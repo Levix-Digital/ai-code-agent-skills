@@ -1,8 +1,8 @@
 {
   "name": "dev-skills",
   "displayName": "Dev Skills (Levix)",
-  "version": "1.1.0",
-  "description": "Project-agnostic development skills: dev cycle protocol, plan and session memory (ChromaDB) and folder RAG sync.",
+  "version": "1.2.0",
+  "description": "Project-agnostic development skills: dev cycle protocol, shared plans and session memory, architecture docs and folder RAG sync.",
   "author": {
     "name": "Levi Silveira"
   },
@@ -11,6 +11,7 @@
     "./dev-cycle-protocol",
     "./plan-memory",
     "./session-memory",
+    "./architecture-docs",
     "./folder-sync"
   ]
 }

@@ -7,6 +7,7 @@ Development skills in the open `SKILL.md` format, shared by every coding agent o
 | [`dev-cycle-protocol`](#dev-cycle-protocol) | 8-step development lifecycle with an explicit approval gate, Dual-Doc, manual tests and release follow-through |
 | [`plan-memory`](#plan-memory) | Keeps complete architecture plans as versioned files in each project (`docs/plans`), shared by the team, with milestones, lineage, search and drift detection |
 | [`session-memory`](#session-memory) | Recovers and consolidates each developer's own session context per project (local ChromaDB) |
+| [`architecture-docs`](#architecture-docs) | Keeps technical docs current: short index, one living page per subsystem, immutable ADRs, validation and migration of legacy docs |
 | [`folder-sync`](#folder-sync) | Incremental RAG over any folder: `/sync` to index, `/folder` to ask |
 
 Agents load a skill on their own when the task matches its `description`. You can also ask for one by name ("use plan-memory to save this plan").
@@ -30,7 +31,8 @@ Agents load a skill on their own when the task matches its `description`. You ca
 ```
 ~/.ai-code-agent-skills/                 this repository (source of truth)
 ├── .claude-plugin/                      Claude Code marketplace + plugin manifests
-├── dev-cycle-protocol/  plan-memory/  session-memory/  folder-sync/
+├── dev-cycle-protocol/  plan-memory/  session-memory/
+├── architecture-docs/  folder-sync/
 ├── install.ps1 / install.sh             link the skills into each agent
 └── requirements.txt                     Python dependencies of the scripts
 
@@ -43,6 +45,7 @@ Agents load a skill on their own when the task matches its `description`. You ca
 └── session-memory/db                    this developer's session memory
 
 <project>/docs/plans/*.md                plans: versioned and shared in each project
+<project>/TECDOC.md, docs/architecture/, docs/adr/   technical docs (architecture-docs)
 ```
 
 - **One copy of each skill.** Agents read the files through links, so an edit in this repository is seen by every agent at once.
@@ -106,7 +109,7 @@ Restart the agent (or open a new session) after installing so it picks up the sk
 
 ## Claude Code cloud sessions (plugin)
 
-Cloud sessions do not see your local folders. For them, this repository is also a Claude Code marketplace (`levix-agent-skills`) with the `dev-skills` plugin, which ships the four skills.
+Cloud sessions do not see your local folders. For them, this repository is also a Claude Code marketplace (`levix-agent-skills`) with the `dev-skills` plugin, which ships the five skills.
 
 Add to the project's `.claude/settings.json` and push it to the branch the cloud session uses:
 
@@ -138,10 +141,10 @@ The governance protocol for AI pair-programming. It defines seven engineering pi
 
 1. **Discovery** — read-only analysis; logs first; check existing plans.
 2. **Complete final plan** — 8-section blueprint, drift check, saved with `plan-memory`.
-3. **Explicit approval gate** — nothing is implemented until the user approves ("Approved", "Aprovado", "Go").
+3. **Explicit approval gate** — nothing is implemented until the user gives a short, direct approval.
 4. **Modular implementation** — core domain first, then storage, then adapters.
 5. **Automated tests** — 100% green on the native runner, regression test for every bug fix.
-6. **Dual-Doc update** — `README.md` (UserDoc) and `TECDOC.md` (TecDoc with ADRs and Mermaid).
+6. **Dual-Doc update** — `README.md` (UserDoc), plus subsystem pages and ADRs with `architecture-docs` (TecDoc).
 7. **Manual test record** — new scenario added to `tests/MANUAL_TESTS.md`, nothing truncated.
 8. **Closure** — version bump, PR, CI watched until green, merge, tag, release verified in the releases repository.
 
@@ -153,7 +156,7 @@ python <skills_root>/dev-cycle-protocol/verify_gate.py --gate 8 --project <proje
 ```
 - `inspect_project.py` detects languages, manifests, test runners, documentation files and Git state.
 - `verify_gate.py --gate 3` (before implementing): clean working tree, active plan in `plan-memory`, no secrets tracked or staged.
-- `verify_gate.py --gate 8` (before releasing): UserDoc, TecDoc and manual tests exist, no secrets, clean tree.
+- `verify_gate.py --gate 8` (before releasing): UserDoc, TecDoc and manual tests exist, `architecture-docs/check_docs.py` passes (warning only for projects not migrated yet), no secrets, clean tree.
 
 Per-project settings go in [`.dev-cycle.json`](#project-configuration-dev-cyclejson). Full protocol: [dev-cycle-protocol/SKILL.md](dev-cycle-protocol/SKILL.md).
 
@@ -209,6 +212,34 @@ All scripts are in `<skills_root>/session-memory/`.
 
 Details: [session-memory/SKILL.md](session-memory/SKILL.md).
 
+### architecture-docs
+
+Keeps the technical documentation describing how the system works **today**, instead of growing into a changelog:
+
+| Content | Where | Rule |
+|---|---|---|
+| How a subsystem works today | `docs/architecture/<subsystem>.md` | Edited in place; outdated text is replaced or removed |
+| Why a decision was made | `docs/adr/NNNN-<slug>.md` | One decision per file; immutable once accepted (status and relations only) |
+| When something changed | GitHub release notes | Never in the architecture docs |
+| Entry point | `TECDOC.md` | Short index; subsystem map and ADR list generated |
+
+| Task | Command |
+|---|---|
+| New ADR | `new_adr.py --title "<decision>" [--version v1.2.0] [--subsystem rag] [--supersedes 129] [--amends 118]` |
+| New subsystem page | `new_subsystem.py --name rag --title "Retrieval Pipeline" --summary "<one sentence>" [--code "src/rag"]` |
+| Regenerate the index | `build_index.py` (`--check` to only verify) |
+| Validate | `check_docs.py [--include-plans] [--max-warnings 0]` |
+| Migrate a legacy single-file TECDOC | `extract_adrs.py [--source TECDOC.md] [--dry-run]`, then the migration steps in the SKILL.md |
+
+All scripts are in `<skills_root>/architecture-docs/`.
+
+- **`check_docs.py` fails on**: headings with versions or manual numbering, invalid ADR frontmatter, ADR relations not recorded in both directions, broken links and anchors, an outdated index, and headings not in the configured language.
+- **It warns about**: long files, body text that looks like another language, ADRs missing a standard section, and documented source paths that no longer exist.
+- **Gate 8** runs it. Once a project has `docs/adr` or `docs/architecture`, errors block the release, so migrate a legacy TECDOC on its own branch and finish it before the next release.
+- **Language**: English by default (`architecture_docs.language`). Mark a line with `<!-- lang-ok -->` to exempt a proper name or quote.
+
+Details: [architecture-docs/SKILL.md](architecture-docs/SKILL.md).
+
 ### folder-sync
 
 Turns any folder into a searchable knowledge base without loading its files into the conversation.
@@ -233,7 +264,7 @@ Details: [folder-sync/SKILL.md](folder-sync/SKILL.md).
 
 ## Project configuration: `.dev-cycle.json`
 
-Optional file at a project's root, read by `dev-cycle-protocol` and `plan-memory`. Every key is optional.
+Optional file at a project's root, read by `dev-cycle-protocol`, `plan-memory` and `architecture-docs`. Every key is optional.
 
 ```json
 {
@@ -249,6 +280,14 @@ Optional file at a project's root, read by `dev-cycle-protocol` and `plan-memory
   "canonical_datastore": "data/app.db",
   "releases_repo": "my-org/my-app-releases",
   "plans_dir": "docs/plans",
+  "architecture_docs": {
+    "index": "TECDOC.md",
+    "architecture_dir": "docs/architecture",
+    "adr_dir": "docs/adr",
+    "max_lines": 800,
+    "language": "en",
+    "language_scope": ["index", "architecture", "adr"]
+  },
   "drift_rules": [
     { "tech": "langchain", "conflict_msg": "The baseline plan removes LangChain in favor of a native implementation." },
     {
@@ -271,13 +310,14 @@ Optional file at a project's root, read by `dev-cycle-protocol` and `plan-memory
 | `canonical_datastore` | The single source of truth database |
 | `releases_repo` | Repository where releases must be published (Step 8) |
 | `plans_dir` | Folder of the plan files (default `docs/plans`) |
+| `architecture_docs` | Layout, line limit and language of the technical docs; add `"plans"` to `language_scope` to check plans too |
 | `drift_rules` | Technologies or patterns the project's plans reject |
 
 **How a drift rule works.** A conflict is raised when:
 1. the active plan mentions `tech` together with a rejection marker; and
 2. the proposal mentions `tech` without an allowed phrase.
 
-When `negative_markers` and `proposal_allow` are omitted, bilingual defaults are used (`remove`, `replace`, `without`, `remover`, `substituir`, `sem`, ... and `without <tech>`, `remove <tech>`, `sem <tech>`, ...).
+When `negative_markers` and `proposal_allow` are omitted, defaults are used (`remove`, `replace`, `without`, `forbidden`, ... and `without <tech>`, `remove <tech>`, `replace <tech>`, ...). The defaults also include the Portuguese equivalents, needed while existing plans are not yet translated.
 
 ---
 
@@ -313,5 +353,6 @@ Links pick up the changes at once. Rerun the install script only when skills wer
 | `ModuleNotFoundError: chromadb` / `docx` / `pypdf` | `pip install -r requirements.txt` with the same Python the agent uses. |
 | `plan-memory` lists no plans | Run it inside the project repository (or pass `--dir`); plans are read from `docs/plans` (or `plans_dir`). |
 | A memory script finds nothing for a project | Run `read_memory.py --list-projects` or `list_plans.py`; the project may be stored under another name. Names are normalized (`AnyContext` = `any-context`), but `anycontext` cannot be split. |
+| `check_docs.py` reports many errors after `extract_adrs.py` | Expected: they are the migration work list (translate and restructure ADRs, rewrite the index and subsystem pages). |
 | `detect_drift.py` reports `Drift Rules: none` | Run it from the project folder (or pass `--dir`) and add `drift_rules` to `.dev-cycle.json`. |
 | Cloud session has no `dev-skills:*` skills | Check the branch has `.claude/settings.json`, the GitHub app can access this repository, and `/plugin` for load errors. |

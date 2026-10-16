@@ -134,6 +134,22 @@ def verify_gate_8(cwd: str, project_name: str) -> bool:
         print("❌ Cumulative manual tests suite missing (tests/MANUAL_TESTS.md required).")
         passed = False
 
+    # 1b. Architecture documentation (architecture-docs skill)
+    checker = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "architecture-docs", "check_docs.py")
+    if os.path.isfile(checker):
+        res = subprocess.run([sys.executable, checker, "--dir", cwd, "--max-warnings", "10"],
+                             capture_output=True, text=True, encoding="utf-8", errors="replace")
+        output = res.stdout.strip()
+        if "does not use the architecture-docs layout" in output:
+            print("⚠️ TecDoc not migrated to the architecture-docs layout (docs/architecture + docs/adr) yet.")
+        elif res.returncode == 0:
+            print(f"✅ Architecture docs check passed. {output.splitlines()[-1] if output else ''}")
+        else:
+            print("❌ Architecture docs check failed (architecture-docs/check_docs.py):")
+            for line in output.splitlines()[:25]:
+                print(f"   {line}")
+            passed = False
+
     # 2. Check Secret Hygiene
     secrets = check_secret_hygiene(cwd)
     if secrets:

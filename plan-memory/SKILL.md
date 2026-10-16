@@ -110,8 +110,8 @@ Anti-pattern rules live in the `drift_rules` key of the project's `.dev-cycle.js
 ]
 ```
 A rule raises a conflict when a plan in force (`active` / `in_progress`) mentions `tech` together with a rejection marker, and the proposal mentions `tech` without an allowed phrase.
-- `negative_markers` (optional): words that mark the rejection. Default: bilingual pt/en list (`remove`, `replace`, `without`, `forbidden`, `remover`, `substituir`, `sem`, ...).
-- `proposal_allow` (optional): phrases that make a mention acceptable. Default: `without <tech>`, `remove <tech>`, `replace <tech>`, `sem <tech>`, `remover <tech>`, ...
+- `negative_markers` (optional): words that mark the rejection. Default: `remove`, `replace`, `without`, `forbidden`, ... plus their Portuguese equivalents, kept while existing plans are not yet translated.
+- `proposal_allow` (optional): phrases that make a mention acceptable. Default: `without <tech>`, `remove <tech>`, `replace <tech>`, ... plus their Portuguese equivalents.
 
 ### 4. List Plans (`list_plans.py`)
 ```powershell

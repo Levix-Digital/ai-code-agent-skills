@@ -11,7 +11,7 @@ description: Universal, project-agnostic 8-step software engineering lifecycle p
 
 It is **100% language- and project-agnostic** (Rust, Python, TypeScript, Go, C++, monorepos, etc.), ensuring every technical change follows rigorous engineering standards: domain isolation, interface parity, deep technical documentation, non-truncated manual tests and persistent architectural decisions.
 
-> **Language**: talk to the user in the language they use. Keep each project's existing documents (README, TECDOC, MANUAL_TESTS) in the language they are already written in.
+> **Language**: talk to the user in the language they use, but write every project artifact in **English**: documentation, ADRs, plans, manual tests, code comments, commit messages and PR descriptions. A project can set another language in `.dev-cycle.json` (`architecture_docs.language`); nothing in another language otherwise.
 
 ---
 
@@ -57,7 +57,8 @@ Every implemented feature requires a synchronized, detailed update of two comple
   - Covers: `README.md`, interactive help menus (`--help`), quick-start tutorials, command parameters and troubleshooting guides.
 - **`TecDoc` (Engineering, Architecture & Technical Deep-Dive)**:
   - Aimed at maintainers, software architects and technical auditors.
-  - Covers: `TECDOC.md` (or `docs/architecture/`), **Mermaid** sequence and flow diagrams, mathematical formulas, algorithmic complexity, database schemas, architecture decision records (ADRs) and the failure-handling matrix.
+  - Maintained with the 👉 **[`architecture-docs`](../architecture-docs/SKILL.md)** skill: a short index (`TECDOC.md`), one living page per subsystem in `docs/architecture/` describing **how it works today** (Mermaid diagrams, data structures, schemas, algorithms, failure handling), and one immutable Architecture Decision Record per decision in `docs/adr/`.
+  - **Edit, never append**: a change updates the relevant subsystem page in place; versioned "what changed in vX.Y" sections are forbidden (release notes cover that).
 
 ### 4. 📝 Cumulative, Non-Truncated Manual Test Suite (`MANUAL_TESTS.md`)
 - **No-Compaction Rule**: **NEVER compact, summarize into one line or truncate** previous manual test scripts. The `tests/MANUAL_TESTS.md` (or `MANUAL_TESTS.md`) file must accumulate every detailed step-by-step scenario (with copyable commands, prerequisites, payloads and explicit acceptance criteria).
@@ -88,9 +89,9 @@ graph TD
     A["1. 💡 Discovery & Exploration (Default)<br/>(Log inspection, detected stack, active plans)"] --> B["2. 📋 Complete Final Plan (Blueprint)<br/>(Decisions, parity, detect_drift, save_plan)"]
     B --> C{"🔒 3. EXPLICIT APPROVAL GATE<br/>(verify_gate 3 + blocked until 'Approved')"}
     C -- "Questions / Adjustments / Exploration" --> A
-    C -- "✅ Authorized ('Approved', 'Go ahead')" --> D["4. 🛠️ Modular Implementation with Parity<br/>(Core Domain first -> Delivery Adapters)"]
+    C -- "✅ Authorized" --> D["4. 🛠️ Modular Implementation with Parity<br/>(Core Domain first -> Delivery Adapters)"]
     D --> E["5. 🧪 Automated Test Suite & NFRs<br/>(100% green tests on the native runner)"]
-    E --> F["6. 📚 Rigorous Dual-Doc Update<br/>(UserDoc README + TecDoc TECDOC.md)"]
+    E --> F["6. 📚 Rigorous Dual-Doc Update<br/>(UserDoc README + architecture pages & ADRs)"]
     F --> G["7. 📝 Detailed Manual Test Record<br/>(tests/MANUAL_TESTS.md without compaction)"]
     G --> H["8. 🚀 Closure, CI/CD, Release & Checklist<br/>(verify_gate 8, bump, PR, CI watch, tag, release)"]
 ```
@@ -119,7 +120,7 @@ graph TD
   1. 🎯 **Goal & Architecture Decisions (ADR)**
   2. 🏛️ **Surface Parity Mapping (which interfaces will be updated)**
   3. 📁 **Affected Files and Lines**
-  4. 📚 **Dual-Doc Update Plan (`UserDoc` + `TecDoc`)**
+  4. 📚 **Dual-Doc Update Plan (`UserDoc` + affected subsystem pages and ADRs)**
   5. 🧪 **Automated Testing Strategy & Regression Protection**
   6. 📝 **Manual Test Scenario Plan (`tests/MANUAL_TESTS.md`)**
   7. 🔒 **Secret Hygiene, Database Migration and Rollback Plan**
@@ -151,7 +152,7 @@ graph TD
   ```powershell
   python "<skills_root>/dev-cycle-protocol/verify_gate.py" --gate 3 --project "<project>"
   ```
-- Implementation **ONLY STARTS** after a **short, direct authorization with no further questions** from the user (e.g. *"Aprovado"*, *"Pode implementar"*, *"Autorizado"*, *"Approved"*, *"Go"*).
+- Implementation **ONLY STARTS** after a **short, direct authorization with no further questions** from the user, in their own language (e.g. *"Approved"*, *"Go ahead"*, *"Go"*).
 - If the user's reply contains any question, reservation or new idea, the assistant **automatically returns to Step 1** without touching any code file.
 - **Commit the approved plan**: right after approval, commit the plan file (`docs(plan): <title>`) before implementing, so every developer sees the plan being executed. In a team, plan files go through pull requests like code.
 
@@ -180,18 +181,18 @@ graph TD
 
 ### 📚 Step 6: Rigorous, Detailed Dual-Doc Update
 - **`UserDoc`**: Update `README.md`, flag documentation, `/help` screens and practical examples.
-- **`TecDoc`**: Update `TECDOC.md` (or `docs/architecture/`):
-  - Mermaid sequence and flow diagrams of the new interactions.
-  - Details of new endpoints, data structures and business rules.
-  - Architecture Decision Record (ADR) explaining why the adopted solution was chosen.
+- **`TecDoc`**: follow "Where Each Change Goes" in the [`architecture-docs`](../architecture-docs/SKILL.md) skill:
+  - Edit the affected subsystem pages in `docs/architecture/` in place (Mermaid diagrams, endpoints, data structures, business rules), removing what no longer exists.
+  - Create an ADR with `new_adr.py` for each decision with alternatives (`--supersedes` / `--amends` when it changes an earlier one).
+  - Run `build_index.py` and `check_docs.py` (zero errors).
 
 ---
 
 ### 📝 Step 7: Cumulative Manual Test Script Record (`tests/MANUAL_TESTS.md`)
 - Persist and version the step-by-step test script in `tests/MANUAL_TESTS.md`.
 - **No compaction**: Add the new detailed scenario at the top and keep every earlier non-obsolete scenario intact, with its steps, commands and acceptance criteria.
-- **Mandatory Scenario Format** (in the language the file already uses):
-  - **Identifier and Title**: `## Scenario X: [Feature Name]` (or `## Cenário X: ...` in a Portuguese file)
+- **Mandatory Scenario Format**:
+  - **Identifier and Title**: `## Scenario X: [Feature Name]`
   - **Prerequisites and Environment**: Required files, environment variables and running services.
   - **Step by Step with Copyable Commands**: Exact commands ready to run in the terminal.
   - **Expected Result (Acceptance Criteria)**: Expected terminal output, generated logs and database state.
