@@ -120,8 +120,8 @@ It warns about long files, body text that looks like another language, ADRs miss
 
 ## 🔒 Integration with `dev-cycle-protocol`
 
-- **Step 2 (plan)**: list the subsystem pages and ADRs the change will touch.
-- **Step 6 (Dual-Doc)**: apply "Where Each Change Goes", run `build_index.py` and `check_docs.py`.
+- **Phase 2 (Plan)**: list the subsystem pages and ADRs the change will touch.
+- **Phase 6 (Documentation)**: apply "Where Each Change Goes", run `build_index.py` and `check_docs.py`. The README is owned by [`user-docs`](../user-docs/SKILL.md) and the structure itself by [`software-design`](../software-design/SKILL.md).
 - **Gate 8**: `verify_gate.py --gate 8` runs `check_docs.py`; errors block the release. Projects that have not adopted the layout get a warning only.
 
 ---
