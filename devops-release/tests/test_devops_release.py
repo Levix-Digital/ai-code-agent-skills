@@ -68,6 +68,26 @@ def test_release_without_prerelease_and_permissions(tmp_path):
     assert not any("pre-releases" in e for e in errors)
 
 
+def test_prerelease_flag_computed_in_env_is_accepted(tmp_path):
+    rel = """on:
+  push:
+    tags: ['v*']
+permissions:
+  contents: write
+jobs:
+  r:
+    runs-on: ubuntu-latest
+    env:
+      IS_RC: ${{ contains(github.ref_name, '-rc') }}
+    steps:
+      - uses: softprops/action-gh-release@v2
+        with:
+          prerelease: ${{ env.IS_RC == 'true' }}
+"""
+    errors, _ = check_ci(repo(tmp_path, {}, {"release.yml": rel}))
+    assert not any("pre-releases" in e for e in errors)
+
+
 def test_tag_pushed_with_github_token_cannot_trigger_release(tmp_path):
     tagger = ("on:\n  push:\n    branches: [main]\npermissions:\n  contents: write\njobs:\n  t:\n    runs-on: ubuntu-latest\n"
               "    steps:\n      - run: |\n          git tag -a v1 -m v1\n          git push origin v1\n")
