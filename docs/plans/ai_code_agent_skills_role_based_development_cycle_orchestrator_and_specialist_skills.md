@@ -6,7 +6,7 @@ version: v2.0.0
 status: in_progress
 author: Levi Silveira
 created_at: '2026-10-16T13:41:24'
-updated_at: '2026-10-16T14:00:22'
+updated_at: '2026-10-16T14:04:49'
 session_id: null
 tags:
 - dev-cycle
@@ -40,7 +40,9 @@ milestones:
   done_at: '2026-10-16'
   by: Levi Silveira
 - name: M6 dev-cycle-protocol as orchestrator
-  done: false
+  done: true
+  done_at: '2026-10-16'
+  by: Levi Silveira
 - name: M7 Repository plumbing
   done: false
 - name: M8 Apply to any-context
@@ -65,6 +67,9 @@ status_log:
 - at: '2026-10-16T14:00:22'
   by: Levi Silveira
   note: 'Milestone ''M5 devops-release skill'' completed: SKILL.md (branching, PR CI policy, semver, release candidates, user merge as release gate, GITHUB_TOKEN limitation, hotfix, rollback, observability profiles); ci/release/tag-on-merge templates; check_ci_policy.py and release_status.py (version, next-rc, verify); 11 tests'
+- at: '2026-10-16T14:04:49'
+  by: Levi Silveira
+  note: 'Milestone ''M6 dev-cycle-protocol as orchestrator'' completed: SKILL.md v3: roles table, principles, full and short paths, 10 phases with user gates (plan, RC acceptance, merge into main); verify_gate.py: gate rc and gate 8 running every role checker; plan-memory and architecture-docs phase references; 6 gate tests'
 ---
 
 # Role-Based Development Cycle: Orchestrator and Specialist Skills

@@ -149,9 +149,9 @@ python "<skills_root>/plan-memory/rebuild_index.py"
 
 ## 👥 Team Workflow
 
-- **Step 2 (plan)**: save the plan with `save_plan.py`. The file is part of the proposal the user approves.
-- **Step 3 (approval)**: once approved, commit the plan file (`docs(plan): <title>`) before implementing. In a team, plan files go through pull requests like code.
-- **Steps 4–8**: commit milestone and status changes with the work that completes them.
+- **Phase 2 (plan)**: save the plan with `save_plan.py`. The file is part of the proposal the user approves.
+- **Phase 3 (approval)**: once approved, commit the plan file (`docs(plan): <title>`) on the work branch before implementing. In a team, plan files go through pull requests like code.
+- **Phases 4 to 10**: commit milestone and status changes with the work that completes them.
 - Someone else's plan changes arrive with `git pull`; the next command re-indexes them automatically.
 - Two people editing the same plan get an ordinary Git merge on readable YAML lines.
 
@@ -160,10 +160,11 @@ python "<skills_root>/plan-memory/rebuild_index.py"
 ## 🔒 Integration with `dev-cycle-protocol`
 
 The whole development lifecycle follows 👉 **[`dev-cycle-protocol`](../dev-cycle-protocol/SKILL.md)**:
-- **Step 1 (Discovery)**: check `list_plans.py`, `check_milestone.py --list` or `search_plans.py` for real progress and agreed guidelines.
-- **Step 2 (Plan)**: save the full plan with `save_plan.py` (with `--supersedes` when it replaces one) and run `detect_drift.py`.
-- **Step 3 (Gate)**: `verify_gate.py --gate 3` checks there is an active plan and warns if its file is not committed.
-- **Step 8 (Release)**: mark milestones with `check_milestone.py` or finish the plan with `update_plan_status.py`.
+- **Phase 1 (Discovery)**: check `list_plans.py`, `check_milestone.py --list` or `search_plans.py` for real progress and agreed guidelines.
+- **Phase 2 (Plan)**: save the full plan with `save_plan.py` (with `--supersedes` when it replaces one) and run `detect_drift.py`. The plan follows the orchestrator's template, with a section from each role.
+- **Phase 3 (Plan approval)**: `verify_gate.py --gate 3` checks there is an active plan and warns if its file is not committed.
+- **Phase 4 (Implementation)**: mark milestones with `check_milestone.py` as they are completed.
+- **Phase 10 (Release)**: close the remaining milestones or finish the plan with `update_plan_status.py`.
 
 ---
 
