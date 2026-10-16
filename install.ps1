@@ -1,30 +1,31 @@
 <#
 .SYNOPSIS
-  Links every skill in this repository into the skills folder of each coding agent.
+  Links every skill in a source folder into the skills folder of each coding agent.
 
 .DESCRIPTION
   A skill is any top-level folder that contains a SKILL.md. Each one is linked
   (directory junction, no admin rights needed) into every target folder, so all
-  agents read the same files from this repository.
+  agents read the same files.
 
-  Targets that already point at this repository as a whole are left untouched.
-  Existing entries with the same name that are not links to this repository are
+  Existing entries with the same name that are not links to the source are
   reported and skipped, never overwritten.
 
 .EXAMPLE
   .\install.ps1
-  .\install.ps1 -Targets "$HOME\.claude\skills","$HOME\.agents\skills","$HOME\.copilot\skills"
-  .\install.ps1 -Exclude assistente-diario
+  .\install.ps1 -Source "$HOME\.ai-code-agent-skills-personal"
+  .\install.ps1 -Targets "$HOME\.claude\skills","$HOME\.copilot\skills"
 #>
 param(
+    [string]$Source = $PSScriptRoot,
     [string[]]$Targets = @(
-        "$HOME\.claude\skills",   # Claude Code
-        "$HOME\.agents\skills"    # Cross-agent standard location (Codex, Gemini CLI and others)
+        "$HOME\.claude\skills",          # Claude Code
+        "$HOME\.agents\skills",          # Cross-agent standard location (Codex and others)
+        "$HOME\.gemini\config\skills"    # Gemini
     ),
     [string[]]$Exclude = @()
 )
 
-$repo = (Resolve-Path $PSScriptRoot).Path.TrimEnd('\')
+$repo = (Resolve-Path $Source).Path.TrimEnd('\')
 $skills = Get-ChildItem -Path $repo -Directory |
     Where-Object { (Test-Path (Join-Path $_.FullName 'SKILL.md')) -and ($Exclude -notcontains $_.Name) }
 
@@ -36,9 +37,8 @@ function Get-LinkTarget([string]$path) {
 
 foreach ($target in $Targets) {
     Write-Host "`n== $target"
-    $whole = Get-LinkTarget $target
-    if ($whole -and ((Resolve-Path $whole).Path.TrimEnd('\') -eq $repo)) {
-        Write-Host "   already links to the whole repository, nothing to do"
+    if (Get-LinkTarget $target) {
+        Write-Warning "   '$target' is itself a link; replace it with a real folder to link skills individually. Skipped."
         continue
     }
     New-Item -ItemType Directory -Force -Path $target | Out-Null
@@ -49,7 +49,7 @@ foreach ($target in $Targets) {
         if ($current -and ($current -eq $skill.FullName)) {
             Write-Host "   = $($skill.Name)"
         } elseif (Test-Path -LiteralPath $dest) {
-            Write-Warning "   ! $($skill.Name): '$dest' already exists and is not a link to this repository, skipped"
+            Write-Warning "   ! $($skill.Name): '$dest' already exists and is not a link to '$repo', skipped"
         } else {
             New-Item -ItemType Junction -Path $dest -Target $skill.FullName | Out-Null
             Write-Host "   + $($skill.Name)"

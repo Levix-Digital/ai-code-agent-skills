@@ -7,18 +7,18 @@ def clean_brain(target_dir: str):
     brain_dir = root_path / ".folder_brain"
     
     if not brain_dir.exists():
-        print(f"ℹ️ Nenhum `.folder_brain` encontrado em '{root_path.name}'.")
+        print(f"ℹ️ No `.folder_brain` found in '{root_path.name}'.")
         return
         
     try:
         shutil.rmtree(brain_dir)
-        print(f"🧹 Base `.folder_brain` removida com sucesso de '{root_path.name}'.")
+        print(f"🧹 `.folder_brain` index removed from '{root_path.name}'.")
     except Exception as e:
-        print(f"❌ Erro ao remover `.folder_brain`: {e}")
+        print(f"❌ Error removing `.folder_brain`: {e}")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Limpeza do Folder Brain")
-    parser.add_argument("--dir", default=".", help="Diretório alvo (padrão: atual)")
+    parser.add_argument("--dir", default=".", help="Target directory (default: current)")
     args = parser.parse_args()
     
     clean_brain(args.dir)

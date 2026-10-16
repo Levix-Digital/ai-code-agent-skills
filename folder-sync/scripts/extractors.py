@@ -33,7 +33,7 @@ def extract_text_from_file(file_path: Path) -> dict:
     if ext in CLOUD_SHORTCUT_EXTENSIONS:
         return {
             "type": "cloud_shortcut",
-            "content": f"[Google Cloud Document Pointer: {file_path.name}] - Necessário exportar como .docx ou .pdf para indexação.",
+            "content": f"[Google Cloud Document Pointer: {file_path.name}] - Export it as .docx or .pdf to index it.",
             "sections": [],
             "word_count": 0
         }
@@ -79,8 +79,8 @@ def extract_text_from_file(file_path: Path) -> dict:
             for idx, page in enumerate(reader.pages):
                 page_text = page.extract_text() or ""
                 if page_text.strip():
-                    full_text.append(f"[Página {idx+1}]\n{page_text.strip()}")
-                    sections.append({"heading": f"Página {idx+1}", "text": page_text.strip(), "page": idx+1})
+                    full_text.append(f"[Page {idx+1}]\n{page_text.strip()}")
+                    sections.append({"heading": f"Page {idx+1}", "text": page_text.strip(), "page": idx+1})
             content = "\n\n".join(full_text)
             
         else: # Text, Markdown, Code, JSON, CSV

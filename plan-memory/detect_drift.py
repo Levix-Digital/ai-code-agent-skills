@@ -97,26 +97,32 @@ def detect_drift(
     warnings = []
     conflicts = []
 
-    # Rules to check against baseline intentions
+    # Rules to check against baseline intentions.
+    # Markers are bilingual (pt/en) because plans and proposals may be written in either language.
     tech_rules = [
         {
             "tech": "langchain",
-            "negative_markers": ["purga", "substituir", "eliminar", "sem", "remover", "proibido", "sem framework"],
-            "proposal_allow": ["sem langchain", "purga do langchain", "substituir langchain", "remover langchain", "eliminando langchain"],
+            "negative_markers": ["purga", "substituir", "eliminar", "sem", "remover", "proibido", "sem framework",
+                                 "purge", "replace", "eliminate", "without", "remove", "forbidden", "no framework"],
+            "proposal_allow": ["sem langchain", "purga do langchain", "substituir langchain", "remover langchain", "eliminando langchain",
+                               "without langchain", "purge langchain", "replace langchain", "remove langchain", "removing langchain"],
             "conflict_msg": "Proposal suggests introducing or using 'LangChain', but baseline plan mandates its purge/removal in favor of pure Rust native architecture."
         },
         {
             "tech": "langgraph",
-            "negative_markers": ["purga", "substituir", "eliminar", "sem", "remover", "proibido"],
+            "negative_markers": ["purga", "substituir", "eliminar", "sem", "remover", "proibido",
+                                 "purge", "replace", "eliminate", "without", "remove", "forbidden"],
             "proposal_allow": [
                 "sem langgraph", "purga do langgraph", "substituir langgraph", 
                 "remover langgraph", "eliminando langgraph", "eliminando o langgraph", 
-                "substituindo o langgraph", "substituindo langgraph", "purga de langgraph"
+                "substituindo o langgraph", "substituindo langgraph", "purga de langgraph",
+                "without langgraph", "purge langgraph", "replace langgraph", "remove langgraph",
+                "removing langgraph", "replacing langgraph"
             ],
             "conflict_msg": "Proposal suggests using 'LangGraph', but baseline plan mandates its replacement with a native Rust FSM."
         },
         {
-            "tech": "banco paralelo",
+            "tech": "banco paralelo",  # Portuguese for "parallel database"
             "negative_markers": ["single source", "single database", "settings.db", "paridade"],
             "proposal_allow": [],
             "conflict_msg": "Proposal hints at parallel databases ('banco paralelo'), violating Single Source of Truth (`settings.db`)."

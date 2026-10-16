@@ -20,7 +20,7 @@ def query_brain(target_dir: str, query: str, top_k: int = 6, mode: str = "hybrid
     chroma_path = brain_dir / "chroma_db"
     
     if not chroma_path.exists():
-        msg = f"❌ A base de conhecimento da pasta ainda não foi sincronizada.\n👉 Execute `/sync` ou `python sync.py` nesta pasta primeiro."
+        msg = f"❌ This folder's knowledge base has not been synced yet.\n👉 Run `/sync` or `python sync.py` in this folder first."
         if json_output:
             print(json.dumps({"error": msg}))
         else:
@@ -87,38 +87,38 @@ def query_brain(target_dir: str, query: str, top_k: int = 6, mode: str = "hybrid
         return
 
     # Formatted Markdown Output
-    print(f"\n🧠 **Resultados da Busca Semântica na Pasta:** `{root_path.name}`")
-    print(f"🔍 **Pergunta/Tema:** *{query}*\n")
+    print(f"\n🧠 **Semantic Search Results in Folder:** `{root_path.name}`")
+    print(f"🔍 **Query/Topic:** *{query}*\n")
     
     if results["macro_matches"]:
-        print("### 📚 Documentos Relevantes (Visão Macro)")
+        print("### 📚 Relevant Documents (Macro View)")
         for m in results["macro_matches"]:
             file_link = f"[{m['file_name']}](file:///{m['file_path'].replace('\\', '/')})"
             print(f"- **{file_link}** (`{m['relative_path']}`) | Score: {1 - m['distance']:.2f}")
         print()
 
     if results["micro_chunks"]:
-        print("### 🧩 Trechos Específicos Encontrados (Visão Micro)")
+        print("### 🧩 Specific Passages Found (Micro View)")
         for idx, c in enumerate(results["micro_chunks"], 1):
             file_link = f"[{c['file_name']}](file:///{c['file_path'].replace('\\', '/')})"
             heading_info = f" > {c['heading']}" if c.get('heading') else ""
-            page_info = f" (Pág {c['page']})" if c.get('page') else ""
+            page_info = f" (p. {c['page']})" if c.get('page') else ""
             score = 1 - c['distance']
             
-            print(f"**[{idx}] {file_link}{heading_info}{page_info}** *(Relevância: {score:.2%})*")
+            print(f"**[{idx}] {file_link}{heading_info}{page_info}** *(Relevance: {score:.2%})*")
             print("```text")
             print(c['content'])
             print("```\n")
     else:
-        print("Nenhum trecho relevante encontrado para esta consulta.")
+        print("No relevant passage found for this query.")
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Consulta Semântica ao Folder Brain")
-    parser.add_argument("--dir", default=".", help="Diretório alvo (padrão: atual)")
+    parser = argparse.ArgumentParser(description="Semantic query over the Folder Brain")
+    parser.add_argument("--dir", default=".", help="Target directory (default: current)")
     parser.add_argument("--query", required=True, help="Texto da consulta ou pergunta")
-    parser.add_argument("--top-k", type=int, default=6, help="Número de chunks a retornar")
+    parser.add_argument("--top-k", type=int, default=6, help="Number of chunks to return")
     parser.add_argument("--mode", choices=["hybrid", "macro", "micro"], default="hybrid")
-    parser.add_argument("--json", action="store_true", help="Retornar saída em formato JSON")
+    parser.add_argument("--json", action="store_true", help="Return output as JSON")
     args = parser.parse_args()
     
     query_brain(args.dir, args.query, args.top_k, args.mode, args.json)

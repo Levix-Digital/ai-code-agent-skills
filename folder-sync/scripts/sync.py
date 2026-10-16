@@ -47,7 +47,7 @@ def get_db_connection(brain_dir: Path) -> sqlite3.Connection:
 def sync_folder(target_dir: str, force: bool = False):
     root_path = Path(target_dir).resolve()
     if not root_path.exists() or not root_path.is_dir():
-        print(f"Erro: O diretório '{target_dir}' não existe ou não é uma pasta válida.")
+        print(f"Error: directory '{target_dir}' does not exist or is not a valid folder.")
         return
 
     brain_dir = root_path / ".folder_brain"
@@ -55,7 +55,7 @@ def sync_folder(target_dir: str, force: bool = False):
     
     chroma_path = brain_dir / "chroma_db"
     
-    print(f"\n🧠 [Folder Brain] Iniciando sincronização incremental em:")
+    print(f"\n🧠 [Folder Brain] Starting incremental sync in:")
     print(f"📂 {root_path}")
     print(f"💾 ChromaDB local: {chroma_path}\n")
     
@@ -153,7 +153,7 @@ def sync_folder(target_dir: str, force: bool = False):
             current_hash = calculate_sha256(f_path)
             
         # Parse and index file
-        action_label = "Modificado" if is_modified else ("Reindexando (force)" if force and is_known else "Novo")
+        action_label = "Modified" if is_modified else ("Reindexing (force)" if force and is_known else "New")
         print(f"  ⚡ [{action_label}] {rel_path}")
         
         extracted = extract_text_from_file(f_path)
@@ -175,7 +175,7 @@ def sync_folder(target_dir: str, force: bool = False):
         macro_id = f"doc_{hashlib.md5(f_str.encode()).hexdigest()}"
         col_macro.add(
             ids=[macro_id],
-            documents=[f"Arquivo: {rel_path}\nTotal de Palavras: {extracted['word_count']}\nPrévia:\n{doc_preview}"],
+            documents=[f"File: {rel_path}\nWord count: {extracted['word_count']}\nPreview:\n{doc_preview}"],
             metadatas=[{
                 "file_path": f_str,
                 "relative_path": rel_path,
@@ -194,7 +194,7 @@ def sync_folder(target_dir: str, force: bool = False):
             for idx, ch in enumerate(chunks):
                 cid = f"{macro_id}_ch_{idx}"
                 heading = ch.get("heading", "Geral")
-                page_str = f" (Pág {ch['page']})" if ch.get("page") else ""
+                page_str = f" (p. {ch['page']})" if ch.get("page") else ""
                 formatted_doc = f"[{rel_path} > {heading}{page_str}]\n{ch['text']}"
                 
                 chunk_ids.append(cid)
@@ -246,26 +246,26 @@ def sync_folder(target_dir: str, force: bool = False):
     elapsed = round(time.time() - start_time, 2)
     
     print("\n" + "="*60)
-    print("✨ Sincronização concluída com sucesso!")
+    print("✨ Sync completed successfully!")
     print(f"⏱️  Tempo decorrido: {elapsed}s")
-    print(f"📄 Arquivos novos indexados: {new_count}")
-    print(f"📝 Arquivos modificados: {modified_count}")
-    print(f"⚡ Arquivos inalterados (cacheados): {unchanged_count}")
+    print(f"📄 New files indexed: {new_count}")
+    print(f"📝 Modified files: {modified_count}")
+    print(f"⚡ Unchanged files (cached): {unchanged_count}")
     if deleted_count > 0:
-        print(f"🗑️  Arquivos removidos do índice: {deleted_count}")
-    print(f"🧩 Total de fragmentos (chunks) na base: {total_chunks}")
+        print(f"🗑️  Files removed from the index: {deleted_count}")
+    print(f"🧩 Total chunks in the index: {total_chunks}")
     print("="*60)
     
     if cloud_files:
-        print(f"\n⚠️  Atenção: Foram detectados {len(cloud_files)} atalhos Google Docs (.gdoc) que necessitam de download:")
+        print(f"\n⚠️  Warning: found {len(cloud_files)} Google Docs shortcuts (.gdoc) that must be downloaded:")
         for cf in cloud_files:
             print(f"   • {cf.name}")
-        print("   👉 Dica: Baixe-os como .docx ou .pdf no Google Drive para incluí-los na próxima sincronização.")
+        print("   👉 Tip: download them from Google Drive as .docx or .pdf to include them in the next sync.")
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Sincronizador Incremental de Pastas com ChromaDB")
-    parser.add_argument("--dir", default=".", help="Diretório a ser sincronizado (padrão: atual)")
-    parser.add_argument("--force", action="store_true", help="Força a reindexação completa ignorando cache")
+    parser = argparse.ArgumentParser(description="Incremental folder sync into ChromaDB")
+    parser.add_argument("--dir", default=".", help="Directory to sync (default: current)")
+    parser.add_argument("--force", action="store_true", help="Force a full reindex, ignoring the cache")
     args = parser.parse_args()
     
     sync_folder(args.dir, args.force)

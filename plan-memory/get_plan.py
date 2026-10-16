@@ -73,7 +73,7 @@ def get_plan(plan_id: str = None, project: str = None, output_file: str = None):
             ratio = len(p_completed_ms) / len(all_ms)
             bar_len = int(round(16 * ratio))
             bar = "█" * bar_len + "░" * (16 - bar_len)
-            print(f"   • Milestones : [{bar}] {ratio*100:.1f}% ({len(p_completed_ms)}/{len(all_ms)} Concluídos)")
+            print(f"   • Milestones : [{bar}] {ratio*100:.1f}% ({len(p_completed_ms)}/{len(all_ms)} Completed)")
         print("=" * 90 + "\n")
         print(doc)
         print("\n" + "=" * 90)

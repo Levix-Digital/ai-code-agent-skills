@@ -11,7 +11,7 @@ from _common import get_collection, get_db_path, master_id, resolve_project, set
 def list_projects(col):
     counts = {}
     for meta in col.get()["metadatas"]:
-        p = (meta or {}).get("project", "<sem projeto>")
+        p = (meta or {}).get("project", "<no project>")
         counts[p] = counts.get(p, 0) + 1
     if not counts:
         print("No memory entries found yet.")
