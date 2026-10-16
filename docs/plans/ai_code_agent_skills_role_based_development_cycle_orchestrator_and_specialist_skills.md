@@ -3,10 +3,10 @@ plan_id: ai_code_agent_skills_role_based_development_cycle_orchestrator_and_spec
 project: ai-code-agent-skills
 title: 'Role-Based Development Cycle: Orchestrator and Specialist Skills'
 version: v2.0.0
-status: active
+status: in_progress
 author: Levi Silveira
 created_at: '2026-10-16T13:41:24'
-updated_at: '2026-10-16T13:41:24'
+updated_at: '2026-10-16T13:45:46'
 session_id: null
 tags:
 - dev-cycle
@@ -20,7 +20,9 @@ superseded_by: null
 parent_plan_id: null
 milestones:
 - name: M1 Project configuration schema
-  done: false
+  done: true
+  done_at: '2026-10-16'
+  by: Levi Silveira
 - name: M2 software-design skill
   done: false
 - name: M3 user-docs skill
@@ -40,6 +42,9 @@ status_log:
   by: Levi Silveira
   status: active
   note: Plan created
+- at: '2026-10-16T13:45:46'
+  by: Levi Silveira
+  note: 'Milestone ''M1 Project configuration schema'' completed: project_config.py loader with defaults, legacy-key mapping, validation and migration; inspect_project, verify_gate, plan-memory and architecture-docs read it; 9 tests'
 ---
 
 # Role-Based Development Cycle: Orchestrator and Specialist Skills

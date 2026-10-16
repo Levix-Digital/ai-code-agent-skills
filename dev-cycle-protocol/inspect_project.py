@@ -11,6 +11,9 @@ import json
 import subprocess
 import glob
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from project_config import load_project_config
+
 def run_cmd(cmd: list[str], cwd: str) -> tuple[int, str]:
     try:
         res = subprocess.run(
@@ -39,19 +42,25 @@ def detect_project_profile(workspace_dir: str = None) -> dict:
         "build_tools": [],
         "doc_files": {},
         "git_status": {},
-        "config_manifest": None
+        "config_manifest": None,
+        "architecture": {},
+        "test_commands": [],
+        "devops": {},
+        "config_problems": [],
     }
 
-    # Check for optional .dev-cycle.json manifest
-    dev_cycle_config = os.path.join(cwd, ".dev-cycle.json")
-    if os.path.exists(dev_cycle_config):
-        try:
-            with open(dev_cycle_config, "r", encoding="utf-8") as f:
-                profile["config_manifest"] = json.load(f)
-                if "project_name" in profile["config_manifest"]:
-                    profile["project_name"] = profile["config_manifest"]["project_name"]
-        except Exception:
-            pass
+    # Project configuration (.dev-cycle.json, shared by every skill)
+    try:
+        cfg = load_project_config(cwd)
+        profile["config_manifest"] = cfg.manifest_path
+        profile["project_name"] = cfg.project_name
+        profile["architecture"] = cfg.section("architecture")
+        profile["test_commands"] = list(cfg.get("test_commands") or [])
+        profile["devops"] = cfg.section("devops")
+        profile["config_problems"] = cfg.validate()
+    except Exception as e:
+        cfg = None
+        profile["config_problems"] = [f"could not read .dev-cycle.json: {e}"]
 
     # Detect Languages & Manifests
     if os.path.exists(os.path.join(cwd, "Cargo.toml")):
@@ -94,6 +103,17 @@ def detect_project_profile(workspace_dir: str = None) -> dict:
     manual_test_candidates = glob.glob(os.path.join(cwd, "tests", "*MANUAL*"), recursive=False) or glob.glob(os.path.join(cwd, "*MANUAL_TESTS*"), recursive=False)
     if manual_test_candidates:
         profile["doc_files"]["manual_tests"] = os.path.relpath(manual_test_candidates[0], cwd)
+
+    # Configured documentation paths win over detection
+    if cfg and cfg.manifest_path:
+        for section, key in (("docs", "user_doc"), ("docs", "tec_doc"), ("tests", "manual_tests")):
+            value = cfg.section(section).get(key)
+            if value and os.path.exists(os.path.join(cwd, value)):
+                profile["doc_files"][key] = value
+
+    # Configured test commands win over detected runners
+    if profile["test_commands"]:
+        profile["test_runners"] = list(profile["test_commands"])
 
     # Git Inspection
     git_dir = os.path.join(cwd, ".git")
@@ -138,6 +158,16 @@ def print_profile_report(profile: dict):
     print(f"   • Tech Stack     : {langs}")
     print(f"   • Manifests      : {manifests}")
     print(f"   • Test Runners   : {runners}")
+    arch = profile.get("architecture", {})
+    devops = profile.get("devops", {})
+    print(f"   • Config         : {profile.get('config_manifest') or 'none (.dev-cycle.json recommended)'}")
+    print(f"   • Architecture   : {arch.get('style') or 'not set (architecture.style in .dev-cycle.json)'}")
+    if devops:
+        rc = "on" if devops.get("release_candidates") else "off"
+        print(f"   • Branches       : {devops.get('integration_branch')} -> {devops.get('production_branch')} (release candidates: {rc})")
+        print(f"   • Releases Repo  : {devops.get('releases_repo') or 'not set'}")
+    for problem in profile.get("config_problems", []):
+        print(f"   ⚠️ Config: {problem}")
     print("-" * 85)
     print("📚 DOCUMENTATION STANDARD STATUS (Dual-Doc + Manual Tests):")
     print(f"   • UserDoc (Public Guide) : {docs.get('user_doc', '❌ MISSING (README.md recommended)')}")

@@ -84,7 +84,8 @@ class PlanStore:
     def __init__(self, start_dir: str = None, project: str = None):
         self.root = repo_root(start_dir)
         self.config = load_config(self.root)
-        self.plans_dir = os.path.join(self.root, self.config.get("plans_dir", os.path.join("docs", "plans")))
+        plans_rel = (self.config.get("plans") or {}).get("dir") or self.config.get("plans_dir") or os.path.join("docs", "plans")
+        self.plans_dir = os.path.join(self.root, plans_rel)
         self.project = normalize_project(project or self.config.get("project_name") or os.path.basename(self.root))
 
     # ------------------------------------------------------------ files

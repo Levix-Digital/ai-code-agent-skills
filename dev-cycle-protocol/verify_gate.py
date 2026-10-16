@@ -11,6 +11,9 @@ import subprocess
 import glob
 import re
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from project_config import load_project_config
+
 def run_cmd(cmd: list[str], cwd: str) -> tuple[int, str]:
     try:
         res = subprocess.run(
@@ -111,28 +114,19 @@ def verify_gate_8(cwd: str, project_name: str) -> bool:
 
     passed = True
 
-    # 1. Dual-Doc Verification
-    has_userdoc = os.path.exists(os.path.join(cwd, "README.md"))
-    has_tecdoc = os.path.exists(os.path.join(cwd, "TECDOC.md")) or os.path.exists(os.path.join(cwd, "docs", "ARCHITECTURE.md"))
-    has_manual_tests = os.path.exists(os.path.join(cwd, "tests", "MANUAL_TESTS.md")) or os.path.exists(os.path.join(cwd, "MANUAL_TESTS.md"))
-
-    if has_userdoc:
-        print("✅ UserDoc verified (README.md exists).")
-    else:
-        print("❌ UserDoc missing (README.md required).")
-        passed = False
-
-    if has_tecdoc:
-        print("✅ TecDoc verified (TECDOC.md exists).")
-    else:
-        print("❌ TecDoc missing (TECDOC.md required).")
-        passed = False
-
-    if has_manual_tests:
-        print("✅ Cumulative manual tests suite verified (MANUAL_TESTS.md exists).")
-    else:
-        print("❌ Cumulative manual tests suite missing (tests/MANUAL_TESTS.md required).")
-        passed = False
+    # 1. Documentation and manual tests at the paths configured in .dev-cycle.json
+    cfg = load_project_config(cwd)
+    required = [
+        ("UserDoc", cfg.section("docs").get("user_doc")),
+        ("TecDoc", cfg.section("docs").get("tec_doc")),
+        ("Manual test suite", cfg.section("tests").get("manual_tests")),
+    ]
+    for label, rel in required:
+        if rel and os.path.exists(os.path.join(cwd, rel)):
+            print(f"✅ {label} verified ({rel} exists).")
+        else:
+            print(f"❌ {label} missing ({rel or 'path not configured'} required).")
+            passed = False
 
     # 1b. Architecture documentation (architecture-docs skill)
     checker = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "architecture-docs", "check_docs.py")
@@ -183,7 +177,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     cwd = os.path.abspath(args.dir or os.getcwd())
-    p_name = args.project or os.path.basename(cwd)
+    p_name = args.project or load_project_config(cwd).project_name
 
     gate_num = args.gate.replace("gate", "")
     if gate_num == "3":

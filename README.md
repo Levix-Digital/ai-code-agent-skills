@@ -264,22 +264,29 @@ Details: [folder-sync/SKILL.md](folder-sync/SKILL.md).
 
 ## Project configuration: `.dev-cycle.json`
 
-Optional file at a project's root, read by `dev-cycle-protocol`, `plan-memory` and `architecture-docs`. Every key is optional.
+Optional file at a project's root: the project configuration shared by every skill. Each skill owns one section, and every key is optional. `dev-cycle-protocol/project_config.py` is the single loader: it fills defaults, accepts the legacy flat keys of older files, and validates the result.
 
 ```json
 {
   "project_name": "my-app",
-  "core_path": "src/core",
-  "doc_files": {
-    "user_doc": "README.md",
-    "tec_doc": "TECDOC.md",
-    "manual_tests": "tests/MANUAL_TESTS.md"
+  "architecture": {
+    "style": "hexagonal",
+    "core_path": "src/core",
+    "surfaces": ["cli", "rest-api", "mcp"],
+    "canonical_datastore": "data/app.db"
   },
   "test_commands": ["cargo test --workspace"],
-  "surfaces": ["cli", "rest-api", "mcp"],
-  "canonical_datastore": "data/app.db",
-  "releases_repo": "my-org/my-app-releases",
-  "plans_dir": "docs/plans",
+  "docs": { "user_doc": "README.md", "tec_doc": "TECDOC.md" },
+  "tests": { "manual_tests": "tests/MANUAL_TESTS.md" },
+  "devops": {
+    "integration_branch": "dev",
+    "production_branch": "main",
+    "releases_repo": "my-org/my-app-releases",
+    "release_candidates": true,
+    "version_files": ["Cargo.toml"],
+    "observability": "cli"
+  },
+  "plans": { "dir": "docs/plans" },
   "architecture_docs": {
     "index": "TECDOC.md",
     "architecture_dir": "docs/architecture",
@@ -300,18 +307,32 @@ Optional file at a project's root, read by `dev-cycle-protocol`, `plan-memory` a
 }
 ```
 
-| Key | Meaning |
-|---|---|
-| `project_name` | Project name (normalized to kebab-case); default: the repository folder name |
-| `core_path` | Where the domain core lives |
-| `doc_files` | UserDoc, TecDoc and manual tests paths |
-| `test_commands` | Commands that run the automated tests |
-| `surfaces` | Interfaces that must stay in parity |
-| `canonical_datastore` | The single source of truth database |
-| `releases_repo` | Repository where releases must be published (Step 8) |
-| `plans_dir` | Folder of the plan files (default `docs/plans`) |
-| `architecture_docs` | Layout, line limit and language of the technical docs; add `"plans"` to `language_scope` to check plans too |
-| `drift_rules` | Technologies or patterns the project's plans reject |
+| Key | Meaning | Default |
+|---|---|---|
+| `project_name` | Project name (normalized to kebab-case by plan-memory) | repository folder name |
+| `architecture.style` | `hexagonal`, `layered`, `mvc`, `pipeline`, `modular-monolith` or `other` | not set |
+| `architecture.core_path` | Where the domain core lives | not set |
+| `architecture.surfaces` | Interfaces that must stay in parity | `[]` |
+| `architecture.canonical_datastore` | The single source of truth database | not set |
+| `test_commands` | Commands that run the automated tests | auto-detected |
+| `docs.user_doc`, `docs.tec_doc` | User documentation and technical documentation index | `README.md`, `TECDOC.md` |
+| `tests.manual_tests` | Curated manual test suite | `tests/MANUAL_TESTS.md` |
+| `devops.integration_branch`, `devops.production_branch` | Branch that receives feature work, branch that holds released code | `dev`, `main` |
+| `devops.releases_repo` | Repository where releases are published | not set |
+| `devops.release_candidates` | Publish `vX.Y.Z-rc.N` pre-releases for manual acceptance before the final release | `true` |
+| `devops.version_files` | Files that hold the version number | `[]` |
+| `devops.observability` | `cli`, `service`, `library`, `desktop` or `none` | not set |
+| `plans.dir` | Folder of the plan files | `docs/plans` |
+| `architecture_docs` | Layout, line limit and language of the technical docs; add `"plans"` to `language_scope` to check plans too | see `architecture-docs` |
+| `drift_rules` | Technologies or patterns the project's plans reject | `[]` |
+
+Older files with flat keys keep working: `core_path`, `surfaces`, `canonical_datastore`, `releases_repo`, `plans_dir` and `doc_files.{user_doc,tec_doc,manual_tests}` are read into their sections, and the sectioned key wins when both exist.
+
+```bash
+python ~/.ai-code-agent-skills/dev-cycle-protocol/project_config.py              # effective configuration
+python ~/.ai-code-agent-skills/dev-cycle-protocol/project_config.py --validate   # exit code 1 on problems
+python ~/.ai-code-agent-skills/dev-cycle-protocol/project_config.py --migrate --write   # move flat keys into sections
+```
 
 **How a drift rule works.** A conflict is raised when:
 1. the active plan mentions `tech` together with a rejection marker; and
