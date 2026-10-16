@@ -7,10 +7,42 @@ scope creep, or principle violations.
 import os
 import sys
 import argparse
+import json
 import re
 import chromadb
 
 from _common import get_db_path, normalize_project
+
+# Defaults for project drift rules. Bilingual (pt/en) because plans and proposals
+# may be written in either language.
+DEFAULT_NEGATIVE_MARKERS = [
+    "purga", "substituir", "eliminar", "sem", "remover", "proibido", "sem framework",
+    "purge", "replace", "eliminate", "without", "remove", "forbidden", "no framework",
+]
+DEFAULT_ALLOW_TEMPLATES = [
+    "sem {tech}", "purga do {tech}", "purga de {tech}", "substituir {tech}", "substituindo {tech}",
+    "substituindo o {tech}", "remover {tech}", "eliminando {tech}", "eliminando o {tech}",
+    "without {tech}", "purge {tech}", "replace {tech}", "replacing {tech}", "remove {tech}", "removing {tech}",
+]
+
+
+def load_drift_rules(start_dir: str):
+    """Reads `drift_rules` from the nearest .dev-cycle.json, walking up from start_dir."""
+    current = os.path.abspath(start_dir)
+    while True:
+        manifest = os.path.join(current, ".dev-cycle.json")
+        if os.path.isfile(manifest):
+            try:
+                with open(manifest, "r", encoding="utf-8") as f:
+                    return json.load(f).get("drift_rules", []), manifest
+            except Exception as e:
+                print(f"⚠️ Could not read '{manifest}': {e}", file=sys.stderr)
+                return [], manifest
+        parent = os.path.dirname(current)
+        if parent == current:
+            return [], None
+        current = parent
+
 
 def find_active_plan(col, plan_id: str = None, project: str = None):
     if plan_id:
@@ -35,13 +67,16 @@ def detect_drift(
     proposal_text: str,
     project: str = None,
     plan_id: str = None,
-    strict: bool = False
+    strict: bool = False,
+    project_dir: str = "."
 ):
     if sys.stdout.encoding != 'utf-8':
         try:
             sys.stdout.reconfigure(encoding='utf-8')
         except Exception:
             pass
+
+    tech_rules, rules_source = load_drift_rules(project_dir)
 
     db_path = get_db_path()
     if not os.path.exists(db_path):
@@ -93,53 +128,20 @@ def detect_drift(
         else:
             unaddressed_milestones.append(m)
 
-    # 3. Known Conflict & Anti-Pattern Detection
+    # 3. Known Conflict & Anti-Pattern Detection (project rules from .dev-cycle.json)
     warnings = []
     conflicts = []
-
-    # Rules to check against baseline intentions.
-    # Markers are bilingual (pt/en) because plans and proposals may be written in either language.
-    tech_rules = [
-        {
-            "tech": "langchain",
-            "negative_markers": ["purga", "substituir", "eliminar", "sem", "remover", "proibido", "sem framework",
-                                 "purge", "replace", "eliminate", "without", "remove", "forbidden", "no framework"],
-            "proposal_allow": ["sem langchain", "purga do langchain", "substituir langchain", "remover langchain", "eliminando langchain",
-                               "without langchain", "purge langchain", "replace langchain", "remove langchain", "removing langchain"],
-            "conflict_msg": "Proposal suggests introducing or using 'LangChain', but baseline plan mandates its purge/removal in favor of pure Rust native architecture."
-        },
-        {
-            "tech": "langgraph",
-            "negative_markers": ["purga", "substituir", "eliminar", "sem", "remover", "proibido",
-                                 "purge", "replace", "eliminate", "without", "remove", "forbidden"],
-            "proposal_allow": [
-                "sem langgraph", "purga do langgraph", "substituir langgraph", 
-                "remover langgraph", "eliminando langgraph", "eliminando o langgraph", 
-                "substituindo o langgraph", "substituindo langgraph", "purga de langgraph",
-                "without langgraph", "purge langgraph", "replace langgraph", "remove langgraph",
-                "removing langgraph", "replacing langgraph"
-            ],
-            "conflict_msg": "Proposal suggests using 'LangGraph', but baseline plan mandates its replacement with a native Rust FSM."
-        },
-        {
-            "tech": "banco paralelo",  # Portuguese for "parallel database"
-            "negative_markers": ["single source", "single database", "settings.db", "paridade"],
-            "proposal_allow": [],
-            "conflict_msg": "Proposal hints at parallel databases ('banco paralelo'), violating Single Source of Truth (`settings.db`)."
-        }
-    ]
+    baseline_lower = baseline_doc.lower()
 
     for rule in tech_rules:
-        tech = rule["tech"]
+        tech = rule["tech"].lower()
+        markers = [m.lower() for m in rule.get("negative_markers", DEFAULT_NEGATIVE_MARKERS)]
+        allow = [a.lower() for a in rule.get("proposal_allow", [t.format(tech=tech) for t in DEFAULT_ALLOW_TEMPLATES])]
         # Check if baseline intends to purge / eliminate this tech
-        baseline_has_rejection = any(
-            marker in baseline_doc.lower() and tech in baseline_doc.lower()
-            for marker in rule["negative_markers"]
-        )
+        baseline_has_rejection = tech in baseline_lower and any(marker in baseline_lower for marker in markers)
         if baseline_has_rejection and tech in proposal_lower:
-            is_allowed = any(allow in proposal_lower for allow in rule["proposal_allow"])
-            if not is_allowed:
-                conflicts.append(rule["conflict_msg"])
+            if not any(a in proposal_lower for a in allow):
+                conflicts.append(rule.get("conflict_msg", f"Proposal mentions '{rule['tech']}', which the baseline plan rejects."))
 
     # Check for order violation (e.g. attempting later milestones first)
     if all_milestones:
@@ -173,6 +175,10 @@ def detect_drift(
     print(f"   • Drift Status     : {status_flag}")
     print(f"   • Alignment Score  : {alignment_score}% (Similarity: {vector_similarity:.2f})")
     print(f"   • Verdict          : {verdict}")
+    if tech_rules:
+        print(f"   • Drift Rules      : {len(tech_rules)} from {rules_source}")
+    else:
+        print("   • Drift Rules      : none (add `drift_rules` to the project's .dev-cycle.json)")
     print("-" * 85)
 
     print("🎯 MILESTONE ALIGNMENT:")
@@ -200,7 +206,8 @@ def detect_drift(
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Detect architectural drift against baseline plans in ChromaDB")
-    parser.add_argument("--project", type=str, default=None, help="Project name (e.g. AnyContext)")
+    parser.add_argument("--project", type=str, default=None, help="Project name (e.g. any-context)")
+    parser.add_argument("--dir", type=str, default=".", help="Project directory where .dev-cycle.json is looked up (default: current)")
     parser.add_argument("--id", type=str, default=None, help="Specific Plan ID to validate against")
     parser.add_argument("--proposal", type=str, default=None, help="Inline text of proposed task/change")
     parser.add_argument("--file", type=str, default=None, help="Path to markdown/text file containing the proposal")
@@ -222,5 +229,6 @@ if __name__ == "__main__":
         proposal_text=proposal_content,
         project=normalize_project(args.project),
         plan_id=args.id,
-        strict=args.strict
+        strict=args.strict,
+        project_dir=args.dir
     )

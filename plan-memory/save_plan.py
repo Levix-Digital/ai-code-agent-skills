@@ -107,7 +107,7 @@ def save_plan(
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Save uncompressed architecture plan or roadmap to ChromaDB")
-    parser.add_argument("--project", type=str, required=True, help="Project name (e.g. AnyContext, Intellexis)")
+    parser.add_argument("--project", type=str, required=True, help="Project name, normalized to kebab-case (e.g. any-context)")
     parser.add_argument("--title", type=str, required=True, help="Plan title / headline")
     parser.add_argument("--content", type=str, default=None, help="Inline markdown content")
     parser.add_argument("--file", type=str, default=None, help="Path to markdown/text file containing the plan")
