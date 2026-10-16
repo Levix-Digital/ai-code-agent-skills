@@ -40,7 +40,7 @@ Este repositório também é um marketplace de plugins do Claude Code (`levix-ag
 {
   "extraKnownMarketplaces": {
     "levix-agent-skills": {
-      "source": { "source": "github", "repo": "<owner>/<repo>" }
+      "source": { "source": "github", "repo": "Levix-Digital/ai-code-agent-skills" }
     }
   },
   "enabledPlugins": {
