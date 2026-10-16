@@ -7,6 +7,8 @@ import sys
 import argparse
 import chromadb
 
+from _common import get_db_path, normalize_project
+
 def search_plans(query: str, project: str = None, limit: int = 5):
     if sys.stdout.encoding != 'utf-8':
         try:
@@ -14,7 +16,7 @@ def search_plans(query: str, project: str = None, limit: int = 5):
         except Exception:
             pass
 
-    db_path = os.path.join(os.path.dirname(__file__), "db")
+    db_path = get_db_path()
     if not os.path.exists(db_path):
         print("No plans database found.", file=sys.stderr)
         return
@@ -78,4 +80,4 @@ if __name__ == "__main__":
     parser.add_argument("--limit", type=int, default=5, help="Maximum number of results to return")
     args = parser.parse_args()
 
-    search_plans(query=args.query, project=args.project, limit=args.limit)
+    search_plans(query=args.query, project=normalize_project(args.project), limit=args.limit)

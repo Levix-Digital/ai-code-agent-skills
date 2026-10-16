@@ -8,6 +8,8 @@ import sys
 import argparse
 import chromadb
 
+from _common import get_db_path, normalize_project
+
 def get_plan(plan_id: str = None, project: str = None, output_file: str = None):
     if sys.stdout.encoding != 'utf-8':
         try:
@@ -15,7 +17,7 @@ def get_plan(plan_id: str = None, project: str = None, output_file: str = None):
         except Exception:
             pass
 
-    db_path = os.path.join(os.path.dirname(__file__), "db")
+    db_path = get_db_path()
     if not os.path.exists(db_path):
         print("No plans database found.", file=sys.stderr)
         sys.exit(1)
@@ -87,4 +89,4 @@ if __name__ == "__main__":
         print("❌ Error: Must specify either --id <plan_id> or --project <project_name>", file=sys.stderr)
         sys.exit(1)
 
-    get_plan(plan_id=args.id, project=args.project, output_file=args.output)
+    get_plan(plan_id=args.id, project=normalize_project(args.project), output_file=args.output)

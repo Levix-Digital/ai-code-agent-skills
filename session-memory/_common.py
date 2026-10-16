@@ -23,9 +23,11 @@ def setup_stdout():
 
 
 def slugify(text: str) -> str:
-    text = text.lower().strip()
+    """Kebab-case project name: 'AnyContext' -> 'any-context' (same rule as plan-memory)."""
+    text = re.sub(r"(?<=[a-z0-9])(?=[A-Z])", "-", text.strip())
+    text = text.lower()
     text = re.sub(r"[^\w\s-]", "", text)
-    text = re.sub(r"[\s_]+", "-", text)
+    text = re.sub(r"[\s_-]+", "-", text)
     return text.strip("-")
 
 
