@@ -2,15 +2,19 @@
 
 Development skills in the open `SKILL.md` format, shared by every coding agent on the machine (Claude Code, Codex, Gemini, Copilot and others) and by Claude Code cloud sessions through a plugin.
 
-| Skill | What it does |
-|---|---|
-| [`dev-cycle-protocol`](#dev-cycle-protocol) | 8-step development lifecycle with an explicit approval gate, Dual-Doc, manual tests and release follow-through |
-| [`plan-memory`](#plan-memory) | Keeps complete architecture plans as versioned files in each project (`docs/plans`), shared by the team, with milestones, lineage, search and drift detection |
-| [`session-memory`](#session-memory) | Recovers and consolidates each developer's own session context per project (local ChromaDB) |
-| [`architecture-docs`](#architecture-docs) | Keeps technical docs current: short index, one living page per subsystem, immutable ADRs, validation and migration of legacy docs |
-| [`folder-sync`](#folder-sync) | Incremental RAG over any folder: `/sync` to index, `/folder` to ask |
+## What It Does
 
-Agents load a skill on their own when the task matches its `description`. You can also ask for one by name ("use plan-memory to save this plan").
+| Skill | Role | What it does |
+|---|---|---|
+| [`dev-cycle-protocol`](#dev-cycle-protocol) | Orchestrator | Development cycle from discovery to a verified release: phases, the role called in each one, full and short paths, the user's gates, the shared `.dev-cycle.json` |
+| [`plan-memory`](#plan-memory) | Planner | Keeps complete architecture plans as versioned files in each project (`docs/plans`), shared by the team, with milestones, lineage, search and drift detection |
+| [`software-design`](#software-design) | Architect | Design principles, the project's architecture style with a guide per style, design input for plans, review checklist and core dependency check |
+| [`architecture-docs`](#architecture-docs) | Technical documentation | Keeps technical docs current: short index, one living page per subsystem, immutable ADRs, validation and migration of legacy docs |
+| [`quality-assurance`](#quality-assurance) | QA | Automated test strategy and one curated manual test suite with Pass/Fail/Blocked runs per release candidate |
+| [`devops-release`](#devops-release) | DevOps | Branching, pull request CI, versions, release candidates, the user's merge as release gate, observability |
+| [`user-docs`](#user-docs) | Technical writer | End-user READMEs in English with a standard structure, template and checker |
+| [`session-memory`](#session-memory) | Session memory | Recovers and consolidates each developer's own session context per project (local ChromaDB) |
+| [`folder-sync`](#folder-sync) | Utility | Incremental RAG over any folder: `/sync` to index, `/folder` to ask |
 
 ---
 
@@ -18,11 +22,13 @@ Agents load a skill on their own when the task matches its `description`. You ca
 
 - [How the repository works](#how-the-repository-works)
 - [Setup](#setup)
+- [Usage](#usage)
 - [Claude Code cloud sessions (plugin)](#claude-code-cloud-sessions-plugin)
 - [Skills](#skills)
 - [Project configuration: `.dev-cycle.json`](#project-configuration-dev-cyclejson)
 - [Maintaining the repository](#maintaining-the-repository)
 - [Troubleshooting](#troubleshooting)
+- [License](#license)
 
 ---
 
@@ -32,7 +38,10 @@ Agents load a skill on their own when the task matches its `description`. You ca
 ~/.ai-code-agent-skills/                 this repository (source of truth)
 ├── .claude-plugin/                      Claude Code marketplace + plugin manifests
 ├── dev-cycle-protocol/  plan-memory/  session-memory/
-├── architecture-docs/  folder-sync/
+├── software-design/  architecture-docs/  quality-assurance/
+├── devops-release/  user-docs/  folder-sync/
+├── docs/plans/                          plans of this repository
+├── tests/MANUAL_TESTS.md                manual tests of this repository
 ├── install.ps1 / install.sh             link the skills into each agent
 └── requirements.txt                     Python dependencies of the scripts
 
@@ -56,9 +65,13 @@ Agents load a skill on their own when the task matches its `description`. You ca
 
 ---
 
-## Setup
+## Requirements
 
-Requirements: Git, Python 3.10+ and `pip`.
+- Git and the GitHub CLI (`gh`) for the release helpers
+- Python 3.10 or later with `pip`
+- A coding agent that reads `SKILL.md` skills (Claude Code, Codex, Gemini, Copilot or similar)
+
+## Setup
 
 ```bash
 git clone https://github.com/Levix-Digital/ai-code-agent-skills.git ~/.ai-code-agent-skills
@@ -85,51 +98,29 @@ Default targets:
 | Codex and other agents that follow the cross-agent standard | `~/.agents/skills` |
 | Gemini | `~/.gemini/config/skills` |
 
-Other targets and options:
-```powershell
-.\install.ps1 -Targets "$HOME\.copilot\skills"              # extra agent
-.\install.ps1 -Source "$HOME\.ai-code-agent-skills-personal" # link skills from another folder
-.\install.ps1 -Exclude folder-sync                           # skip a skill
-```
-```bash
-./install.sh ~/.copilot/skills
-SOURCE=~/.ai-code-agent-skills-personal ./install.sh
-EXCLUDE="folder-sync" ./install.sh
-```
-
-The scripts are idempotent and safe:
-- an existing link to the same skill is kept (`=`);
-- a new link is created (`+`);
-- an existing entry that is not a link to the source is reported and **never overwritten** (`!`);
-- a target folder that is itself a link is skipped (replace it with a real folder to link skills individually).
+Extra agents, another source folder, skipping a skill and how existing entries are handled: [docs/installation.md](docs/installation.md).
 
 Restart the agent (or open a new session) after installing so it picks up the skills.
 
 ---
 
+## Usage
+
+Agents load a skill on their own when the task matches its `description`; you can also ask for one by name ("use plan-memory to save this plan"). For project work, start with the orchestrator: it runs the cycle and calls the other roles in each phase.
+
+1. In a project, describe what you want ("add an export command"). The agent stays in **Discovery** until you agree on an approach.
+2. It writes the **plan** with a section from each role and saves it in `docs/plans`. Reply "Approved" to start, or ask for changes.
+3. It implements on a branch, runs the tests, updates the docs and opens a **pull request into `dev`**, following CI until it is green.
+4. When you want to release, it cuts a **release candidate** (`vX.Y.Z-rc.N`) and prepares the manual tests to run. Install the candidate and mark each test Pass, Fail or Blocked in `tests/MANUAL_TESTS.md`; failures come back as fixes.
+5. When the candidate passes, it opens the pull request from `dev` into `main`. **Your merge releases it**; the agent follows the release until every asset is published.
+
+Small fixes and documentation changes take the short path: no plan file and no release candidate.
+
+---
+
 ## Claude Code cloud sessions (plugin)
 
-Cloud sessions do not see your local folders. For them, this repository is also a Claude Code marketplace (`levix-agent-skills`) with the `dev-skills` plugin, which ships the five skills.
-
-Add to the project's `.claude/settings.json` and push it to the branch the cloud session uses:
-
-```json
-{
-  "extraKnownMarketplaces": {
-    "levix-agent-skills": {
-      "source": { "source": "github", "repo": "Levix-Digital/ai-code-agent-skills" }
-    }
-  },
-  "enabledPlugins": {
-    "dev-skills@levix-agent-skills": true
-  }
-}
-```
-
-- In the plugin, skill names are prefixed: `dev-skills:session-memory`.
-- The Claude GitHub app must have access to this private repository.
-- In the cloud, plans come with the project clone (the index is built on first use, which needs `pip install -r requirements.txt` and downloads a small embedding model). Session memory is written to the session's own environment and does not reach your local database.
-- Locally, a project with the plugin enabled shows each skill twice (from `~/.claude/skills` and from the plugin). Both read the same files.
+Cloud sessions do not see your local folders. For them, this repository is also a Claude Code marketplace (`levix-agent-skills`) with the `dev-skills` plugin, which ships the development skills. Setup and caveats: [docs/cloud-sessions.md](docs/cloud-sessions.md).
 
 ---
 
@@ -137,34 +128,42 @@ Add to the project's `.claude/settings.json` and push it to the branch the cloud
 
 ### dev-cycle-protocol
 
-The governance protocol for AI pair-programming. It defines seven engineering pillars (modularity, hexagonal architecture with surface parity, Dual-Doc, cumulative manual tests, persistent plans, secret hygiene, release follow-through) and an 8-step cycle:
+The orchestrator. It owns the phases, the gates and which role runs when; each role skill owns its artifact, rules and checker.
 
-1. **Discovery** — read-only analysis; logs first; check existing plans.
-2. **Complete final plan** — 8-section blueprint, drift check, saved with `plan-memory`.
-3. **Explicit approval gate** — nothing is implemented until the user gives a short, direct approval.
-4. **Modular implementation** — core domain first, then storage, then adapters.
-5. **Automated tests** — 100% green on the native runner, regression test for every bug fix.
-6. **Dual-Doc update** — `README.md` (UserDoc), plus subsystem pages and ADRs with `architecture-docs` (TecDoc).
-7. **Manual test record** — new scenario added to `tests/MANUAL_TESTS.md`, nothing truncated.
-8. **Closure** — version bump, PR, CI watched until green, merge, tag, release verified in the releases repository.
+| Phase | Roles |
+|---|---|
+| 1. Discovery | orchestrator, plan-memory, software-design |
+| 2. Plan | plan-memory with a section from every role |
+| 3. Plan approval (user) | orchestrator |
+| 4. Implementation on a branch | software-design |
+| 5. Automated tests | quality-assurance |
+| 6. Documentation | architecture-docs, user-docs, quality-assurance |
+| 7. Review and pull request into `dev`, CI green | code review, software-design, devops-release |
+| 8. Release candidate | devops-release, quality-assurance |
+| 9. Acceptance (user runs the manual tests) | quality-assurance |
+| 10. Release gate (user merges `dev` into `main`) and verified release | devops-release, plan-memory, session-memory |
+
+Phases 1 to 7 run for every change, phases 8 to 10 for every release. Small fixes and documentation-only changes take a short path (phases 1, 4 to 7).
 
 Scripts:
 ```bash
 python <skills_root>/dev-cycle-protocol/inspect_project.py [--dir .] [--json]
-python <skills_root>/dev-cycle-protocol/verify_gate.py --gate 3 --project <project> [--dir .]
-python <skills_root>/dev-cycle-protocol/verify_gate.py --gate 8 --project <project> [--dir .]
+python <skills_root>/dev-cycle-protocol/project_config.py [--json] [--validate] [--migrate [--write]]
+python <skills_root>/dev-cycle-protocol/verify_gate.py --gate 3|rc|8 [--run vX.Y.Z-rc.N] [--dir .]
 ```
-- `inspect_project.py` detects languages, manifests, test runners, documentation files and Git state.
-- `verify_gate.py --gate 3` (before implementing): clean working tree, active plan in `plan-memory`, no secrets tracked or staged.
-- `verify_gate.py --gate 8` (before releasing): UserDoc, TecDoc and manual tests exist, `architecture-docs/check_docs.py` passes (warning only for projects not migrated yet), no secrets, clean tree.
+- `inspect_project.py` detects languages, manifests, test runners, documentation files and Git state, and shows the configured architecture style, branches and releases repository.
+- `project_config.py` shows, validates or migrates `.dev-cycle.json`.
+- `verify_gate.py --gate 3` (before plan approval): working tree, active plan, no secrets tracked or staged.
+- `verify_gate.py --gate rc --run <tag>` (candidate acceptance): every manual test of the run is Pass.
+- `verify_gate.py --gate 8` (before the release pull request): documentation and manual test files exist and the checkers of every role pass (`check_docs.py`, `check_readme.py`, `manual_tests.py validate`, `check_design.py`, `check_ci_policy.py`, `release_status.py version`), plus the candidate run with `--run`, no secrets and a clean tree.
 
-Per-project settings go in [`.dev-cycle.json`](#project-configuration-dev-cyclejson). Full protocol: [dev-cycle-protocol/SKILL.md](dev-cycle-protocol/SKILL.md).
+Full protocol: [dev-cycle-protocol/SKILL.md](dev-cycle-protocol/SKILL.md).
 
 ### plan-memory
 
 Keeps every multi-step plan **complete and uncompressed**, shared by everyone on the project:
 
-- **Plan files**: `docs/plans/<plan_id>.md` in the project repository, with YAML frontmatter (status, version, author, milestones, lineage, status log) and the plan body. They are committed and reviewed like code. Change the folder with `plans_dir` in `.dev-cycle.json`.
+- **Plan files**: `docs/plans/<plan_id>.md` in the project repository, with YAML frontmatter (status, version, author, milestones, lineage, status log) and the plan body. They are committed and reviewed like code. Change the folder with `plans.dir` in `.dev-cycle.json`.
 - **Local index**: a ChromaDB index for semantic search and drift detection, synced from the files on every command (including teammates' changes after `git pull`). It is disposable: `rebuild_index.py` recreates it.
 
 | Task | Command |
@@ -184,7 +183,7 @@ All scripts are in `<skills_root>/plan-memory/`. They work on the Git repository
 
 - **Statuses**: `draft`, `planned`, `active`, `in_progress`, `completed`, `superseded`. Saving with `--supersedes` marks the old plan as `superseded` and links both.
 - **Milestones** record who completed them and when; the first one moves the plan to `in_progress`, the last to `completed`.
-- **The scripts never commit.** Commit the plan after approval (Step 3) and its milestone/status changes with the work that completes them.
+- **The scripts never commit.** Commit the plan after approval (Phase 3) and its milestone/status changes with the work that completes them.
 - **Drift detection** combines similarity to the active plan, milestone coverage and order, and the project's own `drift_rules` (see [`.dev-cycle.json`](#project-configuration-dev-cyclejson)).
 - **Index location**: `~/.ai-code-agent-memory/plan-memory/db` (override with `PLAN_MEMORY_DB`).
 
@@ -240,6 +239,64 @@ All scripts are in `<skills_root>/architecture-docs/`.
 
 Details: [architecture-docs/SKILL.md](architecture-docs/SKILL.md).
 
+### software-design
+
+The architect. Universal principles for every project (modularity, separation of responsibilities, SOLID, Clean Code, explicit errors, testability), a **simplicity-first** rule (an abstraction needs a second implementation, a test seam or an external dependency to isolate; design patterns only for a named problem), and the project's architecture style from `architecture.style`, with a guide for `hexagonal`, `layered`, `mvc`, `pipeline` and `modular-monolith`.
+
+| Task | Command |
+|---|---|
+| Check the style and core dependencies | `check_design.py [--dir .] [--strict]` |
+
+`check_design.py` validates `architecture.style` and `architecture.core_path`, and flags core files that import anything in `architecture.forbidden_core_imports` (Rust `use` and qualified paths, Python, JavaScript/TypeScript, Go, C/C++, C#/Java imports; test folders are skipped). Details: [software-design/SKILL.md](software-design/SKILL.md).
+
+### quality-assurance
+
+The QA role. Automated tests on the native runner and in CI, a regression test for every bug fix, and **one curated manual test suite** (`tests.manual_tests`) organized by feature and edited in place, for what cannot be automated:
+
+```markdown
+## Web Sources
+### MT-WEB-001: Re-sync does not duplicate chunks
+- **Covers**: ingestion
+- **Steps**:
+  1. Run `/sync` twice
+- **Expected**:
+  - The chunk count is the same
+- **Result** (v1.4.0-rc.1): [ ] Pass [ ] Fail [ ] Blocked
+- **Notes**:
+```
+
+| Task | Command |
+|---|---|
+| Validate the suite | `manual_tests.py validate` |
+| Start a release candidate run | `manual_tests.py start-run --run v1.4.0-rc.1 --feature "Web Sources"` (or `--id`, `--all`) |
+| Results | `manual_tests.py summary [--run R]` / `failed [--run R]` / `list [--feature F]` |
+| Acceptance gate | `manual_tests.py gate --run v1.4.0-rc.1` |
+
+Details: [quality-assurance/SKILL.md](quality-assurance/SKILL.md).
+
+### devops-release
+
+The DevOps role. Branches `main` (released), `dev` (integration) and short-lived `feat/`, `fix/`, `docs/`, `chore/` branches from `dev`; tests on every pull request into `dev` and `main`; versions bumped in `dev`; release candidates published as pre-releases; **the user's merge into `main` is the release gate**, and it creates the final tag and release automatically. It also plans and tests logs, diagnostics and telemetry (`devops.observability`).
+
+| Task | Command |
+|---|---|
+| Check the workflows against the policy | `check_ci_policy.py [--dir .]` |
+| Version in the version files | `release_status.py version` |
+| Next release candidate tag | `release_status.py next-rc` |
+| Verify a published release | `release_status.py verify --tag v1.4.0 [--asset "*.zip"]` |
+
+Workflow templates: [devops-release/templates](devops-release/templates) (`ci.yml`, `release.yml`, `tag-on-merge.yml`). Details: [devops-release/SKILL.md](devops-release/SKILL.md).
+
+### user-docs
+
+The technical writer. The README is for people who install and use the software: what it is, installation, quick start, usage, configuration, troubleshooting, links and license; always in English, edited in place, with no version sections and no implementation detail. Template: [user-docs/README_TEMPLATE.md](user-docs/README_TEMPLATE.md).
+
+| Task | Command |
+|---|---|
+| Check the README | `check_readme.py [--dir .] [--max-warnings N]` |
+
+Details: [user-docs/SKILL.md](user-docs/SKILL.md).
+
 ### folder-sync
 
 Turns any folder into a searchable knowledge base without loading its files into the conversation.
@@ -264,83 +321,22 @@ Details: [folder-sync/SKILL.md](folder-sync/SKILL.md).
 
 ## Project configuration: `.dev-cycle.json`
 
-Optional file at a project's root: the project configuration shared by every skill. Each skill owns one section, and every key is optional. `dev-cycle-protocol/project_config.py` is the single loader: it fills defaults, accepts the legacy flat keys of older files, and validates the result.
+Optional file at a project's root: the project configuration shared by every skill, one section per skill (`architecture`, `docs`, `tests`, `devops`, `plans`, `architecture_docs`, `drift_rules`) plus `test_commands`. Every key is optional and older files with flat keys keep working.
 
 ```json
 {
   "project_name": "my-app",
-  "architecture": {
-    "style": "hexagonal",
-    "core_path": "src/core",
-    "surfaces": ["cli", "rest-api", "mcp"],
-    "canonical_datastore": "data/app.db"
-  },
+  "architecture": { "style": "hexagonal", "core_path": "src/core", "forbidden_core_imports": ["my_app_cli"] },
   "test_commands": ["cargo test --workspace"],
-  "docs": { "user_doc": "README.md", "tec_doc": "TECDOC.md" },
-  "tests": { "manual_tests": "tests/MANUAL_TESTS.md" },
-  "devops": {
-    "integration_branch": "dev",
-    "production_branch": "main",
-    "releases_repo": "my-org/my-app-releases",
-    "release_candidates": true,
-    "version_files": ["Cargo.toml"],
-    "observability": "cli"
-  },
-  "plans": { "dir": "docs/plans" },
-  "architecture_docs": {
-    "index": "TECDOC.md",
-    "architecture_dir": "docs/architecture",
-    "adr_dir": "docs/adr",
-    "max_lines": 800,
-    "language": "en",
-    "language_scope": ["index", "architecture", "adr"]
-  },
-  "drift_rules": [
-    { "tech": "langchain", "conflict_msg": "The baseline plan removes LangChain in favor of a native implementation." },
-    {
-      "tech": "parallel database",
-      "negative_markers": ["single source", "settings.db"],
-      "proposal_allow": [],
-      "conflict_msg": "Proposal hints at a parallel database, violating the single source of truth."
-    }
-  ]
+  "devops": { "releases_repo": "my-org/my-app-releases", "version_files": ["Cargo.toml"], "observability": "cli" }
 }
 ```
 
-| Key | Meaning | Default |
-|---|---|---|
-| `project_name` | Project name (normalized to kebab-case by plan-memory) | repository folder name |
-| `architecture.style` | `hexagonal`, `layered`, `mvc`, `pipeline`, `modular-monolith` or `other` | not set |
-| `architecture.core_path` | Where the domain core lives | not set |
-| `architecture.surfaces` | Interfaces that must stay in parity | `[]` |
-| `architecture.canonical_datastore` | The single source of truth database | not set |
-| `architecture.forbidden_core_imports` | Libraries or modules the core must never import (checked by `software-design/check_design.py`) | `[]` |
-| `test_commands` | Commands that run the automated tests | auto-detected |
-| `docs.user_doc`, `docs.tec_doc` | User documentation and technical documentation index | `README.md`, `TECDOC.md` |
-| `docs.readme_max_lines` | Line limit checked by `user-docs/check_readme.py` | `400` |
-| `tests.manual_tests` | Curated manual test suite | `tests/MANUAL_TESTS.md` |
-| `devops.integration_branch`, `devops.production_branch` | Branch that receives feature work, branch that holds released code | `dev`, `main` |
-| `devops.releases_repo` | Repository where releases are published | not set |
-| `devops.release_candidates` | Publish `vX.Y.Z-rc.N` pre-releases for manual acceptance before the final release | `true` |
-| `devops.version_files` | Files that hold the version number | `[]` |
-| `devops.observability` | `cli`, `service`, `library`, `desktop` or `none` | not set |
-| `plans.dir` | Folder of the plan files | `docs/plans` |
-| `architecture_docs` | Layout, line limit and language of the technical docs; add `"plans"` to `language_scope` to check plans too | see `architecture-docs` |
-| `drift_rules` | Technologies or patterns the project's plans reject | `[]` |
-
-Older files with flat keys keep working: `core_path`, `surfaces`, `canonical_datastore`, `releases_repo`, `plans_dir` and `doc_files.{user_doc,tec_doc,manual_tests}` are read into their sections, and the sectioned key wins when both exist.
-
 ```bash
-python ~/.ai-code-agent-skills/dev-cycle-protocol/project_config.py              # effective configuration
-python ~/.ai-code-agent-skills/dev-cycle-protocol/project_config.py --validate   # exit code 1 on problems
-python ~/.ai-code-agent-skills/dev-cycle-protocol/project_config.py --migrate --write   # move flat keys into sections
+python ~/.ai-code-agent-skills/dev-cycle-protocol/project_config.py --validate
 ```
 
-**How a drift rule works.** A conflict is raised when:
-1. the active plan mentions `tech` together with a rejection marker; and
-2. the proposal mentions `tech` without an allowed phrase.
-
-When `negative_markers` and `proposal_allow` are omitted, defaults are used (`remove`, `replace`, `without`, `forbidden`, ... and `without <tech>`, `remove <tech>`, `replace <tech>`, ...). The defaults also include the Portuguese equivalents, needed while existing plans are not yet translated.
+Full key reference, defaults and drift rules: [docs/configuration.md](docs/configuration.md).
 
 ---
 
@@ -350,7 +346,13 @@ When `negative_markers` and `proposal_allow` are omitted, defaults are used (`re
 1. Create `<skill-name>/SKILL.md` with `name` and `description` frontmatter. The description is what makes agents load it, so say when to use it.
 2. Add `!/<skill-name>/` to [`.gitignore`](.gitignore) (allowlist).
 3. To ship it in the cloud plugin, add `./<skill-name>` to `skills` in [`.claude-plugin/plugin.json`](.claude-plugin/plugin.json) and bump `version`.
-4. Run `install.ps1` / `install.sh` again, then commit and push.
+4. Add tests under `<skill-name>/tests` for every script.
+5. Run `install.ps1` / `install.sh` again, then commit and push.
+
+**Run the tests**
+```bash
+python -m pytest dev-cycle-protocol/tests software-design/tests user-docs/tests quality-assurance/tests devops-release/tests
+```
 
 **Conventions**
 - Write in English.
@@ -374,8 +376,14 @@ Links pick up the changes at once. Rerun the install script only when skills wer
 | An agent does not list the skills | Check the folder in the table above has links (`ls ~/.agents/skills`), rerun the install script, restart the agent. |
 | `! <skill>: ... already exists` | Something else has that name in the agent's folder. Remove or rename it, then rerun. |
 | `ModuleNotFoundError: chromadb` / `docx` / `pypdf` | `pip install -r requirements.txt` with the same Python the agent uses. |
-| `plan-memory` lists no plans | Run it inside the project repository (or pass `--dir`); plans are read from `docs/plans` (or `plans_dir`). |
+| `plan-memory` lists no plans | Run it inside the project repository (or pass `--dir`); plans are read from `docs/plans` (or `plans.dir`). |
 | A memory script finds nothing for a project | Run `read_memory.py --list-projects` or `list_plans.py`; the project may be stored under another name. Names are normalized (`AnyContext` = `any-context`), but `anycontext` cannot be split. |
 | `check_docs.py` reports many errors after `extract_adrs.py` | Expected: they are the migration work list (translate and restructure ADRs, rewrite the index and subsystem pages). |
 | `detect_drift.py` reports `Drift Rules: none` | Run it from the project folder (or pass `--dir`) and add `drift_rules` to `.dev-cycle.json`. |
 | Cloud session has no `dev-skills:*` skills | Check the branch has `.claude/settings.json`, the GitHub app can access this repository, and `/plugin` for load errors. |
+
+---
+
+## License
+
+Private repository. All rights reserved; no license is granted.

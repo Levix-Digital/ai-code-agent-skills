@@ -6,7 +6,7 @@ version: v2.0.0
 status: in_progress
 author: Levi Silveira
 created_at: '2026-10-16T13:41:24'
-updated_at: '2026-10-16T14:04:49'
+updated_at: '2026-10-16T14:08:52'
 session_id: null
 tags:
 - dev-cycle
@@ -44,7 +44,9 @@ milestones:
   done_at: '2026-10-16'
   by: Levi Silveira
 - name: M7 Repository plumbing
-  done: false
+  done: true
+  done_at: '2026-10-16'
+  by: Levi Silveira
 - name: M8 Apply to any-context
   done: false
 status_log:
@@ -70,6 +72,9 @@ status_log:
 - at: '2026-10-16T14:04:49'
   by: Levi Silveira
   note: 'Milestone ''M6 dev-cycle-protocol as orchestrator'' completed: SKILL.md v3: roles table, principles, full and short paths, 10 phases with user gates (plan, RC acceptance, merge into main); verify_gate.py: gate rc and gate 8 running every role checker; plan-memory and architecture-docs phase references; 6 gate tests'
+- at: '2026-10-16T14:08:52'
+  by: Levi Silveira
+  note: 'Milestone ''M7 Repository plumbing'' completed: plugin 2.0.0 with nine skills; README rewritten (role table, usage, new skill sections, requirements, license) passing check_readme with 0 warnings; configuration, cloud sessions and installation guides in docs/; tests/MANUAL_TESTS.md; new skills linked with install.ps1; 53 tests pass'
 ---
 
 # Role-Based Development Cycle: Orchestrator and Specialist Skills
