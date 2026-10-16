@@ -1,95 +1,103 @@
 ---
 name: plan-memory
-description: Persistent vector storage and semantic retrieval of complete, uncompressed project architecture plans, roadmaps, and multi-step blueprints in ChromaDB. Ensures zero loss of engineering plans, with rich metadata (project, session_id, version, status, milestones) and lifecycle tracking. Project-agnostic.
+description: Shared, versioned storage of complete, uncompressed project architecture plans, roadmaps and multi-step blueprints as Markdown files in the project repository (docs/plans), with milestones, lineage, status history, semantic search and drift detection through a local ChromaDB index. Use to save an approved plan, check progress, find earlier decisions, or validate a proposal against the active plan. Project-agnostic.
 ---
 
 # 📐 Project Plan Memory Skill (`plan-memory`)
 
 > **Paths**: `<skills_root>` is the folder that contains this skill (the parent of this `SKILL.md`'s folder). Use the real absolute path when running the commands.
 
-The **`plan-memory`** skill provides persistent, vector-indexed storage, lifecycle management, and semantic retrieval of **100% complete, uncompressed architectural plans, strategic roadmaps, and multi-step blueprints** across any software project.
+The **`plan-memory`** skill keeps **100% complete, uncompressed architectural plans, strategic roadmaps and multi-step blueprints** of a project, shared by everyone who works on it.
 
-- **ChromaDB Path**: `~/.ai-code-agent-memory/plan-memory/db` (override with the `PLAN_MEMORY_DB` environment variable). It lives outside the skill folder, so the skill can be versioned and copied without carrying data.
-- **Project names**: always normalized to kebab-case (`AnyContext`, `any_context` and `any-context` all become `any-context`). Use the name of the project's Git repository root, the same one the `session-memory` skill uses.
-- **Collection Name**: `project_plans`
-- **Guiding Principle**: **Zero Compaction / Zero Loss**. Architectural decisions and blueprints must be preserved in their entirety (including Mermaid diagrams, tables, steps, formulas, and rationale) so they serve as persistent knowledge bases across active and future coding sessions.
-
----
-
-## 🏛️ Architecture & ChromaDB Schema
-
-Every plan entry in the `project_plans` collection preserves the full uncompressed Markdown document alongside rich structured metadata:
-
-```
-┌────────────────────────────────────────────────────────────────────────────────────────┐
-│                        PROJECT PLAN MEMORY SCHEMA                                      │
-├────────────────────┬───────────────────────────────────────────────────────────────────┤
-│ Field              │ Description & Purpose                                             │
-├────────────────────┼───────────────────────────────────────────────────────────────────┤
-│ `id`               │ Unique Plan Identifier (e.g. `my_app_master_roadmap_v1_2_0`)       │
-│ `document`         │ 100% Full Uncompressed Markdown content of the plan               │
-│ `project`          │ Normalized project name (e.g. "any-context", "my-app")            │
-│ `title`            │ Human-readable headline of the plan                               │
-│ `session_id`       │ Conversation ID where the plan was conceived / approved           │
-│ `version`          │ Target software version (e.g. "v0.30.37")                         │
-│ `status`           │ Lifecycle status: `active`, `in_progress`, `completed`, `superseded`│
-│ `created_at`       │ ISO 8601 creation timestamp                                       │
-│ `updated_at`       │ ISO 8601 last update timestamp                                    │
-│ `tags`             │ Comma-separated search keywords                                   │
-│ `milestones`       │ Comma-separated target milestones                                 │
-│ `completed_ms`     │ Comma-separated list of checked-off milestones                    │
-│ `supersedes`       │ Older Plan ID that this plan replaces / deprecates                │
-│ `superseded_by`    │ Newer Plan ID that superseded this plan                           │
-│ `parent_plan_id`   │ Optional parent Plan ID for hierarchical planning trees           │
-│ `status_notes`     │ Timestamped progress log and architectural notes                  │
-│ `content_length`   │ Character count of the uncompressed plan                          │
-└────────────────────┴───────────────────────────────────────────────────────────────────┘
-```
+- **Source of truth**: one Markdown file per plan in the project repository, `docs/plans/<plan_id>.md` (YAML frontmatter + plan body). Plans are versioned, reviewed and merged with the code. Change the folder with `"plans_dir"` in the project's `.dev-cycle.json`.
+- **Search index**: a local ChromaDB at `~/.ai-code-agent-memory/plan-memory/db` (override with `PLAN_MEMORY_DB`), collection `plan_index`. It is **disposable**: every command syncs it from the files (by SHA-256), and `rebuild_index.py` recreates it.
+- **Project**: resolved from the Git repository of the current directory (or `--dir`): `project_name` in `.dev-cycle.json`, else the repository folder name, normalized to kebab-case. `--project` overrides it.
+- **Guiding Principle**: **Zero Compaction / Zero Loss**. Plans are preserved in their entirety (Mermaid diagrams, tables, steps, formulas, rationale) as persistent knowledge for every developer and session.
 
 ---
 
-## ⚙️ Operational Commands & Scripts
+## 🏛️ Plan File Format
 
-The skill provides a complete suite of Python utilities located in `<skills_root>/plan-memory`:
+```markdown
+---
+plan_id: my_app_blueprint_v1_2_0_two_stage_search
+project: my-app
+title: Two-stage search with local re-ranking
+version: v1.2.0
+status: in_progress        # draft | planned | active | in_progress | completed | superseded
+author: Jane Doe           # git user.name of whoever created it
+created_at: '2026-10-15T16:36:00'
+updated_at: '2026-10-16T09:10:00'
+session_id: 8abbc3bf-...   # conversation where the plan was conceived (optional)
+tags: [search, reranker]
+supersedes: my_app_blueprint_v1_1_0_search
+superseded_by: null
+parent_plan_id: null
+milestones:
+- name: M1 Runtime base
+  done: true
+  done_at: '2026-10-15'
+  by: Jane Doe
+- name: M2 Reranker
+  done: false
+status_log:
+- at: '2026-10-15T16:36:00'
+  by: Jane Doe
+  status: active
+  note: Plan created
+---
+
+# Plan title
+
+...full plan body in Markdown...
+```
+
+- The scripts **only rewrite the frontmatter**; the body is written once by `save_plan.py` (or edited by hand). Milestone and status changes produce small, readable diffs.
+- The file name is the plan ID. Lineage fields (`supersedes`, `superseded_by`, `parent_plan_id`) reference other plan IDs.
+- **The scripts never commit.** The agent commits plan files with the work they describe (see "Team workflow").
+
+---
+
+## ⚙️ Commands
+
+All scripts are in `<skills_root>/plan-memory/` and accept `--dir <project dir>` (default: current directory) and `--project <name>`.
 
 ### 1. Save / Update a Plan with Lineage (`save_plan.py`)
-Saves the full plan without cuts or summaries. Supports `--supersedes` to automatically archive a previous plan as `superseded`:
+Writes `docs/plans/<plan_id>.md` with the full plan, without cuts or summaries. Saving an existing ID updates title, body and fields, keeping author, creation date and milestone progress. `--supersedes` marks the older plan as `superseded`:
 ```powershell
 python "<skills_root>/plan-memory/save_plan.py" `
-  --project "<project>" `
   --title "Integrated Roadmap: Python -> Rust, Model Router & Model Kit" `
   --file "path/to/plan.md" `
-  --session-id "<session_id>" `
   --version "v1.2.0" `
   --tags "roadmap,rust_refactor,model_router" `
   --milestones "Priority 1,Priority 2,Milestone 3" `
   --status "active" `
+  --session-id "<session_id>" `
   --supersedes "<old_plan_id>"
 ```
+Options: `--id` (default: `<project>_<title>` slug), `--parent-id`, `--content` instead of `--file`.
 
-### 2. Granular Milestone & Progress Tracker (`check_milestone.py`)
-Tracks sub-step progress and renders visual progress bars:
+### 2. Milestone & Progress Tracker (`check_milestone.py`)
 ```powershell
-# Show the active plan's progress and milestone checklist:
-python "<skills_root>/plan-memory/check_milestone.py" --project "<project>" --list
+# Progress and checklist of the latest active plan (or --id <plan_id>):
+python "<skills_root>/plan-memory/check_milestone.py" --list
 
-# Mark a milestone as completed:
-python "<skills_root>/plan-memory/check_milestone.py" `
-  --project "<project>" `
-  --milestone "Priority 1" `
-  --notes "Completed via PR #319 with a 100% green test suite"
+# Mark a milestone as completed (records date and author):
+python "<skills_root>/plan-memory/check_milestone.py" --milestone "Priority 1" --notes "Completed via PR #319"
 
-# Uncheck a milestone (revert to pending if needed):
-python "<skills_root>/plan-memory/check_milestone.py" `
-  --project "<project>" `
-  --milestone "Priority 1" `
-  --uncheck
+# Revert a milestone to pending:
+python "<skills_root>/plan-memory/check_milestone.py" --milestone "Priority 1" --uncheck
 ```
+The first completed milestone moves an `active` plan to `in_progress`; the last one moves it to `completed`.
 
 ### 3. Architectural Drift Detector (`detect_drift.py`)
 Compares any implementation proposal, issue or new prompt against the active plan: semantic similarity, milestone coverage and order, and the project's own anti-pattern rules.
+```powershell
+python "<skills_root>/plan-memory/detect_drift.py" --proposal "Priority 1: build the native ReAct orchestrator in Rust, replacing the Python LangGraph"
+python "<skills_root>/plan-memory/detect_drift.py" --file "path/to/proposal.md" --strict   # exit code != 0 on conflict
+```
 
-Anti-pattern rules are project-specific and live in the `drift_rules` key of the nearest `.dev-cycle.json`, looked up from the current directory (or `--dir`) upwards. Without rules, only similarity and milestones are checked.
+Anti-pattern rules live in the `drift_rules` key of the project's `.dev-cycle.json` (looked up from `--dir` upwards). Without rules, only similarity and milestones are checked.
 ```json
 "drift_rules": [
   { "tech": "langchain", "conflict_msg": "The baseline plan removes LangChain." },
@@ -101,95 +109,71 @@ Anti-pattern rules are project-specific and live in the `drift_rules` key of the
   }
 ]
 ```
-A rule raises a conflict when the baseline plan mentions `tech` together with a rejection marker, and the proposal mentions `tech` without an allowed phrase.
-- `negative_markers` (optional): words that mark the rejection in the plan. Default: bilingual pt/en list (`remove`, `replace`, `without`, `forbidden`, `remover`, `substituir`, `sem`, ...).
+A rule raises a conflict when a plan in force (`active` / `in_progress`) mentions `tech` together with a rejection marker, and the proposal mentions `tech` without an allowed phrase.
+- `negative_markers` (optional): words that mark the rejection. Default: bilingual pt/en list (`remove`, `replace`, `without`, `forbidden`, `remover`, `substituir`, `sem`, ...).
 - `proposal_allow` (optional): phrases that make a mention acceptable. Default: `without <tech>`, `remove <tech>`, `replace <tech>`, `sem <tech>`, `remover <tech>`, ...
 
-
+### 4. List Plans (`list_plans.py`)
 ```powershell
-# Check a proposal's architectural alignment:
-python "<skills_root>/plan-memory/detect_drift.py" `
-  --project "<project>" `
-  --proposal "Priority 1: build the native ReAct orchestrator in Rust, replacing the Python LangGraph with zero heavy frameworks"
-
-# Check a proposal from a file in strict mode (exit code != 0 on conflict):
-python "<skills_root>/plan-memory/detect_drift.py" `
-  --project "<project>" `
-  --file "path/to/proposal.md" `
-  --strict
+python "<skills_root>/plan-memory/list_plans.py" [--status active]
 ```
 
-### 4. Automated Snapshot Exporter (`export_plan.py`)
-Exports plans from ChromaDB to Markdown files with a standard YAML frontmatter header, or to JSON files, in the repository:
+### 5. Read a Complete Plan (`get_plan.py`)
 ```powershell
-# Export Markdown with frontmatter to docs/plans/:
-python "<skills_root>/plan-memory/export_plan.py" `
-  --project "<project>" `
-  --output-dir "docs/plans"
-
-# Export a JSON snapshot:
-python "<skills_root>/plan-memory/export_plan.py" `
-  --id "<plan_id>" `
-  --output "docs/plans/roadmap.json" `
-  --format json
-```
-
-### 5. List Plans with Progress Bar and Lineage (`list_plans.py`)
-Shows every plan, or filters by project and status:
-```powershell
-# List all plans
-python "<skills_root>/plan-memory/list_plans.py"
-
-# Filter by project and status
-python "<skills_root>/plan-memory/list_plans.py" --project "<project>" --status "active"
-```
-
-### 6. Retrieve a Complete Plan in Full (`get_plan.py`)
-Retrieves the full text without truncation to guide the session or export to documentation:
-```powershell
-# Print to the terminal with a milestone and status header
 python "<skills_root>/plan-memory/get_plan.py" --id "<plan_id>"
-
-# Get the project's latest active plan
-python "<skills_root>/plan-memory/get_plan.py" --project "<project>"
+python "<skills_root>/plan-memory/get_plan.py"                      # latest active plan
 ```
 
-### 7. Semantic Search over Plans (`search_plans.py`)
-Searches plans by vector proximity to a concept or keyword:
+### 6. Semantic Search (`search_plans.py`)
 ```powershell
-python "<skills_root>/plan-memory/search_plans.py" --query "how to implement the model router in chat" --project "<project>"
+python "<skills_root>/plan-memory/search_plans.py" --query "how to implement the model router in chat" [--limit 5] [--all-projects]
 ```
 
-### 8. Update Lifecycle Status (`update_plan_status.py`)
-When steps are completed or new plans replace earlier ones:
+### 7. Update Lifecycle Status (`update_plan_status.py`)
 ```powershell
-python "<skills_root>/plan-memory/update_plan_status.py" `
-  --id "<plan_id>" `
-  --status "completed" `
-  --notes "Priority 1 and Priority 2 delivered successfully."
+python "<skills_root>/plan-memory/update_plan_status.py" --id "<plan_id>" --status "completed" --notes "Priority 1 and 2 delivered."
+```
+
+### 8. Export (`export_plan.py`)
+Copies a plan elsewhere, as JSON or Markdown with or without frontmatter:
+```powershell
+python "<skills_root>/plan-memory/export_plan.py" --id "<plan_id>" --format json --output-dir "out/"
+```
+
+### 9. Rebuild the Index (`rebuild_index.py`)
+```powershell
+python "<skills_root>/plan-memory/rebuild_index.py"
 ```
 
 ---
 
-## 🔒 Mandatory Integration with `dev-cycle-protocol`
+## 👥 Team Workflow
 
-The whole development lifecycle follows the governance of:
-👉 **[`dev-cycle-protocol`](../dev-cycle-protocol/SKILL.md)**
-
-- **Save Trigger (Step 2: Complete Final Plan)**:
-  Whenever a **Complete Final Plan (Blueprint)** or **Strategic Roadmap** is formulated in Step 2, the assistant **MUST** index the full plan via `save_plan.py` in ChromaDB before submitting it to the Step 3 Approval Gate. If it replaces an earlier plan, use `--supersedes`.
-- **Drift Check (Step 2 / Pre-Gate)**:
-  Use `detect_drift.py` to make sure the proposal does not violate inviolable guidelines or invert the milestones' execution order.
-- **Prior Plan Lookup (Step 1: Discovery & Exploration)**:
-  When starting a discussion about new features or priorities, the assistant **MUST** check `list_plans.py`, `check_milestone.py --list` or `search_plans.py` to verify the real milestone progress and the guidelines already agreed.
-- **Milestone Completion (Step 8: Release)**:
-  When closing the release, use `check_milestone.py` to mark the step as delivered or `update_plan_status.py` to finalize the plan.
+- **Step 2 (plan)**: save the plan with `save_plan.py`. The file is part of the proposal the user approves.
+- **Step 3 (approval)**: once approved, commit the plan file (`docs(plan): <title>`) before implementing. In a team, plan files go through pull requests like code.
+- **Steps 4–8**: commit milestone and status changes with the work that completes them.
+- Someone else's plan changes arrive with `git pull`; the next command re-indexes them automatically.
+- Two people editing the same plan get an ordinary Git merge on readable YAML lines.
 
 ---
 
-## 🔁 Migrate a Legacy Database (`migrate_legacy.py`)
+## 🔒 Integration with `dev-cycle-protocol`
 
-Copies plans from another database (document, metadata and embeddings) into the shared database, normalizing project names. IDs are kept, preserving `supersedes` and `parent_plan_id`. The source database is not changed.
+The whole development lifecycle follows 👉 **[`dev-cycle-protocol`](../dev-cycle-protocol/SKILL.md)**:
+- **Step 1 (Discovery)**: check `list_plans.py`, `check_milestone.py --list` or `search_plans.py` for real progress and agreed guidelines.
+- **Step 2 (Plan)**: save the full plan with `save_plan.py` (with `--supersedes` when it replaces one) and run `detect_drift.py`.
+- **Step 3 (Gate)**: `verify_gate.py --gate 3` checks there is an active plan and warns if its file is not committed.
+- **Step 8 (Release)**: mark milestones with `check_milestone.py` or finish the plan with `update_plan_status.py`.
+
+---
+
+## 🔁 Migrating from the Old Database (`migrate_legacy.py`)
+
+One-time migration from the old ChromaDB-only storage (collection `project_plans`) into `docs/plans`, reconciling plan files that already exist there:
 ```powershell
-python "<skills_root>/plan-memory/migrate_legacy.py" --source "<legacy_chromadb_folder>" [--rename anycontext=any-context] [--dry-run]
+python "<skills_root>/plan-memory/migrate_legacy.py" [--source "<old_chromadb_folder>"] [--orphan-status completed] [--dry-run]
 ```
+- Database plans become files; a file with the same ID keeps the newer body (last commit vs. database `updated_at`).
+- A file matching a plan's content under another ID is renamed (`git mv`) to the database ID, which lineage references use.
+- Files with no database entry keep their ID with minimal metadata.
+- The source database is not modified; review the result and commit it.

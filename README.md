@@ -5,8 +5,8 @@ Development skills in the open `SKILL.md` format, shared by every coding agent o
 | Skill | What it does |
 |---|---|
 | [`dev-cycle-protocol`](#dev-cycle-protocol) | 8-step development lifecycle with an explicit approval gate, Dual-Doc, manual tests and release follow-through |
-| [`plan-memory`](#plan-memory) | Stores complete architecture plans per project in ChromaDB, with milestones, lineage and drift detection |
-| [`session-memory`](#session-memory) | Recovers and consolidates session context per project in ChromaDB |
+| [`plan-memory`](#plan-memory) | Keeps complete architecture plans as versioned files in each project (`docs/plans`), shared by the team, with milestones, lineage, search and drift detection |
+| [`session-memory`](#session-memory) | Recovers and consolidates each developer's own session context per project (local ChromaDB) |
 | [`folder-sync`](#folder-sync) | Incremental RAG over any folder: `/sync` to index, `/folder` to ask |
 
 Agents load a skill on their own when the task matches its `description`. You can also ask for one by name ("use plan-memory to save this plan").
@@ -38,13 +38,16 @@ Agents load a skill on their own when the task matches its `description`. You ca
 ~/.agents/skills/<skill>         ├─ links (junctions on Windows) to the folders above
 ~/.gemini/config/skills/<skill> ─┘
 
-~/.ai-code-agent-memory/                 data, never versioned
-├── plan-memory/db
-└── session-memory/db
+~/.ai-code-agent-memory/                 local data, never versioned
+├── plan-memory/db                       search index of the plans (disposable)
+└── session-memory/db                    this developer's session memory
+
+<project>/docs/plans/*.md                plans: versioned and shared in each project
 ```
 
 - **One copy of each skill.** Agents read the files through links, so an edit in this repository is seen by every agent at once.
-- **Data lives outside the repository.** The memory skills write to `~/.ai-code-agent-memory`, so the repository can be versioned, cloned and shipped as a plugin without carrying data.
+- **No data in this repository.** It can be versioned, cloned and shipped as a plugin without carrying data.
+- **Shared vs. personal memory.** Plans belong to the project and are shared: they live as files in each project repository and go through review like code. Session memory belongs to each developer and stays in their local `~/.ai-code-agent-memory`.
 - **Allowlist `.gitignore`.** Only the files listed in [`.gitignore`](.gitignore) are versioned; databases, virtual environments and `.env` files never are.
 - **Paths in `SKILL.md`.** Commands are written as `<skills_root>/<skill>/script.py`, where `<skills_root>` is the folder that holds the skill. The agent replaces it with the real path.
 
@@ -122,7 +125,7 @@ Add to the project's `.claude/settings.json` and push it to the branch the cloud
 
 - In the plugin, skill names are prefixed: `dev-skills:session-memory`.
 - The Claude GitHub app must have access to this private repository.
-- In the cloud, the memory skills write to the session's own environment: each session starts with empty databases and nothing reaches your local databases.
+- In the cloud, plans come with the project clone (the index is built on first use, which needs `pip install -r requirements.txt` and downloads a small embedding model). Session memory is written to the session's own environment and does not reach your local database.
 - Locally, a project with the plugin enabled shows each skill twice (from `~/.claude/skills` and from the plugin). Both read the same files.
 
 ---
@@ -156,25 +159,31 @@ Per-project settings go in [`.dev-cycle.json`](#project-configuration-dev-cyclej
 
 ### plan-memory
 
-Keeps every multi-step plan **complete and uncompressed** in ChromaDB, per project, with status, milestones and lineage.
+Keeps every multi-step plan **complete and uncompressed**, shared by everyone on the project:
+
+- **Plan files**: `docs/plans/<plan_id>.md` in the project repository, with YAML frontmatter (status, version, author, milestones, lineage, status log) and the plan body. They are committed and reviewed like code. Change the folder with `plans_dir` in `.dev-cycle.json`.
+- **Local index**: a ChromaDB index for semantic search and drift detection, synced from the files on every command (including teammates' changes after `git pull`). It is disposable: `rebuild_index.py` recreates it.
 
 | Task | Command |
 |---|---|
-| Save a plan | `save_plan.py --project <p> --title "<t>" --file plan.md [--version v1.2.0] [--milestones "A,B,C"] [--supersedes <old_id>]` |
-| List plans | `list_plans.py [--project <p>] [--status active]` |
-| Read a plan in full | `get_plan.py --id <plan_id>` or `get_plan.py --project <p>` (latest active) |
-| Semantic search | `search_plans.py --query "<text>" [--project <p>] [--limit 5]` |
-| Milestones | `check_milestone.py --project <p> --list` / `--milestone "A" [--notes "..."]` / `--milestone "A" --uncheck` |
+| Save or update a plan | `save_plan.py --title "<t>" --file plan.md [--version v1.2.0] [--milestones "A,B,C"] [--supersedes <old_id>]` |
+| List plans | `list_plans.py [--status active]` |
+| Read a plan in full | `get_plan.py --id <plan_id>` or `get_plan.py` (latest active) |
+| Semantic search | `search_plans.py --query "<text>" [--limit 5] [--all-projects]` |
+| Milestones | `check_milestone.py --list` / `--milestone "A" [--notes "..."]` / `--milestone "A" --uncheck` |
 | Change status | `update_plan_status.py --id <plan_id> --status completed [--notes "..."]` |
-| Check a proposal for drift | `detect_drift.py --project <p> --proposal "<text>"` or `--file proposal.md [--strict]` |
-| Export to the repository | `export_plan.py --project <p> --output-dir docs/plans [--format json]` |
-| Migrate an old database | `migrate_legacy.py --source <old_db> [--rename old=new] [--dry-run]` |
+| Check a proposal for drift | `detect_drift.py --proposal "<text>"` or `--file proposal.md [--strict]` |
+| Export (JSON or copy) | `export_plan.py --id <plan_id> --format json --output-dir out/` |
+| Rebuild the local index | `rebuild_index.py` |
+| Migrate from the old database | `migrate_legacy.py [--source <old_db>] [--dry-run]` |
 
-All scripts are in `<skills_root>/plan-memory/`.
+All scripts are in `<skills_root>/plan-memory/`. They work on the Git repository of the current directory; use `--dir` for another one and `--project` to override the project name.
 
-- **Statuses**: `draft`, `active`, `in_progress`, `completed`, `superseded`. Saving with `--supersedes` marks the old plan as `superseded` and links both.
+- **Statuses**: `draft`, `planned`, `active`, `in_progress`, `completed`, `superseded`. Saving with `--supersedes` marks the old plan as `superseded` and links both.
+- **Milestones** record who completed them and when; the first one moves the plan to `in_progress`, the last to `completed`.
+- **The scripts never commit.** Commit the plan after approval (Step 3) and its milestone/status changes with the work that completes them.
 - **Drift detection** combines similarity to the active plan, milestone coverage and order, and the project's own `drift_rules` (see [`.dev-cycle.json`](#project-configuration-dev-cyclejson)).
-- **Database**: `~/.ai-code-agent-memory/plan-memory/db` (override with `PLAN_MEMORY_DB`).
+- **Index location**: `~/.ai-code-agent-memory/plan-memory/db` (override with `PLAN_MEMORY_DB`).
 
 Details: [plan-memory/SKILL.md](plan-memory/SKILL.md).
 
@@ -224,7 +233,7 @@ Details: [folder-sync/SKILL.md](folder-sync/SKILL.md).
 
 ## Project configuration: `.dev-cycle.json`
 
-Optional file at a project's root, read by `dev-cycle-protocol` and by `plan-memory/detect_drift.py`. Every key is optional.
+Optional file at a project's root, read by `dev-cycle-protocol` and `plan-memory`. Every key is optional.
 
 ```json
 {
@@ -239,6 +248,7 @@ Optional file at a project's root, read by `dev-cycle-protocol` and by `plan-mem
   "surfaces": ["cli", "rest-api", "mcp"],
   "canonical_datastore": "data/app.db",
   "releases_repo": "my-org/my-app-releases",
+  "plans_dir": "docs/plans",
   "drift_rules": [
     { "tech": "langchain", "conflict_msg": "The baseline plan removes LangChain in favor of a native implementation." },
     {
@@ -253,13 +263,14 @@ Optional file at a project's root, read by `dev-cycle-protocol` and by `plan-mem
 
 | Key | Meaning |
 |---|---|
-| `project_name` | Name shown in reports (normalized to kebab-case for the memory skills) |
+| `project_name` | Project name (normalized to kebab-case); default: the repository folder name |
 | `core_path` | Where the domain core lives |
 | `doc_files` | UserDoc, TecDoc and manual tests paths |
 | `test_commands` | Commands that run the automated tests |
 | `surfaces` | Interfaces that must stay in parity |
 | `canonical_datastore` | The single source of truth database |
 | `releases_repo` | Repository where releases must be published (Step 8) |
+| `plans_dir` | Folder of the plan files (default `docs/plans`) |
 | `drift_rules` | Technologies or patterns the project's plans reject |
 
 **How a drift rule works.** A conflict is raised when:
@@ -280,7 +291,7 @@ When `negative_markers` and `proposal_allow` are omitted, bilingual defaults are
 
 **Conventions**
 - Write in English.
-- Keep data out of skill folders: use `~/.ai-code-agent-memory/<skill>` with an environment variable override.
+- Keep data out of skill folders: shared data in the project repository, personal data in `~/.ai-code-agent-memory/<skill>` with an environment variable override.
 - Refer to scripts as `<skills_root>/<skill>/...` and to other skills by relative links (`../plan-memory/SKILL.md`).
 
 **Personal / machine-specific skills** stay out of this repository, in `~/.ai-code-agent-skills-personal`, linked with `install.ps1 -Source`.
@@ -300,6 +311,7 @@ Links pick up the changes at once. Rerun the install script only when skills wer
 | An agent does not list the skills | Check the folder in the table above has links (`ls ~/.agents/skills`), rerun the install script, restart the agent. |
 | `! <skill>: ... already exists` | Something else has that name in the agent's folder. Remove or rename it, then rerun. |
 | `ModuleNotFoundError: chromadb` / `docx` / `pypdf` | `pip install -r requirements.txt` with the same Python the agent uses. |
+| `plan-memory` lists no plans | Run it inside the project repository (or pass `--dir`); plans are read from `docs/plans` (or `plans_dir`). |
 | A memory script finds nothing for a project | Run `read_memory.py --list-projects` or `list_plans.py`; the project may be stored under another name. Names are normalized (`AnyContext` = `any-context`), but `anycontext` cannot be split. |
 | `detect_drift.py` reports `Drift Rules: none` | Run it from the project folder (or pass `--dir`) and add `drift_rules` to `.dev-cycle.json`. |
 | Cloud session has no `dev-skills:*` skills | Check the branch has `.claude/settings.json`, the GitHub app can access this repository, and `/plugin` for load errors. |
