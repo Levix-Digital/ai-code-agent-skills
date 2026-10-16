@@ -224,40 +224,16 @@ graph TD
 
 ---
 
-## ⚙️ Optional Customization Manifest (`.dev-cycle.json`)
+## ⚙️ Project Configuration (`.dev-cycle.json`)
 
-For projects with custom folder structures, monorepos or specific test commands, the developer can add a `.dev-cycle.json` file at the repository root:
+Optional file at the repository root: the project configuration shared by every skill, with one section per skill (`architecture`, `docs`, `tests`, `devops`, `plans`, `architecture_docs`, `drift_rules`) and `test_commands`. Read it through the single loader, which fills defaults, accepts the legacy flat keys of older files and validates the result:
 
-```json
-{
-  "project_name": "MyProject",
-  "core_path": "src/core",
-  "doc_files": {
-    "user_doc": "README.md",
-    "tec_doc": "docs/ARCHITECTURE.md",
-    "manual_tests": "tests/MANUAL_TESTS.md"
-  },
-  "test_commands": [
-    "cargo test --all",
-    "pytest tests/unit"
-  ],
-  "surfaces": [
-    "cli",
-    "desktop-tauri",
-    "rest-api",
-    "mcp"
-  ],
-  "canonical_datastore": "data/app.db",
-  "releases_repo": "<org/repo-releases>",
-  "drift_rules": [
-    {
-      "tech": "langchain",
-      "conflict_msg": "The baseline plan removes LangChain in favor of a native implementation."
-    }
-  ]
-}
+```powershell
+python "<skills_root>/dev-cycle-protocol/project_config.py"              # effective configuration
+python "<skills_root>/dev-cycle-protocol/project_config.py" --validate   # exit code 1 on problems
+python "<skills_root>/dev-cycle-protocol/project_config.py" --migrate --write   # move flat keys into sections
 ```
 
-`drift_rules` lists technologies or patterns that the project's plans reject; `plan-memory/detect_drift.py` flags proposals that reintroduce them. See the `plan-memory` skill for the rule format.
+Scripts of other skills import it from the sibling folder (`from project_config import load_project_config`). The full key reference is in the skills repository README ("Project configuration"). `inspect_project.py` reports the configured architecture style, test commands, branches and releases repository; `verify_gate.py` checks the configured documentation and manual test paths.
 
 If the file does not exist, `inspect_project.py` and `verify_gate.py` automatically detect the repository's standard stack.
