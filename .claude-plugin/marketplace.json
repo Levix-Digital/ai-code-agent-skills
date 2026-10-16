@@ -8,7 +8,7 @@
     {
       "name": "dev-skills",
       "source": "./",
-      "description": "Project-agnostic development skills: dev cycle protocol, shared plans and session memory, architecture docs and folder RAG sync."
+      "description": "Role-based development skills: cycle orchestrator, architect, QA, DevOps, technical writer, technical docs, shared plans, session memory and folder RAG sync."
     }
   ]
 }

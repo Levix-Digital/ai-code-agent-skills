@@ -1,8 +1,8 @@
 {
   "name": "dev-skills",
   "displayName": "Dev Skills (Levix)",
-  "version": "1.2.0",
-  "description": "Project-agnostic development skills: dev cycle protocol, shared plans and session memory, architecture docs and folder RAG sync.",
+  "version": "2.0.0",
+  "description": "Role-based development skills: cycle orchestrator, architect, QA, DevOps, technical writer, technical docs, shared plans, session memory and folder RAG sync.",
   "author": {
     "name": "Levi Silveira"
   },
@@ -10,8 +10,12 @@
   "skills": [
     "./dev-cycle-protocol",
     "./plan-memory",
-    "./session-memory",
+    "./software-design",
     "./architecture-docs",
+    "./quality-assurance",
+    "./devops-release",
+    "./user-docs",
+    "./session-memory",
     "./folder-sync"
   ]
 }

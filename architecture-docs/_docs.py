@@ -84,7 +84,8 @@ class Project:
         self.index_path = os.path.join(self.root, self.config["index"])
         self.architecture_dir = os.path.join(self.root, self.config["architecture_dir"])
         self.adr_dir = os.path.join(self.root, self.config["adr_dir"])
-        self.plans_dir = os.path.join(self.root, self.manifest.get("plans_dir", os.path.join("docs", "plans")))
+        plans_rel = (self.manifest.get("plans") or {}).get("dir") or self.manifest.get("plans_dir") or os.path.join("docs", "plans")
+        self.plans_dir = os.path.join(self.root, plans_rel)
 
     def rel(self, path: str) -> str:
         return os.path.relpath(path, self.root).replace(os.sep, "/")
