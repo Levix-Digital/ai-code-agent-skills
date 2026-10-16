@@ -6,7 +6,7 @@ version: v2.0.0
 status: in_progress
 author: Levi Silveira
 created_at: '2026-10-16T13:41:24'
-updated_at: '2026-10-16T13:50:44'
+updated_at: '2026-10-16T13:53:45'
 session_id: null
 tags:
 - dev-cycle
@@ -28,7 +28,9 @@ milestones:
   done_at: '2026-10-16'
   by: Levi Silveira
 - name: M3 user-docs skill
-  done: false
+  done: true
+  done_at: '2026-10-16'
+  by: Levi Silveira
 - name: M4 quality-assurance skill
   done: false
 - name: M5 devops-release skill
@@ -50,6 +52,9 @@ status_log:
 - at: '2026-10-16T13:50:44'
   by: Levi Silveira
   note: 'Milestone ''M2 software-design skill'' completed: SKILL.md with universal principles, simplicity-first rule, patterns table, plan design section and review checklist; five style guides; check_design.py (style, core_path, forbidden core imports incl. Rust qualified paths); 9 tests'
+- at: '2026-10-16T13:53:45'
+  by: Levi Silveira
+  note: 'Milestone ''M3 user-docs skill'' completed: SKILL.md (audience, structure, eight rules, legacy rewrite procedure), README_TEMPLATE.md, check_readme.py (sections, changelog/version headings, implementation detail, English, links, length); docs.readme_max_lines; 10 tests'
 ---
 
 # Role-Based Development Cycle: Orchestrator and Specialist Skills

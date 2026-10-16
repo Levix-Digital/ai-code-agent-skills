@@ -317,6 +317,7 @@ Optional file at a project's root: the project configuration shared by every ski
 | `architecture.forbidden_core_imports` | Libraries or modules the core must never import (checked by `software-design/check_design.py`) | `[]` |
 | `test_commands` | Commands that run the automated tests | auto-detected |
 | `docs.user_doc`, `docs.tec_doc` | User documentation and technical documentation index | `README.md`, `TECDOC.md` |
+| `docs.readme_max_lines` | Line limit checked by `user-docs/check_readme.py` | `400` |
 | `tests.manual_tests` | Curated manual test suite | `tests/MANUAL_TESTS.md` |
 | `devops.integration_branch`, `devops.production_branch` | Branch that receives feature work, branch that holds released code | `dev`, `main` |
 | `devops.releases_repo` | Repository where releases are published | not set |
