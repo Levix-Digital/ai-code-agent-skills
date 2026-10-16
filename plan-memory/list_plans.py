@@ -88,7 +88,7 @@ def list_plans(project: str = None, status: str = None):
             ratio = len(p_completed_ms) / len(all_ms)
             bar_len = int(round(16 * ratio))
             bar = "█" * bar_len + "░" * (16 - bar_len)
-            print(f"   • Progress   : [{bar}] {ratio*100:.1f}% ({len(p_completed_ms)}/{len(all_ms)} Marcos)")
+            print(f"   • Progress   : [{bar}] {ratio*100:.1f}% ({len(p_completed_ms)}/{len(all_ms)} Milestones)")
             print(f"   • Milestones : {p_milestones}")
         print("-" * 90)
 

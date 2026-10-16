@@ -5,229 +5,231 @@ description: Universal, project-agnostic 8-step software engineering lifecycle p
 
 # 🛡️ Universal Development Cycle Protocol (`dev-cycle-protocol` v2.0)
 
-> **Caminhos**: `<skills_root>` é a pasta que contém esta skill (o diretório pai da pasta deste `SKILL.md`). Use o caminho absoluto real ao executar os comandos.
+> **Paths**: `<skills_root>` is the folder that contains this skill (the parent of this `SKILL.md`'s folder). Use the real absolute path when running the commands.
 
-O **`dev-cycle-protocol`** é o protocolo universal de governança, qualidade e ciclo de vida de desenvolvimento de software para projetos assistidos por IA em pair-programming.
+**`dev-cycle-protocol`** is the universal governance, quality and lifecycle protocol for AI-assisted pair-programming projects.
 
-Ele é **100% agnóstico a linguagens e projetos** (Rust, Python, TypeScript, Go, C++, Monorepos, etc.), garantindo que qualquer evolução técnica obedeça a padrões rigorosos de engenharia, isolamento de domínio, paridade entre interfaces, documentação técnica profunda, testes manuais não-truncados e persistência de decisões arquiteturais.
+It is **100% language- and project-agnostic** (Rust, Python, TypeScript, Go, C++, monorepos, etc.), ensuring every technical change follows rigorous engineering standards: domain isolation, interface parity, deep technical documentation, non-truncated manual tests and persistent architectural decisions.
+
+> **Language**: talk to the user in the language they use. Keep each project's existing documents (README, TECDOC, MANUAL_TESTS) in the language they are already written in.
 
 ---
 
-## 🏛️ Os Seis Pilares Invioláveis da Engenharia
+## 🏛️ The Seven Inviolable Engineering Pillars
 
-Toda funcionalidade, refatoração ou correção em qualquer repositório deve obedecer rigorosamente a estes seis pilares fundamentais:
+Every feature, refactor or fix in any repository must strictly follow these seven pillars:
 
 ```
 ┌────────────────────────────────────────────────────────────────────────────────────────┐
-│                        OS 7 PILARES INVIOLÁVEIS DA ENGENHARIA                          │
+│                        THE 7 INVIOLABLE ENGINEERING PILLARS                            │
 ├────────────────────────────────────────────────────────────────────────────────────────┤
-│ 1. 🧱 Modularização & Isolamento de Domínio (Single Responsibility & Clean Code)      │
-│ 2. 🏛️ Arquitetura Hexagonal & Paridade Multi-Superfície (Ports & Adapters / Single DB) │
-│ 3. 📚 Padrão Dual-Doc Rigoroso (UserDoc + TecDoc & ADRs)                               │
-│ 4. 📝 Suíte de Testes Manuais Acumulativa e Não-Truncada (MANUAL_TESTS.md)             │
-│ 5. 📐 Memória Persistente de Planos & Linhagem (plan-memory no ChromaDB)               │
-│ 6. 🔒 Higiene de Segredos, Migrações Seguras & Protocolo de Rollback                   │
-   7. **Acompanhamento Ininterrupto da Publicação da Release em Produção**: Acompanhar ativamente o workflow de release (`release.yml`) até o fim absoluto. A tarefa **SÓ PODE ser considerada concluída quando a aplicação estiver pronta, compilada e publicada no repositório designado de releases** (ex: `<org/releases-repo>`). Se o repositório de releases ainda não for conhecido, pergunte ao usuário. O assistente deve rodar `gh release view <tag> --repo <releases-repo>` e comprovar que todos os binários e assets estão disponíveis para download antes de emitir o relatório final.
+│ 1. 🧱 Modularization & Domain Isolation (Single Responsibility & Clean Code)            │
+│ 2. 🏛️ Hexagonal Architecture & Multi-Surface Parity (Ports & Adapters / Single DB)      │
+│ 3. 📚 Rigorous Dual-Doc Standard (UserDoc + TecDoc & ADRs)                             │
+│ 4. 📝 Cumulative, Non-Truncated Manual Test Suite (MANUAL_TESTS.md)                    │
+│ 5. 📐 Persistent Plan Memory & Lineage (plan-memory in ChromaDB)                       │
+│ 6. 🔒 Secret Hygiene, Safe Migrations & Rollback Protocol                              │
+│ 7. 🚀 Uninterrupted Follow-Through until the Release Is Verified in Production         │
 └────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 1. 🧱 Modularização Rigorosa & Isolamento de Domínio
-- **Responsabilidade Única (SRP)**: Cada módulo, classe ou função deve ter uma única razão para mudar.
-- **Domínio Puro**: A lógica de negócio essencial deve ser desacoplada de frameworks de terceiros, drivers de banco, protocolos de rede e detalhes de interface.
-- **Tipagem Estática e Tratamento Canônico de Erros**: Proibido silenciar exceções (`except: pass` ou `.unwrap()` cego em Rust). Todos os erros devem ser mapeados em tipos de erro canônicos e contextuais.
+### 1. 🧱 Rigorous Modularization & Domain Isolation
+- **Single Responsibility (SRP)**: Each module, class or function must have a single reason to change.
+- **Pure Domain**: Core business logic must be decoupled from third-party frameworks, database drivers, network protocols and interface details.
+- **Static Typing and Canonical Error Handling**: Silencing exceptions is forbidden (`except: pass` or blind `.unwrap()` in Rust). All errors must be mapped to canonical, contextual error types.
 
-### 2. 🏛️ Arquitetura Hexagonal & Paridade Absoluta de Superfícies (*Ports & Adapters*)
-- **O Core da Aplicação é o Centro do Universo**: Toda regra de negócio, serviços, comandos e cálculos residem exclusivamente no **Core** do projeto.
-- **Superfícies de Apresentação são Apenas Adaptadores**: As interfaces pelas quais o software é consumido (**CLI Terminal, Desktop GUI, Web API REST, Stdio RPC, Protocolo MCP, Extensões**) são estritamente **Adaptadores de Entrada/Saída**. Nenhuma interface pode conter regras de negócio isoladas, filtros exclusivos ou bases de dados paralelas.
-- **Instância Canônica de Estado / Banco de Dados (*Single Source of Truth*)**: Todas as interfaces em execução no ambiente devem operar sobre a **mesma base de dados/estado canônico**. É terminantemente proibida a criação de bancos secundários ou tabelas desconectadas para interfaces específicas.
-- **Motor Central de Comandos (*Universal Command Engine*)**: Se o sistema oferece ações de usuário (ex: cadastrar, sincronizar, transferir, consultar), todas as interfaces ativas devem despachar para o mesmo serviço de domínio no Core.
+### 2. 🏛️ Hexagonal Architecture & Absolute Surface Parity (*Ports & Adapters*)
+- **The Application Core Is the Center of the Universe**: All business rules, services, commands and calculations live exclusively in the project's **Core**.
+- **Presentation Surfaces Are Only Adapters**: The interfaces through which the software is consumed (**terminal CLI, desktop GUI, REST web API, stdio RPC, MCP protocol, extensions**) are strictly **input/output adapters**. No interface may hold isolated business rules, exclusive filters or parallel databases.
+- **Canonical State / Database Instance (*Single Source of Truth*)**: Every interface running in the environment must operate on the **same canonical database/state**. Creating secondary databases or disconnected tables for specific interfaces is strictly forbidden.
+- **Universal Command Engine**: If the system offers user actions (e.g. register, sync, transfer, query), every active interface must dispatch to the same domain service in the Core.
 
-#### Exemplos de Mapeamento por Ecossistema:
-- **Rust**: Crate de domínio (`crates/<app>-core/`) contendo regras de negócio; binários adaptadores (`src/main.rs` para CLI, `crates/<app>-tauri` para desktop, bindings PyO3/Wasm).
-- **Python**: Pacote de domínio (`src/<app>/core/` e `services/`); adaptadores de entrega (`cli.py`, `server/api.py`, `server/mcp.py`).
-- **TypeScript/Node**: Pacote central (`packages/core/`); apps de apresentação (`apps/web/`, `apps/cli/`, `apps/desktop/`).
-- **Go**: Domínio interno (`internal/domain/`); adaptadores (`cmd/cli/`, `cmd/server/`).
+#### Mapping Examples by Ecosystem:
+- **Rust**: Domain crate (`crates/<app>-core/`) holding business rules; adapter binaries (`src/main.rs` for CLI, `crates/<app>-tauri` for desktop, PyO3/Wasm bindings).
+- **Python**: Domain package (`src/<app>/core/` and `services/`); delivery adapters (`cli.py`, `server/api.py`, `server/mcp.py`).
+- **TypeScript/Node**: Core package (`packages/core/`); presentation apps (`apps/web/`, `apps/cli/`, `apps/desktop/`).
+- **Go**: Internal domain (`internal/domain/`); adapters (`cmd/cli/`, `cmd/server/`).
 
-### 3. 📚 Padrão Dual-Doc de Documentação Rigorosa (*UserDoc + TecDoc*)
-Toda funcionalidade implementada exige a atualização síncrona e detalhada de duas camadas documentais complementares:
-- **`UserDoc` (Manual do Usuário & Experiência Operacional)**:
-  - Focado no operador, usuário final ou desenvolvedor consumidor da API/CLI.
-  - Abrange: `README.md`, menus de ajuda interativos (`--help`), tutoriais de início rápido, parâmetros de comandos e guias de resolução de problemas comuns.
-- **`TecDoc` (Engenharia, Arquitetura & Deep-Dive Técnico)**:
-  - Focado em mantenedores, arquitetos de software e auditores técnicos.
-  - Abrange: `TECDOC.md` (ou `docs/architecture/`), diagramas de sequência e fluxo em **Mermaid**, fórmulas matemáticas, complexidade algorítmica, esquemas de banco de dados, rationale de decisões arquiteturais (ADRs) e matriz de tratamento de falhas.
+### 3. 📚 Rigorous Dual-Doc Documentation Standard (*UserDoc + TecDoc*)
+Every implemented feature requires a synchronized, detailed update of two complementary documentation layers:
+- **`UserDoc` (User Manual & Operational Experience)**:
+  - Aimed at the operator, end user or developer consuming the API/CLI.
+  - Covers: `README.md`, interactive help menus (`--help`), quick-start tutorials, command parameters and troubleshooting guides.
+- **`TecDoc` (Engineering, Architecture & Technical Deep-Dive)**:
+  - Aimed at maintainers, software architects and technical auditors.
+  - Covers: `TECDOC.md` (or `docs/architecture/`), **Mermaid** sequence and flow diagrams, mathematical formulas, algorithmic complexity, database schemas, architecture decision records (ADRs) and the failure-handling matrix.
 
-### 4. 📝 Suíte de Testes Manuais Acumulativa & Não-Truncada (`MANUAL_TESTS.md`)
-- **Regra de Não-Compactação**: **NUNCA compactar, resumir em uma linha ou truncar** os roteiros de testes manuais anteriores. O arquivo `tests/MANUAL_TESTS.md` (ou `MANUAL_TESTS.md`) deve acumular todos os cenários detalhados passo a passo (com comandos copiáveis, pré-requisitos, payloads e critérios de aceitação explícitos).
-- **Quem esvazia é o Usuário**: O arquivo deve encher com os testes acumulados. O usuário é o único responsável por apagar os testes que ele já executou e validou.
-- **Remoção pelo Assistente**: O assistente só deve remover ou retificar testes manuais antigos que ficaram **obsoletos/inválidos** devido a novas decisões arquiteturais (ex: endpoints removidos ou comandos descontinuados).
+### 4. 📝 Cumulative, Non-Truncated Manual Test Suite (`MANUAL_TESTS.md`)
+- **No-Compaction Rule**: **NEVER compact, summarize into one line or truncate** previous manual test scripts. The `tests/MANUAL_TESTS.md` (or `MANUAL_TESTS.md`) file must accumulate every detailed step-by-step scenario (with copyable commands, prerequisites, payloads and explicit acceptance criteria).
+- **The User Empties It**: The file fills up with accumulated tests. The user alone is responsible for deleting the tests they have already run and validated.
+- **Removal by the Assistant**: The assistant may only remove or fix old manual tests that became **obsolete/invalid** due to new architectural decisions (e.g. removed endpoints or discontinued commands).
 
-### 5. 📐 Memória Persistente de Planos & Linhagem (`plan-memory`)
-- **Zero Compaction de Decisões Técnicas**: Todo planejamento arquitetural de múltiplas etapas, blueprint técnico e roadmap estratégico deve ser indexado integralmente no ChromaDB através da skill 👉 **[`plan-memory`](file:///<skills_root>/plan-memory/SKILL.md)**.
-- **Linhagem e Rastreamento de Marcos**: Planos sucessores devem marcar planos antigos como `superseded` via `--supersedes`, mantendo o histórico navegável. Sub-etapas concluídas devem ser marcadas via `check_milestone.py`.
-- **Prevenção Ativa de Desvios (*Plan Drift Detector*)**: Antes de implementar novas tarefas, valide se a proposta respeita os marcos e princípios do plano mestre via `detect_drift.py`.
+### 5. 📐 Persistent Plan Memory & Lineage (`plan-memory`)
+- **Zero Compaction of Technical Decisions**: Every multi-step architectural plan, technical blueprint and strategic roadmap must be indexed in full in ChromaDB through the 👉 **[`plan-memory`](../plan-memory/SKILL.md)** skill.
+- **Lineage and Milestone Tracking**: Successor plans must mark old plans as `superseded` via `--supersedes`, keeping history navigable. Completed sub-steps must be checked off via `check_milestone.py`.
+- **Active Drift Prevention (*Plan Drift Detector*)**: Before implementing new tasks, validate that the proposal respects the master plan's milestones and principles via `detect_drift.py`.
 
-### 6. 🔒 Higiene de Segredos, Migrações Seguras & Protocolo de Rollback
-- **Higiene de Segredos**: Proibido commitar arquivos `.env`, chaves de API, certificados privados ou credenciais. O assistente deve verificar via `verify_gate.py` antes de qualquer commit.
-- **Evolução de Banco de Dados sem Quebra (*Zero-Downtime Schema*)**: Alterações de esquema em SQLite, PostgreSQL ou similar devem ser aditivas ou compatíveis com versões anteriores, garantindo que interfaces legadas ou instâncias paralelas não entrem em crash.
-- **Protocolo de Rollback Atômico**: Se um build falhar em produção ou uma regressão crítica for detectada no CI pós-merge, a ação imediata é disparar o revert do commit/PR na branch de produção e publicar uma tag de correção imediata (`vX.Y.Z+1`), em vez de tentar consertos desordenados direto em produção.
+### 6. 🔒 Secret Hygiene, Safe Migrations & Rollback Protocol
+- **Secret Hygiene**: Committing `.env` files, API keys, private certificates or credentials is forbidden. The assistant must check via `verify_gate.py` before any commit.
+- **Non-Breaking Database Evolution (*Zero-Downtime Schema*)**: Schema changes in SQLite, PostgreSQL or similar must be additive or backward compatible, so legacy interfaces or parallel instances do not crash.
+- **Atomic Rollback Protocol**: If a build fails in production or a critical regression is detected in post-merge CI, the immediate action is to revert the commit/PR on the production branch and publish an immediate fix tag (`vX.Y.Z+1`), instead of attempting disorderly fixes directly in production.
 
-   7. **Acompanhamento Ininterrupto da Publicação da Release em Produção**: Acompanhar ativamente o workflow de release (`release.yml`) até o fim absoluto. A tarefa **SÓ PODE ser considerada concluída quando a aplicação estiver pronta, compilada e publicada no repositório designado de releases** (ex: `<org/releases-repo>`). Se o repositório de releases ainda não for conhecido, pergunte ao usuário. O assistente deve rodar `gh release view <tag> --repo <releases-repo>` e comprovar que todos os binários e assets estão disponíveis para download antes de emitir o relatório final.
-- **O Trabalho Só Termina na Produção Verificada**: É expressamente proibido encerrar a tarefa ou devolver a palavra ao usuário apenas criando o Pull Request ou fazendo o push da tag. O assistente deve **acompanhar ativamente até o fim** cada job e step das GitHub Actions (`gh run watch` / `gh run list`).
-- **Resolução Ativa de Falhas de CI**: Caso algum job do CI (testes automatizados, lint, build em matriz cross-platform) falhe, o assistente deve imediatamente inspecionar os logs do runner remoto (`gh run view --log-failed`), reproduzir localmente, aplicar a correção e atualizar o branch até que todos os checks fiquem 100% verdes.
-- **Publicação Obrigatória no Repositório de Releases (Agnóstico com Fallback para Pergunta)**: **Todas as releases sem exceção DEVEM ser publicadas no repositório designado de releases** (ex: `<org/releases-repo>`). Nenhuma release pode ficar confinada apenas em branches ou tags locais. Se o assistente ainda não souber ou não encontrar configurado qual é o repositório de destino das releases (em `.dev-cycle.json`, workflows de CI ou documentação técnica), o assistente **DEVE obrigatoriamente perguntar ao usuário** antes de concluir. O assistente é obrigado a inspecionar remotamente (`gh release view <tag> --repo <org/releases-repo>`) e confirmar que todos os binários, checksums, scripts de instalação e assets estão publicados e disponíveis publicamente para download antes de considerar qualquer ciclo concluído.
+### 7. 🚀 Uninterrupted Follow-Through until the Release Is Verified in Production
+- **Work Only Ends in Verified Production**: It is expressly forbidden to end the task or hand control back to the user after merely creating the pull request or pushing the tag. The assistant must **actively follow every GitHub Actions job and step to the end** (`gh run watch` / `gh run list`).
+- **Active CI Failure Resolution**: If any CI job fails (automated tests, lint, cross-platform matrix build), the assistant must immediately inspect the remote runner logs (`gh run view --log-failed`), reproduce locally, apply the fix and update the branch until all checks are 100% green.
+- **Mandatory Publication to the Releases Repository (Agnostic, with Fallback to Asking)**: **Every release without exception MUST be published to the designated releases repository** (e.g. `<org/releases-repo>`). No release may stay confined to local branches or tags. If the assistant does not yet know, or cannot find configured, the target releases repository (in `.dev-cycle.json`, CI workflows or technical documentation), the assistant **MUST ask the user** before finishing. The assistant must inspect remotely (`gh release view <tag> --repo <org/releases-repo>`) and confirm that all binaries, checksums, install scripts and assets are published and publicly downloadable before considering any cycle complete.
 
 ---
 
-## 🛡️ O Ciclo de Desenvolvimento de 8 Etapas com Gate de Aprovação
+## 🛡️ The 8-Step Development Cycle with Approval Gate
 
 ```mermaid
 graph TD
-    A["1. 💡 Discovery & Exploração (Default)<br/>(Inspeção de logs, stack detectada, planos ativos)"] --> B["2. 📋 Planejamento Final Completo (Blueprint)<br/>(Decisões, paridade, detect_drift, save_plan)"]
-    B --> C{"🔒 3. GATE DE APROVAÇÃO EXPLÍCITA<br/>(verify_gate 3 + Bloqueio até 'Aprovado')"}
-    C -- "Dúvidas / Ajustes / Exploração" --> A
-    C -- "✅ Autorizado ('Aprovado', 'Pode implementar')" --> D["4. 🛠️ Implementação Modular com Paridade<br/>(Core Domain first -> Delivery Adapters)"]
-    D --> E["5. 🧪 Suíte de Testes Automatizados & NFRs<br/>(100% testes verdes no runner nativo)"]
-    E --> F["6. 📚 Atualização Dual-Doc Rigorosa<br/>(UserDoc README + TecDoc TECDOC.md)"]
-    F --> G["7. 📝 Registro de Testes Manuais Detalhado<br/>(tests/MANUAL_TESTS.md sem compactação)"]
-    G --> H["8. 🚀 Fechamento, CI/CD, Release & Checklist<br/>(verify_gate 8, bump, PR, CI watch, Tag, release)"]
+    A["1. 💡 Discovery & Exploration (Default)<br/>(Log inspection, detected stack, active plans)"] --> B["2. 📋 Complete Final Plan (Blueprint)<br/>(Decisions, parity, detect_drift, save_plan)"]
+    B --> C{"🔒 3. EXPLICIT APPROVAL GATE<br/>(verify_gate 3 + blocked until 'Approved')"}
+    C -- "Questions / Adjustments / Exploration" --> A
+    C -- "✅ Authorized ('Approved', 'Go ahead')" --> D["4. 🛠️ Modular Implementation with Parity<br/>(Core Domain first -> Delivery Adapters)"]
+    D --> E["5. 🧪 Automated Test Suite & NFRs<br/>(100% green tests on the native runner)"]
+    E --> F["6. 📚 Rigorous Dual-Doc Update<br/>(UserDoc README + TecDoc TECDOC.md)"]
+    F --> G["7. 📝 Detailed Manual Test Record<br/>(tests/MANUAL_TESTS.md without compaction)"]
+    G --> H["8. 🚀 Closure, CI/CD, Release & Checklist<br/>(verify_gate 8, bump, PR, CI watch, tag, release)"]
 ```
 
 ---
 
-### 💡 Etapa 1: Discovery & Exploração (Modo Default)
-- **Regra de Ouro**: O assistente permanece **100% em modo consultivo e analítico**.
-- **Auto-Detecção do Perfil do Projeto**: O assistente inspeciona o ecossistema ativo via:
+### 💡 Step 1: Discovery & Exploration (Default Mode)
+- **Golden Rule**: The assistant stays **100% in consultative and analytical mode**.
+- **Project Profile Auto-Detection**: The assistant inspects the active ecosystem via:
   ```powershell
   python "<skills_root>/dev-cycle-protocol/inspect_project.py"
   ```
-- **Investigação Baseada em Logs em Primeiro Lugar (*Log-First Investigation*)**: Ao investigar qualquer erro, anomalia ou crash reportado pelo usuário, **a primeira ação obrigatória é inspecionar diretamente os arquivos de log** (`logs/`, logs de aplicação, instalação, compilação, stderr). Nunca formule hipóteses teóricas sem antes consultar as evidências reais dos logs.
-- **Recuperação Prévia de Planos & Progresso de Marcos (`plan-memory`)**: Ao iniciar a discussão de novas funcionalidades ou refatorações, consulte o estado atual do projeto no banco vetorial:
+- **Log-First Investigation**: When investigating any error, anomaly or crash reported by the user, **the first mandatory action is to inspect the log files directly** (`logs/`, application, install and build logs, stderr). Never form theoretical hypotheses before checking the real evidence in the logs.
+- **Prior Retrieval of Plans & Milestone Progress (`plan-memory`)**: When starting a discussion about new features or refactors, check the project's current state in the vector database:
   ```powershell
-  python "<skills_root>/plan-memory/list_plans.py" --project "<projeto>"
-  python "<skills_root>/plan-memory/check_milestone.py" --project "<projeto>" --list
+  python "<skills_root>/plan-memory/list_plans.py" --project "<project>"
+  python "<skills_root>/plan-memory/check_milestone.py" --project "<project>" --list
   ```
-- Enquanto o usuário estiver levantando hipóteses, fazendo perguntas (*"O que você acha?"*, *"E se fizermos X?"*) ou debatendo alternativas, **é terminantemente proibido propor comandos de edição, alterar arquivos ou iniciar código prematuramente**.
-- O objetivo desta etapa é esgotar todas as dúvidas conceituais, validar viabilidade e convergir para a melhor arquitetura.
+- While the user is raising hypotheses, asking questions (*"What do you think?"*, *"What if we do X?"*) or debating alternatives, **proposing edit commands, changing files or starting code prematurely is strictly forbidden**.
+- The goal of this step is to exhaust all conceptual questions, validate feasibility and converge on the best architecture.
 
 ---
 
-### 📋 Etapa 2: Planejamento Final Completo (Blueprint) & Indexação Persistente
-- Quando as decisões estiverem amadurecidas, o assistente consolida e apresenta o **Planejamento Final Completo** utilizando o template estruturado padrão de 8 seções:
-  1. 🎯 **Objetivo & Decisões Arquiteturais (ADR)**
-  2. 🏛️ **Mapeamento de Paridade de Superfícies (Quais interfaces serão atualizadas)**
-  3. 📁 **Arquivos e Linhas Impactadas**
-  4. 📚 **Plano de Atualização Dual-Doc (`UserDoc` + `TecDoc`)**
-  5. 🧪 **Estratégia de Testes Automatizados & Proteção contra Regressão**
-  6. 📝 **Plano de Cenários de Teste Manual (`tests/MANUAL_TESTS.md`)**
-  7. 🔒 **Higiene de Segredos, Migração de Banco e Plano de Rollback**
-  8. ⏱️ **Passo a Passo da Execução**
-- **Verificação Prévia de Desvio Arquitetural (`detect_drift.py`)**:
-  Antes de apresentar o plano, valide se a proposta não viola princípios anteriores ou ordens de execução:
+### 📋 Step 2: Complete Final Plan (Blueprint) & Persistent Indexing
+- Once decisions have matured, the assistant consolidates and presents the **Complete Final Plan** using the standard 8-section template:
+  1. 🎯 **Goal & Architecture Decisions (ADR)**
+  2. 🏛️ **Surface Parity Mapping (which interfaces will be updated)**
+  3. 📁 **Affected Files and Lines**
+  4. 📚 **Dual-Doc Update Plan (`UserDoc` + `TecDoc`)**
+  5. 🧪 **Automated Testing Strategy & Regression Protection**
+  6. 📝 **Manual Test Scenario Plan (`tests/MANUAL_TESTS.md`)**
+  7. 🔒 **Secret Hygiene, Database Migration and Rollback Plan**
+  8. ⏱️ **Step-by-Step Execution**
+- **Prior Architectural Drift Check (`detect_drift.py`)**:
+  Before presenting the plan, validate that the proposal does not violate earlier principles or execution order:
   ```powershell
-  python "<skills_root>/plan-memory/detect_drift.py" --project "<projeto>" --proposal "<resumo_da_proposta>"
+  python "<skills_root>/plan-memory/detect_drift.py" --project "<project>" --proposal "<proposal_summary>"
   ```
-- **Indexação Obrigatória no ChromaDB (`plan-memory`)**:
-  Todo planejamento com decisões arquiteturais ou plano de múltiplas etapas DEVE ser indexado integralmente no ChromaDB sem qualquer compactação através de:
+- **Mandatory Indexing in ChromaDB (`plan-memory`)**:
+  Every plan with architecture decisions or multiple steps MUST be indexed in full in ChromaDB, without any compaction, via:
   ```powershell
   python "<skills_root>/plan-memory/save_plan.py" `
-    --project "<projeto>" `
-    --title "<titulo_do_plano>" `
-    --content "<conteudo_completo_markdown>" `
+    --project "<project>" `
+    --title "<plan_title>" `
+    --content "<full_markdown_content>" `
     --session-id "<session_id>" `
-    --version "<versao_alvo>" `
+    --version "<target_version>" `
     --tags "<tags>" `
-    --milestones "<marcos_separados_por_virgula>" `
+    --milestones "<comma_separated_milestones>" `
     [--supersedes "<old_plan_id>"]
   ```
-- Finaliza com a pergunta padrão:
-  > *"Este é o planejamento final completo. Deseja ajustar algum ponto ou autoriza o início da implementação?"*
+- End with the standard question (in the user's language):
+  > *"This is the complete final plan. Would you like to adjust anything, or do you authorize the start of implementation?"*
 
 ---
 
-### 🔒 Etapa 3: GATE DE APROVAÇÃO EXPLÍCITA (Imutável)
-- **Verificação Automatizada do Gate 3**:
+### 🔒 Step 3: EXPLICIT APPROVAL GATE (Immutable)
+- **Automated Gate 3 Check**:
   ```powershell
-  python "<skills_root>/dev-cycle-protocol/verify_gate.py" --gate 3 --project "<projeto>"
+  python "<skills_root>/dev-cycle-protocol/verify_gate.py" --gate 3 --project "<project>"
   ```
-- A implementação **SÓ COMEÇA** após uma **autorização curta, direta e sem mais perguntas** do usuário (ex: *"Aprovado"*, *"Pode implementar"*, *"Autorizado"*, *"Go"*).
-- Se a resposta do usuário contiver qualquer dúvida, ressalva ou nova ideia, o assistente **retorna automaticamente à Etapa 1** sem tocar em nenhum arquivo de código.
+- Implementation **ONLY STARTS** after a **short, direct authorization with no further questions** from the user (e.g. *"Aprovado"*, *"Pode implementar"*, *"Autorizado"*, *"Approved"*, *"Go"*).
+- If the user's reply contains any question, reservation or new idea, the assistant **automatically returns to Step 1** without touching any code file.
 
 ---
 
-### 🛠️ Etapa 4: Implementação Modular com Paridade de Interfaces
-- **Verificação de Árvore Git Limpa**: Certificar-se de que a branch está sincronizada com a remota antes de aplicar mudanças.
-- **Ordem de Implementação**:
-  1. **Core Domain**: Entidades, serviços, tipos canônicos e interfaces/traits.
-  2. **Storage / State**: Migrações de esquema compatíveis e persistência.
-  3. **Delivery Adapters**: CLI, Web API, RPC, MCP, UI Desktop, etc.
-- **Tratamento de Exceções**: Todo erro propagado deve conter causa contextual clara.
+### 🛠️ Step 4: Modular Implementation with Interface Parity
+- **Clean Git Tree Check**: Make sure the branch is in sync with the remote before applying changes.
+- **Implementation Order**:
+  1. **Core Domain**: Entities, services, canonical types and interfaces/traits.
+  2. **Storage / State**: Compatible schema migrations and persistence.
+  3. **Delivery Adapters**: CLI, web API, RPC, MCP, desktop UI, etc.
+- **Exception Handling**: Every propagated error must carry a clear contextual cause.
 
 ---
 
-### 🧪 Etapa 5: Suíte de Testes Automatizados & NFRs
-- **Execução no Runner Nativo**:
-  - Rust: `cargo test` (ou matriz MSVC/Linux)
-  - Python: `pytest tests/` (usando o virtualenv correto)
+### 🧪 Step 5: Automated Test Suite & NFRs
+- **Run on the Native Runner**:
+  - Rust: `cargo test` (or MSVC/Linux matrix)
+  - Python: `pytest tests/` (using the correct virtualenv)
   - Node/TypeScript: `npm test` / `pnpm test`
   - Go: `go test -v ./...`
-- **Garantia de 100% de Testes Verdes**: Proibido avançar com qualquer teste falho ou quebrado.
-- **Testes de Regressão**: Se a tarefa corrige um bug, um novo teste automatizado que reproduzia o bug deve ser adicionado para evitar regressão futura.
+- **100% Green Tests Guaranteed**: Moving forward with any failing or broken test is forbidden.
+- **Regression Tests**: If the task fixes a bug, a new automated test that reproduced the bug must be added to prevent future regressions.
 
 ---
 
-### 📚 Etapa 6: Atualização Dual-Doc Rigorosa & Detalhada
-- **`UserDoc`**: Atualização do `README.md`, documentação de flags, telas de ajuda `/help` e exemplos práticos.
-- **`TecDoc`**: Atualização do `TECDOC.md` (ou `docs/architecture/`):
-  - Diagramas Mermaid de sequência e fluxo das novas interações.
-  - Detalhamento de novos endpoints, estruturas de dados e regras de negócio.
-  - Registro de Decisão Arquitetural (ADR) explicando o porquê da solução adotada.
+### 📚 Step 6: Rigorous, Detailed Dual-Doc Update
+- **`UserDoc`**: Update `README.md`, flag documentation, `/help` screens and practical examples.
+- **`TecDoc`**: Update `TECDOC.md` (or `docs/architecture/`):
+  - Mermaid sequence and flow diagrams of the new interactions.
+  - Details of new endpoints, data structures and business rules.
+  - Architecture Decision Record (ADR) explaining why the adopted solution was chosen.
 
 ---
 
-### 📝 Etapa 7: Registro do Roteiro de Teste Manual Acumulativo (`tests/MANUAL_TESTS.md`)
-- Gravação persistente e versionada do roteiro de testes passo a passo no arquivo `tests/MANUAL_TESTS.md`.
-- **Sem compactação**: Adiciona o novo cenário detalhado no topo e preserva intactos todos os cenários anteriores não obsoletos com seus passos, comandos e critérios de aceitação.
-- **Formato Mandatório do Cenário**:
-  - **Identificador e Título**: `## Cenário X: [Nome da Funcionalidade]`
-  - **Pré-requisitos e Ambiente**: Arquivos necessários, variáveis de ambiente e serviços ativos.
-  - **Passo a Passo com Comandos Copiáveis**: Comandos exatos prontos para execução no terminal.
-  - **Resultado Esperado (Critérios de Aceitação)**: Saída esperada no terminal, logs gerados e estado do banco de dados.
+### 📝 Step 7: Cumulative Manual Test Script Record (`tests/MANUAL_TESTS.md`)
+- Persist and version the step-by-step test script in `tests/MANUAL_TESTS.md`.
+- **No compaction**: Add the new detailed scenario at the top and keep every earlier non-obsolete scenario intact, with its steps, commands and acceptance criteria.
+- **Mandatory Scenario Format** (in the language the file already uses):
+  - **Identifier and Title**: `## Scenario X: [Feature Name]` (or `## Cenário X: ...` in a Portuguese file)
+  - **Prerequisites and Environment**: Required files, environment variables and running services.
+  - **Step by Step with Copyable Commands**: Exact commands ready to run in the terminal.
+  - **Expected Result (Acceptance Criteria)**: Expected terminal output, generated logs and database state.
 
 ---
 
-### 🚀 Etapa 8: Fechamento, CI/CD, Release em Produção & Checklist
-- **Verificação Automatizada do Gate 8**:
+### 🚀 Step 8: Closure, CI/CD, Production Release & Checklist
+- **Automated Gate 8 Check**:
   ```powershell
-  python "<skills_root>/dev-cycle-protocol/verify_gate.py" --gate 8 --project "<projeto>"
+  python "<skills_root>/dev-cycle-protocol/verify_gate.py" --gate 8 --project "<project>"
   ```
-- **Regra de Fechamento Integral (Da Concepção até a Release em Produção)**:
-  1. **Version Bump Semântico Mandatório**: Para cada alteração, atualizar a versão de acordo com o tipo/nível da modificação (`pyproject.toml`, `Cargo.toml`, `package.json`, etc.):
-     - **Major (X.0.0)**: Quebras drásticas de compatibilidade ou reformulação integral da arquitetura.
-     - **Minor (0.X.0 / X.Y.0)**: Novas funcionalidades, migrações estruturais de schema de banco de dados ou normalização arquitetural.
-     - **Patch (X.Y.Z)**: Correções de bugs, pequenas melhorias e ajustes retrocompatíveis.
-  2. **Commit e Push no Branch de Desenvolvimento (`dev`)**: Commit semântico padronizado (`feat:`, `fix:`, `refactor:`).
-  3. **Abertura do Pull Request (`dev` -> `main`)**: Criar o PR no GitHub via `gh pr create`.
-  4. **Monitoramento Ininterrupto do CI & Auto-Correção no GitHub Actions**: Acompanhar minuciosamente todo o workflow do CI até a conclusão (`gh run list` / `gh run watch`). Qualquer erro ou falha identificada durante a execução dos jobs **DEVE ser imediatamente investigado, diagnosticado e corrigido no código**, realizando novo commit e reexecução. **NUNCA deixe um workflow quebrado ou falho sem corrigir**. O avanço para o merge só é válido com 100% de sucesso (verde) em todos os checks.
-  5. **Merge para Produção (`main`)**: Realizar o merge do PR para a branch principal (`gh pr merge --merge`).
-  6. **Criação e Push da Tag de Release (`vX.Y.Z`)**: Criar a tag Git anotada e fazer push para disparar o pipeline de release (`git tag -a vX.Y.Z -m "..." && git push origin vX.Y.Z`).
-   7. **Acompanhamento Ininterrupto da Publicação da Release em Produção**: Acompanhar ativamente o workflow de release (`release.yml`) até o fim absoluto. A tarefa **SÓ PODE ser considerada concluída quando a aplicação estiver pronta, compilada e publicada no repositório designado de releases** (ex: `<org/releases-repo>`). Se o repositório de releases ainda não for conhecido, pergunte ao usuário. O assistente deve rodar `gh release view <tag> --repo <releases-repo>` e comprovar que todos os binários e assets estão disponíveis para download antes de emitir o relatório final.
-  8. **Atualização do Ciclo de Vida do Plano & Conclusão de Marcos (`plan-memory`)**:
+- **Full Closure Rule (From Conception to Production Release)**:
+  1. **Mandatory Semantic Version Bump**: For every change, update the version according to the type/level of the change (`pyproject.toml`, `Cargo.toml`, `package.json`, etc.):
+     - **Major (X.0.0)**: Drastic compatibility breaks or a complete architecture overhaul.
+     - **Minor (0.X.0 / X.Y.0)**: New features, structural database schema migrations or architectural normalization.
+     - **Patch (X.Y.Z)**: Bug fixes, small improvements and backward-compatible adjustments.
+  2. **Commit and Push to the Development Branch (`dev`)**: Standard semantic commit (`feat:`, `fix:`, `refactor:`).
+  3. **Open the Pull Request (`dev` -> `main`)**: Create the PR on GitHub via `gh pr create`.
+  4. **Uninterrupted CI Monitoring & Self-Correction on GitHub Actions**: Follow the entire CI workflow closely until completion (`gh run list` / `gh run watch`). Any error or failure found while the jobs run **MUST be immediately investigated, diagnosed and fixed in the code**, with a new commit and re-run. **NEVER leave a broken or failed workflow unfixed**. Moving on to merge is only valid with 100% success (green) on all checks.
+  5. **Merge to Production (`main`)**: Merge the PR into the main branch (`gh pr merge --merge`).
+  6. **Create and Push the Release Tag (`vX.Y.Z`)**: Create the annotated Git tag and push it to trigger the release pipeline (`git tag -a vX.Y.Z -m "..." && git push origin vX.Y.Z`).
+  7. **Uninterrupted Follow-Up of the Production Release**: Actively follow the release workflow (`release.yml`) to the very end. The task **can ONLY be considered complete when the application is ready, built and published to the designated releases repository** (e.g. `<org/releases-repo>`). If the releases repository is not yet known, ask the user. The assistant must run `gh release view <tag> --repo <releases-repo>` and prove that all binaries and assets are available for download before issuing the final report.
+  8. **Plan Lifecycle Update & Milestone Completion (`plan-memory`)**:
      ```powershell
-     python "<skills_root>/plan-memory/check_milestone.py" --project "<projeto>" --milestone "<marco>" --notes "Entregue na release vX.Y.Z"
+     python "<skills_root>/plan-memory/check_milestone.py" --project "<project>" --milestone "<milestone>" --notes "Delivered in release vX.Y.Z"
      ```
-  9. **Registro Histórico na Memória de Sessão (`session-memory`)**: Gravação persistente do contexto da sessão.
-  10. **Relatório Transparente**: Apresentar o checklist final detalhado comprovando que todas as 8 etapas foram concluídas até a publicação da release em produção.
+  9. **Historical Record in Session Memory (`session-memory`)**: Persist the session context.
+  10. **Transparent Report**: Present the detailed final checklist proving that all 8 steps were completed through the production release.
 
 ---
 
-## ⚙️ Manifesto Opcional de Customização (`.dev-cycle.json`)
+## ⚙️ Optional Customization Manifest (`.dev-cycle.json`)
 
-Para projetos que possuem estruturas de pastas personalizadas, monorepos ou comandos específicos de teste, o desenvolvedor pode adicionar um arquivo `.dev-cycle.json` na raiz do repositório:
+For projects with custom folder structures, monorepos or specific test commands, the developer can add a `.dev-cycle.json` file at the repository root:
 
 ```json
 {
-  "project_name": "MeuProjeto",
+  "project_name": "MyProject",
   "core_path": "src/core",
   "doc_files": {
     "user_doc": "README.md",
@@ -249,4 +251,4 @@ Para projetos que possuem estruturas de pastas personalizadas, monorepos ou coma
 }
 ```
 
-Se o arquivo não existir, os utilitários `inspect_project.py` e `verify_gate.py` detectam automaticamente a stack padrão do repositório.
+If the file does not exist, `inspect_project.py` and `verify_gate.py` automatically detect the repository's standard stack.

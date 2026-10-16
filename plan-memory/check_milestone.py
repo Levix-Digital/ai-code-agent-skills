@@ -18,7 +18,7 @@ def render_progress_bar(completed: int, total: int, width: int = 24) -> str:
     filled_len = int(round(width * ratio))
     bar = "█" * filled_len + "░" * (width - filled_len)
     percent = ratio * 100.0
-    return f"[{bar}] {percent:.1f}% ({completed}/{total} Marcos)"
+    return f"[{bar}] {percent:.1f}% ({completed}/{total} Milestones)"
 
 def parse_milestone_list(val: str) -> list[str]:
     if not val:

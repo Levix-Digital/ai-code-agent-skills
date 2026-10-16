@@ -5,39 +5,39 @@ description: Persistent multi-project vector memory and context recovery for cod
 
 # 🧠 Session Memory Skill (`session-memory`)
 
-Banco vetorial **ChromaDB local e compartilhado** que guarda, **por projeto**, contexto, decisões de arquitetura, correções, histórico de releases e próximos passos de sessões de desenvolvimento. Funciona com qualquer agente de código e qualquer projeto.
+A **shared local ChromaDB** vector database that stores, **per project**, the context, architecture decisions, fixes, release history and next steps of development sessions. Works with any coding agent and any project.
 
-- **ChromaDB**: `~/.ai-code-agent-memory/session-memory/db` (sobrescreva com a variável `SESSION_MEMORY_DB`). Fica fora da pasta da skill, então a skill pode ser versionada e copiada sem levar dados.
+- **ChromaDB**: `~/.ai-code-agent-memory/session-memory/db` (override with the `SESSION_MEMORY_DB` variable). It lives outside the skill folder, so the skill can be versioned and copied without carrying data.
 - **Collection**: `session_history`
-- **Scripts**: na mesma pasta deste `SKILL.md` (abaixo, `<skill_dir>`). Requer `pip install chromadb`.
+- **Scripts**: in the same folder as this `SKILL.md` (below, `<skill_dir>`). Requires `pip install chromadb`.
 
 > [!CAUTION]
-> **REGRA DE SEGURANÇA CRÍTICA DO SISTEMA**:
-> **JAMAIS reiniciar ou desligar o computador sem um pedido EXPLÍCITO e DIRETO do usuário na sessão ativa.**
-> É terminantemente proibido qualquer reboot ou shutdown autônomo, proativo ou como consequência de testes, builds, deploys ou atualizações.
+> **CRITICAL SYSTEM SAFETY RULE**:
+> **NEVER restart or shut down the computer without an EXPLICIT and DIRECT request from the user in the active session.**
+> Any autonomous or proactive reboot or shutdown, or one triggered as a consequence of tests, builds, deploys or updates, is strictly forbidden.
 
 ---
 
-## 🏷️ Isolamento por Projeto (obrigatório)
+## 🏷️ Project Isolation (mandatory)
 
-Todo registro carrega o metadado `project` e um ID com namespace do projeto:
+Every record carries the `project` metadata field and an ID namespaced by project:
 
-| Registro | Doc ID | Metadados |
+| Record | Doc ID | Metadata |
 |---|---|---|
-| Master Summary | `<project>::master_summary` | `project`, `type=master_summary`, `last_updated`, `version` (opcional) |
-| Checkpoint de turnos | `<project>::turns::<session_id>::<start>_to_<end>` | `project`, `type=current_session_chunk`, `session_id`, `date`, `start_turn`, `end_turn` |
+| Master Summary | `<project>::master_summary` | `project`, `type=master_summary`, `last_updated`, `version` (optional) |
+| Turn checkpoint | `<project>::turns::<session_id>::<start>_to_<end>` | `project`, `type=current_session_chunk`, `session_id`, `date`, `start_turn`, `end_turn` |
 
-**Como o projeto é resolvido** (nesta ordem): `--project <nome>` ➔ variável `SESSION_MEMORY_PROJECT` ➔ nome da raiz do repositório Git do diretório atual ➔ nome do diretório atual. O nome é normalizado (minúsculas, kebab-case).
+**How the project is resolved** (in this order): `--project <name>` ➔ `SESSION_MEMORY_PROJECT` variable ➔ name of the Git repository root of the current directory ➔ name of the current directory. The name is normalized to kebab-case (`AnyContext` ➔ `any-context`), the same rule the `plan-memory` skill uses.
 
-Regras para o agente:
-1. **No início da sessão**, determine o projeto (normalmente o nome da raiz do repositório Git em que você está trabalhando) e **passe sempre `--project <nome>` explicitamente** em todos os comandos. Não dependa do diretório atual do shell, que pode mudar durante a sessão.
-2. Nunca leia, escreva, consolide ou apague memória de **outro** projeto, a menos que o usuário peça. Se a sessão mudar de projeto, finalize o projeto atual antes de passar ao próximo.
-3. O Master Summary de um projeto contém **apenas** fatos daquele projeto. Não misture conteúdo entre projetos.
-4. Se `read_memory.py` não encontrar nada para o projeto, rode `--list-projects`: o projeto pode estar salvo com outro nome. Pergunte ao usuário antes de assumir que é um projeto novo.
+Rules for the agent:
+1. **At the start of the session**, determine the project (usually the name of the Git repository root you are working in) and **always pass `--project <name>` explicitly** in every command. Do not rely on the shell's current directory, which may change during the session.
+2. Never read, write, consolidate or delete memory of **another** project unless the user asks. If the session switches projects, finalize the current project before moving to the next.
+3. A project's Master Summary contains **only** facts about that project. Do not mix content across projects.
+4. If `read_memory.py` finds nothing for the project, run `--list-projects`: the project may be stored under another name. Ask the user before assuming it is a new project.
 
 ---
 
-## 🔄 Arquitetura de Memória em 2 Camadas (por projeto)
+## 🔄 2-Layer Memory Architecture (per project)
 
 ```
 ┌────────────────────────────────────────────────────────────────────────────────────────┐
@@ -60,45 +60,45 @@ Regras para o agente:
 
 ---
 
-## ⚙️ Comandos
+## ⚙️ Commands
 
-### 1. Recuperar contexto (início da sessão) — `read_memory.py`
+### 1. Recover context (start of session) — `read_memory.py`
 ```bash
-python "<skill_dir>/read_memory.py" --project <projeto>
+python "<skill_dir>/read_memory.py" --project <project>
 python "<skill_dir>/read_memory.py" --list-projects
 ```
-Se houver checkpoints de turnos sem Master Summary atualizado (sessão anterior não finalizada), consolide-os primeiro com `finalize_session.py`.
+If there are turn checkpoints without an updated Master Summary (a previous session that was not finalized), consolidate them first with `finalize_session.py`.
 
-### 2. Checkpoint a cada 20 turnos — `save_incremental_turns.py`
+### 2. Checkpoint every 20 turns — `save_incremental_turns.py`
 ```bash
-python "<skill_dir>/save_incremental_turns.py" --project <projeto> --start 1 --end 20 --file <turnos.md>
+python "<skill_dir>/save_incremental_turns.py" --project <project> --start 1 --end 20 --file <turns.md>
 ```
-Prefira `--file` (arquivo temporário) a `--content` para textos longos ou com aspas. `--session-id` é opcional (padrão: data de hoje).
+Prefer `--file` (a temporary file) over `--content` for long texts or texts with quotes. `--session-id` is optional (default: today's date).
 
-### 3. Encerrar a sessão e consolidar o Master Summary — `finalize_session.py`
+### 3. End the session and consolidate the Master Summary — `finalize_session.py`
 ```bash
-python "<skill_dir>/finalize_session.py" --project <projeto> --file <sumario_mestre.md> [--version <x.y.z>]
+python "<skill_dir>/finalize_session.py" --project <project> --file <master_summary.md> [--version <x.y.z>]
 ```
-O novo sumário **substitui** o anterior: ele precisa conter tudo o que valia no sumário antigo mais o que foi feito na sessão. Leia o sumário atual antes de escrever o novo.
+The new summary **replaces** the previous one: it must contain everything still valid from the old summary plus what was done in the session. Read the current summary before writing the new one.
 
-### 4. Migrar uma base antiga (sem projeto) — `migrate_legacy.py`
+### 4. Migrate a legacy database (no project) — `migrate_legacy.py`
 ```bash
-python "<skill_dir>/migrate_legacy.py" --source <pasta_chromadb_antiga> --project <projeto> [--dry-run]
+python "<skill_dir>/migrate_legacy.py" --source <legacy_chromadb_folder> --project <project> [--dry-run]
 ```
-Copia os registros sem `project` para a base compartilhada, atribuindo-os ao projeto informado. A base de origem não é alterada.
+Copies records without `project` into the shared database, assigning them to the given project. The source database is not changed.
 
 ---
 
-## 📝 Estrutura recomendada do Master Summary
+## 📝 Recommended Master Summary Structure
 
-1. Visão geral do projeto e da arquitetura
-2. Regras e governança específicas do projeto
-3. Histórico consolidado de releases e decisões (ADRs)
-4. Status atual (versão, testes, pendências)
-5. Ponto de partida exato para a próxima sessão
+1. Project and architecture overview
+2. Project-specific rules and governance
+3. Consolidated history of releases and decisions (ADRs)
+4. Current status (version, tests, open items)
+5. Exact starting point for the next session
 
 ---
 
-## 🔒 Governança
+## 🔒 Governance
 
-Se a skill [`dev-cycle-protocol`](../dev-cycle-protocol/SKILL.md) estiver disponível, siga-a para o ciclo de desenvolvimento. Esta skill cuida apenas da memória.
+If the [`dev-cycle-protocol`](../dev-cycle-protocol/SKILL.md) skill is available, follow it for the development cycle. This skill only handles memory.

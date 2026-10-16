@@ -5,12 +5,12 @@ description: Persistent vector storage and semantic retrieval of complete, uncom
 
 # 📐 Project Plan Memory Skill (`plan-memory`)
 
-> **Caminhos**: `<skills_root>` é a pasta que contém esta skill (o diretório pai da pasta deste `SKILL.md`). Use o caminho absoluto real ao executar os comandos.
+> **Paths**: `<skills_root>` is the folder that contains this skill (the parent of this `SKILL.md`'s folder). Use the real absolute path when running the commands.
 
 The **`plan-memory`** skill provides persistent, vector-indexed storage, lifecycle management, and semantic retrieval of **100% complete, uncompressed architectural plans, strategic roadmaps, and multi-step blueprints** across any software project.
 
-- **ChromaDB Path**: `~/.ai-code-agent-memory/plan-memory/db` (sobrescreva com a variável `PLAN_MEMORY_DB`). Fica fora da pasta da skill, então a skill pode ser versionada e copiada sem levar dados.
-- **Project names**: sempre normalizados para kebab-case (`AnyContext`, `any_context` e `any-context` viram `any-context`). Use o nome da raiz do repositório Git do projeto, o mesmo usado pela skill `session-memory`.
+- **ChromaDB Path**: `~/.ai-code-agent-memory/plan-memory/db` (override with the `PLAN_MEMORY_DB` environment variable). It lives outside the skill folder, so the skill can be versioned and copied without carrying data.
+- **Project names**: always normalized to kebab-case (`AnyContext`, `any_context` and `any-context` all become `any-context`). Use the name of the project's Git repository root, the same one the `session-memory` skill uses.
 - **Collection Name**: `project_plans`
 - **Guiding Principle**: **Zero Compaction / Zero Loss**. Architectural decisions and blueprints must be preserved in their entirety (including Mermaid diagrams, tables, steps, formulas, and rationale) so they serve as persistent knowledge bases across active and future coding sessions.
 
@@ -52,126 +52,126 @@ Every plan entry in the `project_plans` collection preserves the full uncompress
 
 The skill provides a complete suite of Python utilities located in `<skills_root>/plan-memory`:
 
-### 1. Salvar / Atualizar um Plano com Linhagem (`save_plan.py`)
-Salva o plano integral sem cortes ou resumos. Suporta `--supersedes` para automaticamente arquivar um plano anterior como `superseded`:
+### 1. Save / Update a Plan with Lineage (`save_plan.py`)
+Saves the full plan without cuts or summaries. Supports `--supersedes` to automatically archive a previous plan as `superseded`:
 ```powershell
 python "<skills_root>/plan-memory/save_plan.py" `
-  --project "<projeto>" `
-  --title "Roadmap Integrado: Python -> Rust, ModelRouter & Kit de Models" `
-  --file "caminho\para\plano.md" `
-  --session-id "9f488dbf-db54-4ecb-8ed2-b7a6ac1b2372" `
-  --version "v0.30.37" `
-  --tags "roadmap,rust_refactor,model_router,kit_de_models" `
-  --milestones "Prioridade 2B,Prioridade 3,Prioridade 4,Marco 2,Marco 3,Kit de Models" `
+  --project "<project>" `
+  --title "Integrated Roadmap: Python -> Rust, Model Router & Model Kit" `
+  --file "path/to/plan.md" `
+  --session-id "<session_id>" `
+  --version "v1.2.0" `
+  --tags "roadmap,rust_refactor,model_router" `
+  --milestones "Priority 1,Priority 2,Milestone 3" `
   --status "active" `
-  --supersedes "anycontext_old_roadmap_v0_30_0"
+  --supersedes "<old_plan_id>"
 ```
 
-### 2. Rastreador Granular de Marcos & Progresso (`check_milestone.py`)
-Controla o avanço das sub-etapas e renderiza barras de progresso visuais:
+### 2. Granular Milestone & Progress Tracker (`check_milestone.py`)
+Tracks sub-step progress and renders visual progress bars:
 ```powershell
-# Ver o progresso e checklist de marcos do plano ativo:
-python "<skills_root>/plan-memory/check_milestone.py" --project "<projeto>" --list
+# Show the active plan's progress and milestone checklist:
+python "<skills_root>/plan-memory/check_milestone.py" --project "<project>" --list
 
-# Marcar um marco como concluído:
+# Mark a milestone as completed:
 python "<skills_root>/plan-memory/check_milestone.py" `
-  --project "<projeto>" `
-  --milestone "Prioridade 2B" `
-  --notes "Concluído via PR #319 com suíte de testes 100% verde"
+  --project "<project>" `
+  --milestone "Priority 1" `
+  --notes "Completed via PR #319 with a 100% green test suite"
 
-# Desmarcar um marco (reverter para pendente se necessário):
+# Uncheck a milestone (revert to pending if needed):
 python "<skills_root>/plan-memory/check_milestone.py" `
-  --project "<projeto>" `
-  --milestone "Prioridade 2B" `
+  --project "<project>" `
+  --milestone "Priority 1" `
   --uncheck
 ```
 
-### 3. Detector de Desvios Arquiteturais (`detect_drift.py`)
-Compara qualquer proposta de implementação, issue ou novo prompt contra o plano ativo e contra princípios anti-pattern no ChromaDB:
+### 3. Architectural Drift Detector (`detect_drift.py`)
+Compares any implementation proposal, issue or new prompt against the active plan and anti-pattern principles in ChromaDB:
 ```powershell
-# Verificar alinhamento arquitetural de uma proposta:
+# Check a proposal's architectural alignment:
 python "<skills_root>/plan-memory/detect_drift.py" `
-  --project "<projeto>" `
-  --proposal "Implementacao da Prioridade 2B: construir o orquestrador ReAct nativo em Rust integrando com actx-lm, substituindo o LangGraph do Python com zero frameworks pesados"
+  --project "<project>" `
+  --proposal "Priority 1: build the native ReAct orchestrator in Rust, replacing the Python LangGraph with zero heavy frameworks"
 
-# Verificar proposta a partir de arquivo com modo estrito (exit code != 0 em conflito):
+# Check a proposal from a file in strict mode (exit code != 0 on conflict):
 python "<skills_root>/plan-memory/detect_drift.py" `
-  --project "<projeto>" `
-  --file "caminho\para\proposta.md" `
+  --project "<project>" `
+  --file "path/to/proposal.md" `
   --strict
 ```
 
-### 4. Exportador Automatizado de Snapshots (`export_plan.py`)
-Exporta planos do ChromaDB para arquivos Markdown com cabeçalho YAML frontmatter padronizado ou arquivos JSON para o repositório:
+### 4. Automated Snapshot Exporter (`export_plan.py`)
+Exports plans from ChromaDB to Markdown files with a standard YAML frontmatter header, or to JSON files, in the repository:
 ```powershell
-# Exportar Markdown com frontmatter para docs/plans/:
+# Export Markdown with frontmatter to docs/plans/:
 python "<skills_root>/plan-memory/export_plan.py" `
-  --project "<projeto>" `
-  --output-dir "C:\Users\guilh\source\repos\any-context\docs\plans"
+  --project "<project>" `
+  --output-dir "docs/plans"
 
-# Exportar snapshot em JSON:
+# Export a JSON snapshot:
 python "<skills_root>/plan-memory/export_plan.py" `
-  --id "anycontext_master_roadmap_v0_30_37" `
-  --output "docs\plans\roadmap.json" `
+  --id "<plan_id>" `
+  --output "docs/plans/roadmap.json" `
   --format json
 ```
 
-### 5. Listar Planos com Barra de Progresso e Linhagem (`list_plans.py`)
-Permite visualizar todos os planos ou filtrar por projeto e status:
+### 5. List Plans with Progress Bar and Lineage (`list_plans.py`)
+Shows every plan, or filters by project and status:
 ```powershell
-# Listar todos os planos
+# List all plans
 python "<skills_root>/plan-memory/list_plans.py"
 
-# Filtrar por projeto e status
-python "<skills_root>/plan-memory/list_plans.py" --project "<projeto>" --status "active"
+# Filter by project and status
+python "<skills_root>/plan-memory/list_plans.py" --project "<project>" --status "active"
 ```
 
-### 6. Recuperar Plano Completo na Íntegra (`get_plan.py`)
-Recupera o texto completo sem truncamento para orientar a sessão ou exportar para documentação:
+### 6. Retrieve a Complete Plan in Full (`get_plan.py`)
+Retrieves the full text without truncation to guide the session or export to documentation:
 ```powershell
-# Imprimir no terminal com cabeçalho de marcos e status
+# Print to the terminal with a milestone and status header
 python "<skills_root>/plan-memory/get_plan.py" --id "<plan_id>"
 
-# Obter o último plano ativo do projeto
-python "<skills_root>/plan-memory/get_plan.py" --project "<projeto>"
+# Get the project's latest active plan
+python "<skills_root>/plan-memory/get_plan.py" --project "<project>"
 ```
 
-### 7. Busca Semântica em Planos (`search_plans.py`)
-Pesquisa planos por proximidade vetorial baseada no conceito ou palavra-chave:
+### 7. Semantic Search over Plans (`search_plans.py`)
+Searches plans by vector proximity to a concept or keyword:
 ```powershell
-python "<skills_root>/plan-memory/search_plans.py" --query "como implementar model router no chat" --project "<projeto>"
+python "<skills_root>/plan-memory/search_plans.py" --query "how to implement the model router in chat" --project "<project>"
 ```
 
-### 8. Atualizar Status do Ciclo de Vida (`update_plan_status.py`)
-Quando etapas forem concluídas ou novos planos substituírem anteriores:
+### 8. Update Lifecycle Status (`update_plan_status.py`)
+When steps are completed or new plans replace earlier ones:
 ```powershell
 python "<skills_root>/plan-memory/update_plan_status.py" `
   --id "<plan_id>" `
   --status "completed" `
-  --notes "Prioridade 2B e Prioridade 3 entregues com sucesso."
+  --notes "Priority 1 and Priority 2 delivered successfully."
 ```
 
 ---
 
-## 🔒 Integração Obrigatória com o `dev-cycle-protocol`
+## 🔒 Mandatory Integration with `dev-cycle-protocol`
 
-Todo o ciclo de vida de desenvolvimento segue a governança do:
+The whole development lifecycle follows the governance of:
 👉 **[`dev-cycle-protocol`](../dev-cycle-protocol/SKILL.md)**
 
-- **Gatilho de Gravação (Etapa 2: Planejamento Final Completo)**:
-  Sempre que um **Planejamento Final Completo (Blueprint)** ou **Roadmap Estratégico** for formulado na Etapa 2, o assistente **DEVE** indexar o plano integralmente via `save_plan.py` no ChromaDB antes de submeter ao Gate de Aprovação da Etapa 3. Caso substitua um plano anterior, use `--supersedes`.
-- **Verificação de Desvio (Etapa 2 / Pré-Gate)**:
-  Use `detect_drift.py` para assegurar que a proposta não viola diretrizes invioláveis nem inverte a ordem de execução dos marcos.
-- **Consulta Prévia de Planos (Etapa 1: Discovery & Exploração)**:
-  Ao iniciar a discussão de novas funcionalidades ou prioridades, o assistente **DEVE** consultar `list_plans.py`, `check_milestone.py --list` ou `search_plans.py` para verificar o progresso real dos marcos e diretrizes já acordadas.
-- **Conclusão de Marcos (Etapa 8: Release)**:
-  Ao fechar a release, use `check_milestone.py` para marcar a etapa como entregue ou `update_plan_status.py` para finalizar o plano.
+- **Save Trigger (Step 2: Complete Final Plan)**:
+  Whenever a **Complete Final Plan (Blueprint)** or **Strategic Roadmap** is formulated in Step 2, the assistant **MUST** index the full plan via `save_plan.py` in ChromaDB before submitting it to the Step 3 Approval Gate. If it replaces an earlier plan, use `--supersedes`.
+- **Drift Check (Step 2 / Pre-Gate)**:
+  Use `detect_drift.py` to make sure the proposal does not violate inviolable guidelines or invert the milestones' execution order.
+- **Prior Plan Lookup (Step 1: Discovery & Exploration)**:
+  When starting a discussion about new features or priorities, the assistant **MUST** check `list_plans.py`, `check_milestone.py --list` or `search_plans.py` to verify the real milestone progress and the guidelines already agreed.
+- **Milestone Completion (Step 8: Release)**:
+  When closing the release, use `check_milestone.py` to mark the step as delivered or `update_plan_status.py` to finalize the plan.
 
 ---
 
-## 🔁 Migrar uma base antiga (`migrate_legacy.py`)
+## 🔁 Migrate a Legacy Database (`migrate_legacy.py`)
 
-Copia planos de outra base (documento, metadados e embeddings) para a base compartilhada, normalizando o nome dos projetos. Os IDs são mantidos, preservando `supersedes` e `parent_plan_id`. A base de origem não é alterada.
+Copies plans from another database (document, metadata and embeddings) into the shared database, normalizing project names. IDs are kept, preserving `supersedes` and `parent_plan_id`. The source database is not changed.
 ```powershell
-python "<skills_root>/plan-memory/migrate_legacy.py" --source "<pasta_chromadb_antiga>" [--rename anycontext=any-context] [--dry-run]
+python "<skills_root>/plan-memory/migrate_legacy.py" --source "<legacy_chromadb_folder>" [--rename anycontext=any-context] [--dry-run]
 ```

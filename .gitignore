@@ -1,5 +1,4 @@
 # Allowlist: only what is listed below is versioned.
-# assistente-diario stays local-only (personal data, sessions and tokens).
 /*
 !/.gitignore
 !/.gitattributes
@@ -11,10 +10,6 @@
 !/folder-sync/
 !/plan-memory/
 !/session-memory/
-!/safe-shutdown/
-!/specify/
-!/speckit/
-!/speckit.*/
 
 # Data, state and environments are never versioned
 db/

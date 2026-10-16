@@ -1,40 +1,37 @@
 # AI Code Agent Skills
 
-Skills no formato aberto `SKILL.md` (uma pasta por skill, com frontmatter `name` e `description`), compartilhadas entre agentes de código: Claude Code, Codex, Gemini CLI, Copilot e outros.
+Skills in the open `SKILL.md` format (one folder per skill, with `name` and `description` frontmatter), shared across coding agents: Claude Code, Codex, Gemini, Copilot and others.
 
 ## Skills
 
-| Skill | Escopo | No plugin do Claude |
-|---|---|---|
-| `dev-cycle-protocol` | Ciclo de desenvolvimento em 8 etapas com gates de aprovação | ✅ |
-| `plan-memory` | Planos de arquitetura persistidos no ChromaDB, por projeto | ✅ |
-| `session-memory` | Memória de sessão em 2 camadas no ChromaDB, por projeto | ✅ |
-| `folder-sync` | RAG incremental de pastas com ChromaDB | ✅ |
-| `specify`, `speckit*` | Fluxo Spec Kit (SDD) | ✅ |
-| `safe-shutdown` | Desligamento seguro do Windows (só local) | ❌ |
-| `assistente-diario` | Assistente pessoal (só local, **fora do Git**) | ❌ |
+| Skill | Purpose |
+|---|---|
+| `dev-cycle-protocol` | 8-step development lifecycle with explicit approval gates |
+| `plan-memory` | Full architecture plans persisted in ChromaDB, per project |
+| `session-memory` | 2-layer session memory in ChromaDB, per project |
+| `folder-sync` | Incremental folder RAG with ChromaDB |
 
-Os dados (bases ChromaDB, `.venv`, `node_modules`, `.env`, sessões e tokens) nunca são versionados: veja o [`.gitignore`](.gitignore).
+Data (ChromaDB databases, virtual environments, `.env` files) is never versioned: see [`.gitignore`](.gitignore).
 
-## Instalação local (todos os agentes)
+## Local install (all agents)
 
-Cria um link de cada skill na pasta de skills de cada agente. Por padrão: `~/.claude/skills` (Claude Code) e `~/.agents/skills` (local padrão entre agentes).
+Links each skill into each agent's skills folder. Default targets: `~/.claude/skills` (Claude Code), `~/.agents/skills` (cross-agent standard location) and `~/.gemini/config/skills` (Gemini).
 
 ```powershell
 .\install.ps1
-.\install.ps1 -Targets "$HOME\.claude\skills","$HOME\.agents\skills","$HOME\.copilot\skills"
+.\install.ps1 -Targets "$HOME\.claude\skills","$HOME\.copilot\skills"
 ```
 
 ```bash
 ./install.sh
-./install.sh ~/.claude/skills ~/.agents/skills ~/.gemini/skills
+./install.sh ~/.claude/skills ~/.copilot/skills
 ```
 
-Os scripts nunca sobrescrevem uma pasta existente que não seja um link para este repositório. Rode de novo depois de criar uma skill nova.
+The scripts never overwrite an existing entry that is not a link to this repository, and skip a target folder that is itself a link. Run them again after adding a new skill.
 
-## Claude Code na nuvem (plugin)
+## Claude Code in the cloud (plugin)
 
-Este repositório também é um marketplace de plugins do Claude Code (`levix-agent-skills`) com o plugin `dev-skills`. Para uma sessão na nuvem carregar as skills, declare no `.claude/settings.json` do projeto:
+This repository is also a Claude Code plugin marketplace (`levix-agent-skills`) with the `dev-skills` plugin. To have cloud sessions load the skills, declare it in the project's `.claude/settings.json`:
 
 ```json
 {
@@ -49,11 +46,11 @@ Este repositório também é um marketplace de plugins do Claude Code (`levix-ag
 }
 ```
 
-No plugin, as skills aparecem com prefixo: `dev-skills:session-memory`.
+In the plugin, skills are namespaced: `dev-skills:session-memory`. New skills must also be listed in [`.claude-plugin/plugin.json`](.claude-plugin/plugin.json).
 
-## Dados das skills de memória
+## Memory skill data
 
-- `session-memory`: `~/.ai-code-agent-memory/session-memory/db` (variável `SESSION_MEMORY_DB`)
-- `plan-memory`: `~/.ai-code-agent-memory/plan-memory/db` (variável `PLAN_MEMORY_DB`)
+- `session-memory`: `~/.ai-code-agent-memory/session-memory/db` (override with `SESSION_MEMORY_DB`)
+- `plan-memory`: `~/.ai-code-agent-memory/plan-memory/db` (override with `PLAN_MEMORY_DB`)
 
-As duas skills normalizam o nome do projeto para kebab-case (`AnyContext` → `any-context`). Um nome todo em minúsculas e junto (`anycontext`) não tem como ser separado: use o nome da raiz do repositório Git.
+Both skills normalize project names to kebab-case (`AnyContext` → `any-context`). An all-lowercase concatenated name (`anycontext`) cannot be split: use the name of the project's Git repository root.

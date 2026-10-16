@@ -16,7 +16,7 @@ def show_stats(target_dir: str):
     db_path = brain_dir / "sync_state.sqlite"
     
     if not brain_dir.exists() or not db_path.exists():
-        print(f"ℹ️ A pasta '{root_path.name}' ainda não possui um índice `.folder_brain` sincronizado.")
+        print(f"ℹ️ Folder '{root_path.name}' has no synced `.folder_brain` index yet.")
         return
 
     conn = sqlite3.connect(db_path)
@@ -32,12 +32,12 @@ def show_stats(target_dir: str):
     size_mb = round((total_size or 0) / (1024 * 1024), 2)
     last_sync_str = datetime.fromtimestamp(last_sync).strftime("%d/%m/%Y %H:%M:%S") if last_sync else "Nunca"
 
-    print(f"\n📊 **Estatísticas do Folder Brain:** `{root_path.name}`")
-    print(f"📁 Caminho: `{root_path}`")
-    print(f"📄 Total de arquivos indexados: {total_files or 0}")
-    print(f"🧩 Total de chunks vetoriais: {total_chunks or 0}")
+    print(f"\n📊 **Folder Brain Statistics:** `{root_path.name}`")
+    print(f"📁 Path: `{root_path}`")
+    print(f"📄 Total indexed files: {total_files or 0}")
+    print(f"🧩 Total vector chunks: {total_chunks or 0}")
     print(f"💾 Volume total de dados: {size_mb} MB")
-    print(f"🕒 Última sincronização: {last_sync_str}\n")
+    print(f"🕒 Last sync: {last_sync_str}\n")
     
     if top_files:
         print("🔝 **Maiores documentos indexados:**")
@@ -45,8 +45,8 @@ def show_stats(target_dir: str):
             print(f"- `{rel_path}` ({chunks} chunks)")
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Estatísticas do Folder Brain")
-    parser.add_argument("--dir", default=".", help="Diretório alvo (padrão: atual)")
+    parser = argparse.ArgumentParser(description="Folder Brain statistics")
+    parser.add_argument("--dir", default=".", help="Target directory (default: current)")
     args = parser.parse_args()
     
     show_stats(args.dir)
