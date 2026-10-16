@@ -39,6 +39,7 @@ DEFAULTS = {
     "docs": {
         "user_doc": "README.md",
         "tec_doc": "TECDOC.md",
+        "readme_max_lines": 400,
     },
     "tests": {
         "manual_tests": "tests/MANUAL_TESTS.md",

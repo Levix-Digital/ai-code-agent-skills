@@ -61,7 +61,7 @@ def test_legacy_flat_keys_are_mapped(tmp_path):
     assert cfg.section("architecture")["surfaces"] == ["cli"]
     assert cfg.section("devops")["releases_repo"] == "org/releases"
     assert cfg.section("plans")["dir"] == "plans"
-    assert cfg.section("docs") == {"user_doc": "USER.md", "tec_doc": "ARCH.md"}
+    assert cfg.section("docs") == {"user_doc": "USER.md", "tec_doc": "ARCH.md", "readme_max_lines": 400}
     assert cfg.section("tests")["manual_tests"] == "MT.md"
     assert "core_path" in cfg.legacy_keys_used
     assert "doc_files.user_doc" in cfg.legacy_keys_used
