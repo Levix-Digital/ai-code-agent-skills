@@ -33,6 +33,7 @@ DEFAULTS = {
         "core_path": None,
         "surfaces": [],
         "canonical_datastore": None,
+        "forbidden_core_imports": [],
     },
     "test_commands": [],
     "docs": {
@@ -147,7 +148,7 @@ class ProjectConfig:
             problems.append("test_commands must be a list of shell commands")
         if not isinstance(self.section("devops").get("release_candidates"), bool):
             problems.append("devops.release_candidates must be true or false")
-        for key in ("surfaces",):
+        for key in ("surfaces", "forbidden_core_imports"):
             if not isinstance(self.section("architecture").get(key), list):
                 problems.append(f"architecture.{key} must be a list")
         if not isinstance(self.section("devops").get("version_files"), list):

@@ -6,7 +6,7 @@ version: v2.0.0
 status: in_progress
 author: Levi Silveira
 created_at: '2026-10-16T13:41:24'
-updated_at: '2026-10-16T13:45:46'
+updated_at: '2026-10-16T13:50:44'
 session_id: null
 tags:
 - dev-cycle
@@ -24,7 +24,9 @@ milestones:
   done_at: '2026-10-16'
   by: Levi Silveira
 - name: M2 software-design skill
-  done: false
+  done: true
+  done_at: '2026-10-16'
+  by: Levi Silveira
 - name: M3 user-docs skill
   done: false
 - name: M4 quality-assurance skill
@@ -45,6 +47,9 @@ status_log:
 - at: '2026-10-16T13:45:46'
   by: Levi Silveira
   note: 'Milestone ''M1 Project configuration schema'' completed: project_config.py loader with defaults, legacy-key mapping, validation and migration; inspect_project, verify_gate, plan-memory and architecture-docs read it; 9 tests'
+- at: '2026-10-16T13:50:44'
+  by: Levi Silveira
+  note: 'Milestone ''M2 software-design skill'' completed: SKILL.md with universal principles, simplicity-first rule, patterns table, plan design section and review checklist; five style guides; check_design.py (style, core_path, forbidden core imports incl. Rust qualified paths); 9 tests'
 ---
 
 # Role-Based Development Cycle: Orchestrator and Specialist Skills

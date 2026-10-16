@@ -13,6 +13,7 @@
 !/folder-sync/
 !/plan-memory/
 !/session-memory/
+!/software-design/
 
 # Data, state and environments are never versioned
 db/
