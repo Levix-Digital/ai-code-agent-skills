@@ -1,25 +1,18 @@
 """
 Save Plan Utility - plan-memory Skill
-Saves an uncompressed, comprehensive architectural plan or roadmap into ChromaDB.
+Saves an uncompressed, comprehensive architectural plan or roadmap as
+<repo>/docs/plans/<plan_id>.md (YAML frontmatter + Markdown body) and indexes it.
 Supports plan lineage via --supersedes to automatically deprecate older plans.
+Saving an existing plan ID updates it, keeping its author, creation date and milestone progress.
 """
-import os
-import sys
 import argparse
-import datetime
-import re
-import chromadb
+import sys
 
-from _common import get_db_path, normalize_project
+from _store import Plan, PlanStore, STATUSES, now_iso, setup_stdout, slugify_id, split_csv
 
-def slugify(text: str) -> str:
-    text = text.lower().strip()
-    text = re.sub(r'[^\w\s-]', '', text)
-    text = re.sub(r'[\s_-]+', '_', text)
-    return text.strip('_')
 
 def save_plan(
-    project: str,
+    store: PlanStore,
     title: str,
     content: str,
     plan_id: str = None,
@@ -31,98 +24,96 @@ def save_plan(
     parent_plan_id: str = None,
     supersedes: str = None,
 ):
-    if sys.stdout.encoding != 'utf-8':
-        try:
-            sys.stdout.reconfigure(encoding='utf-8')
-        except Exception:
-            pass
+    setup_stdout()
+    pid = plan_id or f"{slugify_id(store.project)}_{slugify_id(title)}"
+    author = store.author()
+    ts = now_iso()
 
-    db_path = get_db_path()
-    os.makedirs(db_path, exist_ok=True)
+    existing = store.get(pid)
+    if existing:
+        meta = existing.meta
+        old_done = {m["name"]: m for m in existing.milestones}
+        action = "updated"
+    else:
+        meta = {"plan_id": pid, "author": author, "created_at": ts, "status_log": []}
+        old_done = {}
+        action = "created"
 
-    client = chromadb.PersistentClient(path=db_path)
-    col = client.get_or_create_collection(
-        name="project_plans",
-        metadata={"description": "Persistent vector database for complete, uncompressed project architecture plans and roadmaps"}
-    )
+    meta.update({
+        "project": store.project,
+        "title": title,
+        "status": status or meta.get("status") or "active",
+        "updated_at": ts,
+    })
+    if version:
+        meta["version"] = version
+    if session_id:
+        meta["session_id"] = session_id
+    if tags is not None:
+        meta["tags"] = split_csv(tags)
+    if parent_plan_id:
+        meta["parent_plan_id"] = parent_plan_id
+    if supersedes:
+        meta["supersedes"] = supersedes
+    if milestones is not None:
+        meta["milestones"] = [old_done.get(name, {"name": name, "done": False}) for name in split_csv(milestones)]
+    for key in ("version", "session_id", "supersedes", "superseded_by", "parent_plan_id"):
+        meta.setdefault(key, None)
+    meta.setdefault("tags", [])
+    meta.setdefault("milestones", [])
 
-    now_iso = datetime.datetime.now().isoformat()
-    pid = plan_id or f"{slugify(project)}_{slugify(title)}"
+    plan = Plan(meta, content)
+    plan.add_log(author, f"Plan {action}", status=meta["status"])
+    store.save(plan)
 
     # Handle lineage / superseding
     if supersedes:
-        old_res = col.get(ids=[supersedes])
-        if old_res and old_res["ids"]:
-            old_meta = old_res["metadatas"][0] or {}
-            old_doc = old_res["documents"][0]
-            old_status = old_meta.get("status", "active")
-            old_meta["status"] = "superseded"
-            old_meta["superseded_by"] = pid
-            old_meta["updated_at"] = now_iso
-            notes = old_meta.get("status_notes", "")
-            old_meta["status_notes"] = f"{notes} [{now_iso}] Superseded by {pid}".strip()
-            col.upsert(ids=[supersedes], documents=[old_doc], metadatas=[old_meta])
-            print(f"📦 Plan Lineage: Successfully marked '{supersedes}' as SUPERSEDED (was {old_status.upper()})")
+        old = store.get(supersedes)
+        if old:
+            old_status = old.meta.get("status", "active")
+            old.meta["status"] = "superseded"
+            old.meta["superseded_by"] = pid
+            old.meta["updated_at"] = ts
+            old.add_log(author, f"Superseded by {pid}", status="superseded")
+            store.save(old)
+            print(f"📦 Plan Lineage: marked '{supersedes}' as SUPERSEDED (was {old_status.upper()})")
         else:
-            print(f"⚠️ Warning: Target plan to supersede '{supersedes}' not found in database.", file=sys.stderr)
+            print(f"⚠️ Warning: plan to supersede '{supersedes}' not found in {store.plans_dir}.", file=sys.stderr)
 
-    metadata = {
-        "project": str(project),
-        "title": str(title),
-        "plan_id": str(pid),
-        "session_id": str(session_id or "unknown"),
-        "version": str(version or "unversioned"),
-        "status": str(status or "active"),
-        "created_at": now_iso,
-        "updated_at": now_iso,
-        "tags": str(tags or ""),
-        "milestones": str(milestones or ""),
-        "completed_milestones": "",
-        "parent_plan_id": str(parent_plan_id or ""),
-        "supersedes": str(supersedes or ""),
-        "superseded_by": "",
-        "status_notes": "",
-        "content_length": len(content),
-    }
+    store.sync_index()
 
-    col.upsert(
-        ids=[pid],
-        documents=[content],
-        metadatas=[metadata]
-    )
-
-    print(f"✅ Plan successfully saved and indexed in ChromaDB!")
+    print(f"✅ Plan {action}: {plan.path}")
     print(f"   • Plan ID    : {pid}")
-    print(f"   • Project    : {project}")
+    print(f"   • Project    : {store.project}")
     print(f"   • Title      : {title}")
-    print(f"   • Session ID : {metadata['session_id']}")
-    print(f"   • Version    : {metadata['version']}")
-    print(f"   • Status     : {metadata['status'].upper()}")
+    print(f"   • Author     : {meta.get('author')}")
+    print(f"   • Version    : {meta.get('version') or '-'}")
+    print(f"   • Status     : {meta['status'].upper()}")
     print(f"   • Size       : {len(content)} characters (100% uncompressed)")
     if supersedes:
         print(f"   • Supersedes : {supersedes}")
-    if milestones:
-        print(f"   • Milestones : {milestones}")
-    print(f"   • Total plans in DB: {col.count()}\n")
+    if meta["milestones"]:
+        print(f"   • Milestones : {', '.join(m['name'] for m in meta['milestones'])}")
+    print("   👉 Commit the plan file with the change it describes (dev-cycle-protocol Step 3).\n")
+
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Save uncompressed architecture plan or roadmap to ChromaDB")
-    parser.add_argument("--project", type=str, required=True, help="Project name, normalized to kebab-case (e.g. any-context)")
+    parser = argparse.ArgumentParser(description="Save an uncompressed architecture plan or roadmap to docs/plans")
     parser.add_argument("--title", type=str, required=True, help="Plan title / headline")
     parser.add_argument("--content", type=str, default=None, help="Inline markdown content")
     parser.add_argument("--file", type=str, default=None, help="Path to markdown/text file containing the plan")
+    parser.add_argument("--project", type=str, default=None, help="Project name (default: .dev-cycle.json project_name or repository folder name)")
+    parser.add_argument("--dir", type=str, default=None, help="Project directory (default: current; the Git root is used)")
     parser.add_argument("--id", type=str, default=None, help="Explicit unique Plan ID (auto-generated if omitted)")
     parser.add_argument("--session-id", type=str, default=None, help="Conversation ID where the plan was conceived")
     parser.add_argument("--version", type=str, default=None, help="Target software version (e.g. v0.30.37)")
     parser.add_argument("--tags", type=str, default=None, help="Comma-separated keywords/tags")
     parser.add_argument("--milestones", type=str, default=None, help="Comma-separated milestone targets")
-    parser.add_argument("--status", type=str, default="active", help="Plan status (active, in_progress, completed, superseded)")
+    parser.add_argument("--status", type=str, default="active", choices=STATUSES, help="Plan status")
     parser.add_argument("--parent-id", type=str, default=None, help="Parent plan ID for hierarchical breakdown")
     parser.add_argument("--supersedes", type=str, default=None, help="Older Plan ID that this new plan supersedes")
-
     args = parser.parse_args()
 
-    plan_content = ""
     if args.file:
         with open(args.file, "r", encoding="utf-8") as f:
             plan_content = f.read()
@@ -133,7 +124,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     save_plan(
-        project=normalize_project(args.project),
+        store=PlanStore(args.dir, args.project),
         title=args.title,
         content=plan_content,
         plan_id=args.id,

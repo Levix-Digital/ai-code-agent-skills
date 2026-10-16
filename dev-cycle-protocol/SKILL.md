@@ -27,7 +27,7 @@ Every feature, refactor or fix in any repository must strictly follow these seve
 │ 2. 🏛️ Hexagonal Architecture & Multi-Surface Parity (Ports & Adapters / Single DB)      │
 │ 3. 📚 Rigorous Dual-Doc Standard (UserDoc + TecDoc & ADRs)                             │
 │ 4. 📝 Cumulative, Non-Truncated Manual Test Suite (MANUAL_TESTS.md)                    │
-│ 5. 📐 Persistent Plan Memory & Lineage (plan-memory in ChromaDB)                       │
+│ 5. 📐 Shared, Versioned Plans & Lineage (plan-memory in docs/plans)                    │
 │ 6. 🔒 Secret Hygiene, Safe Migrations & Rollback Protocol                              │
 │ 7. 🚀 Uninterrupted Follow-Through until the Release Is Verified in Production         │
 └────────────────────────────────────────────────────────────────────────────────────────┘
@@ -65,7 +65,7 @@ Every implemented feature requires a synchronized, detailed update of two comple
 - **Removal by the Assistant**: The assistant may only remove or fix old manual tests that became **obsolete/invalid** due to new architectural decisions (e.g. removed endpoints or discontinued commands).
 
 ### 5. 📐 Persistent Plan Memory & Lineage (`plan-memory`)
-- **Zero Compaction of Technical Decisions**: Every multi-step architectural plan, technical blueprint and strategic roadmap must be indexed in full in ChromaDB through the 👉 **[`plan-memory`](../plan-memory/SKILL.md)** skill.
+- **Zero Compaction of Technical Decisions**: Every multi-step architectural plan, technical blueprint and strategic roadmap must be saved in full as a versioned plan file (`docs/plans/<plan_id>.md`, shared with every developer) through the 👉 **[`plan-memory`](../plan-memory/SKILL.md)** skill.
 - **Lineage and Milestone Tracking**: Successor plans must mark old plans as `superseded` via `--supersedes`, keeping history navigable. Completed sub-steps must be checked off via `check_milestone.py`.
 - **Active Drift Prevention (*Plan Drift Detector*)**: Before implementing new tasks, validate that the proposal respects the master plan's milestones and principles via `detect_drift.py`.
 
@@ -104,10 +104,10 @@ graph TD
   python "<skills_root>/dev-cycle-protocol/inspect_project.py"
   ```
 - **Log-First Investigation**: When investigating any error, anomaly or crash reported by the user, **the first mandatory action is to inspect the log files directly** (`logs/`, application, install and build logs, stderr). Never form theoretical hypotheses before checking the real evidence in the logs.
-- **Prior Retrieval of Plans & Milestone Progress (`plan-memory`)**: When starting a discussion about new features or refactors, check the project's current state in the vector database:
+- **Prior Retrieval of Plans & Milestone Progress (`plan-memory`)**: When starting a discussion about new features or refactors, check the project's current plans (`docs/plans`):
   ```powershell
-  python "<skills_root>/plan-memory/list_plans.py" --project "<project>"
-  python "<skills_root>/plan-memory/check_milestone.py" --project "<project>" --list
+  python "<skills_root>/plan-memory/list_plans.py"
+  python "<skills_root>/plan-memory/check_milestone.py" --list
   ```
 - While the user is raising hypotheses, asking questions (*"What do you think?"*, *"What if we do X?"*) or debating alternatives, **proposing edit commands, changing files or starting code prematurely is strictly forbidden**.
 - The goal of this step is to exhaust all conceptual questions, validate feasibility and converge on the best architecture.
@@ -127,15 +127,14 @@ graph TD
 - **Prior Architectural Drift Check (`detect_drift.py`)**:
   Before presenting the plan, validate that the proposal does not violate earlier principles or execution order:
   ```powershell
-  python "<skills_root>/plan-memory/detect_drift.py" --project "<project>" --proposal "<proposal_summary>"
+  python "<skills_root>/plan-memory/detect_drift.py" --proposal "<proposal_summary>"
   ```
-- **Mandatory Indexing in ChromaDB (`plan-memory`)**:
-  Every plan with architecture decisions or multiple steps MUST be indexed in full in ChromaDB, without any compaction, via:
+- **Mandatory Plan File (`plan-memory`)**:
+  Every plan with architecture decisions or multiple steps MUST be saved in full, without any compaction, as `docs/plans/<plan_id>.md` via:
   ```powershell
   python "<skills_root>/plan-memory/save_plan.py" `
-    --project "<project>" `
     --title "<plan_title>" `
-    --content "<full_markdown_content>" `
+    --file "<full_markdown_plan.md>" `
     --session-id "<session_id>" `
     --version "<target_version>" `
     --tags "<tags>" `
@@ -154,6 +153,7 @@ graph TD
   ```
 - Implementation **ONLY STARTS** after a **short, direct authorization with no further questions** from the user (e.g. *"Aprovado"*, *"Pode implementar"*, *"Autorizado"*, *"Approved"*, *"Go"*).
 - If the user's reply contains any question, reservation or new idea, the assistant **automatically returns to Step 1** without touching any code file.
+- **Commit the approved plan**: right after approval, commit the plan file (`docs(plan): <title>`) before implementing, so every developer sees the plan being executed. In a team, plan files go through pull requests like code.
 
 ---
 
@@ -214,9 +214,9 @@ graph TD
   5. **Merge to Production (`main`)**: Merge the PR into the main branch (`gh pr merge --merge`).
   6. **Create and Push the Release Tag (`vX.Y.Z`)**: Create the annotated Git tag and push it to trigger the release pipeline (`git tag -a vX.Y.Z -m "..." && git push origin vX.Y.Z`).
   7. **Uninterrupted Follow-Up of the Production Release**: Actively follow the release workflow (`release.yml`) to the very end. The task **can ONLY be considered complete when the application is ready, built and published to the designated releases repository** (e.g. `<org/releases-repo>`). If the releases repository is not yet known, ask the user. The assistant must run `gh release view <tag> --repo <releases-repo>` and prove that all binaries and assets are available for download before issuing the final report.
-  8. **Plan Lifecycle Update & Milestone Completion (`plan-memory`)**:
+  8. **Plan Lifecycle Update & Milestone Completion (`plan-memory`)** (commit the updated plan file with the release):
      ```powershell
-     python "<skills_root>/plan-memory/check_milestone.py" --project "<project>" --milestone "<milestone>" --notes "Delivered in release vX.Y.Z"
+     python "<skills_root>/plan-memory/check_milestone.py" --milestone "<milestone>" --notes "Delivered in release vX.Y.Z"
      ```
   9. **Historical Record in Session Memory (`session-memory`)**: Persist the session context.
   10. **Transparent Report**: Present the detailed final checklist proving that all 8 steps were completed through the production release.

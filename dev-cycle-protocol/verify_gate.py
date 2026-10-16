@@ -69,25 +69,22 @@ def verify_gate_3(cwd: str, project_name: str) -> bool:
     else:
         print("✅ Git working tree is clean.")
 
-    # 2. Check Plan Memory in ChromaDB
+    # 2. Check the project's plan files (plan-memory: docs/plans)
     try:
-        import chromadb
-        # Same location and project normalization as plan-memory/_common.py
-        db_path = os.environ.get("PLAN_MEMORY_DB", os.path.join(os.path.expanduser("~"), ".ai-code-agent-memory", "plan-memory", "db"))
-        plan_project = re.sub(r"(?<=[a-z0-9])(?=[A-Z])", "-", project_name.strip()).lower()
-        plan_project = re.sub(r"[\s_-]+", "-", re.sub(r"[^\w\s-]", "", plan_project)).strip("-")
-        if os.path.exists(db_path):
-            client = chromadb.PersistentClient(path=db_path)
-            col = client.get_or_create_collection("project_plans")
-            res = col.get(where={"project": plan_project})
-            if res and res["ids"]:
-                print(f"✅ Active architectural plan found in ChromaDB: '{res['ids'][0]}'")
-            else:
-                print(f"⚠️ Warning: No plan found in ChromaDB for project '{project_name}'. Remember to index the blueprint in Step 2!")
+        sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "plan-memory"))
+        from _store import PlanStore
+        store = PlanStore(cwd)
+        in_force = [p for p in store.load_all() if p.meta.get("status") in ("active", "in_progress")]
+        if in_force:
+            latest = store.latest(in_force)
+            print(f"✅ Active plan found in {store.plans_dir}: '{latest.meta['plan_id']}' ({len(in_force)} active/in progress)")
+            _, tracked = run_cmd(["git", "ls-files", "--", latest.path], cwd)
+            if not tracked:
+                print("⚠️ The active plan file is not committed yet. Commit it with the approved plan.")
         else:
-            print("⚠️ plan-memory database not initialized yet.")
+            print(f"⚠️ Warning: No active plan in {store.plans_dir}. Save the blueprint with plan-memory in Step 2!")
     except Exception as e:
-        print(f"ℹ️ Could not check ChromaDB plan-memory: {e}")
+        print(f"ℹ️ Could not check plan-memory plans: {e}")
 
     # 3. Secret Hygiene Check
     secrets = check_secret_hygiene(cwd)

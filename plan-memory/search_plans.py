@@ -1,83 +1,54 @@
 """
 Search Plans Utility - plan-memory Skill
-Performs semantic vector search across all architectural plans and roadmaps in ChromaDB.
+Semantic vector search across the project's plans. The local index is synced
+from docs/plans before every search.
 """
-import os
-import sys
 import argparse
-import chromadb
 
-from _common import get_db_path, normalize_project
+from _store import PlanStore, setup_stdout
 
-def search_plans(query: str, project: str = None, limit: int = 5):
-    if sys.stdout.encoding != 'utf-8':
-        try:
-            sys.stdout.reconfigure(encoding='utf-8')
-        except Exception:
-            pass
 
-    db_path = get_db_path()
-    if not os.path.exists(db_path):
-        print("No plans database found.", file=sys.stderr)
+def search_plans(store: PlanStore, query: str, limit: int = 5, all_projects: bool = False):
+    setup_stdout()
+    col = store.sync_index()
+    where = None if all_projects else {"project": store.project}
+    count = len(col.get(where=where)["ids"]) if where else col.count()
+    if count == 0:
+        print(f"No plans indexed for '{store.project}' ({store.plans_dir}).")
         return
 
-    client = chromadb.PersistentClient(path=db_path)
-    col = client.get_or_create_collection("project_plans")
-    if col.count() == 0:
-        print("No plans stored in ChromaDB yet.")
-        return
-
-    where_filter = {}
-    if project:
-        where_filter["project"] = project
-
-    kwargs = {
-        "query_texts": [query],
-        "n_results": min(limit, col.count())
-    }
-    if where_filter:
-        kwargs["where"] = where_filter
-
-    results = col.query(**kwargs)
-
+    results = col.query(query_texts=[query], n_results=min(limit, count), where=where)
     ids = results.get("ids", [[]])[0]
     docs = results.get("documents", [[]])[0]
     metas = results.get("metadatas", [[]])[0]
-    distances = results.get("distances", [[]])[0] if "distances" in results else [0.0] * len(ids)
+    distances = (results.get("distances") or [[0.0] * len(ids)])[0]
 
     print("=" * 90)
     print(f"🔍 SEMANTIC SEARCH IN PLANS: '{query}' (Found: {len(ids)})")
     print("=" * 90)
-
     if not ids:
         print("No matching plans found.")
         return
 
     for pid, doc, meta, dist in zip(ids, docs, metas, distances):
         sim = 1.0 / (1.0 + max(0.0, dist))
-        p_name = meta.get("project", "Unknown")
-        p_title = meta.get("title", "Untitled")
-        p_ver = meta.get("version", "-")
-        p_status = meta.get("status", "active")
-        p_date = meta.get("created_at", "-")
-        p_sid = meta.get("session_id", "-")
-
-        print(f"🎯 Score: {sim:.3f} | [{p_name}] {p_title} ({p_ver})")
-        print(f"   • Plan ID    : {pid} | Status: {p_status.upper()}")
-        print(f"   • Session ID : {p_sid} | Date: {p_date}")
-        
-        # Snippet preview (first 400 chars)
+        print(f"🎯 Score: {sim:.3f} | [{meta.get('project')}] {meta.get('title') or 'Untitled'} ({meta.get('version') or '-'})")
+        print(f"   • Plan ID    : {pid} | Status: {(meta.get('status') or 'active').upper()}")
+        print(f"   • File       : {meta.get('path')}")
         preview = doc.strip().replace("\n", " ")
         if len(preview) > 300:
             preview = preview[:300] + "..."
         print(f"   • Preview    : {preview}")
         print("-" * 90)
 
+
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Search architectural plans in ChromaDB via semantic vector similarity")
+    parser = argparse.ArgumentParser(description="Semantic search over the project's plans")
     parser.add_argument("--query", type=str, required=True, help="Search query or concept")
-    parser.add_argument("--project", type=str, default=None, help="Filter search to specific project")
     parser.add_argument("--limit", type=int, default=5, help="Maximum number of results to return")
+    parser.add_argument("--project", type=str, default=None, help="Project name (default: from the repository)")
+    parser.add_argument("--dir", type=str, default=None, help="Project directory (default: current)")
+    parser.add_argument("--all-projects", action="store_true", help="Search every project indexed on this machine")
     args = parser.parse_args()
 
-    search_plans(query=args.query, project=normalize_project(args.project), limit=args.limit)
+    search_plans(PlanStore(args.dir, args.project), query=args.query, limit=args.limit, all_projects=args.all_projects)
