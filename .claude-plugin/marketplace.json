@@ -1,0 +1,14 @@
+{
+  "name": "levix-agent-skills",
+  "description": "Levi Silveira's coding-agent skills",
+  "owner": {
+    "name": "Levi Silveira"
+  },
+  "plugins": [
+    {
+      "name": "dev-skills",
+      "source": "./",
+      "description": "Project-agnostic development skills: dev cycle protocol, plan and session memory, folder RAG sync and Spec Kit workflow."
+    }
+  ]
+}
