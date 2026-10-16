@@ -7,11 +7,17 @@
 !/install.ps1
 !/install.sh
 !/requirements.txt
+!/tests/
+!/docs/
 !/architecture-docs/
 !/dev-cycle-protocol/
+!/devops-release/
 !/folder-sync/
 !/plan-memory/
+!/quality-assurance/
 !/session-memory/
+!/software-design/
+!/user-docs/
 
 # Data, state and environments are never versioned
 db/

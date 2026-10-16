@@ -1,0 +1,34 @@
+# Test workflow: every pull request into the integration or production branch, and every
+# push to the integration branch. Replace the test step with the project's test_commands.
+name: Tests
+
+on:
+  pull_request:
+    branches: [dev, main]
+  push:
+    branches: [dev]
+  workflow_dispatch:
+
+concurrency:
+  # One run per pull request (superseded runs are cancelled); one per commit otherwise.
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+
+      # Set up the toolchain and caches of the stack here.
+
+      - name: Run tests
+        run: echo "replace with the project's test_commands" && exit 1

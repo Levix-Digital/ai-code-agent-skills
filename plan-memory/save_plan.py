@@ -94,7 +94,7 @@ def save_plan(
         print(f"   • Supersedes : {supersedes}")
     if meta["milestones"]:
         print(f"   • Milestones : {', '.join(m['name'] for m in meta['milestones'])}")
-    print("   👉 Commit the plan file with the change it describes (dev-cycle-protocol Step 3).\n")
+    print("   👉 Commit the plan file with the change it describes (dev-cycle-protocol Phase 3).\n")
 
 
 if __name__ == "__main__":
