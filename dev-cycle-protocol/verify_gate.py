@@ -72,11 +72,14 @@ def verify_gate_3(cwd: str, project_name: str) -> bool:
     # 2. Check Plan Memory in ChromaDB
     try:
         import chromadb
-        db_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "plan-memory", "db")
+        # Same location and project normalization as plan-memory/_common.py
+        db_path = os.environ.get("PLAN_MEMORY_DB", os.path.join(os.path.expanduser("~"), ".ai-code-agent-memory", "plan-memory", "db"))
+        plan_project = re.sub(r"(?<=[a-z0-9])(?=[A-Z])", "-", project_name.strip()).lower()
+        plan_project = re.sub(r"[\s_-]+", "-", re.sub(r"[^\w\s-]", "", plan_project)).strip("-")
         if os.path.exists(db_path):
             client = chromadb.PersistentClient(path=db_path)
             col = client.get_or_create_collection("project_plans")
-            res = col.get(where={"project": project_name})
+            res = col.get(where={"project": plan_project})
             if res and res["ids"]:
                 print(f"✅ Active architectural plan found in ChromaDB: '{res['ids'][0]}'")
             else:

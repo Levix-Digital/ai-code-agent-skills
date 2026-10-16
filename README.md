@@ -54,4 +54,6 @@ No plugin, as skills aparecem com prefixo: `dev-skills:session-memory`.
 ## Dados das skills de memória
 
 - `session-memory`: `~/.ai-code-agent-memory/session-memory/db` (variável `SESSION_MEMORY_DB`)
-- `plan-memory`: ainda em `plan-memory/db`, dentro da pasta da skill (ignorada pelo Git)
+- `plan-memory`: `~/.ai-code-agent-memory/plan-memory/db` (variável `PLAN_MEMORY_DB`)
+
+As duas skills normalizam o nome do projeto para kebab-case (`AnyContext` → `any-context`). Um nome todo em minúsculas e junto (`anycontext`) não tem como ser separado: use o nome da raiz do repositório Git.

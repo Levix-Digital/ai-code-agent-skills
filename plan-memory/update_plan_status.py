@@ -8,6 +8,8 @@ import argparse
 import datetime
 import chromadb
 
+from _common import get_db_path, normalize_project
+
 def update_plan_status(plan_id: str, new_status: str, notes: str = None):
     if sys.stdout.encoding != 'utf-8':
         try:
@@ -15,7 +17,7 @@ def update_plan_status(plan_id: str, new_status: str, notes: str = None):
         except Exception:
             pass
 
-    db_path = os.path.join(os.path.dirname(__file__), "db")
+    db_path = get_db_path()
     if not os.path.exists(db_path):
         print("No plans database found.", file=sys.stderr)
         sys.exit(1)

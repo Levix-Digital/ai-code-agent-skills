@@ -9,6 +9,8 @@ import argparse
 import json
 import chromadb
 
+from _common import get_db_path, normalize_project
+
 def find_plan(col, plan_id: str = None, project: str = None):
     if plan_id:
         res = col.get(ids=[plan_id])
@@ -42,7 +44,7 @@ def export_plan(
         except Exception:
             pass
 
-    db_path = os.path.join(os.path.dirname(__file__), "db")
+    db_path = get_db_path()
     if not os.path.exists(db_path):
         print("❌ Error: No plans database found.", file=sys.stderr)
         sys.exit(1)
@@ -152,7 +154,7 @@ if __name__ == "__main__":
 
     export_plan(
         plan_id=args.id,
-        project=args.project,
+        project=normalize_project(args.project),
         output_path=args.output,
         output_dir=args.output_dir,
         format_type=args.format,

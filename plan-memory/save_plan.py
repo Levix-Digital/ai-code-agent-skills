@@ -10,6 +10,8 @@ import datetime
 import re
 import chromadb
 
+from _common import get_db_path, normalize_project
+
 def slugify(text: str) -> str:
     text = text.lower().strip()
     text = re.sub(r'[^\w\s-]', '', text)
@@ -35,7 +37,7 @@ def save_plan(
         except Exception:
             pass
 
-    db_path = os.path.join(os.path.dirname(__file__), "db")
+    db_path = get_db_path()
     os.makedirs(db_path, exist_ok=True)
 
     client = chromadb.PersistentClient(path=db_path)
@@ -131,7 +133,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     save_plan(
-        project=args.project,
+        project=normalize_project(args.project),
         title=args.title,
         content=plan_content,
         plan_id=args.id,

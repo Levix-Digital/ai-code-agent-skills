@@ -7,6 +7,8 @@ import sys
 import argparse
 import chromadb
 
+from _common import get_db_path, normalize_project
+
 def list_plans(project: str = None, status: str = None):
     if sys.stdout.encoding != 'utf-8':
         try:
@@ -14,7 +16,7 @@ def list_plans(project: str = None, status: str = None):
         except Exception:
             pass
 
-    db_path = os.path.join(os.path.dirname(__file__), "db")
+    db_path = get_db_path()
     if not os.path.exists(db_path):
         print("No plans database found yet.")
         return
@@ -96,4 +98,4 @@ if __name__ == "__main__":
     parser.add_argument("--status", type=str, default=None, help="Filter by status (active, in_progress, completed, superseded)")
     args = parser.parse_args()
 
-    list_plans(project=args.project, status=args.status)
+    list_plans(project=normalize_project(args.project), status=args.status)
