@@ -6,6 +6,7 @@
 !/README.md
 !/install.ps1
 !/install.sh
+!/requirements.txt
 !/dev-cycle-protocol/
 !/folder-sync/
 !/plan-memory/

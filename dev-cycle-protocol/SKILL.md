@@ -247,8 +247,16 @@ For projects with custom folder structures, monorepos or specific test commands,
     "mcp"
   ],
   "canonical_datastore": "data/app.db",
-  "releases_repo": "<org/repo-releases>"
+  "releases_repo": "<org/repo-releases>",
+  "drift_rules": [
+    {
+      "tech": "langchain",
+      "conflict_msg": "The baseline plan removes LangChain in favor of a native implementation."
+    }
+  ]
 }
 ```
+
+`drift_rules` lists technologies or patterns that the project's plans reject; `plan-memory/detect_drift.py` flags proposals that reintroduce them. See the `plan-memory` skill for the rule format.
 
 If the file does not exist, `inspect_project.py` and `verify_gate.py` automatically detect the repository's standard stack.

@@ -87,7 +87,25 @@ python "<skills_root>/plan-memory/check_milestone.py" `
 ```
 
 ### 3. Architectural Drift Detector (`detect_drift.py`)
-Compares any implementation proposal, issue or new prompt against the active plan and anti-pattern principles in ChromaDB:
+Compares any implementation proposal, issue or new prompt against the active plan: semantic similarity, milestone coverage and order, and the project's own anti-pattern rules.
+
+Anti-pattern rules are project-specific and live in the `drift_rules` key of the nearest `.dev-cycle.json`, looked up from the current directory (or `--dir`) upwards. Without rules, only similarity and milestones are checked.
+```json
+"drift_rules": [
+  { "tech": "langchain", "conflict_msg": "The baseline plan removes LangChain." },
+  {
+    "tech": "parallel database",
+    "negative_markers": ["single source", "settings.db"],
+    "proposal_allow": [],
+    "conflict_msg": "Proposal hints at a parallel database, violating the single source of truth."
+  }
+]
+```
+A rule raises a conflict when the baseline plan mentions `tech` together with a rejection marker, and the proposal mentions `tech` without an allowed phrase.
+- `negative_markers` (optional): words that mark the rejection in the plan. Default: bilingual pt/en list (`remove`, `replace`, `without`, `forbidden`, `remover`, `substituir`, `sem`, ...).
+- `proposal_allow` (optional): phrases that make a mention acceptable. Default: `without <tech>`, `remove <tech>`, `replace <tech>`, `sem <tech>`, `remover <tech>`, ...
+
+
 ```powershell
 # Check a proposal's architectural alignment:
 python "<skills_root>/plan-memory/detect_drift.py" `
