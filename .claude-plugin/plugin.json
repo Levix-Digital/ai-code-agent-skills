@@ -1,0 +1,27 @@
+{
+  "name": "dev-skills",
+  "displayName": "Dev Skills (Levix)",
+  "version": "1.0.0",
+  "description": "Project-agnostic development skills: dev cycle protocol, plan and session memory (ChromaDB), folder RAG sync and Spec Kit workflow.",
+  "author": {
+    "name": "Levi Silveira"
+  },
+  "license": "UNLICENSED",
+  "skills": [
+    "./dev-cycle-protocol",
+    "./plan-memory",
+    "./session-memory",
+    "./folder-sync",
+    "./specify",
+    "./speckit",
+    "./speckit.analyze",
+    "./speckit.checklist",
+    "./speckit.clarify",
+    "./speckit.constitution",
+    "./speckit.converge",
+    "./speckit.implement",
+    "./speckit.plan",
+    "./speckit.specify",
+    "./speckit.tasks"
+  ]
+}

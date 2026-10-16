@@ -1,0 +1,27 @@
+# Allowlist: only what is listed below is versioned.
+# assistente-diario stays local-only (personal data, sessions and tokens).
+/*
+!/.gitignore
+!/.gitattributes
+!/.claude-plugin/
+!/README.md
+!/install.ps1
+!/install.sh
+!/dev-cycle-protocol/
+!/folder-sync/
+!/plan-memory/
+!/session-memory/
+!/safe-shutdown/
+!/specify/
+!/speckit/
+!/speckit.*/
+
+# Data, state and environments are never versioned
+db/
+chroma_db/
+__pycache__/
+*.pyc
+.venv/
+node_modules/
+.env
+*.sqlite3
