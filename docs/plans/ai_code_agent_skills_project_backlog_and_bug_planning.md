@@ -3,10 +3,10 @@ plan_id: ai_code_agent_skills_project_backlog_and_bug_planning
 project: ai-code-agent-skills
 title: Project backlog and bug planning
 version: v2.1.0
-status: active
+status: in_progress
 author: Levi Silveira
 created_at: '2026-10-16T17:55:20'
-updated_at: '2026-10-16T17:55:20'
+updated_at: '2026-10-16T18:04:01'
 session_id: null
 tags:
 - backlog
@@ -18,7 +18,9 @@ superseded_by: null
 parent_plan_id: null
 milestones:
 - name: M1 Backlog store and CLI
-  done: false
+  done: true
+  done_at: '2026-10-16'
+  by: Levi Silveira
 - name: M2 Plan kinds and promotion
   done: false
 - name: M3 Cycle integration
@@ -32,6 +34,9 @@ status_log:
   by: Levi Silveira
   status: active
   note: Plan created
+- at: '2026-10-16T18:04:01'
+  by: Levi Silveira
+  note: 'Milestone ''M1 Backlog store and CLI'' completed: backlog.py, _backlog.py, template, backlog config section, 14 tests'
 ---
 
 # Project Backlog and Bug Planning
