@@ -28,13 +28,15 @@ def get_plan(store: PlanStore, plan_id: str = None, output_file: str = None):
 
     print("=" * 90)
     print(f"📜 FULL ARCHITECTURAL PLAN: {m['plan_id']}")
-    print(f"   • Project    : {m.get('project', store.project)} | Version: {m.get('version') or '-'} | Status: {m.get('status', 'active').upper()}")
+    print(f"   • Project    : {m.get('project', store.project)} | Version: {m.get('version') or '-'} | Status: {m.get('status', 'active').upper()} | Kind: {plan.kind}")
     print(f"   • Author     : {m.get('author') or '-'} | Created: {m.get('created_at') or '-'} | Updated: {m.get('updated_at') or '-'}")
     print(f"   • File       : {plan.path}")
     if m.get("supersedes"):
         print(f"   • Supersedes : {m['supersedes']}")
     if m.get("superseded_by"):
         print(f"   • Superseded by: {m['superseded_by']}")
+    if plan.backlog_items:
+        print(f"   • Backlog    : {', '.join(plan.backlog_items)}")
     if plan.milestones:
         print(f"   • Milestones : {progress_bar(len(plan.done_milestones), len(plan.milestones))}")
     print("=" * 90 + "\n")
