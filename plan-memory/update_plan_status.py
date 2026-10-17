@@ -5,6 +5,7 @@ Updates the lifecycle status of a plan file (e.g. active -> completed, in_progre
 import argparse
 import sys
 
+from _backlog_store import sync_plan_items
 from _store import PlanStore, STATUSES, now_iso, setup_stdout
 
 
@@ -22,6 +23,7 @@ def update_plan_status(store: PlanStore, plan_id: str, new_status: str, notes: s
     plan.add_log(store.author(), notes or f"Status {old_status} -> {new_status}", status=new_status)
     store.save(plan)
     store.sync_index()
+    item_messages = sync_plan_items(store.root, plan)
 
     print("✅ Plan status updated successfully!")
     print(f"   • Plan ID    : {plan_id}")
@@ -31,6 +33,8 @@ def update_plan_status(store: PlanStore, plan_id: str, new_status: str, notes: s
     if notes:
         print(f"   • Notes      : {notes}")
     print(f"   • File       : {plan.path}")
+    for message in item_messages:
+        print(f"   {message}")
     print("   👉 Commit the updated plan file.")
 
 

@@ -15,61 +15,28 @@ Usage:
     python backlog.py drop <ID> --reason R
     python backlog.py duplicate <ID> --of <ID>
     python backlog.py reopen <ID>
+    python backlog.py promote <ID> [<ID> ...] [--title T] [--id PLAN_ID] [--version V] | --into <PLAN_ID>
     python backlog.py validate
 All commands accept --dir <project> (default: current directory; the Git root is used).
 """
 import argparse
 import json
 import os
+import re
 import sys
 
-HERE = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, os.path.join(HERE, "..", "dev-cycle-protocol"))
-from project_config import load_project_config  # noqa: E402
-
-from _backlog import (CLOSED_STATUSES, OPEN_STATUSES, PRIORITIES, SEVERITIES, TYPES,  # noqa: E402
+from _backlog import (CLOSED_STATUSES, OPEN_STATUSES, PRIORITIES, SEVERITIES, TYPES,
                       Backlog, BacklogError)
-from _store import repo_root, setup_stdout, today  # noqa: E402
+from _backlog_store import BacklogFile, sync_plan_items
+from _store import PlanStore, now_iso, setup_stdout, today
+from save_plan import save_plan
 
-TEMPLATE = os.path.join(HERE, "templates", "BACKLOG_TEMPLATE.md")
-
-
-class BacklogFile:
-    """The backlog file of one project."""
-
-    def __init__(self, start_dir: str = None):
-        self.config = load_project_config(repo_root(start_dir))
-        section = self.config.section("backlog")
-        self.path = os.path.join(self.config.root, section.get("file") or os.path.join("docs", "BACKLOG.md"))
-        self.blocking_severities = section.get("blocking_severities") or []
-
-    @property
-    def exists(self) -> bool:
-        return os.path.isfile(self.path)
-
-    def load(self, create: bool = False) -> Backlog:
-        if self.exists:
-            with open(self.path, "r", encoding="utf-8", newline="") as f:
-                return Backlog(f.read())
-        if not create:
-            raise BacklogError(f"no backlog at {self.rel}; the first 'add' creates it")
-        with open(TEMPLATE, "r", encoding="utf-8") as f:
-            return Backlog(f.read())
-
-    def save(self, backlog: Backlog):
-        """Atomic write; refuses a file whose structure it could not read, so nothing is lost."""
-        structural = backlog.errors + [f"unknown section '## {name}'" for _, name in backlog.unknown_sections]
-        if structural:
-            raise BacklogError(f"{self.rel} has structural problems; fix them by hand first:\n  - " + "\n  - ".join(structural))
-        os.makedirs(os.path.dirname(self.path), exist_ok=True)
-        tmp = self.path + ".tmp"
-        with open(tmp, "w", encoding="utf-8", newline="") as f:
-            f.write(backlog.render())
-        os.replace(tmp, self.path)
-
-    @property
-    def rel(self) -> str:
-        return os.path.relpath(self.path, self.config.root).replace("\\", "/")
+HERE = os.path.dirname(os.path.abspath(__file__))
+PLAN_TEMPLATES = {
+    "bug": os.path.join(HERE, "templates", "BUG_PLAN_TEMPLATE.md"),
+    "feature": os.path.join(HERE, "templates", "FEATURE_PLAN_TEMPLATE.md"),
+}
+ITEMS_SECTION = "## Backlog items"
 
 
 def line_of(item) -> str:
@@ -107,6 +74,77 @@ def print_summary(backlog: Backlog, bf: BacklogFile):
             print(f"\n{TYPES[item_type][1]}:")
             for item in items:
                 print(f"   {line_of(item)}")
+
+
+def render_items(items: list) -> str:
+    """The items as they are copied into a plan body."""
+    blocks = []
+    for item in items:
+        lines = [f"### {item.id}: {item.title}"]
+        for name in ("Severity", "Priority", "Found", "Description"):
+            if item.get(name):
+                lines.append(f"- **{name}**: {item.get(name)}")
+        blocks.append("\n".join(lines))
+    return "\n\n".join(blocks)
+
+
+def insert_items(body: str, items_text: str) -> str:
+    """Adds items at the end of the plan's 'Backlog items' section (or a new one at the end)."""
+    start = body.find(ITEMS_SECTION)
+    if start == -1:
+        return f"{body.rstrip()}\n\n{ITEMS_SECTION}\n\n{items_text}\n"
+    m = re.compile(r"^## ", re.M).search(body, start + len(ITEMS_SECTION))
+    end = m.start() if m else len(body)
+    return f"{body[:end].rstrip()}\n\n{items_text}\n\n{body[end:].lstrip()}".rstrip() + "\n"
+
+
+def promote(bf: BacklogFile, ids: list, title: str = None, into: str = None, plan_id: str = None,
+            version: str = None, store: PlanStore = None):
+    """Creates a draft plan for open backlog items (or adds them to `into`) and links both ways."""
+    backlog = bf.load()
+    items = []
+    for item_id in ids:
+        item = backlog.find(item_id)
+        if item.closed:
+            raise BacklogError(f"{item.id} is closed ({item.status}); reopen it first")
+        if item.plan:
+            raise BacklogError(f"{item.id} is already promoted into plan '{item.plan}'")
+        if item in items:
+            raise BacklogError(f"{item.id} is listed twice")
+        items.append(item)
+    if not items:
+        raise BacklogError("name at least one backlog item")
+    store = store or PlanStore(bf.config.root)
+    all_bugs = all(i.type == "bug" for i in items)
+
+    if into:
+        plan = store.get(into)
+        if not plan:
+            raise BacklogError(f"plan '{into}' not found in {store.plans_dir}")
+        if plan.meta.get("status") in ("completed", "superseded"):
+            raise BacklogError(f"plan '{into}' is {plan.meta['status']}; promote into an open plan")
+        plan.meta["backlog_items"] = plan.backlog_items + [i.id for i in items]
+        if plan.kind == "bug" and not all_bugs:
+            plan.meta["kind"] = "feature"
+        plan.meta["updated_at"] = now_iso()
+        plan.body = insert_items(plan.body, render_items(items))
+        plan.add_log(store.author(), f"Backlog items added: {', '.join(i.id for i in items)}")
+        store.save(plan)
+        store.sync_index()
+        print(f"✅ Added {', '.join(i.id for i in items)} to plan '{into}' ({plan.path})")
+    else:
+        if not title:
+            if len(items) > 1:
+                raise BacklogError("promoting several items needs --title")
+            title = items[0].title
+        kind = "bug" if all_bugs else "feature"
+        with open(PLAN_TEMPLATES[kind], "r", encoding="utf-8") as f:
+            body = f.read().replace("{title}", title).replace("{items}", render_items(items))
+        plan = save_plan(store, title, body, plan_id=plan_id, version=version, status="draft",
+                         kind=kind, backlog_items=",".join(i.id for i in items))
+    for message in sync_plan_items(bf.config.root, plan):
+        print(message)
+    return plan
 
 
 def cmd(args) -> int:
@@ -187,6 +225,9 @@ def cmd(args) -> int:
             raise BacklogError("an item cannot duplicate itself")
         item = backlog.close(args.id, "duplicate", f"{today()}, duplicate of {original.id}")
         message = f"✅ {item.id} closed as duplicate of {original.id}"
+    elif args.command == "promote":
+        promote(bf, args.ids, args.title, args.into, args.id, args.version)
+        return 0
     elif args.command == "reopen":
         item = backlog.reopen(args.id)
         message = f"✅ {item.id} reopened"
@@ -250,6 +291,13 @@ def build_parser() -> argparse.ArgumentParser:
 
     p = command("reopen", "Move a closed item back to its section as open")
     p.add_argument("id")
+
+    p = command("promote", "Create a draft plan for open items (or add them to an open plan)")
+    p.add_argument("ids", nargs="+")
+    p.add_argument("--title", help="Plan title (default: the item's title; required for several items)")
+    p.add_argument("--id", help="Plan id (default: generated from the title)")
+    p.add_argument("--version", help="Target version")
+    p.add_argument("--into", help="Add the items to this existing plan instead")
 
     command("validate", "Check the backlog format")
     return parser
