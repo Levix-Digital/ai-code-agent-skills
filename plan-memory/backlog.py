@@ -7,6 +7,7 @@ close them. Writes the file; never commits.
 Usage:
     python backlog.py add --type bug|feature|improvement|adjustment --title T --description D
                           [--severity S] [--priority P] [--found-in "v1.2.0, PR #12"]
+    python backlog.py add --from-failed --run <rc> [--severity S]    (failed manual tests deferred as bugs)
     python backlog.py list [--type T] [--status S] [--all] [--json]
     python backlog.py summary [--json]
     python backlog.py show <ID> [--json]
@@ -74,6 +75,40 @@ def print_summary(backlog: Backlog, bf: BacklogFile):
             print(f"\n{TYPES[item_type][1]}:")
             for item in items:
                 print(f"   {line_of(item)}")
+
+
+def add_failed_manual_tests(bf: BacklogFile, run: str, severity: str = None) -> list:
+    """One bug per manual test marked Fail in `run`, skipping tests already captured for that run."""
+    sys.path.insert(0, os.path.join(HERE, "..", "quality-assurance"))
+    from manual_tests import load_suite
+    try:
+        suite = load_suite(bf.config.root)
+    except FileNotFoundError as e:
+        raise BacklogError(str(e))
+    failed = [t for t in suite.select(run) if t.status == "Fail"]
+    if not failed:
+        print(f"ℹ️ No manual test is marked Fail in run {run}.")
+        return []
+    backlog = bf.load(create=True)
+    captured = " ".join(i.get("Description") for i in backlog.items)
+    added = []
+    for t in failed:
+        marker = f"Manual test {t.id} failed in run {run}"
+        if marker in captured:
+            print(f"ℹ️ {t.id} is already in the backlog for run {run}.")
+            continue
+        notes = suite.notes_text(t)
+        description = f"{marker} ({t.feature})." + (f" Notes: {notes}" if notes else "")
+        item = backlog.add("bug", f"{t.id} fails: {t.title}", description, f"{today()}, {run}, {t.id}",
+                           severity=severity or "high")
+        added.append(item)
+    if added:
+        bf.save(backlog)
+        for item in added:
+            print(f"✅ {item.id}: {item.title} ({item.rank}) added to {bf.rel}")
+        if not severity:
+            print("   Severity defaults to high for failed acceptance tests; adjust with 'backlog.py set <ID> --severity <s>'.")
+    return added
 
 
 def render_items(items: list) -> str:
@@ -161,7 +196,15 @@ def cmd(args) -> int:
         print(f"\n{'✅' if not problems else '❌'} backlog: {len(backlog.items)} item(s), {len(problems)} problem(s).")
         return 1 if problems else 0
 
+    if args.command == "add" and args.from_failed:
+        if not args.run:
+            raise BacklogError("--from-failed needs --run <rc>")
+        add_failed_manual_tests(bf, args.run, args.severity)
+        return 0
+
     if args.command == "add":
+        if args.type is None or args.title is None or args.description is None:
+            raise BacklogError("add needs --type, --title and --description (or --from-failed --run <rc>)")
         backlog = bf.load(create=True)
         found = today() + (f", {args.found_in.strip()}" if args.found_in and args.found_in.strip() else "")
         item = backlog.add(args.type, args.title, args.description, found, args.severity, args.priority)
@@ -248,12 +291,14 @@ def build_parser() -> argparse.ArgumentParser:
         return p
 
     p = command("add", "Capture a new item")
-    p.add_argument("--type", required=True, choices=list(TYPES))
-    p.add_argument("--title", required=True)
-    p.add_argument("--description", required=True)
+    p.add_argument("--type", choices=list(TYPES))
+    p.add_argument("--title")
+    p.add_argument("--description")
     p.add_argument("--severity", choices=SEVERITIES, help="Required for bugs")
     p.add_argument("--priority", choices=PRIORITIES, help="Other types (default: medium)")
     p.add_argument("--found-in", default=None, help="Where it was found: version, pull request, test")
+    p.add_argument("--from-failed", action="store_true", help="Capture the manual tests marked Fail in --run as bugs")
+    p.add_argument("--run", default=None, help="Release candidate run, with --from-failed")
 
     p = command("list", "List items (open ones by default)")
     p.add_argument("--type", choices=list(TYPES))

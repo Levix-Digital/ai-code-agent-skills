@@ -29,6 +29,25 @@ def run_cmd(cmd: list[str], cwd: str) -> tuple[int, str]:
     except Exception as e:
         return -1, str(e)
 
+def backlog_profile(cwd: str) -> dict:
+    """Open backlog items per type and the bugs that come before new work."""
+    try:
+        sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "plan-memory"))
+        from _backlog_store import BacklogFile
+        bf = BacklogFile(cwd)
+        if not bf.exists:
+            return {"file": bf.rel, "exists": False}
+        backlog = bf.load()
+        return {
+            "file": bf.rel,
+            "exists": True,
+            "open": {kind: len(backlog.open_items(kind)) for kind in ("bug", "feature", "improvement", "adjustment")},
+            "blocking_bugs": [f"{b.id} ({b.rank}) {b.title}" for b in backlog.blocking_bugs(bf.blocking_severities)],
+        }
+    except Exception as e:
+        return {"error": str(e)}
+
+
 def detect_project_profile(workspace_dir: str = None) -> dict:
     cwd = os.path.abspath(workspace_dir or os.getcwd())
 
@@ -47,6 +66,7 @@ def detect_project_profile(workspace_dir: str = None) -> dict:
         "test_commands": [],
         "devops": {},
         "config_problems": [],
+        "backlog": {},
     }
 
     # Project configuration (.dev-cycle.json, shared by every skill)
@@ -58,6 +78,7 @@ def detect_project_profile(workspace_dir: str = None) -> dict:
         profile["test_commands"] = list(cfg.get("test_commands") or [])
         profile["devops"] = cfg.section("devops")
         profile["config_problems"] = cfg.validate()
+        profile["backlog"] = backlog_profile(cwd)
     except Exception as e:
         cfg = None
         profile["config_problems"] = [f"could not read .dev-cycle.json: {e}"]
@@ -168,6 +189,18 @@ def print_profile_report(profile: dict):
         print(f"   • Releases Repo  : {devops.get('releases_repo') or 'not set'}")
     for problem in profile.get("config_problems", []):
         print(f"   ⚠️ Config: {problem}")
+    print("-" * 85)
+    backlog = profile.get("backlog") or {}
+    if backlog.get("exists"):
+        counts = ", ".join(f"{n} {kind}" for kind, n in backlog["open"].items())
+        print(f"📥 BACKLOG ({backlog['file']}): open {counts}")
+        for bug in backlog["blocking_bugs"]:
+            print(f"   🐞 Comes before new work: {bug}")
+        print("   Triage with the user: promote, re-prioritize or drop (plan-memory/backlog.py summary).")
+    elif backlog.get("file"):
+        print(f"📥 BACKLOG: none yet ({backlog['file']} is created by the first /backlog or backlog.py add)")
+    elif backlog.get("error"):
+        print(f"📥 BACKLOG: could not be read ({backlog['error']})")
     print("-" * 85)
     print("📚 DOCUMENTATION STANDARD STATUS (Dual-Doc + Manual Tests):")
     print(f"   • UserDoc (Public Guide) : {docs.get('user_doc', '❌ MISSING (README.md recommended)')}")

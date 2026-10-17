@@ -226,3 +226,51 @@ def test_script_runs_standalone(tmp_path):
     res = subprocess.run([sys.executable, script, "summary", "--dir", str(tmp_path)],
                          capture_output=True, text=True, encoding="utf-8")
     assert res.returncode == 0 and "No backlog" in res.stdout
+
+
+MANUAL_SUITE = """# Manual Tests
+
+## Sync
+
+### MT-SYNC-001: Sync finishes
+
+- **Covers**: sync
+- **Steps**:
+  1. Run sync
+- **Expected**:
+  - It finishes
+- **Result** (v1.0.0-rc.1): [ ] Pass [x] Fail [ ] Blocked
+- **Notes**: Hangs at 90%.
+
+### MT-SYNC-002: Cancel works
+
+- **Covers**: sync
+- **Steps**:
+  1. Cancel
+- **Expected**:
+  - It stops
+- **Result** (v1.0.0-rc.1): [x] Pass [ ] Fail [ ] Blocked
+- **Notes**:
+"""
+
+
+def test_cli_from_failed_captures_failed_manual_tests_once(tmp_path, capsys):
+    (tmp_path / "tests").mkdir()
+    (tmp_path / "tests" / "MANUAL_TESTS.md").write_text(MANUAL_SUITE, encoding="utf-8")
+    assert run(tmp_path, "add", "--from-failed") == 1
+    assert run(tmp_path, "add", "--from-failed", "--run", "v1.0.0-rc.1") == 0
+    assert run(tmp_path, "add", "--from-failed", "--run", "v1.0.0-rc.1") == 0
+    out = capsys.readouterr().out
+    assert "already in the backlog" in out
+    backlog = Backlog((tmp_path / "docs" / "BACKLOG.md").read_text(encoding="utf-8"))
+    bugs = backlog.open_items("bug")
+    assert len(bugs) == 1 and bugs[0].rank == "high"
+    assert bugs[0].title == "MT-SYNC-001 fails: Sync finishes"
+    assert "Hangs at 90%." in bugs[0].get("Description") and "v1.0.0-rc.1" in bugs[0].get("Found")
+    assert run(tmp_path, "add", "--from-failed", "--run", "v9.9.9-rc.1") == 0
+    assert "No manual test is marked Fail" in capsys.readouterr().out
+
+
+def test_cli_add_needs_type_title_and_description(tmp_path, capsys):
+    assert run(tmp_path, "add", "--type", "feature", "--title", "x") == 1
+    assert "add needs --type, --title and --description" in capsys.readouterr().out

@@ -16,6 +16,7 @@ The QA role of the development cycle. It owns **evidence that the software works
 | Documentation | Curates the manual suite for the features the change touched. |
 | Release candidate | Starts a run for the candidate (`manual_tests.py start-run`) with the affected tests. |
 | User acceptance | Reads the user's results (`manual_tests.py failed`), routes failures back to fixes, and gates the candidate (`manual_tests.py gate`). |
+| Bugs | Defines what a bug report holds and what proves a bug fixed (see "Bugs"). |
 
 ---
 
@@ -79,10 +80,26 @@ For a cumulative file that grew by appending scenarios:
    python "<skills_root>/quality-assurance/manual_tests.py" failed --run v1.4.0-rc.1
    ```
    Each `Fail` or `Blocked` test, with its notes, becomes a fix in the integration branch (with a regression test when it can be automated), followed by a new candidate and a new run (`rc.2`) containing at least the failed tests.
+   When the user decides to release without fixing a failure now, capture it in the backlog instead, so it is not lost:
+   ```powershell
+   python "<skills_root>/plan-memory/backlog.py" add --from-failed --run v1.4.0-rc.1 [--severity medium]
+   ```
 4. The candidate passes the acceptance gate when every test of the run is `Pass`:
    ```powershell
    python "<skills_root>/quality-assurance/manual_tests.py" gate --run v1.4.0-rc.1
    ```
+
+---
+
+## 🐞 Bugs
+
+Bugs live in the project backlog (`plan-memory/backlog.py`, default `docs/BACKLOG.md`) until they are planned and fixed.
+
+- **Captured bug** (backlog item `BUG-NNN`): a title that names the wrong behavior, the severity, where it was found (version, pull request, manual test) and a description with the symptom: what happens and what should happen. No hypothesis is required at capture time.
+- **Severity**: `critical` (data loss, security, nothing works), `high` (a main feature fails, no workaround), `medium` (a feature fails with a workaround), `low` (cosmetic or rare). Open `critical` and `high` bugs come before other work (`backlog.blocking_severities`).
+- **Planned bug** (bug plan from `backlog.py promote`): exact reproduction steps, the real log lines, the confirmed root cause, the fix design and the **regression test that fails before the fix and passes after it**. The plan is not ready for approval while the root cause is still a hypothesis.
+- **Fixed**: the regression test is in the suite and green in CI, the affected manual tests are curated, and the item is closed by the plan's completion or `backlog.py close <ID> --ref "PR #N"`.
+- **Bugs found while doing something else**: fix them in the same change only when they are in scope and small; otherwise capture them (`backlog.py add --type bug ...`) and report the id to the user.
 
 ---
 

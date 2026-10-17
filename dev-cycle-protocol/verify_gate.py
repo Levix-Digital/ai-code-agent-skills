@@ -1,7 +1,7 @@
 """
 Verify Gate Utility - dev-cycle-protocol Skill
 Automated gate checks of the role-based development cycle:
-  gate 3  - before asking for plan approval
+  gate 3  - before asking for plan approval (bugs first: open blocking bugs hold back other plans)
   gate rc - release candidate acceptance (all manual tests of the run Pass)
   gate 8  - release readiness, before the release pull request (runs every role's checker)
 Project-agnostic: adapts to the project's .dev-cycle.json and detected stack.
@@ -79,7 +79,47 @@ def report_checker(label: str, code, output: str, blocking: bool = True, max_lin
     return not blocking
 
 
-def verify_gate_3(cwd: str, project_name: str) -> bool:
+def load_backlog(cwd: str):
+    """(BacklogFile, Backlog) of the project, or (BacklogFile, None) when there is no backlog file."""
+    sys.path.insert(0, os.path.join(SKILLS_ROOT, "plan-memory"))
+    from _backlog_store import BacklogFile
+    bf = BacklogFile(cwd)
+    return bf, (bf.load() if bf.exists else None)
+
+
+def check_bugs_first(cwd: str, plan, store, accept_reason: str = None) -> bool:
+    """Open bugs with a blocking severity come before any plan that is not a bug plan."""
+    bf, backlog = load_backlog(cwd)
+    if backlog is None:
+        return True
+    problems = backlog.validate()
+    if problems:
+        print(f"⚠️ Backlog {bf.rel} has {len(problems)} problem(s); run plan-memory/backlog.py validate.")
+    blocking = [b for b in backlog.blocking_bugs(bf.blocking_severities) if b.id not in plan.backlog_items]
+    others = [b for b in backlog.open_items("bug") if b not in blocking and b.id not in plan.backlog_items]
+    if others:
+        print(f"ℹ️ Other open bugs in {bf.rel}: {', '.join(b.id for b in others)}")
+    if not blocking:
+        print(f"✅ Bugs first: no open {'/'.join(bf.blocking_severities) or 'blocking'} bug outside this plan.")
+        return True
+    listing = ", ".join(f"{b.id} ({b.rank})" for b in blocking)
+    if plan.kind == "bug":
+        print(f"ℹ️ Bug plan; other blocking bugs still open: {listing}")
+        return True
+    if accept_reason:
+        plan.add_log(store.author(), f"Approved with open blocking bugs {', '.join(b.id for b in blocking)}: {accept_reason}")
+        store.save(plan)
+        print(f"⚠️ Bugs first overridden by the user: {listing}. Recorded in the plan's status log; commit the plan file.")
+        return True
+    print(f"❌ Bugs first: open {', '.join(bf.blocking_severities)} bugs come before this {plan.kind} plan: {listing}")
+    for b in blocking:
+        print(f"   {b.id}: {b.title}")
+    print("   Plan them first (plan-memory/backlog.py promote), or, only when the user explicitly accepts the risk,")
+    print('   run this gate again with --accept-open-bugs "<the user\'s reason>".')
+    return False
+
+
+def verify_gate_3(cwd: str, project_name: str, accept_open_bugs: str = None) -> bool:
     """Plan approval gate."""
     print("=" * 80)
     print(f"🔒 VERIFYING GATE 3 (PLAN APPROVAL): {project_name}")
@@ -104,6 +144,7 @@ def verify_gate_3(cwd: str, project_name: str) -> bool:
             _, tracked = run_cmd(["git", "ls-files", "--", latest.path], cwd)
             if not tracked:
                 print("⚠️ The active plan file is not committed yet. Commit it after approval.")
+            passed &= check_bugs_first(cwd, latest, store, accept_open_bugs)
         else:
             print(f"⚠️ No active plan in {store.plans_dir}. Save the plan with plan-memory in Phase 2 (full path).")
     except Exception as e:
@@ -205,7 +246,21 @@ def verify_gate_8(cwd: str, project_name: str, run: str = None) -> bool:
         else:
             print("⚠️ Release candidates are on but no --run was given: acceptance of the candidate not checked.")
 
-    # 9. Secret hygiene
+    # 9. Backlog format (plan-memory) and open blocking bugs for the release notes
+    code, out = run_checker("plan-memory", "backlog.py", ["validate", "--dir", cwd])
+    passed &= report_checker("Backlog (plan-memory)", code, out)
+    if code is not None:
+        try:
+            bf, backlog = load_backlog(cwd)
+            if backlog is not None:
+                open_bugs = backlog.blocking_bugs(bf.blocking_severities)
+                if open_bugs:
+                    print(f"⚠️ Open {'/'.join(bf.blocking_severities)} bugs; list them as known limitations in the release notes: "
+                          + ", ".join(f"{b.id} {b.title}" for b in open_bugs))
+        except Exception as e:
+            print(f"ℹ️ Could not read the backlog: {e}")
+
+    # 10. Secret hygiene
     secrets = check_secret_hygiene(cwd)
     if secrets:
         for s in secrets:
@@ -214,7 +269,7 @@ def verify_gate_8(cwd: str, project_name: str, run: str = None) -> bool:
     else:
         print("✅ Secret hygiene check passed.")
 
-    # 10. Git status
+    # 11. Git status
     code, status_out = run_cmd(["git", "status", "--porcelain"], cwd)
     dirty = [l for l in status_out.splitlines() if l.strip()]
     if dirty:
@@ -241,6 +296,8 @@ def main() -> int:
     parser.add_argument("--dir", type=str, default=None, help="Workspace directory")
     parser.add_argument("--project", type=str, default=None, help="Project name override")
     parser.add_argument("--run", type=str, default=None, help="Release candidate run label, for example v1.4.0-rc.1")
+    parser.add_argument("--accept-open-bugs", type=str, default=None, metavar="REASON",
+                        help="Gate 3: the user explicitly accepts approving a non-bug plan with open blocking bugs")
     args = parser.parse_args()
 
     cwd = os.path.abspath(args.dir or os.getcwd())
@@ -248,7 +305,7 @@ def main() -> int:
 
     gate = args.gate.replace("gate", "")
     if gate == "3":
-        success = verify_gate_3(cwd, p_name)
+        success = verify_gate_3(cwd, p_name, args.accept_open_bugs)
     elif gate == "rc":
         success = verify_gate_rc(cwd, p_name, args.run)
     else:

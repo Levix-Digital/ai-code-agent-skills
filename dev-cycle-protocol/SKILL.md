@@ -1,6 +1,6 @@
 ---
 name: dev-cycle-protocol
-description: Orchestrator of the role-based development cycle - phases from discovery to a verified release, the role skill called in each phase (software-design, quality-assurance, devops-release, user-docs, architecture-docs, plan-memory, code review), a full path for features and a short path for small fixes, the user's approval gates (plan, release candidate acceptance, merge into production), the shared .dev-cycle.json project configuration and automated gate verification. Use during all software design, exploration, implementation, review and release tasks.
+description: Orchestrator of the role-based development cycle - phases from discovery to a verified release, the role skill called in each phase (software-design, quality-assurance, devops-release, user-docs, architecture-docs, plan-memory, code review), a full path for features and a short path for small fixes, the project backlog with bugs before new work, the user's approval gates (plan, release candidate acceptance, merge into production), the shared .dev-cycle.json project configuration and automated gate verification. Use during all software design, exploration, implementation, review and release tasks.
 ---
 
 # 🛡️ Development Cycle Protocol (`dev-cycle-protocol` v3)
@@ -18,7 +18,7 @@ description: Orchestrator of the role-based development cycle - phases from disc
 | Role | Skill | Owns |
 |---|---|---|
 | Orchestrator | `dev-cycle-protocol` | Phases, gates, the path for each change, `.dev-cycle.json` |
-| Planner | [`plan-memory`](../plan-memory/SKILL.md) | Plan files in `docs/plans`, milestones, drift detection |
+| Planner | [`plan-memory`](../plan-memory/SKILL.md) | The backlog (`docs/BACKLOG.md`, `/backlog` command), plan files in `docs/plans`, milestones, drift detection |
 | Architect | [`software-design`](../software-design/SKILL.md) | Design principles, architecture style, design section of plans, structural review |
 | Technical documentation | [`architecture-docs`](../architecture-docs/SKILL.md) | `TECDOC.md`, `docs/architecture`, ADRs |
 | QA | [`quality-assurance`](../quality-assurance/SKILL.md) | Automated test strategy, curated manual test suite, release candidate runs |
@@ -39,7 +39,8 @@ A role is a set of rules and a checker, not a separate person: load the role ski
 4. **Plans are shared and complete**: approved plans are versioned files in the project (`plan-memory`).
 5. **Safe delivery**: short-lived branches, CI on every pull request, release candidates, the user's merge as the release gate (`devops-release`).
 6. **Security**: no secrets in Git, backward-compatible data migrations, a rollback path for every release.
-7. **Follow-through**: the agent follows CI and releases to the end and fixes what fails; the user's decisions (plan approval, candidate acceptance, merge into production) are never taken by the agent.
+7. **Bugs first**: open `critical` and `high` bugs are planned and fixed before new features, improvements and adjustments, unless the user explicitly accepts the risk; nothing found is lost, it is fixed now or captured in the backlog.
+8. **Follow-through**: the agent follows CI and releases to the end and fixes what fails; the user's decisions (plan approval, candidate acceptance, merge into production) are never taken by the agent.
 
 ---
 
@@ -84,6 +85,8 @@ Phases 1 to 7 run for every change. Phases 8 to 10 run when the user wants to re
   ```
 - **Logs first**: for any reported error, read the real logs before forming hypotheses.
 - Read the active plans (`plan-memory/list_plans.py`, `check_milestone.py --list`) and the architecture style and structure (`software-design`).
+- Read the backlog (`plan-memory/backlog.py summary`; `inspect_project.py` shows it too). Show the user the open bugs that come before new work and the items related to the request; the user decides what to promote, re-prioritize or drop (see "Backlog").
+- To plan backlog items, promote them (`backlog.py promote <ID> ...`): the draft plan (a bug plan for bugs) is where the discovery is written.
 - Exhaust the open questions and converge on an approach with the user.
 
 ### 2. 📋 Plan
@@ -137,7 +140,7 @@ python "<skills_root>/dev-cycle-protocol/verify_gate.py" --gate 3
 
 ### 9. ✅ Acceptance Gate (user)
 - The user installs the candidate and marks each test Pass, Fail or Blocked.
-- Read the results (`manual_tests.py failed --run <rc>`): each failure goes back to Phase 4 as a fix, followed by a new candidate and run.
+- Read the results (`manual_tests.py failed --run <rc>`): each failure goes back to Phase 4 as a fix, followed by a new candidate and run. A failure the user decides to leave for later is captured in the backlog (`backlog.py add --from-failed --run <rc>`).
 - The candidate is accepted when the acceptance gate passes:
   ```powershell
   python "<skills_root>/dev-cycle-protocol/verify_gate.py" --gate rc --run vX.Y.Z-rc.N
@@ -155,6 +158,19 @@ python "<skills_root>/dev-cycle-protocol/verify_gate.py" --gate 3
 
 ---
 
+## 📥 Backlog
+
+The backlog (`backlog.file` in `.dev-cycle.json`, default `docs/BACKLOG.md`) is the first level of planning: bugs, features, improvements and adjustments captured for later, without discovery. The second level is the plan, created when the user promotes items.
+
+- **Capture**: the user types `/backlog --feature|--improvement|--adjustment|--bug "<text>"` (the [`backlog`](../backlog/SKILL.md) command) or asks to note something for later; the agent runs `plan-memory/backlog.py add` and answers with the new id.
+- **Bugs found during work**: in scope and small, fix them now with a regression test. Otherwise capture them (`backlog.py add --type bug --severity <s> ...`) and report the ids in the phase report and in the pull request description, which links backlog ids instead of carrying loose "to decide" lists.
+- **Triage is the user's**: the agent never promotes, drops or re-prioritizes on its own; it shows the summary at discovery and asks.
+- **Bugs first**: gate 3 blocks a plan that is not a bug plan while an open bug with a blocking severity (`backlog.blocking_severities`, default `critical` and `high`) is outside it. Only when the user explicitly accepts the risk, run the gate with `--accept-open-bugs "<the user's reason>"`; the reason is recorded in the plan.
+- **Closing**: items close as done when their plan is completed, or with `backlog.py close <ID> --ref "PR #N"`; `drop` and `duplicate` record why.
+- **Release**: gate 8 validates the backlog and lists open blocking bugs, which go into the release notes as known limitations.
+
+---
+
 ## 🔐 Security, Data and Rollback
 
 - **Secrets**: never commit `.env` files, keys, certificates or credentials; `verify_gate.py` checks tracked and staged files.
@@ -167,12 +183,12 @@ python "<skills_root>/dev-cycle-protocol/verify_gate.py" --gate 3
 
 | Gate | When | Checks |
 |---|---|---|
-| `--gate 3` | Before asking for plan approval | Working tree state, active plan saved (and committed after approval), secret hygiene |
+| `--gate 3 [--accept-open-bugs R]` | Before asking for plan approval | Working tree state, active plan saved (and committed after approval), bugs first (no open blocking bug outside a non-bug plan, unless the user accepts with reason `R`), secret hygiene |
 | `--gate rc --run R` | Before declaring a candidate accepted | Every manual test of run `R` is Pass (`quality-assurance/manual_tests.py gate`) |
-| `--gate 8 [--run R]` | Before opening the release pull request | Documentation and manual test files exist; `check_docs.py`, `check_readme.py`, `manual_tests.py validate`, `check_design.py` and `check_ci_policy.py` have no errors; version files agree; the candidate run passed (required with `--run` when release candidates are on); secret hygiene; clean working tree |
+| `--gate 8 [--run R]` | Before opening the release pull request | Documentation and manual test files exist; `check_docs.py`, `check_readme.py`, `manual_tests.py validate`, `check_design.py`, `check_ci_policy.py` and `backlog.py validate` have no errors (open blocking bugs are listed for the release notes); version files agree; the candidate run passed (required with `--run` when release candidates are on); secret hygiene; clean working tree |
 
 ```powershell
-python "<skills_root>/dev-cycle-protocol/verify_gate.py" --gate 3|rc|8 [--run <rc tag>] [--dir <project>]
+python "<skills_root>/dev-cycle-protocol/verify_gate.py" --gate 3|rc|8 [--run <rc tag>] [--accept-open-bugs "<reason>"] [--dir <project>]
 python "<skills_root>/dev-cycle-protocol/inspect_project.py" [--json]
 python "<skills_root>/dev-cycle-protocol/project_config.py" [--json] [--validate] [--migrate [--write]]
 ```
@@ -181,6 +197,6 @@ python "<skills_root>/dev-cycle-protocol/project_config.py" [--json] [--validate
 
 ## ⚙️ Project Configuration (`.dev-cycle.json`)
 
-Optional file at the repository root: the project configuration shared by every skill, with one section per skill (`architecture`, `docs`, `tests`, `devops`, `plans`, `architecture_docs`, `drift_rules`) and `test_commands`. Read it through the single loader, which fills defaults, accepts the legacy flat keys of older files and validates the result (`project_config.py`). Scripts of other skills import it from the sibling folder (`from project_config import load_project_config`). The full key reference is in the skills repository README ("Project configuration").
+Optional file at the repository root: the project configuration shared by every skill, with one section per skill (`architecture`, `docs`, `tests`, `devops`, `plans`, `backlog`, `architecture_docs`, `drift_rules`) and `test_commands`. Read it through the single loader, which fills defaults, accepts the legacy flat keys of older files and validates the result (`project_config.py`). Scripts of other skills import it from the sibling folder (`from project_config import load_project_config`). The full key reference is in the skills repository README ("Project configuration").
 
 If the file does not exist, `inspect_project.py` and `verify_gate.py` detect the repository's standard stack and use the defaults.
