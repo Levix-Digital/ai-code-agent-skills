@@ -26,6 +26,7 @@ def test_defaults_without_manifest(tmp_path):
     assert cfg.section("docs")["user_doc"] == "README.md"
     assert cfg.section("tests")["manual_tests"] == "tests/MANUAL_TESTS.md"
     assert cfg.section("plans")["dir"] == "docs/plans"
+    assert cfg.section("backlog") == {"file": "docs/BACKLOG.md", "blocking_severities": ["critical", "high"]}
     assert cfg.section("architecture")["style"] is None
     assert cfg.validate() == []
 
@@ -80,6 +81,7 @@ def test_validation_reports_problems(tmp_path):
         "architecture": {"style": "spaghetti"},
         "devops": {"observability": "telepathy", "release_candidates": "yes"},
         "test_commands": "cargo test",
+        "backlog": {"blocking_severities": ["urgent"]},
         "mystery": 1,
     })
     problems = load_project_config(str(tmp_path)).validate()
@@ -89,6 +91,7 @@ def test_validation_reports_problems(tmp_path):
     assert "release_candidates" in text
     assert "test_commands must be a list" in text
     assert "unknown top-level key 'mystery'" in text
+    assert "backlog.blocking_severities" in text
 
 
 def test_manifest_found_from_subdirectory(tmp_path):
