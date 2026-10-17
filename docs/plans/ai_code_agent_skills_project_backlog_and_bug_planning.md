@@ -3,10 +3,10 @@ plan_id: ai_code_agent_skills_project_backlog_and_bug_planning
 project: ai-code-agent-skills
 title: Project backlog and bug planning
 version: v2.1.0
-status: in_progress
+status: completed
 author: Levi Silveira
 created_at: '2026-10-16T17:55:20'
-updated_at: '2026-10-16T18:24:21'
+updated_at: '2026-10-16T18:28:05'
 session_id: null
 tags:
 - backlog
@@ -34,7 +34,9 @@ milestones:
   done_at: '2026-10-16'
   by: Levi Silveira
 - name: M5 Apply to any-context
-  done: false
+  done: true
+  done_at: '2026-10-16'
+  by: Levi Silveira
 status_log:
 - at: '2026-10-16T17:55:20'
   by: Levi Silveira
@@ -52,6 +54,13 @@ status_log:
 - at: '2026-10-16T18:24:21'
   by: Levi Silveira
   note: 'Milestone ''M4 Documentation and release'' completed: plan-memory SKILL, README, configuration reference, manual tests MT-BACKLOG-001/002, plugin 2.1.0, backlog linked by install.ps1; 84 tests pass'
+- at: '2026-10-16T18:28:05'
+  by: Levi Silveira
+  note: 'Milestone ''M5 Apply to any-context'' completed: any-context PR #334; checker fix 71b99cd cherry-picked into PR #3'
+- at: '2026-10-16T18:28:05'
+  by: Levi Silveira
+  status: completed
+  note: All milestones completed
 ---
 
 # Project Backlog and Bug Planning
