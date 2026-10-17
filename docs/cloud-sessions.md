@@ -1,6 +1,6 @@
 # Claude Code Cloud Sessions (Plugin)
 
-Cloud sessions do not see your local folders. For them, this repository is also a Claude Code marketplace (`levix-agent-skills`) with the `dev-skills` plugin, which ships the nine skills.
+Cloud sessions do not see your local folders. For them, this repository is also a Claude Code marketplace (`levix-agent-skills`) with the `dev-skills` plugin, which ships the ten skills.
 
 Add to the project's `.claude/settings.json` and push it to the branch the cloud session uses:
 

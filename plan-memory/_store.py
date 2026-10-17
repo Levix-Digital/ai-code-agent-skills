@@ -18,9 +18,10 @@ from _common import get_db_path, normalize_project
 
 INDEX_COLLECTION = "plan_index"
 STATUSES = ["draft", "planned", "active", "in_progress", "completed", "superseded"]
+KINDS = ["feature", "bug"]   # a plan without `kind` is a feature plan
 FIELD_ORDER = [
-    "plan_id", "project", "title", "version", "status", "author", "created_at", "updated_at",
-    "session_id", "tags", "supersedes", "superseded_by", "parent_plan_id", "milestones", "status_log",
+    "plan_id", "project", "title", "kind", "version", "status", "author", "created_at", "updated_at",
+    "session_id", "tags", "supersedes", "superseded_by", "parent_plan_id", "backlog_items", "milestones", "status_log",
 ]
 
 
@@ -174,6 +175,14 @@ class Plan:
         return self.meta.get("milestones") or []
 
     @property
+    def kind(self) -> str:
+        return self.meta.get("kind") or "feature"
+
+    @property
+    def backlog_items(self) -> list:
+        return [str(i) for i in self.meta.get("backlog_items") or []]
+
+    @property
     def done_milestones(self) -> list:
         return [m["name"] for m in self.milestones if m.get("done")]
 
@@ -239,6 +248,7 @@ def index_metadata(plan: Plan, project: str) -> dict:
         "title": str(m.get("title") or ""),
         "version": str(m.get("version") or ""),
         "status": str(m.get("status") or ""),
+        "kind": plan.kind,
         "created_at": str(m.get("created_at") or ""),
         "path": plan.path or "",
         "sha256": plan.sha256 or "",

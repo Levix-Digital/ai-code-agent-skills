@@ -25,7 +25,8 @@ RELEASE_ACTION_RE = re.compile(r"softprops/action-gh-release|ncipollo/release-ac
 TEST_STEP_RE = re.compile(r"\b(cargo\s+test|pytest|npm\s+(run\s+)?test|pnpm\s+(run\s+)?test|yarn\s+test|go\s+test|dotnet\s+test|mvn\s+test|gradle\w*\s+test|make\s+test|tox)\b")
 TAG_PUSH_RE = re.compile(r"git\s+tag\b[\s\S]*?git\s+push\b|git\s+push\s+origin\s+\S*v\$|gh\s+release\s+create")
 REUSABLE_CALL_RE = re.compile(r"^\s*uses:\s*\./\.github/workflows/", re.M)
-PRERELEASE_RE = re.compile(r"prerelease\s*:\s*.*(-rc|rc\.)|--prerelease", re.I)
+PRERELEASE_RE = re.compile(r"^\s*prerelease\s*:|--prerelease", re.I | re.M)
+RC_TEST_RE = re.compile(r"-rc\b|\brc\.")
 CONTENTS_WRITE_RE = re.compile(r"contents\s*:\s*write")
 CUSTOM_SECRET_RE = re.compile(r"secrets\.(?!GITHUB_TOKEN\b)[A-Z0-9_]+")
 
@@ -125,7 +126,7 @@ def run(project_dir: str = None):
     for w in releases:
         if not CONTENTS_WRITE_RE.search(w.text):
             errors.append(f"{w.name}: publishing a release needs 'permissions: contents: write'")
-        if use_rc and (w.push_tags() or "workflow_call" in w.triggers) and not PRERELEASE_RE.search(w.text):
+        if use_rc and (w.push_tags() or "workflow_call" in w.triggers) and not (PRERELEASE_RE.search(w.text) and RC_TEST_RE.search(w.text)):
             errors.append(f"{w.name}: '-rc' tags must publish pre-releases (prerelease: ${{{{ contains(<tag>, '-rc') }}}})")
 
     taggers = [w for w in workflows if w.push_covers_branch(production) and TAG_PUSH_RE.search(w.text)]
