@@ -1,6 +1,6 @@
 ---
 name: plan-memory
-description: Shared, versioned storage of complete, uncompressed project architecture plans, roadmaps and multi-step blueprints as Markdown files in the project repository (docs/plans), with milestones, lineage, status history, semantic search and drift detection through a local ChromaDB index. Use to save an approved plan, check progress, find earlier decisions, or validate a proposal against the active plan. Project-agnostic.
+description: Shared, versioned planning of a project in its repository - the backlog (docs/BACKLOG.md) where bugs, features, improvements and adjustments are captured for later, and complete, uncompressed plans (docs/plans, feature or bug plans) with milestones, lineage, status history, promotion of backlog items, semantic search and drift detection through a local ChromaDB index. Use to capture or triage backlog items, promote them into a plan, save an approved plan, check progress, find earlier decisions, or validate a proposal against the active plan. Project-agnostic.
 ---
 
 # 📐 Project Plan Memory Skill (`plan-memory`)
@@ -12,6 +12,7 @@ The **`plan-memory`** skill keeps **100% complete, uncompressed architectural pl
 - **Source of truth**: one Markdown file per plan in the project repository, `docs/plans/<plan_id>.md` (YAML frontmatter + plan body). Plans are versioned, reviewed and merged with the code. Change the folder with `"plans_dir"` in the project's `.dev-cycle.json`.
 - **Search index**: a local ChromaDB at `~/.ai-code-agent-memory/plan-memory/db` (override with `PLAN_MEMORY_DB`), collection `plan_index`. It is **disposable**: every command syncs it from the files (by SHA-256), and `rebuild_index.py` recreates it.
 - **Project**: resolved from the Git repository of the current directory (or `--dir`): `project_name` in `.dev-cycle.json`, else the repository folder name, normalized to kebab-case. `--project` overrides it.
+- **Two levels**: the **backlog** (`docs/BACKLOG.md`) captures work in seconds, without discovery; a **plan** is created when the user promotes backlog items and holds the discovery and the planning (see "Backlog").
 - **Guiding Principle**: **Zero Compaction / Zero Loss**. Plans are preserved in their entirety (Mermaid diagrams, tables, steps, formulas, rationale) as persistent knowledge for every developer and session.
 
 ---
@@ -23,6 +24,7 @@ The **`plan-memory`** skill keeps **100% complete, uncompressed architectural pl
 plan_id: my_app_blueprint_v1_2_0_two_stage_search
 project: my-app
 title: Two-stage search with local re-ranking
+kind: feature              # feature (default) | bug
 version: v1.2.0
 status: in_progress        # draft | planned | active | in_progress | completed | superseded
 author: Jane Doe           # git user.name of whoever created it
@@ -33,6 +35,7 @@ tags: [search, reranker]
 supersedes: my_app_blueprint_v1_1_0_search
 superseded_by: null
 parent_plan_id: null
+backlog_items: [FEAT-004]  # backlog items the plan delivers (optional)
 milestones:
 - name: M1 Runtime base
   done: true
@@ -75,7 +78,7 @@ python "<skills_root>/plan-memory/save_plan.py" `
   --session-id "<session_id>" `
   --supersedes "<old_plan_id>"
 ```
-Options: `--id` (default: `<project>_<title>` slug), `--parent-id`, `--content` instead of `--file`.
+Options: `--id` (default: `<project>_<title>` slug), `--parent-id`, `--content` instead of `--file`, `--kind feature|bug`, `--backlog-items "BUG-001,FEAT-002"` (links the items, which become `planned`).
 
 ### 2. Milestone & Progress Tracker (`check_milestone.py`)
 ```powershell
@@ -115,7 +118,7 @@ A rule raises a conflict when a plan in force (`active` / `in_progress`) mention
 
 ### 4. List Plans (`list_plans.py`)
 ```powershell
-python "<skills_root>/plan-memory/list_plans.py" [--status active]
+python "<skills_root>/plan-memory/list_plans.py" [--status active] [--kind bug]
 ```
 
 ### 5. Read a Complete Plan (`get_plan.py`)
@@ -147,6 +150,42 @@ python "<skills_root>/plan-memory/rebuild_index.py"
 
 ---
 
+## 📥 Backlog (`backlog.py`)
+
+The first level of planning: one Markdown file (`backlog.file` in `.dev-cycle.json`, default `docs/BACKLOG.md`), created by the first `add` from `templates/BACKLOG_TEMPLATE.md`.
+
+```markdown
+## Bugs | Features | Improvements | Adjustments | Closed
+
+### BUG-001: Frontier preset selects an outdated model id
+- **Severity**: high              # bugs: critical | high | medium | low
+- **Status**: open                # open | planned | in_progress (done | dropped | duplicate under Closed)
+- **Found**: 2026-10-16, v0.45.0, PR #333
+- **Plan**: -                     # plan id once promoted
+- **Description**: `/preset frontier` sets `claude-3-7-sonnet`, which the provider may reject.
+```
+
+Features (`FEAT-NNN`), improvements (`IMP-NNN`) and adjustments (`ADJ-NNN`) have `Priority` (high, medium, low) instead of `Severity`. Ids are never reused: closed items stay under `## Closed` with a `- **Closed**:` note (date and pull request, reason, or `duplicate of <ID>`).
+
+| Task | Command |
+|---|---|
+| Capture | `backlog.py add --type bug\|feature\|improvement\|adjustment --title "<t>" --description "<d>" [--severity S] [--priority P] [--found-in "v1.2.0, PR #12"]` |
+| Capture failed manual tests | `backlog.py add --from-failed --run vX.Y.Z-rc.N [--severity S]` |
+| Summary (bugs before new work first) | `backlog.py summary [--json]` |
+| List, show | `backlog.py list [--type T] [--status S] [--all] [--json]`, `backlog.py show <ID>` |
+| Change | `backlog.py set <ID> [--title] [--description] [--severity] [--priority] [--status] [--plan]` |
+| Promote into a plan | `backlog.py promote <ID> [<ID> ...] [--title T] [--id PLAN_ID] [--version V]` or `--into <PLAN_ID>` |
+| Close | `backlog.py close <ID> [--ref "PR #12"]`, `drop <ID> --reason R`, `duplicate <ID> --of <ID>`, `reopen <ID>` |
+| Validate | `backlog.py validate` |
+
+- **Capture** costs nothing: no discovery, no plan. The user does it with the [`/backlog`](../backlog/SKILL.md) command; the agent does it for bugs it finds outside the current scope.
+- **Promotion** creates a `draft` plan from `templates/BUG_PLAN_TEMPLATE.md` (every item a bug: reproduction, evidence and root cause, fix design, regression test) or `templates/FEATURE_PLAN_TEMPLATE.md`, with the items copied into its `Backlog items` section, and links both ways. The discovery is written in that plan; it is saved again as `active`, with milestones, for approval.
+- **Linked items follow their plan**: `planned` while the plan is draft or active, `in_progress` when it is in progress, closed as `done` when it is completed (`check_milestone.py`, `update_plan_status.py`).
+- **Triage is the user's decision**: the agent never promotes, drops or re-prioritizes on its own.
+- The script never commits and refuses to rewrite a file whose structure it cannot read, so hand edits are never lost.
+
+---
+
 ## 👥 Team Workflow
 
 - **Phase 2 (plan)**: save the plan with `save_plan.py`. The file is part of the proposal the user approves.
@@ -160,9 +199,9 @@ python "<skills_root>/plan-memory/rebuild_index.py"
 ## 🔒 Integration with `dev-cycle-protocol`
 
 The whole development lifecycle follows 👉 **[`dev-cycle-protocol`](../dev-cycle-protocol/SKILL.md)**:
-- **Phase 1 (Discovery)**: check `list_plans.py`, `check_milestone.py --list` or `search_plans.py` for real progress and agreed guidelines.
+- **Phase 1 (Discovery)**: check `list_plans.py`, `check_milestone.py --list` or `search_plans.py` for real progress and agreed guidelines, and `backlog.py summary` for open bugs and captured ideas; promote the items the user chooses.
 - **Phase 2 (Plan)**: save the full plan with `save_plan.py` (with `--supersedes` when it replaces one) and run `detect_drift.py`. The plan follows the orchestrator's template, with a section from each role.
-- **Phase 3 (Plan approval)**: `verify_gate.py --gate 3` checks there is an active plan and warns if its file is not committed.
+- **Phase 3 (Plan approval)**: `verify_gate.py --gate 3` checks there is an active plan, warns if its file is not committed, and blocks a non-bug plan while open blocking bugs are outside it (bugs first).
 - **Phase 4 (Implementation)**: mark milestones with `check_milestone.py` as they are completed.
 - **Phase 10 (Release)**: close the remaining milestones or finish the plan with `update_plan_status.py`.
 

@@ -1,8 +1,8 @@
 {
   "name": "dev-skills",
   "displayName": "Dev Skills (Levix)",
-  "version": "2.0.0",
-  "description": "Role-based development skills: cycle orchestrator, architect, QA, DevOps, technical writer, technical docs, shared plans, session memory and folder RAG sync.",
+  "version": "2.1.0",
+  "description": "Role-based development skills: cycle orchestrator, backlog and /backlog command, architect, QA, DevOps, technical writer, technical docs, shared plans, session memory and folder RAG sync.",
   "author": {
     "name": "Levi Silveira"
   },
