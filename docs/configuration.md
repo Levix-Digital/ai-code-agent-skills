@@ -23,6 +23,7 @@ Optional file at a project's root: the project configuration shared by every ski
     "observability": "cli"
   },
   "plans": { "dir": "docs/plans" },
+  "backlog": { "file": "docs/BACKLOG.md", "blocking_severities": ["critical", "high"] },
   "architecture_docs": {
     "index": "TECDOC.md",
     "architecture_dir": "docs/architecture",
@@ -61,6 +62,8 @@ Optional file at a project's root: the project configuration shared by every ski
 | `devops.version_files` | Files that hold the version number | `[]` |
 | `devops.observability` | `cli`, `service`, `library`, `desktop` or `none` | not set |
 | `plans.dir` | Folder of the plan files | `docs/plans` |
+| `backlog.file` | The project backlog | `docs/BACKLOG.md` |
+| `backlog.blocking_severities` | Severities of open bugs that block plan approval of other work (bugs first); `[]` turns the rule off | `["critical", "high"]` |
 | `architecture_docs` | Layout, line limit and language of the technical docs; add `"plans"` to `language_scope` to check plans too | see `architecture-docs` |
 | `drift_rules` | Technologies or patterns the project's plans reject | `[]` |
 

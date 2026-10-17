@@ -7,7 +7,8 @@ Development skills in the open `SKILL.md` format, shared by every coding agent o
 | Skill | Role | What it does |
 |---|---|---|
 | [`dev-cycle-protocol`](#dev-cycle-protocol) | Orchestrator | Development cycle from discovery to a verified release: phases, the role called in each one, full and short paths, the user's gates, the shared `.dev-cycle.json` |
-| [`plan-memory`](#plan-memory) | Planner | Keeps complete architecture plans as versioned files in each project (`docs/plans`), shared by the team, with milestones, lineage, search and drift detection |
+| [`plan-memory`](#plan-memory) | Planner | The project backlog (`docs/BACKLOG.md`) and complete plans as versioned files (`docs/plans`), shared by the team, with promotion of backlog items, milestones, lineage, search and drift detection |
+| [`backlog`](#backlog) | Command | `/backlog --feature\|--improvement\|--adjustment\|--bug "<text>"`: capture an idea or bug for later in one line |
 | [`software-design`](#software-design) | Architect | Design principles, the project's architecture style with a guide per style, design input for plans, review checklist and core dependency check |
 | [`architecture-docs`](#architecture-docs) | Technical documentation | Keeps technical docs current: short index, one living page per subsystem, immutable ADRs, validation and migration of legacy docs |
 | [`quality-assurance`](#quality-assurance) | QA | Automated test strategy and one curated manual test suite with Pass/Fail/Blocked runs per release candidate |
@@ -116,6 +117,8 @@ Agents load a skill on their own when the task matches its `description`; you ca
 
 Small fixes and documentation changes take the short path: no plan file and no release candidate.
 
+Ideas and bugs you do not want to work on yet go to the **backlog**: type `/backlog --feature "<your idea>"` (or `--improvement`, `--adjustment`, `--bug`) and the agent records it in `docs/BACKLOG.md` with an id. Bugs the agent finds outside the current change land there too. At the start of the next cycle the agent shows the backlog; you choose what to plan, and open critical or high bugs come before new features.
+
 ---
 
 ## Claude Code cloud sessions (plugin)
@@ -153,23 +156,24 @@ python <skills_root>/dev-cycle-protocol/verify_gate.py --gate 3|rc|8 [--run vX.Y
 ```
 - `inspect_project.py` detects languages, manifests, test runners, documentation files and Git state, and shows the configured architecture style, branches and releases repository.
 - `project_config.py` shows, validates or migrates `.dev-cycle.json`.
-- `verify_gate.py --gate 3` (before plan approval): working tree, active plan, no secrets tracked or staged.
+- `verify_gate.py --gate 3` (before plan approval): working tree, active plan, bugs first (a plan that is not a bug plan is blocked while an open critical or high bug is outside it, unless you accept the risk: `--accept-open-bugs "<reason>"`), no secrets tracked or staged.
 - `verify_gate.py --gate rc --run <tag>` (candidate acceptance): every manual test of the run is Pass.
-- `verify_gate.py --gate 8` (before the release pull request): documentation and manual test files exist and the checkers of every role pass (`check_docs.py`, `check_readme.py`, `manual_tests.py validate`, `check_design.py`, `check_ci_policy.py`, `release_status.py version`), plus the candidate run with `--run`, no secrets and a clean tree.
+- `verify_gate.py --gate 8` (before the release pull request): documentation and manual test files exist and the checkers of every role pass (`check_docs.py`, `check_readme.py`, `manual_tests.py validate`, `check_design.py`, `check_ci_policy.py`, `release_status.py version`, `backlog.py validate`), plus the candidate run with `--run`, no secrets and a clean tree; open blocking bugs are listed for the release notes.
 
 Full protocol: [dev-cycle-protocol/SKILL.md](dev-cycle-protocol/SKILL.md).
 
 ### plan-memory
 
-Keeps every multi-step plan **complete and uncompressed**, shared by everyone on the project:
+Keeps the project's planning in its repository, at two levels: the **backlog**, where work is captured for later, and **plans**, complete and uncompressed, shared by everyone on the project:
 
+- **Backlog**: `docs/BACKLOG.md` (`backlog.file`), sections Bugs (`BUG-NNN`, with severity), Features (`FEAT-NNN`), Improvements (`IMP-NNN`) and Adjustments (`ADJ-NNN`, with priority), and Closed. `backlog.py promote <ID>` turns items into a draft plan (a bug plan for bugs, with reproduction, root cause and regression test); the items follow the plan and close when it is completed.
 - **Plan files**: `docs/plans/<plan_id>.md` in the project repository, with YAML frontmatter (status, version, author, milestones, lineage, status log) and the plan body. They are committed and reviewed like code. Change the folder with `plans.dir` in `.dev-cycle.json`.
 - **Local index**: a ChromaDB index for semantic search and drift detection, synced from the files on every command (including teammates' changes after `git pull`). It is disposable: `rebuild_index.py` recreates it.
 
 | Task | Command |
 |---|---|
-| Save or update a plan | `save_plan.py --title "<t>" --file plan.md [--version v1.2.0] [--milestones "A,B,C"] [--supersedes <old_id>]` |
-| List plans | `list_plans.py [--status active]` |
+| Save or update a plan | `save_plan.py --title "<t>" --file plan.md [--version v1.2.0] [--milestones "A,B,C"] [--supersedes <old_id>] [--kind bug] [--backlog-items "BUG-001"]` |
+| List plans | `list_plans.py [--status active] [--kind bug]` |
 | Read a plan in full | `get_plan.py --id <plan_id>` or `get_plan.py` (latest active) |
 | Semantic search | `search_plans.py --query "<text>" [--limit 5] [--all-projects]` |
 | Milestones | `check_milestone.py --list` / `--milestone "A" [--notes "..."]` / `--milestone "A" --uncheck` |
@@ -188,6 +192,10 @@ All scripts are in `<skills_root>/plan-memory/`. They work on the Git repository
 - **Index location**: `~/.ai-code-agent-memory/plan-memory/db` (override with `PLAN_MEMORY_DB`).
 
 Details: [plan-memory/SKILL.md](plan-memory/SKILL.md).
+
+### backlog
+
+The `/backlog` command captures without leaving the conversation: `/backlog --feature "I would like answers exportable to Markdown"`, `/backlog --bug "sync never finishes on network drives" --severity high`, or `/backlog` alone for the summary. The agent writes a short title and a faithful English description, runs `plan-memory/backlog.py add` and answers with one line (`FEAT-003: Export answers to Markdown (medium)`). Priority defaults to `medium`; a bug without `--severity` gets an estimated one, stated in the answer. In agents without slash commands, ask "add to the backlog as a feature: ...". Details: [backlog/SKILL.md](backlog/SKILL.md); backlog commands (`add`, `summary`, `promote`, `close`, ...): [plan-memory/SKILL.md](plan-memory/SKILL.md#-backlog-backlogpy).
 
 ### session-memory
 
@@ -321,7 +329,7 @@ Details: [folder-sync/SKILL.md](folder-sync/SKILL.md).
 
 ## Project configuration: `.dev-cycle.json`
 
-Optional file at a project's root: the project configuration shared by every skill, one section per skill (`architecture`, `docs`, `tests`, `devops`, `plans`, `architecture_docs`, `drift_rules`) plus `test_commands`. Every key is optional and older files with flat keys keep working.
+Optional file at a project's root: the project configuration shared by every skill, one section per skill (`architecture`, `docs`, `tests`, `devops`, `plans`, `backlog`, `architecture_docs`, `drift_rules`) plus `test_commands`. Every key is optional and older files with flat keys keep working.
 
 ```json
 {

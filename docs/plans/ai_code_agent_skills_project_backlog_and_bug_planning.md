@@ -6,7 +6,7 @@ version: v2.1.0
 status: in_progress
 author: Levi Silveira
 created_at: '2026-10-16T17:55:20'
-updated_at: '2026-10-16T18:17:03'
+updated_at: '2026-10-16T18:24:21'
 session_id: null
 tags:
 - backlog
@@ -30,7 +30,9 @@ milestones:
   done_at: '2026-10-16'
   by: Levi Silveira
 - name: M4 Documentation and release
-  done: false
+  done: true
+  done_at: '2026-10-16'
+  by: Levi Silveira
 - name: M5 Apply to any-context
   done: false
 status_log:
@@ -47,6 +49,9 @@ status_log:
 - at: '2026-10-16T18:17:03'
   by: Levi Silveira
   note: 'Milestone ''M3 Cycle integration'' completed: C:/Program Files/Git/backlog skill, bugs-first gate 3, backlog checks in gate 8 and inspect_project, --from-failed, protocol and QA rules'
+- at: '2026-10-16T18:24:21'
+  by: Levi Silveira
+  note: 'Milestone ''M4 Documentation and release'' completed: plan-memory SKILL, README, configuration reference, manual tests MT-BACKLOG-001/002, plugin 2.1.0, backlog linked by install.ps1; 84 tests pass'
 ---
 
 # Project Backlog and Bug Planning
