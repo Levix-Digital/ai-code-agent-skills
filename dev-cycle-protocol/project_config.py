@@ -23,6 +23,7 @@ import sys
 MANIFEST_NAME = ".dev-cycle.json"
 
 ARCHITECTURE_STYLES = ["hexagonal", "layered", "mvc", "pipeline", "modular-monolith", "other"]
+BUG_SEVERITIES = ["critical", "high", "medium", "low"]
 OBSERVABILITY_PROFILES = ["cli", "service", "library", "desktop", "none"]
 
 # Sections and their defaults. `None` means "not set": skills fall back to auto-detection.
@@ -54,6 +55,10 @@ DEFAULTS = {
     },
     "plans": {
         "dir": "docs/plans",
+    },
+    "backlog": {
+        "file": "docs/BACKLOG.md",
+        "blocking_severities": ["critical", "high"],
     },
     # Owned by other skills; passed through untouched.
     "architecture_docs": {},
@@ -154,6 +159,9 @@ class ProjectConfig:
                 problems.append(f"architecture.{key} must be a list")
         if not isinstance(self.section("devops").get("version_files"), list):
             problems.append("devops.version_files must be a list of paths")
+        blocking = self.section("backlog").get("blocking_severities")
+        if not isinstance(blocking, list) or any(s not in BUG_SEVERITIES for s in blocking):
+            problems.append(f"backlog.blocking_severities must be a list of: {', '.join(BUG_SEVERITIES)}")
         known = set(DEFAULTS) | set(LEGACY_KEYS) | {"doc_files"}
         for key in self.raw:
             if key not in known:
@@ -237,6 +245,8 @@ def main() -> int:
         print(f"   Branches           : {devops.get('integration_branch')} -> {devops.get('production_branch')}"
               f" (release candidates: {'on' if devops.get('release_candidates') else 'off'})")
         print(f"   Releases repo      : {devops.get('releases_repo') or 'not set'}")
+        backlog = cfg.section("backlog")
+        print(f"   Backlog            : {backlog.get('file')} (bugs first: {', '.join(backlog.get('blocking_severities') or []) or 'off'})")
         if cfg.legacy_keys_used:
             print(f"   ℹ️  Legacy keys in use: {', '.join(cfg.legacy_keys_used)} (run with --migrate --write)")
 

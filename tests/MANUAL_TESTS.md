@@ -15,9 +15,9 @@ How to record a run: in each test of the current run, mark exactly one box of th
   2. Run it a second time.
   3. Open a new agent session and ask "which skills do you have?".
 - **Expected**:
-  - The first run shows `+` or `=` for `dev-cycle-protocol`, `plan-memory`, `software-design`, `architecture-docs`, `quality-assurance`, `devops-release`, `user-docs`, `session-memory` and `folder-sync` in every target folder.
+  - The first run shows `+` or `=` for `dev-cycle-protocol`, `plan-memory`, `backlog`, `software-design`, `architecture-docs`, `quality-assurance`, `devops-release`, `user-docs`, `session-memory` and `folder-sync` in every target folder.
   - The second run shows only `=`.
-  - The agent lists the nine skills.
+  - The agent lists the ten skills.
 - **Result**: [ ] Pass [ ] Fail [ ] Blocked
 - **Notes**:
 
@@ -48,6 +48,39 @@ How to record a run: in each test of the current run, mark exactly one box of th
 - **Expected**:
   - No plan file is created and no release candidate is cut.
   - The fix is made on a `fix/` or `docs/` branch with a pull request into `dev`.
+- **Result**: [ ] Pass [ ] Fail [ ] Blocked
+- **Notes**:
+
+## Backlog
+
+### MT-BACKLOG-001: /backlog captures one item in English
+
+- **Covers**: backlog, plan-memory
+- **Prerequisites**: a sample Git project
+- **Steps**:
+  1. Type `/backlog --feature "eu gostaria de exportar as respostas em Markdown"`.
+  2. Type `/backlog --bug "o sync nunca termina em unidades de rede"` without a severity.
+  3. Type `/backlog`.
+- **Expected**:
+  - Step 1 answers with one line such as `FEAT-001: Export answers to Markdown (medium)`; `docs/BACKLOG.md` has the item in English, with no added scope.
+  - Step 2 answers with the new `BUG` id and says the severity was estimated.
+  - Step 3 shows the summary; no plan file is created, no code changes and nothing is committed.
+- **Result**: [ ] Pass [ ] Fail [ ] Blocked
+- **Notes**:
+
+### MT-BACKLOG-002: Bugs are captured, triaged by the user and come first
+
+- **Covers**: dev-cycle-protocol, plan-memory, quality-assurance
+- **Prerequisites**: the sample project with an open `high` bug in `docs/BACKLOG.md`
+- **Steps**:
+  1. Ask for a small change and let the agent notice an unrelated bug while working (or point one out as out of scope).
+  2. Ask for a new feature.
+  3. Ask the agent to plan the open bug.
+- **Expected**:
+  - The unrelated bug is captured with `backlog.py add` and its id is reported; the pull request links it instead of listing loose points to decide.
+  - At discovery the agent shows the backlog and asks what to do; it promotes, drops or re-prioritizes nothing on its own.
+  - The feature plan does not pass gate 3 while the high bug is open, unless you accept the risk and the reason is recorded in the plan.
+  - Planning the bug runs `backlog.py promote` and produces a bug plan with reproduction, root cause and a regression test; the item becomes `planned`.
 - **Result**: [ ] Pass [ ] Fail [ ] Blocked
 - **Notes**:
 

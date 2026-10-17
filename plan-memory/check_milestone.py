@@ -6,6 +6,7 @@ Displays visual progress bars, checklist states, and milestone notes.
 import argparse
 import sys
 
+from _backlog_store import sync_plan_items
 from _store import PlanStore, now_iso, progress_bar, setup_stdout, today
 
 
@@ -86,6 +87,8 @@ def check_milestone(
         meta["updated_at"] = now_iso()
         store.save(plan)
         store.sync_index()
+        for message in sync_plan_items(store.root, plan):
+            print(message)
 
     print("=" * 80)
     print(f"📊 MILESTONE TRACKER: [{meta.get('project', store.project)}] {meta.get('title', pid)}")

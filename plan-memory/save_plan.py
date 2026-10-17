@@ -8,7 +8,8 @@ Saving an existing plan ID updates it, keeping its author, creation date and mil
 import argparse
 import sys
 
-from _store import Plan, PlanStore, STATUSES, now_iso, setup_stdout, slugify_id, split_csv
+from _backlog_store import sync_plan_items
+from _store import KINDS, Plan, PlanStore, STATUSES, now_iso, setup_stdout, slugify_id, split_csv
 
 
 def save_plan(
@@ -23,7 +24,10 @@ def save_plan(
     status: str = "active",
     parent_plan_id: str = None,
     supersedes: str = None,
+    kind: str = None,
+    backlog_items: str = None,
 ):
+    """Writes the plan file and returns the Plan."""
     setup_stdout()
     pid = plan_id or f"{slugify_id(store.project)}_{slugify_id(title)}"
     author = store.author()
@@ -55,6 +59,12 @@ def save_plan(
         meta["parent_plan_id"] = parent_plan_id
     if supersedes:
         meta["supersedes"] = supersedes
+    if kind:
+        if kind not in KINDS:
+            raise ValueError(f"kind '{kind}' is not one of: {', '.join(KINDS)}")
+        meta["kind"] = kind
+    if backlog_items is not None:
+        meta["backlog_items"] = [i.upper() for i in split_csv(backlog_items)]
     if milestones is not None:
         meta["milestones"] = [old_done.get(name, {"name": name, "done": False}) for name in split_csv(milestones)]
     for key in ("version", "session_id", "supersedes", "superseded_by", "parent_plan_id"):
@@ -81,11 +91,15 @@ def save_plan(
             print(f"⚠️ Warning: plan to supersede '{supersedes}' not found in {store.plans_dir}.", file=sys.stderr)
 
     store.sync_index()
+    item_messages = sync_plan_items(store.root, plan)
 
     print(f"✅ Plan {action}: {plan.path}")
     print(f"   • Plan ID    : {pid}")
     print(f"   • Project    : {store.project}")
     print(f"   • Title      : {title}")
+    print(f"   • Kind       : {plan.kind}")
+    if plan.backlog_items:
+        print(f"   • Backlog    : {', '.join(plan.backlog_items)}")
     print(f"   • Author     : {meta.get('author')}")
     print(f"   • Version    : {meta.get('version') or '-'}")
     print(f"   • Status     : {meta['status'].upper()}")
@@ -94,7 +108,10 @@ def save_plan(
         print(f"   • Supersedes : {supersedes}")
     if meta["milestones"]:
         print(f"   • Milestones : {', '.join(m['name'] for m in meta['milestones'])}")
+    for message in item_messages:
+        print(f"   {message}")
     print("   👉 Commit the plan file with the change it describes (dev-cycle-protocol Phase 3).\n")
+    return plan
 
 
 if __name__ == "__main__":
@@ -112,6 +129,8 @@ if __name__ == "__main__":
     parser.add_argument("--status", type=str, default="active", choices=STATUSES, help="Plan status")
     parser.add_argument("--parent-id", type=str, default=None, help="Parent plan ID for hierarchical breakdown")
     parser.add_argument("--supersedes", type=str, default=None, help="Older Plan ID that this new plan supersedes")
+    parser.add_argument("--kind", type=str, default=None, choices=KINDS, help="Plan kind (default: feature)")
+    parser.add_argument("--backlog-items", type=str, default=None, help="Comma-separated backlog item ids the plan delivers")
     args = parser.parse_args()
 
     if args.file:
@@ -135,4 +154,6 @@ if __name__ == "__main__":
         status=args.status,
         parent_plan_id=args.parent_id,
         supersedes=args.supersedes,
+        kind=args.kind,
+        backlog_items=args.backlog_items,
     )
