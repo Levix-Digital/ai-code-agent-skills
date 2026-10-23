@@ -1,6 +1,7 @@
 """
 Verify Gate Utility - dev-cycle-protocol Skill
 Automated gate checks of the role-based development cycle:
+  gate 0  - before asking for the product baseline approval (Phase 0, product inception)
   gate 3  - before asking for plan approval (bugs first: open blocking bugs hold back other plans)
   gate rc - release candidate acceptance (all manual tests of the run Pass)
   gate 8  - release readiness, before the release pull request (runs every role's checker)
@@ -117,6 +118,128 @@ def check_bugs_first(cwd: str, plan, store, accept_reason: str = None) -> bool:
     print("   Plan them first (plan-memory/backlog.py promote), or, only when the user explicitly accepts the risk,")
     print('   run this gate again with --accept-open-bugs "<the user\'s reason>".')
     return False
+
+
+def load_roadmap(cwd: str):
+    """(RoadmapFile, Roadmap) of the project, or (RoadmapFile, None) when there is no roadmap file."""
+    sys.path.insert(0, os.path.join(SKILLS_ROOT, "plan-memory"))
+    from _roadmap_store import RoadmapFile
+    rf = RoadmapFile(cwd)
+    return rf, (rf.load() if rf.exists else None)
+
+
+def check_speckit(cwd: str) -> bool:
+    """When Spec Kit is enabled: the setup matches the pin and the constitution is current."""
+    cfg = load_project_config(cwd)
+    if not cfg.section("speckit").get("enabled"):
+        return True
+    passed = report_checker("Spec Kit setup (speckit_setup.py status)",
+                            *run_checker("dev-cycle-protocol", "speckit_setup.py", ["status", "--dir", cwd]))
+    passed &= report_checker("Constitution (constitution.py check)",
+                             *run_checker("dev-cycle-protocol", "constitution.py", ["check", "--dir", cwd]))
+    return passed
+
+
+def verify_gate_0(cwd: str, project_name: str) -> bool:
+    """Product baseline gate (Phase 0): vision, technical specification, architecture, backlog and roadmap."""
+    print("=" * 80)
+    print(f"🌱 VERIFYING GATE 0 (PRODUCT BASELINE): {project_name}")
+    print("=" * 80)
+
+    passed = True
+    cfg = load_project_config(cwd)
+
+    # 1. Business document and technical specification (product-inception)
+    code, out = run_checker("product-inception", "check_product.py", ["--dir", cwd])
+    passed &= report_checker("Product documents (product-inception)", code, out, max_lines=40)
+    questions = [l.strip() for l in (out or "").splitlines() if l.strip().startswith("❓")]
+    if code == 0 and questions:
+        print(f"⚠️ {len(questions)} open question(s) remain; the user decides whether the baseline is approved with them:")
+        for q in questions:
+            print(f"   {q}")
+
+    # 2. Architecture style (software-design) and technical documentation (architecture-docs)
+    style = cfg.section("architecture").get("style")
+    if style:
+        print(f"✅ Architecture style set: {style}")
+    else:
+        print("❌ architecture.style is not set in .dev-cycle.json (software-design).")
+        passed = False
+    index = (cfg.section("architecture_docs") or {}).get("index") or cfg.section("docs").get("tec_doc")
+    if index and os.path.isfile(os.path.join(cwd, index)):
+        code, out = run_checker("architecture-docs", "check_docs.py", ["--dir", cwd])
+        if code is not None and "does not use the architecture-docs layout" in out:
+            print("⚠️ TecDoc not migrated to the architecture-docs layout (docs/architecture + docs/adr) yet.")
+        else:
+            passed &= report_checker("Architecture docs check (architecture-docs)", code, out)
+    else:
+        print(f"❌ Technical documentation index missing ({index or 'not configured'}): create it with architecture-docs.")
+        passed = False
+
+    # 3. Product backlog with epics (plan-memory)
+    try:
+        bf, backlog = load_backlog(cwd)
+        if backlog is None:
+            print(f"❌ No backlog at {bf.rel}: capture the product's epics and items (plan-memory/backlog.py).")
+            passed = False
+        else:
+            problems = backlog.validate()
+            epics = backlog.open_items("epic")
+            if problems:
+                print(f"❌ Backlog {bf.rel} has {len(problems)} problem(s); run plan-memory/backlog.py validate.")
+                passed = False
+            elif not epics:
+                print(f"❌ Backlog {bf.rel} has no epic: the complete product is planned as epics and their items.")
+                passed = False
+            else:
+                loose = [i.id for i in backlog.open_items() if i.type not in ("epic", "bug") and not i.epic]
+                print(f"✅ Backlog: {len(epics)} epic(s), {len(backlog.open_items()) - len(epics)} open item(s).")
+                if loose:
+                    print(f"ℹ️ Items without an epic: {', '.join(loose)}")
+    except Exception as e:
+        print(f"❌ Could not read the backlog: {e}")
+        backlog = None
+        passed = False
+
+    # 4. Roadmap (plan-memory)
+    try:
+        rf, roadmap = load_roadmap(cwd)
+        if roadmap is None:
+            print(f"❌ No roadmap at {rf.rel}: plan the releases (plan-memory/roadmap.py add-release, assign).")
+            passed = False
+        else:
+            problems = roadmap.validate(backlog)
+            current = roadmap.current()
+            if problems:
+                print(f"❌ Roadmap {rf.rel} has {len(problems)} problem(s); run plan-memory/roadmap.py validate.")
+                passed = False
+            elif current is None or not current.items:
+                print(f"❌ Roadmap {rf.rel} has no release with items to start from.")
+                passed = False
+            else:
+                print(f"✅ Roadmap: {len(roadmap.releases)} release(s); first: {current.version} {current.name} "
+                      f"({len(current.items)} item(s)).")
+    except Exception as e:
+        print(f"❌ Could not read the roadmap: {e}")
+        passed = False
+
+    # 5. Spec Kit and the generated constitution, when enabled
+    passed &= check_speckit(cwd)
+
+    # 6. Secret hygiene
+    secrets = check_secret_hygiene(cwd)
+    if secrets:
+        for s in secrets:
+            print(f"🚨 SECRET HYGIENE ALERT: {s}")
+        passed = False
+    else:
+        print("✅ Secret hygiene check passed.")
+
+    print("-" * 80)
+    print("🟢 GATE 0 STATUS: READY FOR THE USER'S APPROVAL OF THE PRODUCT BASELINE" if passed
+          else "🚨 GATE 0 STATUS: PRODUCT BASELINE INCOMPLETE")
+    print("=" * 80 + "\n")
+    return passed
 
 
 def verify_gate_3(cwd: str, project_name: str, accept_open_bugs: str = None) -> bool:
@@ -291,8 +414,8 @@ def main() -> int:
         except Exception:
             pass
     parser = argparse.ArgumentParser(description="Verify gate compliance for dev-cycle-protocol")
-    parser.add_argument("--gate", type=str, required=True, choices=["3", "8", "rc", "gate3", "gate8", "gaterc"],
-                        help="Gate to verify (3=plan approval, rc=candidate acceptance, 8=release readiness)")
+    parser.add_argument("--gate", type=str, required=True, choices=["0", "3", "8", "rc", "gate0", "gate3", "gate8", "gaterc"],
+                        help="Gate to verify (0=product baseline, 3=plan approval, rc=candidate acceptance, 8=release readiness)")
     parser.add_argument("--dir", type=str, default=None, help="Workspace directory")
     parser.add_argument("--project", type=str, default=None, help="Project name override")
     parser.add_argument("--run", type=str, default=None, help="Release candidate run label, for example v1.4.0-rc.1")
@@ -304,7 +427,9 @@ def main() -> int:
     p_name = args.project or load_project_config(cwd).project_name
 
     gate = args.gate.replace("gate", "")
-    if gate == "3":
+    if gate == "0":
+        success = verify_gate_0(cwd, p_name)
+    elif gate == "3":
         success = verify_gate_3(cwd, p_name, args.accept_open_bugs)
     elif gate == "rc":
         success = verify_gate_rc(cwd, p_name, args.run)

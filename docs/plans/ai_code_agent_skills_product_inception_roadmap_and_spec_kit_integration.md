@@ -6,7 +6,7 @@ version: v2.2.0
 status: in_progress
 author: Levi Silveira
 created_at: '2026-10-23T13:51:22'
-updated_at: '2026-10-23T14:04:18'
+updated_at: '2026-10-23T14:07:57'
 session_id: null
 tags:
 - product-inception
@@ -27,7 +27,9 @@ milestones:
   done_at: '2026-10-23'
   by: Levi Silveira
 - name: M3 Product inception and gate 0
-  done: false
+  done: true
+  done_at: '2026-10-23'
+  by: Levi Silveira
 - name: M4 Spec Kit preset and setup
   done: false
 - name: M5 Generated constitution
@@ -47,6 +49,9 @@ status_log:
 - at: '2026-10-23T14:04:18'
   by: Levi Silveira
   note: 'Milestone ''M2 Epics and roadmap'' completed: EPIC-NNN items and the Epic field (epics are never promoted); roadmap.py (add-release, set-release, move-release, assign with epic expansion, unassign, show, current, validate); roadmap config section; 19 tests'
+- at: '2026-10-23T14:07:57'
+  by: Levi Silveira
+  note: 'Milestone ''M3 Product inception and gate 0'' completed: product-inception skill (process, interview rules, adoption mode), VISION and TECH_SPEC templates, check_product.py, verify_gate.py --gate 0, product config section; 13 tests'
 ---
 
 # Product Inception, Roadmap and Spec Kit Integration
