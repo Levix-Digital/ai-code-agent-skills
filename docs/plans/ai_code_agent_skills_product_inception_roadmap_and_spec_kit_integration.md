@@ -6,7 +6,7 @@ version: v2.2.0
 status: in_progress
 author: Levi Silveira
 created_at: '2026-10-23T13:51:22'
-updated_at: '2026-10-23T14:08:46'
+updated_at: '2026-10-23T14:10:37'
 session_id: null
 tags:
 - product-inception
@@ -35,7 +35,9 @@ milestones:
   done_at: '2026-10-23'
   by: Levi Silveira
 - name: M5 Generated constitution
-  done: false
+  done: true
+  done_at: '2026-10-23'
+  by: Levi Silveira
 - name: M6 Protocol integration
   done: false
 - name: M7 Documentation and release
@@ -57,6 +59,9 @@ status_log:
 - at: '2026-10-23T14:08:46'
   by: Levi Silveira
   note: 'Milestone ''M4 Spec Kit preset and setup'' completed: dev-cycle preset (plan template addendum, append strategy); speckit_setup.py init/upgrade/status/latest with the pinned uvx call, verified-version fallback and adaptation document; speckit config section; init verified end to end on a scratch project'
+- at: '2026-10-23T14:10:37'
+  by: Levi Silveira
+  note: 'Milestone ''M5 Generated constitution'' completed: constitution.py generate/check from software-design, the style guide, the protocol principles, TECH_SPEC requirements and constraints and accepted ADRs; content and sources hashes detect hand edits and stale files; gates 0 and 3 run it when Spec Kit is enabled; 8 tests'
 ---
 
 # Product Inception, Roadmap and Spec Kit Integration
