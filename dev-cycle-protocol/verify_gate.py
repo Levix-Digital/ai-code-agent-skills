@@ -9,6 +9,7 @@ Project-agnostic: adapts to the project's .dev-cycle.json and detected stack.
 """
 import argparse
 import os
+import re
 import subprocess
 import sys
 
@@ -126,6 +127,44 @@ def load_roadmap(cwd: str):
     from _roadmap_store import RoadmapFile
     rf = RoadmapFile(cwd)
     return rf, (rf.load() if rf.exists else None)
+
+
+NEEDS_CLARIFICATION = "[NEEDS CLARIFICATION"
+SPEC_REQUIRED = ["spec.md", "plan.md", "tasks.md"]
+
+
+def check_spec_dir(cwd: str, plan) -> bool:
+    """Spec Kit artifacts of a feature plan: complete, without open clarifications, on a protocol branch."""
+    cfg = load_project_config(cwd).section("speckit")
+    if not cfg.get("enabled") or plan.kind == "bug":
+        return True
+    if not plan.spec_dir:
+        print("⚠️ Spec Kit is enabled but this feature plan has no spec_dir (save_plan.py --spec-dir specs/NNN-slug); "
+              "the user decides whether this change goes without Spec Kit.")
+        return True
+    folder = os.path.join(cwd, plan.spec_dir)
+    missing = [n for n in SPEC_REQUIRED if not os.path.isfile(os.path.join(folder, n))]
+    if missing:
+        print(f"❌ Spec Kit artifacts missing in {plan.spec_dir}: {', '.join(missing)} "
+              "(/speckit-specify, /speckit-plan, /speckit-tasks).")
+        return False
+    passed = True
+    for name in ("spec.md", "plan.md"):
+        with open(os.path.join(folder, name), "r", encoding="utf-8") as f:
+            count = f.read().count(NEEDS_CLARIFICATION)
+        if count:
+            print(f"❌ {plan.spec_dir}/{name} has {count} open [NEEDS CLARIFICATION] marker(s): run /speckit-clarify.")
+            passed = False
+    with open(os.path.join(folder, "plan.md"), "r", encoding="utf-8") as f:
+        if "## Dev Cycle Protocol" not in f.read():
+            print(f"⚠️ {plan.spec_dir}/plan.md has no 'Dev Cycle Protocol' sections (is the dev-cycle preset installed?).")
+    prefix = cfg.get("branch_prefix") or "feat"
+    code, branch = run_cmd(["git", "rev-parse", "--abbrev-ref", "HEAD"], cwd)
+    if code == 0 and not re.match(rf"^{re.escape(prefix)}/\d{{3,}}-", branch):
+        print(f"⚠️ Current branch '{branch}' is not a Spec Kit feature branch ({prefix}/NNN-slug).")
+    if passed:
+        print(f"✅ Spec Kit artifacts complete in {plan.spec_dir} (spec, plan, tasks; no open clarification).")
+    return passed
 
 
 def check_speckit(cwd: str) -> bool:
@@ -268,6 +307,7 @@ def verify_gate_3(cwd: str, project_name: str, accept_open_bugs: str = None) -> 
             if not tracked:
                 print("⚠️ The active plan file is not committed yet. Commit it after approval.")
             passed &= check_bugs_first(cwd, latest, store, accept_open_bugs)
+            passed &= check_spec_dir(cwd, latest)
         else:
             print(f"⚠️ No active plan in {store.plans_dir}. Save the plan with plan-memory in Phase 2 (full path).")
     except Exception as e:
@@ -385,7 +425,36 @@ def verify_gate_8(cwd: str, project_name: str, run: str = None) -> bool:
         except Exception as e:
             print(f"ℹ️ Could not read the backlog: {e}")
 
-    # 10. Secret hygiene
+    # 10. Roadmap (plan-memory): items of the release being shipped that are still open
+    code, out = run_checker("plan-memory", "roadmap.py", ["validate", "--dir", cwd])
+    passed &= report_checker("Roadmap (plan-memory)", code, out)
+    if code is not None:
+        try:
+            rf, roadmap = load_roadmap(cwd)
+            if roadmap is not None:
+                version = re.sub(r"-rc\.\d+$", "", run) if run else None
+                release = next((r for r in roadmap.releases if r.version == version), None) if version else roadmap.current()
+                if release is None and version:
+                    print(f"⚠️ {version} is not in the roadmap {rf.rel}; add it or check the version.")
+                elif release is not None:
+                    _, backlog = load_backlog(cwd)
+                    still_open = []
+                    for item_id in release.items:
+                        try:
+                            item = backlog.find(item_id) if backlog else None
+                        except ValueError:
+                            item = None
+                        if item is not None and not item.closed:
+                            still_open.append(f"{item.id} [{item.status}] {item.title}")
+                    if still_open:
+                        print(f"⚠️ Items of {release.version} still open; the user decides whether they move to the next release "
+                              f"(roadmap.py assign --move): " + "; ".join(still_open))
+                    else:
+                        print(f"✅ Every item of {release.version} is closed.")
+        except Exception as e:
+            print(f"ℹ️ Could not read the roadmap: {e}")
+
+    # 11. Secret hygiene
     secrets = check_secret_hygiene(cwd)
     if secrets:
         for s in secrets:
@@ -394,7 +463,7 @@ def verify_gate_8(cwd: str, project_name: str, run: str = None) -> bool:
     else:
         print("✅ Secret hygiene check passed.")
 
-    # 11. Git status
+    # 12. Git status
     code, status_out = run_cmd(["git", "status", "--porcelain"], cwd)
     dirty = [l for l in status_out.splitlines() if l.strip()]
     if dirty:

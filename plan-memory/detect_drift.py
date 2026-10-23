@@ -62,7 +62,7 @@ def detect_drift(
 
     meta = plan.meta
     pid = meta["plan_id"]
-    baseline_doc = plan.body
+    baseline_doc = store.full_text(plan)
     project_name = meta.get("project", store.project)
     plan_title = meta.get("title", pid)
     all_milestones = [m["name"] for m in plan.milestones]
@@ -98,7 +98,7 @@ def detect_drift(
     warnings = []
     conflicts = []
     # Project rules are checked against every plan still in force, not only the baseline
-    in_force = [p.body for p in plans if p.meta.get("status") in ("active", "in_progress") and p.meta["plan_id"] != pid]
+    in_force = [store.full_text(p) for p in plans if p.meta.get("status") in ("active", "in_progress") and p.meta["plan_id"] != pid]
     baseline_lower = "\n".join([baseline_doc] + in_force).lower()
 
     for rule in tech_rules:

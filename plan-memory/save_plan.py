@@ -6,6 +6,7 @@ Supports plan lineage via --supersedes to automatically deprecate older plans.
 Saving an existing plan ID updates it, keeping its author, creation date and milestone progress.
 """
 import argparse
+import os
 import sys
 
 from _backlog_store import sync_plan_items
@@ -26,8 +27,10 @@ def save_plan(
     supersedes: str = None,
     kind: str = None,
     backlog_items: str = None,
+    spec_dir: str = None,
 ):
-    """Writes the plan file and returns the Plan."""
+    """Writes the plan file and returns the Plan. `spec_dir` links the Spec Kit folder whose
+    artifacts hold the plan's detail (the plan file is then the envelope)."""
     setup_stdout()
     pid = plan_id or f"{slugify_id(store.project)}_{slugify_id(title)}"
     author = store.author()
@@ -65,6 +68,11 @@ def save_plan(
         meta["kind"] = kind
     if backlog_items is not None:
         meta["backlog_items"] = [i.upper() for i in split_csv(backlog_items)]
+    if spec_dir is not None:
+        spec_dir = spec_dir.strip().replace("\\", "/").rstrip("/")
+        meta["spec_dir"] = spec_dir or None
+        if spec_dir and not os.path.isdir(os.path.join(store.root, spec_dir)):
+            print(f"⚠️ Warning: spec folder '{spec_dir}' does not exist (yet) in {store.root}.", file=sys.stderr)
     if milestones is not None:
         meta["milestones"] = [old_done.get(name, {"name": name, "done": False}) for name in split_csv(milestones)]
     for key in ("version", "session_id", "supersedes", "superseded_by", "parent_plan_id"):
@@ -100,6 +108,8 @@ def save_plan(
     print(f"   • Kind       : {plan.kind}")
     if plan.backlog_items:
         print(f"   • Backlog    : {', '.join(plan.backlog_items)}")
+    if plan.spec_dir:
+        print(f"   • Spec Kit   : {plan.spec_dir} ({len(store.spec_files(plan))} artifact(s))")
     print(f"   • Author     : {meta.get('author')}")
     print(f"   • Version    : {meta.get('version') or '-'}")
     print(f"   • Status     : {meta['status'].upper()}")
@@ -131,6 +141,7 @@ if __name__ == "__main__":
     parser.add_argument("--supersedes", type=str, default=None, help="Older Plan ID that this new plan supersedes")
     parser.add_argument("--kind", type=str, default=None, choices=KINDS, help="Plan kind (default: feature)")
     parser.add_argument("--backlog-items", type=str, default=None, help="Comma-separated backlog item ids the plan delivers")
+    parser.add_argument("--spec-dir", type=str, default=None, help="Spec Kit folder with the plan's detail (e.g. specs/001-photo-upload)")
     args = parser.parse_args()
 
     if args.file:
@@ -156,4 +167,5 @@ if __name__ == "__main__":
         supersedes=args.supersedes,
         kind=args.kind,
         backlog_items=args.backlog_items,
+        spec_dir=args.spec_dir,
     )
