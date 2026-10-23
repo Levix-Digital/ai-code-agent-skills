@@ -117,3 +117,13 @@ def test_gate_8_without_run_only_warns_about_candidate(tmp_path):
     d = make_project(tmp_path)
     res = gate(d, "--gate", "8")
     assert res.returncode == 0 and "no --run was given" in res.stdout
+
+
+def test_gate_8_names_the_release_gate_of_the_branching_model(tmp_path):
+    d = make_project(tmp_path)
+    assert "READY FOR THE RELEASE PULL REQUEST" in gate(d, "--gate", "8", "--run", "v1.0.0-rc.1").stdout
+    make_project(tmp_path, devops={"branching": "trunk", "version_files": ["version.txt"]})
+    res = gate(d, "--gate", "8", "--run", "v1.0.0-rc.1")
+    assert res.returncode == 0, res.stdout
+    assert "READY FOR THE PROMOTION (the user runs the promote workflow for v1.0.0-rc.1)" in res.stdout
+    assert "Tag v1.0.0-rc.1 not found locally" in res.stdout

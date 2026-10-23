@@ -42,7 +42,7 @@ graph TD
 **Each step ends with the user's approval** of what it produced, before the next one starts. The user may go back at any time: an answer that changes an approved document reopens it, and it is edited in place (it describes the product today, not its history). Stay **consultative** until gate 0: no product code is written in Phase 0.
 
 ### 1. 💡 Idea
-The user's prompt. Repeat it back in two or three sentences (what, for whom, why) so both sides start from the same understanding. If the project folder is new, initialize the repository (`git init`, `dev` and `main` branches per `devops-release`) and create `.dev-cycle.json` with `project_name`.
+The user's prompt. Repeat it back in two or three sentences (what, for whom, why) so both sides start from the same understanding. If the project folder is new, choose the branching model with the user (`devops-release`, "Branching Model": `integration`, `trunk` or `release-branches`, with a recommendation), initialize the repository (`git init` with `main`, plus `dev` for `integration`) and create `.dev-cycle.json` with `project_name` and `devops.branching`.
 
 ### 2. 🎤 Interview
 Rounds of **at most five questions**, each with your **suggestion** (a proposed answer the user can accept, change or reject), ordered by impact on scope. Cover, over the rounds:

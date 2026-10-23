@@ -1,9 +1,10 @@
 """
 Check CI Policy - devops-release Skill
-Checks a repository's GitHub Actions workflows against the devops-release policy:
-tests on pull requests into the integration and production branches, pre-releases for
--rc tags, a tag-on-merge job that can actually trigger the release, release permissions,
-and existing version files.
+Checks a repository's GitHub Actions workflows against the devops-release policy, for the
+project's branching model (`devops.branching`): tests on pull requests into every branch
+that receives them, pre-releases for -rc tags, the release gate (a tag-on-merge job, or a
+promote workflow) able to actually trigger the release, release permissions, and existing
+version files.
 
 Usage:
     python check_ci_policy.py [--dir <project>]
@@ -21,6 +22,9 @@ import yaml
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "dev-cycle-protocol"))
 from project_config import load_project_config  # noqa: E402
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from branching import BranchingModel  # noqa: E402
+
 RELEASE_ACTION_RE = re.compile(r"softprops/action-gh-release|ncipollo/release-action|gh\s+release\s+create")
 TEST_STEP_RE = re.compile(r"\b(cargo\s+test|pytest|npm\s+(run\s+)?test|pnpm\s+(run\s+)?test|yarn\s+test|go\s+test|dotnet\s+test|mvn\s+test|gradle\w*\s+test|make\s+test|tox)\b")
 TAG_PUSH_RE = re.compile(r"git\s+tag\b[\s\S]*?git\s+push\b|git\s+push\s+origin\s+\S*v\$|gh\s+release\s+create")
@@ -29,6 +33,7 @@ PRERELEASE_RE = re.compile(r"^\s*prerelease\s*:|--prerelease", re.I | re.M)
 RC_TEST_RE = re.compile(r"-rc\b|\brc\.")
 CONTENTS_WRITE_RE = re.compile(r"contents\s*:\s*write")
 CUSTOM_SECRET_RE = re.compile(r"secrets\.(?!GITHUB_TOKEN\b)[A-Z0-9_]+")
+ENVIRONMENT_RE = re.compile(r"^\s*environment\s*:", re.M)
 
 
 class Workflow:
@@ -96,8 +101,11 @@ def run(project_dir: str = None):
     errors, warnings = [], []
     cfg = load_project_config(project_dir)
     devops = cfg.section("devops")
-    integration = devops.get("integration_branch") or "dev"
-    production = devops.get("production_branch") or "main"
+    try:
+        model = BranchingModel.from_devops(devops)
+    except ValueError as e:
+        return [str(e)], warnings
+    production = model.production
     use_rc = devops.get("release_candidates", True)
 
     for rel in devops.get("version_files") or []:
@@ -116,9 +124,10 @@ def run(project_dir: str = None):
         return errors, warnings
 
     tests = [w for w in workflows if w.runs_tests]
-    for branch in (integration, production):
-        if not any(w.pr_covers(branch) for w in tests):
-            errors.append(f"no test workflow runs on pull requests into '{branch}' (see templates/ci.yml)")
+    for target in model.pr_targets:
+        sample = target.replace("*", "0.0")   # release/* is checked with a branch it must cover
+        if not any(w.pr_covers(sample) for w in tests):
+            errors.append(f"no test workflow runs on pull requests into '{target}' (see templates/ci.yml)")
 
     releases = [w for w in workflows if w.publishes_release]
     if not releases:
@@ -129,10 +138,23 @@ def run(project_dir: str = None):
         if use_rc and (w.push_tags() or "workflow_call" in w.triggers) and not (PRERELEASE_RE.search(w.text) and RC_TEST_RE.search(w.text)):
             errors.append(f"{w.name}: '-rc' tags must publish pre-releases (prerelease: ${{{{ contains(<tag>, '-rc') }}}})")
 
-    taggers = [w for w in workflows if w.push_covers_branch(production) and TAG_PUSH_RE.search(w.text)]
-    if not taggers:
-        warnings.append(f"no workflow creates the final tag when '{production}' receives the merge (see templates/tag-on-merge.yml)")
-    for w in taggers:
+    merged = [t.replace("*", "0.0") for t in model.pr_targets]
+    taggers = [w for w in workflows if TAG_PUSH_RE.search(w.text) and any(w.push_covers_branch(b) for b in merged)]
+    if model.gate == "merge":
+        gate = [w for w in taggers if w.push_covers_branch(production)]
+        if not gate:
+            warnings.append(f"no workflow creates the final tag when '{production}' receives the merge (see templates/tag-on-merge.yml)")
+    else:
+        for w in taggers:
+            errors.append(f"{w.name}: creates a tag on every merge, but under '{model.name}' the release gate is the user's "
+                          "promotion of an accepted candidate (see templates/promote.yml)")
+        gate = [w for w in workflows if "workflow_dispatch" in w.triggers and TAG_PUSH_RE.search(w.text)]
+        if not gate:
+            warnings.append(f"no promote workflow releases an accepted candidate under '{model.name}' (see templates/promote.yml)")
+        for w in gate:
+            if not ENVIRONMENT_RE.search(w.text):
+                warnings.append(f"{w.name}: no 'environment:' with required reviewers holds the promotion for the user's approval")
+    for w in gate:
         calls_release = bool(REUSABLE_CALL_RE.search(w.text)) or w.publishes_release
         uses_own_token = bool(CUSTOM_SECRET_RE.search(w.text))
         if not calls_release and not uses_own_token:

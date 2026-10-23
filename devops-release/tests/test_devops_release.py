@@ -45,6 +45,50 @@ def test_templates_pass_the_policy(tmp_path):
     assert errors == [] and warnings == []
 
 
+def ci_for(branches):
+    return template("ci.yml").replace("branches: [dev, main]", f"branches: {branches}").replace(
+        'echo "replace with the project\'s test_commands" && exit 1', "pytest")
+
+
+def test_trunk_templates_pass_and_tag_on_merge_is_refused(tmp_path):
+    files = {"version.txt": "1.2.3\n"}
+    flows = {"ci.yml": ci_for("[main]"), "release.yml": template("release.yml"), "promote.yml": template("promote.yml")}
+    d = repo(tmp_path, {"branching": "trunk", "version_files": ["version.txt"]}, flows, files)
+    assert check_ci(d) == ([], [])
+    flows["tag-on-merge.yml"] = template("tag-on-merge.yml")
+    errors, _ = check_ci(repo(tmp_path, {"branching": "trunk", "version_files": ["version.txt"]}, flows, files))
+    assert any("tag-on-merge.yml: creates a tag on every merge" in e for e in errors)
+
+
+def test_trunk_needs_ci_only_into_main_and_a_promote_workflow(tmp_path):
+    d = repo(tmp_path, {"branching": "trunk"}, {"ci.yml": ci_for("[main]"), "release.yml": template("release.yml")})
+    errors, warnings = check_ci(d)
+    assert not any("pull requests into" in e for e in errors)
+    assert any("no promote workflow" in w for w in warnings)
+
+
+def test_promote_without_environment_is_warned(tmp_path):
+    promote = template("promote.yml").replace("    environment: release\n", "")
+    d = repo(tmp_path, {"branching": "trunk"}, {"ci.yml": ci_for("[main]"), "promote.yml": promote,
+                                                 "release.yml": template("release.yml")})
+    _, warnings = check_ci(d)
+    assert any("promote.yml: no 'environment:'" in w for w in warnings)
+
+
+def test_release_branches_need_ci_into_release_branches(tmp_path):
+    flows = {"release.yml": template("release.yml"), "promote.yml": template("promote.yml")}
+    errors, _ = check_ci(repo(tmp_path, {"branching": "release-branches"}, {**flows, "ci.yml": ci_for("[main]")}))
+    assert any("pull requests into 'release/*'" in e for e in errors)
+    errors, _ = check_ci(repo(tmp_path, {"branching": "release-branches"},
+                              {**flows, "ci.yml": ci_for("[main, 'release/**']")}))
+    assert errors == []
+
+
+def test_unknown_branching_model_is_an_error(tmp_path):
+    errors, _ = check_ci(repo(tmp_path, {"branching": "gitflow"}, {}))
+    assert any("gitflow" in e for e in errors)
+
+
 def test_missing_pr_ci_into_integration_branch(tmp_path):
     wf = "on:\n  pull_request:\n    branches: [main]\njobs:\n  t:\n    runs-on: ubuntu-latest\n    steps:\n      - run: cargo test\n"
     errors, _ = check_ci(repo(tmp_path, {}, {"ci.yml": wf}))

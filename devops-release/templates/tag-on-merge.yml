@@ -1,4 +1,5 @@
-# Final release on the user's merge into the production branch.
+# Final release on the user's merge into the production branch (integration model only; trunk and
+# release-branches release through promote.yml).
 # Reads the version bumped in the integration branch, creates the final tag vX.Y.Z when it
 # does not exist yet, and calls the release workflow for it in the same run.
 name: Tag on Merge

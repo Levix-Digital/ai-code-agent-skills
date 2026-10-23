@@ -28,7 +28,7 @@ The platform is detected from the `origin` remote. Set it in `.dev-cycle.json` w
 
 ## What Happens on a Pull Request
 
-1. The agent opens the pull request into the integration branch.
+1. The agent opens the pull request into the work base of the branching model (`dev`, or `main` under `trunk` and `release-branches`; `release/X.Y` for a fix of a release).
 2. The protocol reviews it right away, and again after pushes that change code: line comments that start with **[review]** and a level, `blocking`, `suggestion` or `nit`. The review never approves.
 3. You and your teammates review as usual on the platform.
 4. The agent handles every waiting thread:

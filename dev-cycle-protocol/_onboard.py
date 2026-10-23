@@ -7,7 +7,8 @@ was found. No I/O here, so every rule is unit-tested.
 State (dict, every key optional):
     repo:     {git, commits, branch, dirty, has_code}
     config:   {exists, problems}
-    branches: {integration, integration_exists, production, production_exists}
+    branches: {integration, integration_exists, production, production_exists,
+               model, decided, gate, detected: {model, integration_branch, reason}}
     baseline: {vision, tech_spec, style, tec_doc, epics, roadmap}
     plans:    [{id, title, status, done, total}]          (active and in progress)
     prs:      [{number, title, summary, needs_action, for_user}]   (open pull requests on the platform)
@@ -43,7 +44,16 @@ def setup_items(state: dict, new: bool) -> list:
                       "the project has no configuration"))
     elif config.get("problems"):
         items.append(("config", "Fix .dev-cycle.json", "; ".join(config["problems"])))
-    if repo.get("commits") and branches.get("integration") and not branches.get("integration_exists"):
+    model = branches.get("model") or "integration"
+    detected = (branches.get("detected") or {}).get("model")
+    # The repository follows another model than the default and nobody chose yet: ask once (D4 of branching models).
+    undecided = not branches.get("decided") and detected and detected != model
+    if undecided and config.get("exists"):
+        items.append(("branching", f"Choose the branching model (asked once): the repository looks like '{detected}' "
+                                   f"({branches['detected'].get('reason')}), the configuration defaults to '{model}'",
+                      "no decision recorded"))
+    if (not undecided and model == "integration" and repo.get("commits") and branches.get("integration")
+            and not branches.get("integration_exists")):
         items.append(("branch", f"Create the integration branch '{branches['integration']}' "
                                 f"from '{branches.get('production') or 'main'}'",
                       "feature work goes through the integration branch"))
@@ -103,8 +113,9 @@ def options(state: dict, request: str = None) -> list:
                                            f"{rc.get('failed')} failed" if rc.get("failed") else "") if p)
             add("rc", f"rc:{rc['run']}", f"Finish the acceptance of {rc['run']} ({detail})", "release candidate pending")
         else:
-            add("rc", f"rc:{rc['run']}", f"{rc['run']} is accepted: open the release pull request (gate 8)",
-                "release gate pending")
+            step = ("gate 8, then you promote it (promote workflow)" if (state.get("branches") or {}).get("gate") == "promote"
+                    else "open the release pull request (gate 8)")
+            add("rc", f"rc:{rc['run']}", f"{rc['run']} is accepted: {step}", "release gate pending")
     bugs = state.get("bugs") or []
     if bugs:
         add("bugs", "bugs", f"Plan the open blocking bugs: {', '.join(b.split(' ')[0] for b in bugs)}", "bugs come first")

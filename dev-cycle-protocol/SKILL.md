@@ -1,6 +1,6 @@
 ---
 name: dev-cycle-protocol
-description: Orchestrator of the role-based development cycle - phases from product inception (Phase 0) and discovery to a verified release, the role skill called in each phase (product-inception, software-design, quality-assurance, devops-release, user-docs, architecture-docs, plan-memory, code review), a full path for features and a short path for small fixes, the project backlog with epics and bugs before new work, the roadmap of releases, GitHub Spec Kit as the optional executor of specification, planning and implementation, the user's approval gates (product baseline, plan, release candidate acceptance, merge into production), the shared .dev-cycle.json project configuration and automated gate verification. Use during all product, software design, exploration, implementation, review and release tasks.
+description: Orchestrator of the role-based development cycle - phases from product inception (Phase 0) and discovery to a verified release, on the project's branching model (integration, trunk or release-branches), the role skill called in each phase (product-inception, software-design, quality-assurance, devops-release, user-docs, architecture-docs, plan-memory, code review), a full path for features and a short path for small fixes, the project backlog with epics and bugs before new work, the roadmap of releases, GitHub Spec Kit as the optional executor of specification, planning and implementation, the user's approval gates (product baseline, plan, release candidate acceptance, the release gate: merge into production or promotion of the candidate), the shared .dev-cycle.json project configuration and automated gate verification. Use during all product, software design, exploration, implementation, review and release tasks.
 ---
 
 # 🛡️ Development Cycle Protocol (`dev-cycle-protocol` v4)
@@ -15,7 +15,7 @@ description: Orchestrator of the role-based development cycle - phases from prod
 
 ## 🧭 Starting a Session (`/dev-cycle`)
 
-The user starts with one command, [`/dev-cycle`](../dev-cycle/SKILL.md) (with a product idea or a request, or alone). It runs the diagnosis (`onboard.py diagnose`), says in one line that the project is up to date and goes on, or shows the options in the recommended order: a plan in progress, a pending release candidate, open blocking bugs, missing setup (configuration, integration branch, Spec Kit), a missing product baseline, the next items of the current release, the request. A new repository goes to Phase 0. A repository that never used the protocol gets one initial setup list, confirmed at once or item by item; nothing is written before the user confirms. When the user asks for work without the command, run the same diagnosis first.
+The user starts with one command, [`/dev-cycle`](../dev-cycle/SKILL.md) (with a product idea or a request, or alone). It runs the diagnosis (`onboard.py diagnose`), says in one line that the project is up to date and goes on, or shows the options in the recommended order: a plan in progress, a pending release candidate, open blocking bugs, missing setup (configuration, branching model, integration branch, Spec Kit), a missing product baseline, the next items of the current release, the request. A new repository goes to Phase 0. A repository that never used the protocol gets one initial setup list, confirmed at once or item by item; nothing is written before the user confirms. When the user asks for work without the command, run the same diagnosis first.
 
 ---
 
@@ -29,7 +29,7 @@ The user starts with one command, [`/dev-cycle`](../dev-cycle/SKILL.md) (with a 
 | Architect | [`software-design`](../software-design/SKILL.md) | Design principles, architecture style, design section of plans, structural review |
 | Technical documentation | [`architecture-docs`](../architecture-docs/SKILL.md) | `TECDOC.md`, `docs/architecture`, ADRs |
 | QA | [`quality-assurance`](../quality-assurance/SKILL.md) | Automated test strategy, curated manual test suite, release candidate runs |
-| DevOps | [`devops-release`](../devops-release/SKILL.md) | Branches, CI, versions, release candidates, releases, observability |
+| DevOps | [`devops-release`](../devops-release/SKILL.md) | The branching model, CI, versions, release candidates, releases, observability |
 | Technical writer | [`user-docs`](../user-docs/SKILL.md) | README and end-user documentation |
 | Reviewer | [`code-review`](../code-review/SKILL.md) | The review of every pull request on its platform: line comments with a level, never an approval |
 | Session memory | [`session-memory`](../session-memory/SKILL.md) | The developer's own session context |
@@ -45,10 +45,10 @@ A role is a set of rules and a checker, not a separate person: load the role ski
 2. **Evidence**: every change is proven by automated tests; manual tests cover only what cannot be automated, in one curated suite (`quality-assurance`).
 3. **Documentation describes today**: technical docs and README are edited in place; history lives in Git and release notes (`architecture-docs`, `user-docs`).
 4. **Plans are shared and complete**: approved plans are versioned files in the project (`plan-memory`).
-5. **Safe delivery**: short-lived branches, CI on every pull request, release candidates, the user's merge as the release gate (`devops-release`).
+5. **Safe delivery**: short-lived branches on the project's branching model, CI on every pull request, release candidates, the user's release gate (`devops-release`).
 6. **Security**: no secrets in Git, backward-compatible data migrations, a rollback path for every release.
 7. **Bugs first**: open `critical` and `high` bugs are planned and fixed before new features, improvements and adjustments, unless the user explicitly accepts the risk; nothing found is lost, it is fixed now or captured in the backlog.
-8. **Follow-through**: the agent follows CI and releases to the end and fixes what fails; the user's decisions (plan approval, candidate acceptance, merge into production) are never taken by the agent.
+8. **Follow-through**: the agent follows CI and releases to the end and fixes what fails; the user's decisions (plan approval, candidate acceptance, the release gate) are never taken by the agent.
 9. **No AI attribution, anywhere**: no artifact names an AI, a model or a coding agent as author, co-author, reviewer or source: commits and their trailers, tags, branches, pull and merge requests, reviews and review comments, issues, plans, documentation, release notes and code comments. Everything is authored by the repository's Git identity (`devops-release`). Configuration a project needs for its tools (an agent's settings folder, an integration name) is technical, not attribution.
 
 ---
@@ -76,16 +76,24 @@ graph TD
     G3 -- "approved" --> P4["4. Implementation on a branch<br/>software-design"]
     P4 --> P5["5. Automated tests<br/>quality-assurance"]
     P5 --> P6["6. Documentation<br/>architecture-docs, user-docs, quality-assurance"]
-    P6 --> P7["7. Review and PR into dev, CI green<br/>reviewer, software-design, devops-release"]
+    P6 --> P7["7. Review and PR into the work base, CI green<br/>reviewer, software-design, devops-release"]
     P7 -. "next change" .-> P1
     P7 --> P8["8. Release candidate<br/>devops-release, quality-assurance"]
     P8 --> G9{"9. Acceptance<br/>(user runs manual tests)"}
     G9 -- "Fail / Blocked" --> P4
-    G9 -- "all Pass" --> G10{"10. Release gate<br/>(user merges dev into main)"}
+    G9 -- "all Pass" --> G10{"10. Release gate (user)<br/>merges dev into main, or promotes the candidate"}
     G10 --> P11["Final release followed and verified<br/>devops-release, plan-memory, session-memory"]
 ```
 
-Phase 0 runs once per product. Phases 1 to 7 run for every change. Phases 8 to 10 run when the user wants to release what has accumulated in the integration branch. The steps marked **Spec Kit** apply only to feature plans of a project with `speckit.enabled` (see "Spec Kit").
+Phase 0 runs once per product. Phases 1 to 7 run for every change. Phases 8 to 10 run when the user wants to release what has accumulated in the work base.
+
+**Branching model** (`devops.branching`, `devops-release`): every phase below says *work base*, *candidate branch* and *release gate*; the model gives them (`devops-release/branching.py show`):
+
+| Model | Work base (branches from, pull requests into) | Candidate branch | Release gate (the user) |
+|---|---|---|---|
+| `integration` (default) | `dev` | `dev` | merges `dev` into `main` |
+| `trunk` | `main` | `main` | runs the promote workflow for the accepted candidate |
+| `release-branches` | `main` (fixes of a release: `release/X.Y`) | `release/X.Y` | runs the promote workflow for the accepted candidate | The steps marked **Spec Kit** apply only to feature plans of a project with `speckit.enabled` (see "Spec Kit").
 
 ### 0. 🌱 Product Inception (once per product)
 Follow [`product-inception`](../product-inception/SKILL.md): interview, business document, architecture, technical specification, constitution (Spec Kit), product backlog with epics, roadmap, each approved by the user. It ends at **gate 0**, the user's approval of the product baseline:
@@ -105,7 +113,7 @@ A project without a baseline that is already under way can adopt it (adoption mo
 - Read the active plans (`plan-memory/list_plans.py`, `check_milestone.py --list`) and the architecture style and structure (`software-design`).
 - Read the backlog and the roadmap (`plan-memory/backlog.py summary`, `plan-memory/roadmap.py current`; `inspect_project.py` shows both). Show the user the open bugs that come before new work, then the open items of the current release and the items related to the request; the user decides what to promote, re-prioritize, move or drop (see "Backlog and Roadmap").
 - To plan backlog items, promote them (`backlog.py promote <ID> ...`): the draft plan (a bug plan for bugs) is where the discovery is written.
-- **Spec Kit**: check out the integration branch, then run `/speckit-specify` with the items' description: it creates the work branch `feat/NNN-slug` and `specs/NNN-slug/spec.md`. Run `/speckit-clarify` until no `[NEEDS CLARIFICATION]` marker is left; the user answers its questions. The promoted plan is the envelope; the discovery lives in the spec.
+- **Spec Kit**: check out the work base, then run `/speckit-specify` with the items' description: it creates the work branch `feat/NNN-slug` and `specs/NNN-slug/spec.md`. Run `/speckit-clarify` until no `[NEEDS CLARIFICATION]` marker is left; the user answers its questions. The promoted plan is the envelope; the discovery lives in the spec.
 - Exhaust the open questions and converge on an approach with the user.
 
 ### 2. 📋 Plan
@@ -138,7 +146,7 @@ python "<skills_root>/dev-cycle-protocol/verify_gate.py" --gate 3
 - After approval, commit the plan file (`docs(plan): <title>`) on the work branch, with the spec folder when Spec Kit is used.
 
 ### 4. 🛠️ Implementation
-- Create the branch from the integration branch (`devops-release` naming: `feat/`, `fix/`, `docs/`, ...). With Spec Kit the branch already exists (`feat/NNN-slug`, from Phase 1).
+- Create the branch from the work base (`devops-release` naming: `feat/`, `fix/`, `docs/`, ...). With Spec Kit the branch already exists (`feat/NNN-slug`, from Phase 1).
 - Follow `software-design`: core and domain first, then storage, then the adapters of each affected surface; one responsibility per unit; explicit errors.
 - **Spec Kit**: run `/speckit-implement`, which executes `tasks.md` in order. The protocol's rules still hold: a regression test per bug, never move on with a failing test, the plan's milestones marked as the phases of `tasks.md` complete.
 - Mark plan milestones as they are completed (`plan-memory/check_milestone.py`).
@@ -152,7 +160,7 @@ python "<skills_root>/dev-cycle-protocol/verify_gate.py" --gate 3
 - Manual tests: curate the suite for the features touched (`quality-assurance`) and run `manual_tests.py validate`.
 
 ### 7. 🔍 Pull Request and Review (on the platform)
-- Run the `software-design` checklist and `check_design.py`, commit with Conventional Commits, push, and open the pull request **into the integration branch** (a merge request on GitLab). Its description follows principle 9.
+- Run the `software-design` checklist and `check_design.py`, commit with Conventional Commits, push, and open the pull request **into the work base** (a merge request on GitLab). Its description follows principle 9.
 - **The pull request is the channel from here on**: every correction of the change is a commit on the same branch, and every answer goes to the thread it answers, not only to the chat. Read its state with `pr_sync.py status` (threads waiting, comments, changes requested, CI, conflicts).
 - **The protocol reviews it** (`code-review`): right after it is opened and again after pushes that change code, the review is posted on the platform as line comments marked `[review]` with a level (`blocking`, `suggestion`, `nit`). It never approves.
 - **Every waiting thread, the protocol's findings included, is handled**:
@@ -165,28 +173,30 @@ python "<skills_root>/dev-cycle-protocol/verify_gate.py" --gate 3
 
   A thread is resolved only after its fix is pushed or the reviewer agrees. After changes a person requested, ask them to review again (`pr_sync.py request-review`).
 - **When the agent reads the pull request**: where the agent receives pull request events, as they arrive; elsewhere at the start of every session (the `/dev-cycle` diagnosis lists open pull requests with pending items), after every push until CI finishes, when the user says they reviewed or commented, and on a timer where the agent can schedule one.
-- Follow CI to the end; read the logs of any failure, reproduce, fix and push until every check is green (`devops-release`). People approve; the user merges the pull request (or authorizes the agent to merge into the integration branch). Without a supported platform CLI (`gh`, `glab`), review and answers happen in the chat as before.
+- Follow CI to the end; read the logs of any failure, reproduce, fix and push until every check is green (`devops-release`). People approve; the user merges the pull request (or authorizes the agent to merge into the work base). Without a supported platform CLI (`gh`, `glab`), review and answers happen in the chat as before.
 
 ### 8. 🧪 Release Candidate (per release)
-- `devops-release`: bump the version in `devops.version_files` (on a branch, through a pull request), then tag `vX.Y.Z-rc.N` from the integration branch, follow the pipeline and verify the pre-release (`release_status.py verify`).
+- `devops-release`: bump the version in `devops.version_files` (on a branch, through a pull request), then tag `vX.Y.Z-rc.N` on the candidate branch (`branching.py rc-branch`; with `release-branches`, cut `release/X.Y` from `main` first), follow the pipeline and verify the pre-release (`release_status.py verify`).
 - `quality-assurance`: start the candidate's manual test run (`manual_tests.py start-run --run vX.Y.Z-rc.N ...`) and commit it.
 - Tell the user how to install the candidate and which tests to run.
 
 ### 9. ✅ Acceptance Gate (user)
 - The user installs the candidate and marks each test Pass, Fail or Blocked.
-- Read the results (`manual_tests.py failed --run <rc>`): each failure goes back to Phase 4 as a fix, followed by a new candidate and run. A failure the user decides to leave for later is captured in the backlog (`backlog.py add --from-failed --run <rc>`).
+- Read the results (`manual_tests.py failed --run <rc>`): each failure goes back to Phase 4 as a fix into the candidate branch, followed by a new candidate and run. A failure the user decides to leave for later is captured in the backlog (`backlog.py add --from-failed --run <rc>`).
 - The candidate is accepted when the acceptance gate passes:
   ```powershell
   python "<skills_root>/dev-cycle-protocol/verify_gate.py" --gate rc --run vX.Y.Z-rc.N
   ```
 
 ### 10. 🚀 Release Gate (user) and Verified Release
-- Run the release readiness gate, then open the pull request from the integration branch into the production branch with the release notes highlights (user-visible changes, upgrade steps, known limitations):
+- Run the release readiness gate, then hand the release to the user with the release notes highlights (user-visible changes, upgrade steps, known limitations):
   ```powershell
   python "<skills_root>/dev-cycle-protocol/verify_gate.py" --gate 8 --run vX.Y.Z-rc.N
   ```
-- **The user merges.** The agent never merges into the production branch, never pushes a final tag by hand and never publishes a final release.
-- The merge creates the final tag and release (`devops-release` tag-on-merge). Follow the workflow to the end and verify the published release (`release_status.py verify --tag vX.Y.Z`). If the releases repository is unknown, ask the user.
+  - `integration`: open the pull request from the integration branch into the production branch with the highlights; **the user merges**, and the merge creates the final tag and release (`devops-release` tag-on-merge).
+  - `trunk`, `release-branches`: give the user the highlights and the command for the accepted candidate (`gh workflow run promote.yml -f candidate=vX.Y.Z-rc.N`, or Actions > Promote); **the user promotes**, and the promote workflow tags that candidate's commit and creates the release.
+- The agent never merges into the production branch, never runs the promote workflow, never pushes a final tag by hand and never publishes a final release.
+- When the release workflow starts, follow it to the end and verify the published release (`release_status.py verify --tag vX.Y.Z`). If the releases repository is unknown, ask the user.
 - Close the plan milestones and update the plan status (`plan-memory`), mark the release released in the roadmap (`roadmap.py set-release vX.Y.Z --status released`), and record the session (`session-memory`).
 - Report: what was released, the verified release link, and anything left open.
 
@@ -232,7 +242,7 @@ The backlog (`backlog.file` in `.dev-cycle.json`, default `docs/BACKLOG.md`) is 
 
 - **Secrets**: never commit `.env` files, keys, certificates or credentials; `verify_gate.py` checks tracked and staged files.
 - **Data migrations** are additive or backward compatible so older versions and parallel instances keep working; destructive changes need a plan section and a backup step.
-- **Rollback**: a broken release is reverted through a pull request on the production branch and followed by the next patch release (`devops-release`).
+- **Rollback**: a broken release is reverted through a pull request on the branch it was released from and followed by the next patch release (`devops-release`).
 
 ---
 
@@ -243,7 +253,7 @@ The backlog (`backlog.file` in `.dev-cycle.json`, default `docs/BACKLOG.md`) is 
 | `--gate 0` | Before asking for the product baseline approval (Phase 0) | Product documents (`check_product.py`), architecture style, technical docs, a valid backlog with epics, a valid roadmap with a first release, Spec Kit setup and constitution when enabled, secret hygiene; open questions are listed |
 | `--gate 3 [--accept-open-bugs R]` | Before asking for plan approval | Working tree state, active plan saved (and committed after approval), bugs first (no open blocking bug outside a non-bug plan, unless the user accepts with reason `R`), with Spec Kit the spec folder, branch, setup and constitution, secret hygiene |
 | `--gate rc --run R` | Before declaring a candidate accepted | Every manual test of run `R` is Pass (`quality-assurance/manual_tests.py gate`) |
-| `--gate 8 [--run R]` | Before opening the release pull request | Documentation and manual test files exist; `check_docs.py`, `check_readme.py`, `manual_tests.py validate`, `check_design.py`, `check_ci_policy.py`, `backlog.py validate` and `roadmap.py validate` have no errors (open blocking bugs are listed for the release notes, open items of the release are listed for the user); version files agree; the candidate run passed (required with `--run` when release candidates are on); secret hygiene; clean working tree |
+| `--gate 8 [--run R]` | Before the release gate (the release pull request, or the promotion) | Documentation and manual test files exist; `check_docs.py`, `check_readme.py`, `manual_tests.py validate`, `check_design.py`, `check_ci_policy.py`, `backlog.py validate` and `roadmap.py validate` have no errors (open blocking bugs are listed for the release notes, open items of the release are listed for the user); version files agree; the candidate run passed (required with `--run` when release candidates are on); secret hygiene; clean working tree |
 
 ```powershell
 python "<skills_root>/dev-cycle-protocol/verify_gate.py" --gate 0|3|rc|8 [--run <rc tag>] [--accept-open-bugs "<reason>"] [--dir <project>]
@@ -259,6 +269,6 @@ python "<skills_root>/dev-cycle-protocol/constitution.py" generate [--replace-ha
 
 ## ⚙️ Project Configuration (`.dev-cycle.json`)
 
-Optional file at the repository root: the project configuration shared by every skill, with one section per skill (`architecture`, `docs`, `tests`, `devops`, `plans`, `backlog`, `roadmap`, `product`, `speckit`, `architecture_docs`, `drift_rules`) and `test_commands`. Read it through the single loader, which fills defaults, accepts the legacy flat keys of older files and validates the result (`project_config.py`). Scripts of other skills import it from the sibling folder (`from project_config import load_project_config`). The full key reference is in the skills repository README ("Project configuration").
+Optional file at the repository root: the project configuration shared by every skill (the branching model is `devops.branching`), with one section per skill (`architecture`, `docs`, `tests`, `devops`, `plans`, `backlog`, `roadmap`, `product`, `speckit`, `architecture_docs`, `drift_rules`) and `test_commands`. Read it through the single loader, which fills defaults, accepts the legacy flat keys of older files and validates the result (`project_config.py`). Scripts of other skills import it from the sibling folder (`from project_config import load_project_config`). The full key reference is in the skills repository README ("Project configuration").
 
 If the file does not exist, `inspect_project.py` and `verify_gate.py` detect the repository's standard stack and use the defaults.

@@ -103,6 +103,25 @@ def test_code_without_baseline_is_an_existing_project():
     assert [o["key"] for o in options(s, "x")] == ["adoption", "request"]
 
 
+def test_a_repository_on_another_model_is_asked_once():
+    trunk = {"model": "trunk", "integration_branch": None, "reason": "only 'main' and short-lived branches"}
+    s = state(branches={"integration": "dev", "integration_exists": False, "production": "main",
+                        "model": "integration", "decided": False, "detected": trunk})
+    keys = [o["key"] for o in options(s)]
+    assert keys[0] == "branching" and "branch" not in keys
+    assert "looks like 'trunk'" in options(s)[0]["title"]
+    s["branches"]["decided"] = True                     # integration chosen: its branch is proposed
+    assert [o["key"] for o in options(s)][0] == "branch"
+    s["branches"].update(model="trunk", decided=False)  # the default already matches: nothing to ask
+    assert "branching" not in [o["key"] for o in options(s)]
+
+
+def test_an_accepted_candidate_under_promote_names_the_promotion():
+    s = state(rc={"run": "v1.0.0-rc.2", "version": "v1.0.0", "not_run": 0, "failed": 0, "released": False})
+    s["branches"]["gate"] = "promote"
+    assert "then you promote it" in options(s)[0]["title"]
+
+
 def test_config_problems_are_a_setup_item():
     opts = options(state(config={"exists": True, "problems": ["speckit.version 'latest' must be an exact release tag"]}))
     assert opts[0]["key"] == "config" and "exact release tag" in opts[0]["reason"]
@@ -155,8 +174,9 @@ def test_collect_a_repository_that_never_used_the_protocol(repo):
     assert s["config"]["exists"] is False
     assert s["branches"]["integration_exists"] is False and s["branches"]["production_exists"] is True
     assert s["speckit"]["state"] == "undecided" and s["rc"] is None and s["findings"] == []
+    assert s["branches"]["detected"]["model"] == "trunk" and s["branches"]["decided"] is False
     rec = recommendation(s)
-    assert [o["key"] for o in rec["options"]][:2] == ["config", "branch"]
+    assert [o["key"] for o in rec["options"]][:2] == ["config", "speckit-ask"]     # the model comes with the config
 
 
 def test_collect_release_candidate_and_tags(repo):
@@ -207,8 +227,11 @@ def test_proposal_from_detection(repo):
     add = data["additions"]
     assert add["project_name"] == repo.name and add["test_commands"] == ["python -m pytest"]
     assert add["docs"] == {"user_doc": "README.md"}
-    assert add["devops"] == {"integration_branch": "dev", "production_branch": "main", "version_files": ["pyproject.toml"]}
+    assert add["devops"] == {"branching": "trunk", "production_branch": "main", "version_files": ["pyproject.toml"]}
+    assert data["branching"]["model"] == "trunk"
     assert "architecture" not in add
+    run_git(repo, "branch", "develop")
+    assert onboard.propose_config(str(repo))["additions"]["devops"]["integration_branch"] == "develop"
 
 
 def test_existing_keys_are_never_proposed_or_overwritten(repo):
@@ -238,6 +261,20 @@ def test_create_integration_branch(repo):
     assert onboard.branch_exists(str(repo), "dev")
     with pytest.raises(ValueError, match="already exists"):
         onboard.create_integration_branch(str(repo))
+
+
+def test_create_branch_only_for_the_integration_model(repo):
+    (repo / ".dev-cycle.json").write_text(json.dumps({"devops": {"branching": "trunk"}}), encoding="utf-8")
+    with pytest.raises(ValueError, match="'trunk' branching model has no integration branch"):
+        onboard.create_integration_branch(str(repo))
+
+
+def test_collect_reads_the_branching_model(repo):
+    (repo / ".dev-cycle.json").write_text(json.dumps({"devops": {"branching": "release-branches"}}), encoding="utf-8")
+    b = onboard.collect(str(repo))["branches"]
+    assert (b["model"], b["decided"], b["gate"]) == ("release-branches", True, "promote")
+    run_git(repo, "branch", "release/1.0")
+    assert onboard.detect_branching(str(repo))["model"] == "release-branches"
 
 
 def test_explicit_false_is_a_decision(repo):

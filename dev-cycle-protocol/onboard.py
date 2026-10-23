@@ -8,7 +8,7 @@ Usage:
     python onboard.py diagnose [--request "<text>"] [--dir <project>] [--json]
     python onboard.py propose-config [--dir <project>] [--json]
     python onboard.py write-config --file <proposal.json> [--dir <project>]
-    python onboard.py create-branch [--dir <project>]      (the integration branch, from the production branch)
+    python onboard.py create-branch [--dir <project>]      (integration model: the integration branch, from the production branch)
     python onboard.py set-attribution [--dir <project>]    (Claude Code: no automatic attribution, .claude/settings.json)
 """
 import argparse
@@ -24,7 +24,9 @@ SKILLS_ROOT = os.path.dirname(HERE)
 sys.path.insert(0, HERE)
 sys.path.insert(0, os.path.join(SKILLS_ROOT, "plan-memory"))
 sys.path.insert(0, os.path.join(SKILLS_ROOT, "quality-assurance"))
+sys.path.insert(0, os.path.join(SKILLS_ROOT, "devops-release"))
 from _onboard import recommendation  # noqa: E402
+from branching import GATES  # noqa: E402
 from project_config import MANIFEST_NAME, load_project_config  # noqa: E402
 
 SOURCE_EXT = {".py", ".rs", ".go", ".ts", ".tsx", ".js", ".jsx", ".java", ".kt", ".cs", ".cpp", ".cc", ".c", ".h",
@@ -65,6 +67,19 @@ def branch_exists(root: str, name: str) -> bool:
                for ref in (f"refs/heads/{name}", f"refs/remotes/origin/{name}"))
 
 
+def branch_names(root: str) -> list:
+    """Local branches and the branches of `origin` (as origin/<name>)."""
+    code, out = git(root, "for-each-ref", "--format=%(refname:short)", "refs/heads", "refs/remotes/origin")
+    if code != 0:
+        return []
+    return [n for n in out.splitlines() if n.strip() and n not in ("origin", "origin/HEAD")]
+
+
+def detect_branching(root: str, production: str = "main") -> dict:
+    from branching import detect
+    return detect(branch_names(root), production)
+
+
 TEST_COMMANDS = {"pytest": "python -m pytest", "cargo test": "cargo test", "npm test": "npm test",
                  "go test ./...": "go test ./..."}
 VERSION_FILES = ["pyproject.toml", "package.json", "Cargo.toml", "setup.cfg", "VERSION", "version.txt"]
@@ -89,8 +104,13 @@ def detect_config(root: str) -> dict:
         data["docs"] = {k: docs[k] for k in ("user_doc", "tec_doc") if docs.get(k)}
     if docs.get("manual_tests"):
         data["tests"] = {"manual_tests": docs["manual_tests"]}
-    data["devops"] = {"integration_branch": "dev", "production_branch": production,
-                      "version_files": [f for f in VERSION_FILES if os.path.isfile(os.path.join(root, f))]}
+    found = detect_branching(root, production)
+    model = found["model"] or "integration"
+    data["devops"] = {"branching": model}
+    if model == "integration":
+        data["devops"]["integration_branch"] = found["integration_branch"] or "dev"
+    data["devops"].update({"production_branch": production,
+                           "version_files": [f for f in VERSION_FILES if os.path.isfile(os.path.join(root, f))]})
     return data
 
 
@@ -130,7 +150,7 @@ def propose_config(root: str) -> dict:
     existing = raw_manifest(cfg)
     proposal = missing_keys(existing, detect_config(root))
     return {"file": cfg.manifest_path or os.path.join(root, MANIFEST_NAME), "exists": bool(cfg.manifest_path),
-            "additions": proposal}
+            "additions": proposal, "branching": detect_branching(root, cfg.section("devops").get("production_branch") or "main")}
 
 
 def write_config(root: str, additions: dict) -> tuple:
@@ -150,6 +170,8 @@ def write_config(root: str, additions: dict) -> tuple:
 def create_integration_branch(root: str) -> str:
     cfg = load_project_config(root)
     devops = cfg.section("devops")
+    if (devops.get("branching") or "integration") != "integration":
+        raise ValueError(f"the '{devops['branching']}' branching model has no integration branch")
     integration, production = devops.get("integration_branch") or "dev", devops.get("production_branch") or "main"
     if branch_exists(root, integration):
         raise ValueError(f"'{integration}' already exists")
@@ -224,7 +246,10 @@ def collect(root: str, agent: str = None) -> dict:
     devops = cfg.section("devops")
     state["branches"] = {"integration": devops.get("integration_branch"), "production": devops.get("production_branch"),
                          "integration_exists": branch_exists(root, devops.get("integration_branch") or "dev") if commits else False,
-                         "production_exists": branch_exists(root, devops.get("production_branch") or "main") if commits else False}
+                         "production_exists": branch_exists(root, devops.get("production_branch") or "main") if commits else False,
+                         "model": devops.get("branching"), "decided": cfg.is_set("devops", "branching"),
+                         "gate": GATES.get(devops.get("branching")),
+                         "detected": detect_branching(root, devops.get("production_branch") or "main") if commits else None}
 
     product = cfg.section("product")
     index = (cfg.section("architecture_docs") or {}).get("index") or cfg.section("docs").get("tec_doc")
@@ -393,6 +418,9 @@ def main(argv: list = None) -> int:
         else:
             print(f"📝 Proposed {'additions to' if data['exists'] else 'new'} {data['file']} (written only after you confirm):")
             print(json.dumps(data["additions"], indent=2, ensure_ascii=False))
+            found = data["branching"]
+            if found["model"]:
+                print(f"ℹ️ Branching model detected: {found['model']} ({found['reason']}); the alternatives are in devops-release.")
             print("ℹ️ architecture.style is chosen with software-design, not detected.")
         return 0
     if args.command == "write-config":

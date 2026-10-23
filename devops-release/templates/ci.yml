@@ -1,5 +1,9 @@
-# Test workflow: every pull request into the integration or production branch, and every
-# push to the integration branch. Replace the test step with the project's test_commands.
+# Test workflow: every pull request into a branch that receives them, and every push to the
+# branch work is merged into. Replace the test step with the project's test_commands.
+# Branches by devops.branching (`branching.py show`):
+#   integration       pull_request [dev, main]            push [dev]
+#   trunk             pull_request [main]                 push [main]
+#   release-branches  pull_request [main, 'release/**']   push [main, 'release/**']
 name: Tests
 
 on:

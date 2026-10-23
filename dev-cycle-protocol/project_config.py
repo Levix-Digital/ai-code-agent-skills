@@ -28,6 +28,7 @@ BUG_SEVERITIES = ["critical", "high", "medium", "low"]
 OBSERVABILITY_PROFILES = ["cli", "service", "library", "desktop", "none"]
 SPECKIT_SCRIPTS = ["sh", "ps", "py"]
 REVIEW_PROVIDERS = ["auto", "github", "gitlab", "none"]
+BRANCHING_MODELS = ["integration", "trunk", "release-branches"]
 
 # Sections and their defaults. `None` means "not set": skills fall back to auto-detection.
 DEFAULTS = {
@@ -49,10 +50,12 @@ DEFAULTS = {
         "manual_tests": "tests/MANUAL_TESTS.md",
     },
     "devops": {
+        "branching": "integration",
         "integration_branch": "dev",
         "production_branch": "main",
         "releases_repo": None,
         "release_candidates": True,
+        "release_branch_prefix": "release",
         "version_files": [],
         "observability": None,
     },
@@ -184,6 +187,12 @@ class ProjectConfig:
             problems.append(f"devops.observability '{obs}' is not one of: {', '.join(OBSERVABILITY_PROFILES)}")
         if not isinstance(self.data.get("test_commands"), list):
             problems.append("test_commands must be a list of shell commands")
+        branching = self.section("devops").get("branching")
+        if branching not in BRANCHING_MODELS:
+            problems.append(f"devops.branching '{branching}' is not one of: {', '.join(BRANCHING_MODELS)}")
+        prefix = self.section("devops").get("release_branch_prefix")
+        if not (isinstance(prefix, str) and re.match(r"^[A-Za-z0-9._-]+(/[A-Za-z0-9._-]+)*$", prefix)):
+            problems.append(f"devops.release_branch_prefix '{prefix}' must be a branch name prefix like 'release'")
         if not isinstance(self.section("devops").get("release_candidates"), bool):
             problems.append("devops.release_candidates must be true or false")
         for key in ("surfaces", "forbidden_core_imports"):
@@ -234,6 +243,17 @@ class ProjectConfig:
                 out[section].setdefault(sub, self.raw["doc_files"][key])
         order = list(DEFAULTS)
         return {k: out[k] for k in sorted(out, key=lambda k: order.index(k) if k in order else len(order))}
+
+
+def branch_summary(devops: dict) -> str:
+    """One line for the branching model, e.g. 'integration: dev -> main' or 'trunk: main'."""
+    model = devops.get("branching") or "integration"
+    production = devops.get("production_branch") or "main"
+    if model == "integration":
+        return f"integration: {devops.get('integration_branch') or 'dev'} -> {production}"
+    if model == "release-branches":
+        return f"release-branches: {production} -> {devops.get('release_branch_prefix') or 'release'}/X.Y"
+    return f"{model}: {production}"
 
 
 def load_project_config(start_dir: str = None) -> ProjectConfig:
@@ -291,7 +311,7 @@ def main() -> int:
         print(f"   Architecture style : {arch.get('style') or 'not set'}")
         print(f"   Core path          : {arch.get('core_path') or 'not set'}")
         print(f"   Test commands      : {', '.join(cfg.get('test_commands')) or 'auto-detect'}")
-        print(f"   Branches           : {devops.get('integration_branch')} -> {devops.get('production_branch')}"
+        print(f"   Branching          : {branch_summary(devops)}"
               f" (release candidates: {'on' if devops.get('release_candidates') else 'off'})")
         print(f"   Releases repo      : {devops.get('releases_repo') or 'not set'}")
         backlog = cfg.section("backlog")
