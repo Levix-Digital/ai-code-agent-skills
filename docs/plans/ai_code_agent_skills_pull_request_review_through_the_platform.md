@@ -6,7 +6,7 @@ version: v2.4.0
 status: in_progress
 author: Levix Digital
 created_at: '2026-10-23T20:11:03'
-updated_at: '2026-10-23T20:31:18'
+updated_at: '2026-10-23T20:32:40'
 session_id: null
 tags:
 - pull-requests
@@ -28,7 +28,9 @@ milestones:
   done_at: '2026-10-23'
   by: Levix Digital
 - name: M3 GitLab
-  done: false
+  done: true
+  done_at: '2026-10-23'
+  by: Levix Digital
 - name: M4 Reviewer and the cycle
   done: false
 - name: M5 Documentation and release
@@ -48,6 +50,9 @@ status_log:
 - at: '2026-10-23T20:31:18'
   by: Levix Digital
   note: 'Milestone ''M2 Writes and the guard'' completed: _no_ai.py guard (attribution, not subject; code spans and paths ignored; allowed terms); pr_sync reply, resolve, comment, review (marker and level), request-review; gate 8 checks commit messages since the last tag'
+- at: '2026-10-23T20:32:40'
+  by: Levix Digital
+  note: 'Milestone ''M3 GitLab'' completed: GitLabProvider through glab api (merge request, discussions with pagination, approvals, pipeline; reply, resolve, comment, review with diff positions, reviewers), self-hosted hosts; recorded responses in tests'
 ---
 
 # Pull Request Review Through the Platform

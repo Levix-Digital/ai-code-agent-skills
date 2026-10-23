@@ -194,13 +194,151 @@ class GitHubProvider:
         self._gh(["pr", "edit", str(number), "--add-reviewer", ",".join(reviewers)] + repo)
 
 
+# ---------------------------------------------------------------- GitLab
+
+GITLAB_PIPELINE = {"success": "success", "failed": "failure", "canceled": "failure", "skipped": "skipped"}
+
+
+class GitLabProvider:
+    """Merge requests through `glab api` (gitlab.com or a self-hosted instance)."""
+    name = "gitlab"
+    cli = "glab"
+
+    def __init__(self, path: str, host: str = "gitlab.com", runner=None):
+        self.path, self.host, self.runner = path, host or "gitlab.com", runner or run
+        self.project = f"projects/{quote_path(path or '')}"
+
+    def _api(self, endpoint: str, method: str = None, payload: dict = None, paginate: bool = False):
+        cmd = ["glab", "api", endpoint]
+        if method:
+            cmd += ["--method", method]
+        if paginate:
+            cmd.append("--paginate")
+        if self.host != "gitlab.com":
+            cmd += ["--hostname", self.host]
+        if payload is not None:
+            cmd += ["--input", "-", "-H", "Content-Type: application/json"]
+        code, out, err = self.runner(cmd, json.dumps(payload) if payload is not None else None)
+        if code == 127:
+            raise ProviderError("the GitLab CLI is not installed: https://gitlab.com/gitlab-org/cli")
+        if code != 0:
+            text = (err or out).strip()
+            if "401" in text or "auth login" in text or "unauthorized" in text.lower():
+                raise ProviderError(f"the GitLab CLI is not logged in: run 'glab auth login --hostname {self.host}' ({text[:200]})")
+            raise ProviderError(f"glab api {endpoint} failed: {text[:500]}")
+        return self._decode(endpoint, out)
+
+    @staticmethod
+    def _decode(endpoint: str, out: str):
+        """One JSON value, or the pages `--paginate` prints one after the other (arrays are joined)."""
+        decoder, values, i, text = json.JSONDecoder(), [], 0, out.strip()
+        try:
+            while i < len(text):
+                value, end = decoder.raw_decode(text, i)
+                values.append(value)
+                i = end
+                while i < len(text) and text[i].isspace():
+                    i += 1
+        except ValueError:
+            raise ProviderError(f"glab api {endpoint} returned no JSON: {out[:200]}")
+        if not values:
+            return None
+        if len(values) == 1:
+            return values[0]
+        return [x for page in values for x in (page if isinstance(page, list) else [page])]
+
+    def me(self) -> str:
+        return (self._api("user") or {}).get("username", "")
+
+    def pull_request(self, number=None, branch: str = None) -> dict:
+        if number is None:
+            found = self._api(f"{self.project}/merge_requests?state=opened&source_branch={urllib.parse.quote(branch or '', safe='')}") or []
+            if not found:
+                return None
+            number = found[0]["iid"]
+        base = f"{self.project}/merge_requests/{int(number)}"
+        mr = self._api(base)
+        discussions = self._api(f"{base}/discussions?per_page=100", paginate=True) or []
+        approvals = self._api(f"{base}/approvals") or {}
+        return self._model(mr, discussions, approvals)
+
+    def _model(self, mr: dict, discussions: list, approvals: dict) -> dict:
+        threads, comments = [], []
+        for d in discussions:
+            notes = [n for n in d.get("notes") or [] if not n.get("system")]
+            if not notes:
+                continue
+            converted = [{"id": n.get("id"), "author": (n.get("author") or {}).get("username"), "body": n.get("body"),
+                          "created": n.get("created_at")} for n in notes]
+            first = notes[0]
+            if d.get("individual_note") and not first.get("resolvable"):
+                comments += converted
+                continue
+            position = first.get("position") or {}
+            threads.append({"id": d.get("id"), "path": position.get("new_path") or position.get("old_path"),
+                            "line": position.get("new_line") or position.get("old_line"),
+                            "resolved": all(n.get("resolved") for n in notes if n.get("resolvable")),
+                            "outdated": False, "comments": converted})
+        pipeline = mr.get("head_pipeline") or {}
+        checks = []
+        if pipeline:
+            checks.append({"name": "pipeline", "status": GITLAB_PIPELINE.get(pipeline.get("status"), "pending"),
+                           "url": pipeline.get("web_url")})
+        state = {"opened": "open", "locked": "open"}.get(mr.get("state"), mr.get("state"))
+        conflict = mr.get("has_conflicts") or mr.get("detailed_merge_status") == "conflict"
+        reviews = [{"author": (a.get("user") or {}).get("username"), "state": "approved"}
+                   for a in approvals.get("approved_by") or []]
+        return {
+            "provider": "gitlab", "number": mr.get("iid"), "url": mr.get("web_url"), "title": mr.get("title"),
+            "state": state, "draft": bool(mr.get("draft") or mr.get("work_in_progress")),
+            "author": (mr.get("author") or {}).get("username"), "base": mr.get("target_branch"),
+            "head": mr.get("source_branch"), "mergeable": "conflict" if conflict else "clean",
+            "checks": checks, "reviews": reviews, "threads": threads, "comments": comments,
+            "diff_refs": mr.get("diff_refs") or {},
+        }
+
+    def open_pull_requests(self, limit: int = 10) -> list:
+        found = self._api(f"{self.project}/merge_requests?state=opened&per_page={int(limit)}") or []
+        return [self.pull_request(item["iid"]) for item in found[:limit]]
+
+    # ------------------------------------------------------------ writes
+
+    def reply(self, number: int, thread_id: str, body: str):
+        self._api(f"{self.project}/merge_requests/{int(number)}/discussions/{thread_id}/notes", "POST", {"body": body})
+
+    def resolve(self, number: int, thread_id: str):
+        self._api(f"{self.project}/merge_requests/{int(number)}/discussions/{thread_id}", "PUT", {"resolved": True})
+
+    def comment(self, number: int, body: str):
+        self._api(f"{self.project}/merge_requests/{int(number)}/notes", "POST", {"body": body})
+
+    def review(self, number: int, body: str, comments: list):
+        base = f"{self.project}/merge_requests/{int(number)}"
+        refs = (self._api(base) or {}).get("diff_refs") or {}
+        for c in comments:
+            position = {"position_type": "text", "base_sha": refs.get("base_sha"), "start_sha": refs.get("start_sha"),
+                        "head_sha": refs.get("head_sha"), "new_path": c["path"], "new_line": int(c["line"])}
+            self._api(f"{base}/discussions", "POST", {"body": c["body"], "position": position})
+        self._api(f"{base}/notes", "POST", {"body": body})
+
+    def request_review(self, number: int, reviewers: list):
+        base = f"{self.project}/merge_requests/{int(number)}"
+        ids = [r.get("id") for r in (self._api(base) or {}).get("reviewers") or []]
+        for login in reviewers:
+            users = self._api(f"users?username={urllib.parse.quote(login, safe='')}") or []
+            if not users:
+                raise ProviderError(f"GitLab user '{login}' not found")
+            if users[0]["id"] not in ids:
+                ids.append(users[0]["id"])
+        self._api(base, "PUT", {"reviewer_ids": ids})
+
+
 # ---------------------------------------------------------------- factory
 
 def provider_for(provider: str, host: str, path: str, runner=None):
     if provider == "github":
         return GitHubProvider(path, host, runner)
     if provider == "gitlab":
-        from _pr_gitlab import GitLabProvider
         return GitLabProvider(path, host, runner)
     raise ProviderError(f"pull request platform '{provider}' is not supported yet (GitHub and GitLab are)")
 
