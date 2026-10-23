@@ -6,7 +6,7 @@ version: v2.3.0
 status: in_progress
 author: Levi Silveira
 created_at: '2026-10-23T14:43:16'
-updated_at: '2026-10-23T15:01:37'
+updated_at: '2026-10-23T15:02:53'
 session_id: null
 tags:
 - dev-cycle
@@ -30,7 +30,9 @@ milestones:
   done_at: '2026-10-23'
   by: Levix Digital
 - name: M4 The dev-cycle command
-  done: false
+  done: true
+  done_at: '2026-10-23'
+  by: Levix Digital
 - name: M5 Documentation and release
   done: false
 status_log:
@@ -51,6 +53,9 @@ status_log:
 - at: '2026-10-23T15:01:37'
   by: Levix Digital
   note: 'Milestone ''M3 Spec Kit in onboarding'' completed: speckit_setup.py adopt (pins the installed version after the check, adds the git extension when missing, preset, feat/NNN-slug); constitution.py refuses to replace a hand-written constitution without --replace-hand-written and keeps a copy; verified end to end on a Spec Kit project without the protocol; 7 tests'
+- at: '2026-10-23T15:02:53'
+  by: Levix Digital
+  note: 'Milestone ''M4 The dev-cycle command'' completed: dev-cycle skill (/dev-cycle router: diagnose, ask only when there is a decision, action per option), ''Starting a Session'' in the protocol, product-inception entry, MT-DEVCYCLE-001..004, plugin and allowlist'
 ---
 
 # The /dev-cycle Command and Project Onboarding

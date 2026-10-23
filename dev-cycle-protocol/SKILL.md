@@ -13,11 +13,17 @@ description: Orchestrator of the role-based development cycle - phases from prod
 
 ---
 
+## 🧭 Starting a Session (`/dev-cycle`)
+
+The user starts with one command, [`/dev-cycle`](../dev-cycle/SKILL.md) (with a product idea or a request, or alone). It runs the diagnosis (`onboard.py diagnose`), says in one line that the project is up to date and goes on, or shows the options in the recommended order: a plan in progress, a pending release candidate, open blocking bugs, missing setup (configuration, integration branch, Spec Kit), a missing product baseline, the next items of the current release, the request. A new repository goes to Phase 0. A repository that never used the protocol gets one initial setup list, confirmed at once or item by item; nothing is written before the user confirms. When the user asks for work without the command, run the same diagnosis first.
+
+---
+
 ## 👥 Roles
 
 | Role | Skill | Owns |
 |---|---|---|
-| Orchestrator | `dev-cycle-protocol` | Phases, gates, the path for each change, `.dev-cycle.json`, Spec Kit setup and the generated constitution |
+| Orchestrator | `dev-cycle-protocol` | Phases, gates, the path for each change, `.dev-cycle.json`, the `/dev-cycle` diagnosis, Spec Kit setup and the generated constitution |
 | Product | [`product-inception`](../product-inception/SKILL.md) | Phase 0: the product baseline, `docs/product/VISION.md` and `TECH_SPEC.md` |
 | Planner | [`plan-memory`](../plan-memory/SKILL.md) | The backlog with epics (`docs/BACKLOG.md`, `/backlog` command), the roadmap (`docs/ROADMAP.md`), plan files in `docs/plans`, milestones, drift detection |
 | Architect | [`software-design`](../software-design/SKILL.md) | Design principles, architecture style, design section of plans, structural review |
@@ -203,6 +209,7 @@ The backlog (`backlog.file` in `.dev-cycle.json`, default `docs/BACKLOG.md`) is 
 | 6–10 | not used |
 
 - **When**: only on the full path, for feature plans. The short path and bug plans (reproduction, root cause, regression test) never use it.
+- **Asked once**: `/dev-cycle` asks whether to use Spec Kit the first time it runs in a project and records the answer (`speckit.enabled: true` or `false`). A repository that already uses Spec Kit without the protocol is adopted with `speckit_setup.py adopt` (its version pinned after the compatibility check); its hand-written constitution is moved into the sources with the user and only then replaced (`constitution.py generate --replace-hand-written`, a copy is kept).
 - **Setup** (`.dev-cycle.json` section `speckit`): `speckit_setup.py init` installs Spec Kit in the project at an exact version, through `uvx` (requires [uv](https://docs.astral.sh/uv/)), with the agent integration (`speckit.integration`, default `claude`), the script type (`speckit.script`: `sh`, or `ps` on Windows), branches `feat/NNN-slug` (`speckit.branch_prefix`) and the protocol's preset; commit `.specify/`, the agent command files and `.dev-cycle.json`.
 - **Version pinned per project**: `speckit.version` is an exact release tag; the CLI is always called at that version, never through a global install. A new project takes the latest release when it passes the **compatibility check** (`speckit_setup.py check`: init, version, templates, commands, branch naming, preset, feature resolution, constitution check in a temporary repository), and the protocol's verified version (`speckit-preset/compat.json`) moves forward. When the latest release fails the check, the project pins the last verified version and the agent drafts an adaptation document in the skills repository (`docs/protocol-updates/speckit-vX.Y.Z.md`) and captures it in that repository's backlog. Existing projects change versions only when the user asks (`speckit_setup.py upgrade --to vX.Y.Z`, which runs the check first).
 - **Constitution**: `.specify/memory/constitution.md` is generated from `software-design` (principles and the project's style guide), the protocol's principles, the technical specification (requirements and constraints) and the accepted ADRs, so Spec Kit's Constitution Check enforces the protocol's rules. It is never edited by hand: change the source, run `constitution.py generate` and commit it with the change. Gates 0 and 3 block a stale or hand-edited constitution.
@@ -230,8 +237,9 @@ The backlog (`backlog.file` in `.dev-cycle.json`, default `docs/BACKLOG.md`) is 
 python "<skills_root>/dev-cycle-protocol/verify_gate.py" --gate 0|3|rc|8 [--run <rc tag>] [--accept-open-bugs "<reason>"] [--dir <project>]
 python "<skills_root>/dev-cycle-protocol/inspect_project.py" [--json]
 python "<skills_root>/dev-cycle-protocol/project_config.py" [--json] [--validate] [--migrate [--write]]
-python "<skills_root>/dev-cycle-protocol/speckit_setup.py" status|latest|check|init|upgrade [...]
-python "<skills_root>/dev-cycle-protocol/constitution.py" generate|check [--dir <project>]
+python "<skills_root>/dev-cycle-protocol/onboard.py" diagnose [--request "<text>"] [--json] | propose-config | write-config --file <f> | create-branch
+python "<skills_root>/dev-cycle-protocol/speckit_setup.py" status|latest|check|init|adopt|upgrade [...]
+python "<skills_root>/dev-cycle-protocol/constitution.py" generate [--replace-hand-written] | check [--dir <project>]
 ```
 
 ---

@@ -7,7 +7,7 @@ description: Phase 0 of the development cycle - turns a product idea into an app
 
 > **Paths**: `<skills_root>` is the folder that contains this skill (the parent of this `SKILL.md`'s folder). Use the real absolute path when running the commands.
 
-Phase 0 of [`dev-cycle-protocol`](../dev-cycle-protocol/SKILL.md): it runs **once per product**, before the first change, and produces the **product baseline** every later phase builds on. It owns the process and the two product documents; the other artifacts are written with the role that owns them.
+Phase 0 of [`dev-cycle-protocol`](../dev-cycle-protocol/SKILL.md), usually reached through [`/dev-cycle "<idea>"`](../dev-cycle/SKILL.md) in a new repository (or the adoption option of `/dev-cycle` in an existing one): it runs **once per product**, before the first change, and produces the **product baseline** every later phase builds on. It owns the process and the two product documents; the other artifacts are written with the role that owns them.
 
 | Artifact | Owner | Where |
 |---|---|---|

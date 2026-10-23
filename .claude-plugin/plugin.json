@@ -8,6 +8,7 @@
   },
   "license": "UNLICENSED",
   "skills": [
+    "./dev-cycle",
     "./dev-cycle-protocol",
     "./product-inception",
     "./plan-memory",
