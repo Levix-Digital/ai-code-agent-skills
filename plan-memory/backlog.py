@@ -15,6 +15,7 @@ Usage:
     python backlog.py close <ID> [--ref "PR #12"]
     python backlog.py drop <ID> --reason R
     python backlog.py duplicate <ID> --of <ID>
+    python backlog.py supersede <ID> --by <ID>[,<ID>...]    (replaced by different, better defined items)
     python backlog.py reopen <ID>
     python backlog.py promote <ID> [<ID> ...] [--title T] [--id PLAN_ID] [--version V] | --into <PLAN_ID>
     python backlog.py validate
@@ -283,6 +284,12 @@ def cmd(args) -> int:
             raise BacklogError("an item cannot duplicate itself")
         item = backlog.close(args.id, "duplicate", f"{today()}, duplicate of {original.id}")
         message = f"✅ {item.id} closed as duplicate of {original.id}"
+    elif args.command == "supersede":
+        by = [i.strip() for i in args.by.split(",") if i.strip()]
+        item = backlog.supersede(args.id, by, today())
+        message = f"✅ {item.id} closed as superseded by {', '.join(item.superseded_by)}"
+        if item.plan:
+            message += f"\n⚠️ {item.id} was in plan '{item.plan}'; update the plan (backlog.py promote <new ids> --into {item.plan})."
     elif args.command == "promote":
         promote(bf, args.ids, args.title, args.into, args.id, args.version)
         return 0
@@ -351,6 +358,10 @@ def build_parser() -> argparse.ArgumentParser:
     p = command("duplicate", "Close an item as a duplicate of another")
     p.add_argument("id")
     p.add_argument("--of", required=True)
+
+    p = command("supersede", "Close an item replaced by different, better defined items")
+    p.add_argument("id")
+    p.add_argument("--by", required=True, help="Comma-separated ids of the items that replace it")
 
     p = command("reopen", "Move a closed item back to its section as open")
     p.add_argument("id")

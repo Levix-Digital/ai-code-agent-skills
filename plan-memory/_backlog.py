@@ -11,10 +11,10 @@ Format (see templates/BACKLOG_TEMPLATE.md):
     - **Severity**: critical | high | medium | low      (bugs)
     - **Priority**: high | medium | low                 (other types)
     - **Epic**: <EPIC id>                               (optional; not on epics)
-    - **Status**: open | planned | in_progress          (done | dropped | duplicate under Closed; epics: open)
+    - **Status**: open | planned | in_progress          (done | dropped | duplicate | superseded under Closed; epics: open)
     - **Found**: <date>[, <version, pull request or test>]
     - **Plan**: <plan id> | -                           (not on epics: an epic is never promoted, its items are)
-    - **Closed**: <date>, <pull request | reason | duplicate of <ID>>   (Closed only)
+    - **Closed**: <date>, <pull request | reason | duplicate of <ID> | superseded by <ID>[, <ID>...]>   (Closed only)
     - **Description**: <text, may continue on indented lines>
 """
 import re
@@ -36,7 +36,7 @@ SECTION_TYPE = {heading: t for t, (_, heading) in TYPES.items()}
 SEVERITIES = ["critical", "high", "medium", "low"]
 PRIORITIES = ["high", "medium", "low"]
 OPEN_STATUSES = ["open", "planned", "in_progress"]
-CLOSED_STATUSES = ["done", "dropped", "duplicate"]
+CLOSED_STATUSES = ["done", "dropped", "duplicate", "superseded"]
 NO_PLAN = "-"
 
 SECTION_RE = re.compile(r"^##\s+(?!#)(.+?)\s*$")
@@ -44,6 +44,7 @@ ITEM_RE = re.compile(r"^###\s+(?!#)(\S+?):\s*(.+?)\s*$")
 ID_RE = re.compile(r"^(BUG|FEAT|IMP|ADJ|EPIC)-(\d{3,})$")
 FIELD_RE = re.compile(r"^-\s+\*\*([A-Za-z ]+)\*\*\s*:\s?(.*)$")
 DUPLICATE_RE = re.compile(r"duplicate of\s+((?:BUG|FEAT|IMP|ADJ|EPIC)-\d{3,})", re.I)
+SUPERSEDED_RE = re.compile(r"superseded by\s+((?:BUG|FEAT|IMP|ADJ|EPIC)-\d{3,}(?:\s*,\s*(?:BUG|FEAT|IMP|ADJ|EPIC)-\d{3,})*)", re.I)
 
 FIELD_ORDER = ["Severity", "Priority", "Epic", "Status", "Found", "Plan", "Closed", "Description"]
 
@@ -94,6 +95,11 @@ class Item:
     def epic(self):
         value = self.get("Epic")
         return value.upper() if value and value != NO_PLAN else None
+
+    @property
+    def superseded_by(self) -> list:
+        m = SUPERSEDED_RE.search(self.get("Closed")) if self.status == "superseded" else None
+        return [i.strip().upper() for i in m.group(1).split(",")] if m else []
 
     @property
     def rank(self) -> str:
@@ -298,6 +304,24 @@ class Backlog:
         self.sections[CLOSED_SECTION].append(item)
         return item
 
+    def supersede(self, item_id: str, by: list, on: str) -> Item:
+        """Closes an item replaced by one or more different, better defined items."""
+        item = self.find(item_id)
+        replacements = []
+        for other_id in by:
+            other = self.find(other_id)
+            if other.id == item.id:
+                raise BacklogError("an item cannot supersede itself")
+            if other.closed:
+                raise BacklogError(f"{other.id} is closed ({other.status}); an item is superseded by open items")
+            if (other.type == "epic") != (item.type == "epic"):
+                raise BacklogError(f"{other.id}: an epic is superseded by epics, an item by items")
+            if other.id not in replacements:
+                replacements.append(other.id)
+        if not replacements:
+            raise BacklogError("name the items that replace it (--by)")
+        return self.close(item.id, "superseded", f"{on}, superseded by {', '.join(replacements)}")
+
     def reopen(self, item_id: str) -> Item:
         item = self.find(item_id)
         if not item.closed:
@@ -368,6 +392,14 @@ class Backlog:
                     problems.append(f"{where}: a duplicate needs 'duplicate of <ID>' in '- **Closed**:'")
                 elif m_dup.group(1).upper() not in ids:
                     problems.append(f"{where}: duplicate of unknown item {m_dup.group(1)}")
+            if item.status == "superseded":
+                if not item.superseded_by:
+                    problems.append(f"{where}: a superseded item needs 'superseded by <ID>[, <ID>...]' in '- **Closed**:'")
+                for other in item.superseded_by:
+                    if other not in ids:
+                        problems.append(f"{where}: superseded by unknown item {other}")
+                    elif other == item.id:
+                        problems.append(f"{where}: an item cannot supersede itself")
         return problems
 
     def warnings(self) -> list:

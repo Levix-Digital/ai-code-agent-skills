@@ -94,6 +94,11 @@ def warnings(roadmap, backlog) -> list:
                 notes.append(f"{release.version} is released but {item_id} is still {d['status']}")
             if release.status != "released" and d["status"] in ("dropped", "duplicate"):
                 notes.append(f"{item_id} in {release.version} was closed as {d['status']}; unassign it")
+            if release.status != "released" and d["status"] == "superseded":
+                replacements = [r for r in backlog.find(item_id).superseded_by if roadmap.release_of(r) is None]
+                hint = (f"; assign {', '.join(replacements)} (roadmap.py assign {' '.join(replacements)} --release {release.version})"
+                        if replacements else "")
+                notes.append(f"{item_id} in {release.version} was superseded; unassign it{hint}")
     return notes
 
 
