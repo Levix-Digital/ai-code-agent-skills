@@ -104,6 +104,8 @@ The project declares its style in `.dev-cycle.json`:
 
 Large systems may combine styles (a hexagonal core whose ingestion is a pipeline); the top-level style goes in `.dev-cycle.json` and the combination in the ADR.
 
+In a project that uses Spec Kit, the universal principles, simplicity first and the guide of the project's style are part of the generated constitution (`dev-cycle-protocol/constitution.py`), so Spec Kit's plans are checked against them; after a style change, regenerate it.
+
 ---
 
 ## 📋 Design Section of a Plan (Phase 2)
