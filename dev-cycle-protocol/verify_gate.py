@@ -273,6 +273,8 @@ def verify_gate_3(cwd: str, project_name: str, accept_open_bugs: str = None) -> 
     except Exception as e:
         print(f"ℹ️ Could not check plan-memory plans: {e}")
 
+    passed &= check_speckit(cwd)
+
     secrets = check_secret_hygiene(cwd)
     if secrets:
         for s in secrets:
