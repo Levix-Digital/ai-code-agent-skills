@@ -6,7 +6,7 @@ version: v2.2.0
 status: in_progress
 author: Levi Silveira
 created_at: '2026-10-23T13:51:22'
-updated_at: '2026-10-23T14:00:26'
+updated_at: '2026-10-23T14:04:18'
 session_id: null
 tags:
 - product-inception
@@ -23,7 +23,9 @@ milestones:
   done_at: '2026-10-23'
   by: Levi Silveira
 - name: M2 Epics and roadmap
-  done: false
+  done: true
+  done_at: '2026-10-23'
+  by: Levi Silveira
 - name: M3 Product inception and gate 0
   done: false
 - name: M4 Spec Kit preset and setup
@@ -42,6 +44,9 @@ status_log:
 - at: '2026-10-23T14:00:26'
   by: Levi Silveira
   note: 'Milestone ''M1 Spec Kit spike and compatibility check'' completed: speckit_setup.py check; v1.2.3 verified (compat.json); branches feat/NNN-slug natively via the git extension''s branch_prefix (D6 revised: no script wrappers); preset reduced to the plan template addendum; findings recorded in the plan'
+- at: '2026-10-23T14:04:18'
+  by: Levi Silveira
+  note: 'Milestone ''M2 Epics and roadmap'' completed: EPIC-NNN items and the Epic field (epics are never promoted); roadmap.py (add-release, set-release, move-release, assign with epic expansion, unassign, show, current, validate); roadmap config section; 19 tests'
 ---
 
 # Product Inception, Roadmap and Spec Kit Integration
