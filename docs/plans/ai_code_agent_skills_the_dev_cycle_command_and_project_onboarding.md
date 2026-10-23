@@ -6,7 +6,7 @@ version: v2.3.0
 status: in_progress
 author: Levi Silveira
 created_at: '2026-10-23T14:43:16'
-updated_at: '2026-10-23T14:48:40'
+updated_at: '2026-10-23T15:01:37'
 session_id: null
 tags:
 - dev-cycle
@@ -26,7 +26,9 @@ milestones:
   done_at: '2026-10-23'
   by: Levi Silveira
 - name: M3 Spec Kit in onboarding
-  done: false
+  done: true
+  done_at: '2026-10-23'
+  by: Levix Digital
 - name: M4 The dev-cycle command
   done: false
 - name: M5 Documentation and release
@@ -46,6 +48,9 @@ status_log:
 - at: '2026-10-23T14:48:40'
   by: Levi Silveira
   note: 'Milestone ''M2 Assisted setup'' completed: onboard.py propose-config (detected keys missing from the file), write-config (adds only, refuses to change existing keys), create-branch (integration from production); ProjectConfig.is_set tells undecided from an explicit false; 5 tests'
+- at: '2026-10-23T15:01:37'
+  by: Levix Digital
+  note: 'Milestone ''M3 Spec Kit in onboarding'' completed: speckit_setup.py adopt (pins the installed version after the check, adds the git extension when missing, preset, feat/NNN-slug); constitution.py refuses to replace a hand-written constitution without --replace-hand-written and keeps a copy; verified end to end on a Spec Kit project without the protocol; 7 tests'
 ---
 
 # The /dev-cycle Command and Project Onboarding

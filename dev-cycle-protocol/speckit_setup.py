@@ -10,6 +10,7 @@ Commands:
     python speckit_setup.py check   [--version vX.Y.Z] [--script sh|ps|py] [--record] [--keep] [--json]
     python speckit_setup.py init    [--version vX.Y.Z] [--integration claude] [--script sh|ps|py] [--dir <project>] [--dry-run]
     python speckit_setup.py upgrade --to vX.Y.Z [--dir <project>] [--dry-run]
+    python speckit_setup.py adopt   [--dir <project>] [--dry-run]     (Spec Kit already used without the protocol)
 
 `check` runs the compatibility check: Spec Kit is initialized in a temporary repository and
 every behavior the protocol depends on is verified. `init` without --version checks the latest
@@ -427,6 +428,63 @@ def cmd_init(args) -> int:
     return 0
 
 
+def installed_settings(root: str) -> tuple:
+    """(integration, script) recorded by Spec Kit in the project, or (None, None)."""
+    integration_json = read_json(os.path.join(root, ".specify", "integration.json"))
+    options = read_json(os.path.join(root, ".specify", "init-options.json"))
+    integration = integration_json.get("integration") or options.get("integration")
+    settings = (integration_json.get("integration_settings") or {}).get(integration or "", {})
+    return integration, settings.get("script") or options.get("script")
+
+
+def extension_add_cmd(version: str, extension: str) -> list:
+    return specify_cmd(version) + ["extension", "add", extension]
+
+
+def cmd_adopt(args) -> int:
+    """Brings a project that used Spec Kit without the protocol under it: pins the installed version
+    (when it passes the compatibility check), the git extension with feat/NNN-slug branches, the preset."""
+    root = project_root(args.dir)
+    cfg = load_project_config(root)
+    if not os.path.isdir(os.path.join(root, ".specify")):
+        raise SetupError(f"Spec Kit is not initialized in {root}; use 'init'")
+    if cfg.section("speckit").get("enabled") and cfg.section("speckit").get("version"):
+        raise SetupError("Spec Kit is already managed by the protocol here (speckit.enabled); use 'status' or 'upgrade'")
+    version = installed_version(root)
+    verified = verified_version()
+    if not version:
+        raise SetupError("the installed Spec Kit version is unknown (no .specify/integration.json or init-options.json); "
+                         f"run 'upgrade --to {verified}' after enabling, or re-initialize")
+    integration, script = installed_settings(root)
+    integration = integration or cfg.section("speckit").get("integration") or "claude"
+    script = script or cfg.section("speckit").get("script") or default_script()
+    prefix = cfg.section("speckit").get("branch_prefix") or "feat"
+    if not args.dry_run:
+        require_uv()
+        if verified != version:
+            result = compatibility_check(version, integration, script)
+            print_check(result)
+            if not result["passed"]:
+                raise SetupError(f"the installed Spec Kit {version} is not compatible with the protocol; upgrade it to the "
+                                 f"verified {verified} first (speckit_setup.py upgrade --to {verified}), then adopt again")
+    cmds = []
+    if not os.path.isfile(git_config_path(root)):
+        cmds.append(extension_add_cmd(version, "git"))
+    cmds.append(preset_update_cmd(version) if preset_installed(root) else preset_add_cmd(version))
+    execute(cmds, root, args.dry_run)
+    if args.dry_run:
+        print(f"(dry run) would pin speckit.version = {version} and set branches {prefix}/NNN-slug")
+        return 0
+    set_branch_prefix(root, prefix)
+    write_speckit_config(root, {"enabled": True, "version": version, "integration": integration, "script": script,
+                                "branch_prefix": prefix})
+    print(f"✅ Spec Kit {version} adopted ({integration}, {script}), branches '{prefix}/NNN-slug', preset '{PRESET_ID}'. "
+          "Existing specs/ are kept.")
+    print("   Next: the constitution. If it was written by hand, move its principles into the sources (TECH_SPEC.md, ADRs) "
+          "with the user, then run constitution.py generate --replace-hand-written (a copy is kept).")
+    return 0
+
+
 def cmd_upgrade(args) -> int:
     root = project_root(args.dir)
     cfg = load_project_config(root).section("speckit")
@@ -525,6 +583,9 @@ def main(argv: list = None) -> int:
     p.add_argument("--integration", default=None, help="Agent integration (default: speckit.integration or claude)")
     p.add_argument("--script", choices=SCRIPT_TYPES, default=None)
     p.add_argument("--dry-run", action="store_true")
+    p = sub.add_parser("adopt", help="Bring a project that used Spec Kit without the protocol under it")
+    p.add_argument("--dir", default=None)
+    p.add_argument("--dry-run", action="store_true")
     p = sub.add_parser("upgrade", help="Upgrade the project's Spec Kit after a compatibility check")
     p.add_argument("--dir", default=None)
     p.add_argument("--to", required=True, help="Release tag")
@@ -551,6 +612,8 @@ def main(argv: list = None) -> int:
             return 0 if result["passed"] else 1
         if args.command == "init":
             return cmd_init(args)
+        if args.command == "adopt":
+            return cmd_adopt(args)
         return cmd_upgrade(args)
     except SetupError as e:
         print(f"❌ {e}")
