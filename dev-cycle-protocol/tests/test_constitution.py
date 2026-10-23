@@ -106,7 +106,7 @@ def test_hand_edits_are_detected_and_replaced(project):
 
 def test_spec_kit_template_is_not_a_generated_constitution(project):
     (project / con.CONSTITUTION).write_text("# [PROJECT_NAME] Constitution\n", encoding="utf-8")
-    assert any("not generated" in p for p in con.check(str(project)))
+    assert any("still Spec Kit's template" in p for p in con.check(str(project)))
 
 
 def test_requires_spec_kit(tmp_path):
@@ -121,3 +121,23 @@ def test_without_product_documents_or_style(tmp_path):
     assert con.main(["generate", "--dir", str(tmp_path)]) == 0
     t = (tmp_path / con.CONSTITUTION).read_text(encoding="utf-8")
     assert "### III. Development Cycle" in t and "Product Requirements" not in t and "Architecture Decisions" not in t
+
+
+HAND_WRITTEN = "# Photos Constitution\n\n## Core Principles\n\n### I. Privacy first\nNo photo leaves the family group.\n"
+
+
+def test_hand_written_constitution_is_never_replaced_silently(project, capsys):
+    (project / con.CONSTITUTION).write_text(HAND_WRITTEN, encoding="utf-8")
+    assert any("is hand-written" in p for p in con.check(str(project)))
+    assert con.main(["generate", "--dir", str(project)]) == 1
+    assert "Move its principles into the sources first" in capsys.readouterr().out
+    assert text(project) == HAND_WRITTEN
+    assert con.main(["generate", "--dir", str(project), "--replace-hand-written"]) == 0
+    assert (project / con.HAND_WRITTEN_COPY).read_text(encoding="utf-8") == HAND_WRITTEN
+    assert text(project).startswith("<!-- dev-cycle-constitution") and con.check(str(project)) == []
+
+
+def test_kinds_of_constitution():
+    assert con.kind_of("# [PROJECT_NAME] Constitution\n") == "template"
+    assert con.kind_of(HAND_WRITTEN) == "hand-written"
+    assert con.kind_of("<!-- dev-cycle-constitution\nsources-sha256: x\n-->\n# X\n") == "generated"

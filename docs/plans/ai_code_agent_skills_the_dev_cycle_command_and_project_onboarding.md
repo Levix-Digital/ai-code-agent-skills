@@ -3,10 +3,10 @@ plan_id: ai_code_agent_skills_the_dev_cycle_command_and_project_onboarding
 project: ai-code-agent-skills
 title: The /dev-cycle command and project onboarding
 version: v2.3.0
-status: active
+status: in_progress
 author: Levi Silveira
 created_at: '2026-10-23T14:43:16'
-updated_at: '2026-10-23T14:43:16'
+updated_at: '2026-10-23T15:02:53'
 session_id: null
 tags:
 - dev-cycle
@@ -18,13 +18,21 @@ superseded_by: null
 parent_plan_id: null
 milestones:
 - name: M1 Diagnosis
-  done: false
+  done: true
+  done_at: '2026-10-23'
+  by: Levi Silveira
 - name: M2 Assisted setup
-  done: false
+  done: true
+  done_at: '2026-10-23'
+  by: Levi Silveira
 - name: M3 Spec Kit in onboarding
-  done: false
+  done: true
+  done_at: '2026-10-23'
+  by: Levix Digital
 - name: M4 The dev-cycle command
-  done: false
+  done: true
+  done_at: '2026-10-23'
+  by: Levix Digital
 - name: M5 Documentation and release
   done: false
 status_log:
@@ -32,6 +40,22 @@ status_log:
   by: Levi Silveira
   status: active
   note: Plan created
+- at: '2026-10-23T14:45:11'
+  by: Levi Silveira
+  status: active
+  note: Approved by the user
+- at: '2026-10-23T14:47:31'
+  by: Levi Silveira
+  note: 'Milestone ''M1 Diagnosis'' completed: _onboard.py rules (D2-D4, new vs existing, setup items, Spec Kit states) and onboard.py diagnose (repository, config, branches, baseline, plans, release candidate, bugs, roadmap, Spec Kit); 15 tests'
+- at: '2026-10-23T14:48:40'
+  by: Levi Silveira
+  note: 'Milestone ''M2 Assisted setup'' completed: onboard.py propose-config (detected keys missing from the file), write-config (adds only, refuses to change existing keys), create-branch (integration from production); ProjectConfig.is_set tells undecided from an explicit false; 5 tests'
+- at: '2026-10-23T15:01:37'
+  by: Levix Digital
+  note: 'Milestone ''M3 Spec Kit in onboarding'' completed: speckit_setup.py adopt (pins the installed version after the check, adds the git extension when missing, preset, feat/NNN-slug); constitution.py refuses to replace a hand-written constitution without --replace-hand-written and keeps a copy; verified end to end on a Spec Kit project without the protocol; 7 tests'
+- at: '2026-10-23T15:02:53'
+  by: Levix Digital
+  note: 'Milestone ''M4 The dev-cycle command'' completed: dev-cycle skill (/dev-cycle router: diagnose, ask only when there is a decision, action per option), ''Starting a Session'' in the protocol, product-inception entry, MT-DEVCYCLE-001..004, plugin and allowlist'
 ---
 
 # The /dev-cycle Command and Project Onboarding

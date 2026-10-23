@@ -201,3 +201,41 @@ def test_upgrade_refuses_an_older_version(tmp_path, capsys):
 def test_verified_version_passes_the_real_check():
     result = ss.compatibility_check(ss.verified_version(), "claude", ss.default_script())
     assert result["passed"], result["checks"]
+
+
+# ---------------------------------------------------------------- adoption
+
+def test_installed_settings(tmp_path):
+    root = make_project(tmp_path)
+    (root / ".specify" / "integration.json").write_text(json.dumps(
+        {"version": "1.2.3", "integration": "codex", "integration_settings": {"codex": {"script": "ps"}}}), encoding="utf-8")
+    assert ss.installed_settings(str(root)) == ("codex", "ps")
+
+
+def test_adopt_refuses_without_spec_kit(tmp_path, capsys):
+    root = make_project(tmp_path, initialized=False)
+    assert ss.main(["adopt", "--dir", str(root), "--dry-run"]) == 1
+    assert "not initialized" in capsys.readouterr().out
+
+
+def test_adopt_refuses_a_managed_project(tmp_path, capsys):
+    root = make_project(tmp_path, speckit={"enabled": True, "version": "v1.2.3"})
+    assert ss.main(["adopt", "--dir", str(root), "--dry-run"]) == 1
+    assert "already managed" in capsys.readouterr().out
+
+
+def test_adopt_dry_run_adds_the_git_extension_and_the_preset(tmp_path, capsys):
+    root = make_project(tmp_path, preset=False)
+    (root / ".specify" / "extensions" / "git" / "git-config.yml").unlink()
+    assert ss.main(["adopt", "--dir", str(root), "--dry-run"]) == 0
+    out = capsys.readouterr().out
+    assert "specify extension add git" in out and "specify preset add --dev" in out
+    assert "would pin speckit.version = v1.2.3" in out
+    assert not (root / ".dev-cycle.json").exists()
+
+
+def test_adopt_dry_run_updates_an_installed_preset(tmp_path, capsys):
+    root = make_project(tmp_path)
+    assert ss.main(["adopt", "--dir", str(root), "--dry-run"]) == 0
+    out = capsys.readouterr().out
+    assert "extension add" not in out and "specify preset update dev-cycle" in out

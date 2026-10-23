@@ -15,7 +15,7 @@ How to record a run: in each test of the current run, mark exactly one box of th
   2. Run it a second time.
   3. Open a new agent session and ask "which skills do you have?".
 - **Expected**:
-  - The first run shows `+` or `=` for `dev-cycle-protocol`, `product-inception`, `plan-memory`, `backlog`, `software-design`, `architecture-docs`, `quality-assurance`, `devops-release`, `user-docs`, `session-memory` and `folder-sync` in every target folder.
+  - The first run shows `+` or `=` for `dev-cycle`, `dev-cycle-protocol`, `product-inception`, `plan-memory`, `backlog`, `software-design`, `architecture-docs`, `quality-assurance`, `devops-release`, `user-docs`, `session-memory` and `folder-sync` in every target folder.
   - The second run shows only `=`.
   - The agent lists the ten skills.
 - **Result**: [ ] Pass [ ] Fail [ ] Blocked
@@ -98,6 +98,59 @@ How to record a run: in each test of the current run, mark exactly one box of th
   - Step 2 creates `docs/ROADMAP.md` with `v0.1.0: MVP` holding both features; `roadmap.py current` lists them.
   - Step 3 captures the two new items, closes the old one as `superseded by` them, and the roadmap (`roadmap.py validate`) asks for the new items to take its place in v0.1.0.
   - Step 4 is refused: the agent offers to promote the epic's items instead.
+- **Result**: [ ] Pass [ ] Fail [ ] Blocked
+- **Notes**:
+
+## The /dev-cycle Command
+
+### MT-DEVCYCLE-001: An idea in an empty folder starts Phase 0
+
+- **Covers**: dev-cycle, product-inception
+- **Prerequisites**: an empty folder
+- **Steps**:
+  1. Type `/dev-cycle "quero um app onde famílias guardam fotos"`.
+- **Expected**:
+  - One line says the repository is new, and the agent starts product inception with the idea (first interview round), without asking for configuration first.
+- **Result**: [ ] Pass [ ] Fail [ ] Blocked
+- **Notes**:
+
+### MT-DEVCYCLE-002: A repository that never used the protocol gets one setup list
+
+- **Covers**: dev-cycle, dev-cycle-protocol
+- **Prerequisites**: an existing repository with code, a README and only a `main` branch; uv installed
+- **Steps**:
+  1. Type `/dev-cycle`.
+  2. Answer "all", change one value of the proposed configuration, and answer "no" to Spec Kit.
+  3. Type `/dev-cycle` again.
+- **Expected**:
+  - Step 1 lists, in order: create `.dev-cycle.json`, create the `dev` branch, decide about Spec Kit, adopt a product baseline; nothing is written yet.
+  - Step 2 shows the proposed configuration before writing it, writes it with the changed value, creates `dev` from `main` and records `speckit.enabled: false`.
+  - Step 3 no longer lists the configuration, the branch or the Spec Kit question.
+- **Result**: [ ] Pass [ ] Fail [ ] Blocked
+- **Notes**:
+
+### MT-DEVCYCLE-003: A request waits for a plan in progress
+
+- **Covers**: dev-cycle, dev-cycle-protocol
+- **Prerequisites**: a set-up project with an active plan that has milestones left
+- **Steps**:
+  1. Type `/dev-cycle "add search"`.
+  2. In a project with nothing pending, type `/dev-cycle "add search"`.
+- **Expected**:
+  - Step 1 shows the plan in progress first (recommended) and the request last, and waits for the choice.
+  - Step 2 answers with one line on the project state and starts Phase 1 with the request.
+- **Result**: [ ] Pass [ ] Fail [ ] Blocked
+- **Notes**:
+
+### MT-DEVCYCLE-004: A repository that already uses Spec Kit is adopted
+
+- **Covers**: dev-cycle, dev-cycle-protocol
+- **Prerequisites**: a repository initialized with Spec Kit (without the protocol) and a hand-written constitution; uv installed
+- **Steps**:
+  1. Type `/dev-cycle` and choose the Spec Kit adoption.
+- **Expected**:
+  - The installed version is pinned in `.dev-cycle.json`, the preset is installed and branches are `feat/NNN-slug`; existing `specs/` are untouched.
+  - The agent shows each principle of the old constitution and proposes where it goes; after the user confirms, the constitution is generated and the old one is kept in `.specify/memory/constitution.hand-written.md`.
 - **Result**: [ ] Pass [ ] Fail [ ] Blocked
 - **Notes**:
 

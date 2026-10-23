@@ -76,7 +76,7 @@ Optional file at a project's root: the project configuration shared by every ski
 | `roadmap.file` | The roadmap of releases (`plan-memory/roadmap.py`) | `docs/ROADMAP.md` |
 | `product.vision`, `product.tech_spec` | The business document and the technical specification of Phase 0 (`product-inception`) | `docs/product/VISION.md`, `docs/product/TECH_SPEC.md` |
 | `product.max_lines` | Line limit of each product document | `400` |
-| `speckit.enabled` | Use GitHub Spec Kit for the detail of feature plans (Phases 1, 2 and 4) | `false` |
+| `speckit.enabled` | Use GitHub Spec Kit for the detail of feature plans (Phases 1, 2 and 4). Written by `/dev-cycle` with the user's answer; an explicit `false` is a decision and is not asked again, while a missing key means it was never asked | `false` |
 | `speckit.version` | Exact Spec Kit release tag the project is pinned to; set by `speckit_setup.py init` and `upgrade` | not set |
 | `speckit.integration` | Coding agent integration passed to `specify init` | `claude` |
 | `speckit.script` | Script type of Spec Kit's commands: `sh`, `ps` or `py` | `sh` (`ps` on Windows) |

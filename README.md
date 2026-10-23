@@ -6,6 +6,7 @@ Development skills in the open `SKILL.md` format, shared by every coding agent o
 
 | Skill | Role | What it does |
 |---|---|---|
+| [`dev-cycle`](#dev-cycle) | Command | `/dev-cycle ["<idea or request>"]`: the one entry point; diagnoses the repository, proposes where to start, sets up what is missing after you confirm |
 | [`dev-cycle-protocol`](#dev-cycle-protocol) | Orchestrator | Development cycle from product inception to a verified release: phases, the role called in each one, full and short paths, the user's gates, GitHub Spec Kit as optional executor, the shared `.dev-cycle.json` |
 | [`product-inception`](#product-inception) | Product | Phase 0: from an idea to an approved product baseline (vision, architecture, technical specification, backlog with epics, roadmap), or adoption of an existing project |
 | [`plan-memory`](#plan-memory) | Planner | The project backlog with epics (`docs/BACKLOG.md`), the roadmap of releases (`docs/ROADMAP.md`) and complete plans as versioned files (`docs/plans`), shared by the team, with promotion of backlog items, milestones, lineage, search and drift detection |
@@ -39,9 +40,9 @@ Development skills in the open `SKILL.md` format, shared by every coding agent o
 ```
 ~/.ai-code-agent-skills/                 this repository (source of truth)
 ├── .claude-plugin/                      Claude Code marketplace + plugin manifests
-├── dev-cycle-protocol/  product-inception/  plan-memory/  backlog/  session-memory/
+├── dev-cycle/  dev-cycle-protocol/  product-inception/  plan-memory/  backlog/
 ├── software-design/  architecture-docs/  quality-assurance/
-├── devops-release/  user-docs/  folder-sync/
+├── devops-release/  user-docs/  session-memory/  folder-sync/
 ├── docs/plans/                          plans of this repository
 ├── tests/MANUAL_TESTS.md                manual tests of this repository
 ├── install.ps1 / install.sh             link the skills into each agent
@@ -56,8 +57,7 @@ Development skills in the open `SKILL.md` format, shared by every coding agent o
 └── session-memory/db                    this developer's session memory
 
 <project>/docs/plans/*.md                plans: versioned and shared in each project
-<project>/docs/BACKLOG.md, docs/ROADMAP.md   backlog with epics and the roadmap of releases
-<project>/docs/product/                  vision and technical specification (Phase 0)
+<project>/docs/BACKLOG.md, ROADMAP.md, product/   backlog, roadmap, vision and technical specification
 <project>/.specify/, specs/              Spec Kit setup and feature specs (when enabled)
 <project>/TECDOC.md, docs/architecture/, docs/adr/   technical docs (architecture-docs)
 ```
@@ -112,7 +112,7 @@ Restart the agent (or open a new session) after installing so it picks up the sk
 
 ## Usage
 
-Agents load a skill on their own when the task matches its `description`; you can also ask for one by name ("use plan-memory to save this plan"). For project work, start with the orchestrator: it runs the cycle and calls the other roles in each phase.
+Agents load a skill on their own when the task matches its `description`; you can also ask for one by name ("use plan-memory to save this plan"). For project work, start with **`/dev-cycle`**: with your idea in a new folder, with a request in an existing project, or alone to see where things stand. It diagnoses the repository, says in one line when everything is in order, and otherwise offers the options in the recommended order (a plan in progress, a pending release candidate, blocking bugs, missing setup, the next items of the roadmap). In a repository that never used the cycle it proposes the setup (configuration, `dev` branch, Spec Kit, product baseline) and writes nothing before you confirm. Agents without slash commands: say "start the dev cycle".
 
 0. For a **new product**, start with the idea ("I want an app where families keep their photos"). The agent runs **product inception**: rounds of questions and suggestions, then the vision, the architecture, the technical specification, the backlog of the complete product (epics and their items) and the roadmap from the MVP, each for your approval. An existing project can adopt the same baseline.
 1. In a project, describe what you want ("add an export command"), or start from the next items of the roadmap. The agent stays in **Discovery** until you agree on an approach.
@@ -136,6 +136,10 @@ Cloud sessions do not see your local folders. For them, this repository is also 
 ---
 
 ## Skills
+
+### dev-cycle
+
+The `/dev-cycle` command, a thin router over `dev-cycle-protocol/onboard.py`: `diagnose` reads the configuration, branches, product baseline, plans, the latest release candidate run, blocking bugs, the roadmap and Spec Kit; `propose-config` and `write-config` create or complete `.dev-cycle.json` from what can be detected (adding keys, never overwriting); `create-branch` creates the integration branch. Spec Kit is asked about once per project, and a repository that already uses it is adopted (`speckit_setup.py adopt`) with its hand-written constitution moved into the sources before it is replaced. Details: [dev-cycle/SKILL.md](dev-cycle/SKILL.md).
 
 ### dev-cycle-protocol
 
@@ -202,7 +206,6 @@ Keeps the project's planning in its repository: the **backlog**, where work is c
 | Change status | `update_plan_status.py --id <plan_id> --status completed [--notes "..."]` |
 | Check a proposal for drift | `detect_drift.py --proposal "<text>"` or `--file proposal.md [--strict]` |
 | Export (JSON or copy) | `export_plan.py --id <plan_id> --format json --output-dir out/` |
-| Rebuild the local index | `rebuild_index.py` |
 | Migrate from the old database | `migrate_legacy.py [--source <old_db>] [--dry-run]` |
 
 All scripts are in `<skills_root>/plan-memory/`. They work on the Git repository of the current directory; use `--dir` for another one and `--project` to override the project name.

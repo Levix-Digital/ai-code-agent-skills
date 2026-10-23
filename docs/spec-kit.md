@@ -28,6 +28,18 @@ python ~/.ai-code-agent-skills/dev-cycle-protocol/constitution.py generate
 
 `speckit_setup.py status` shows the pinned and installed versions, the preset, the branch prefix and whether uv is available.
 
+## Adopting a Repository That Already Uses Spec Kit
+
+`/dev-cycle` notices a `.specify/` folder the protocol does not manage and offers to adopt it:
+
+```bash
+python ~/.ai-code-agent-skills/dev-cycle-protocol/speckit_setup.py adopt
+```
+
+It pins the installed version when it passes the compatibility check (otherwise it asks for `upgrade --to <verified version>` first), adds the git extension when it is missing, installs the `dev-cycle` preset and sets `feat/NNN-slug` branches. Existing `specs/` stay as they are.
+
+The project's constitution was written by hand, so it is not replaced right away: the agent shows each of its principles and proposes where it goes (constraints and non-functional requirements to `TECH_SPEC.md`, decisions to ADRs, general design rules as a suggestion for software-design). After you confirm, `constitution.py generate --replace-hand-written` writes the generated one and keeps the old one in `.specify/memory/constitution.hand-written.md`.
+
 ## Versions
 
 - Each project is **pinned** to one Spec Kit release (`speckit.version`).
