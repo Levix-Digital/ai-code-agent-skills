@@ -1,17 +1,17 @@
 """
 Backlog - plan-memory Skill
 The first level of planning: capture bugs, features, improvements and adjustments in the
-project backlog (default: docs/BACKLOG.md) without discovery, list and triage them, and
-close them. Writes the file; never commits.
+project backlog (default: docs/BACKLOG.md) without discovery, group them under epics, list
+and triage them, and close them. Writes the file; never commits.
 
 Usage:
-    python backlog.py add --type bug|feature|improvement|adjustment --title T --description D
-                          [--severity S] [--priority P] [--found-in "v1.2.0, PR #12"]
+    python backlog.py add --type bug|feature|improvement|adjustment|epic --title T --description D
+                          [--severity S] [--priority P] [--epic EPIC-NNN] [--found-in "v1.2.0, PR #12"]
     python backlog.py add --from-failed --run <rc> [--severity S]    (failed manual tests deferred as bugs)
-    python backlog.py list [--type T] [--status S] [--all] [--json]
+    python backlog.py list [--type T] [--status S] [--epic EPIC-NNN] [--all] [--json]
     python backlog.py summary [--json]
     python backlog.py show <ID> [--json]
-    python backlog.py set <ID> [--title T] [--description D] [--severity S] [--priority P] [--status S] [--plan ID]
+    python backlog.py set <ID> [--title T] [--description D] [--severity S] [--priority P] [--status S] [--plan ID] [--epic ID|-]
     python backlog.py close <ID> [--ref "PR #12"]
     python backlog.py drop <ID> --reason R
     python backlog.py duplicate <ID> --of <ID>
@@ -43,7 +43,14 @@ ITEMS_SECTION = "## Backlog items"
 def line_of(item) -> str:
     rank = item.rank or "?"
     plan = f"  → {item.plan}" if item.plan else ""
-    return f"{item.id:<9} [{item.status}] ({rank}) {item.title}{plan}"
+    epic = f"  [{item.epic}]" if item.epic else ""
+    return f"{item.id:<9} [{item.status}] ({rank}) {item.title}{epic}{plan}"
+
+
+def epic_progress(backlog: Backlog, epic) -> str:
+    items = backlog.epic_items(epic.id)
+    done = len([i for i in items if i.closed])
+    return f"{done}/{len(items)} items closed"
 
 
 def summary_data(backlog: Backlog, blocking: list) -> dict:
@@ -74,7 +81,8 @@ def print_summary(backlog: Backlog, bf: BacklogFile):
         if items:
             print(f"\n{TYPES[item_type][1]}:")
             for item in items:
-                print(f"   {line_of(item)}")
+                extra = f"  ({epic_progress(backlog, item)})" if item.type == "epic" else ""
+                print(f"   {line_of(item)}{extra}")
 
 
 def add_failed_manual_tests(bf: BacklogFile, run: str, severity: str = None) -> list:
@@ -142,6 +150,9 @@ def promote(bf: BacklogFile, ids: list, title: str = None, into: str = None, pla
         item = backlog.find(item_id)
         if item.closed:
             raise BacklogError(f"{item.id} is closed ({item.status}); reopen it first")
+        if item.type == "epic":
+            members = ", ".join(i.id for i in backlog.epic_items(item.id, include_closed=False)) or "none open"
+            raise BacklogError(f"{item.id} is an epic; promote its items instead ({members})")
         if item.plan:
             raise BacklogError(f"{item.id} is already promoted into plan '{item.plan}'")
         if item in items:
@@ -193,6 +204,8 @@ def cmd(args) -> int:
         problems = backlog.validate()
         for p in problems:
             print(f"❌ {p}")
+        for w in backlog.warnings():
+            print(f"⚠️ {w}")
         print(f"\n{'✅' if not problems else '❌'} backlog: {len(backlog.items)} item(s), {len(problems)} problem(s).")
         return 1 if problems else 0
 
@@ -207,7 +220,7 @@ def cmd(args) -> int:
             raise BacklogError("add needs --type, --title and --description (or --from-failed --run <rc>)")
         backlog = bf.load(create=True)
         found = today() + (f", {args.found_in.strip()}" if args.found_in and args.found_in.strip() else "")
-        item = backlog.add(args.type, args.title, args.description, found, args.severity, args.priority)
+        item = backlog.add(args.type, args.title, args.description, found, args.severity, args.priority, args.epic)
         bf.save(backlog)
         print(f"✅ {item.id}: {item.title} ({item.rank}) added to {bf.rel}")
         return 0
@@ -231,7 +244,8 @@ def cmd(args) -> int:
 
     if args.command == "list":
         items = backlog.items if args.all else backlog.open_items()
-        items = [i for i in items if (not args.type or i.type == args.type) and (not args.status or i.status == args.status)]
+        items = [i for i in items if (not args.type or i.type == args.type) and (not args.status or i.status == args.status)
+                 and (not args.epic or i.epic == args.epic.upper())]
         if args.json:
             print(json.dumps([i.to_dict() for i in items], indent=2, ensure_ascii=False))
         else:
@@ -252,7 +266,8 @@ def cmd(args) -> int:
         return 0
 
     if args.command == "set":
-        item = backlog.update(args.id, args.title, args.description, args.severity, args.priority, args.status, args.plan)
+        item = backlog.update(args.id, args.title, args.description, args.severity, args.priority, args.status, args.plan,
+                              args.epic)
         message = f"✅ {item.id} updated: [{item.status}] ({item.rank}) {item.title}"
     elif args.command == "close":
         item = backlog.close(args.id, "done", today() + (f", {args.ref.strip()}" if args.ref else ""))
@@ -296,6 +311,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--description")
     p.add_argument("--severity", choices=SEVERITIES, help="Required for bugs")
     p.add_argument("--priority", choices=PRIORITIES, help="Other types (default: medium)")
+    p.add_argument("--epic", default=None, help="Epic the item belongs to (EPIC-NNN)")
     p.add_argument("--found-in", default=None, help="Where it was found: version, pull request, test")
     p.add_argument("--from-failed", action="store_true", help="Capture the manual tests marked Fail in --run as bugs")
     p.add_argument("--run", default=None, help="Release candidate run, with --from-failed")
@@ -303,6 +319,7 @@ def build_parser() -> argparse.ArgumentParser:
     p = command("list", "List items (open ones by default)")
     p.add_argument("--type", choices=list(TYPES))
     p.add_argument("--status", choices=OPEN_STATUSES + CLOSED_STATUSES)
+    p.add_argument("--epic", default=None, help="Only the items of this epic")
     p.add_argument("--all", action="store_true", help="Include closed items")
     p.add_argument("--json", action="store_true")
 
@@ -321,6 +338,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--priority", choices=PRIORITIES)
     p.add_argument("--status", choices=OPEN_STATUSES)
     p.add_argument("--plan", help="Plan id ('-' clears it)")
+    p.add_argument("--epic", help="Epic id ('-' clears it)")
 
     p = command("close", "Close an item as done")
     p.add_argument("id")

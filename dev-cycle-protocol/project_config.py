@@ -62,6 +62,9 @@ DEFAULTS = {
         "file": "docs/BACKLOG.md",
         "blocking_severities": ["critical", "high"],
     },
+    "roadmap": {
+        "file": "docs/ROADMAP.md",
+    },
     "speckit": {
         "enabled": False,
         "version": None,
