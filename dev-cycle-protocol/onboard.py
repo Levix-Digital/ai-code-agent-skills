@@ -269,9 +269,34 @@ def collect(root: str, agent: str = None) -> dict:
         state["findings"].append(f"plans: could not be read ({e})")
 
     state["rc"] = rc_state(root, cfg)
+    state["prs"] = prs_state(root, cfg, state["findings"])
     state["speckit"] = speckit_state(root, cfg)
     state["agent"] = {"name": agent, "attribution_hidden": attribution_hidden(root)}
     return state
+
+
+def prs_state(root: str, cfg, findings: list) -> list:
+    """Open pull requests on the platform with what is pending; [] when the platform is not reachable."""
+    if cfg.section("review").get("provider") == "none":
+        return []
+    try:
+        import pr_sync
+        from _pr_model import needs_action, summary_line
+        from _pr_providers import cli_available
+        ctx = pr_sync.Context(root)
+        if not ctx.provider_name or not cli_available(ctx.provider_name):
+            if ctx.provider_name:
+                findings.append(f"pull requests: the {ctx.provider_name} CLI is not installed, so they were not read")
+            return []
+        out = []
+        for pr in ctx.provider().open_pull_requests():
+            p = pr_sync.pending_of(ctx, pr)
+            out.append({"number": pr["number"], "title": pr.get("title"), "summary": summary_line(pr, p),
+                        "needs_action": needs_action(p), "for_user": len([t for t in p["threads"] if t["hint"] == "large"])})
+        return out
+    except Exception as e:
+        findings.append(f"pull requests: could not be read ({e})")
+        return []
 
 
 def rc_state(root: str, cfg):

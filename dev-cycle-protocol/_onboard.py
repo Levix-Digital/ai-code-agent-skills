@@ -10,6 +10,7 @@ State (dict, every key optional):
     branches: {integration, integration_exists, production, production_exists}
     baseline: {vision, tech_spec, style, tec_doc, epics, roadmap}
     plans:    [{id, title, status, done, total}]          (active and in progress)
+    prs:      [{number, title, summary, needs_action, for_user}]   (open pull requests on the platform)
     rc:       {run, version, not_run, failed, released}    (latest release candidate run)
     bugs:     ["BUG-001 (high) Crash", ...]                 (open blocking bugs)
     roadmap:  {current, open_items: [...]}                  (current release)
@@ -19,8 +20,8 @@ State (dict, every key optional):
 """
 
 # Option kinds, in the recommended order (D4). The first three compete with a request.
-ORDER = ["plan", "rc", "bugs", "setup", "baseline", "release", "request"]
-COMPETING = {"plan", "rc", "bugs"}
+ORDER = ["plan", "pr", "rc", "bugs", "setup", "baseline", "release", "request"]
+COMPETING = {"plan", "pr", "rc", "bugs"}
 
 
 def is_new(state: dict) -> bool:
@@ -91,6 +92,10 @@ def options(state: dict, request: str = None) -> list:
             continue
         add("plan", f"plan:{plan['id']}", f"Resume the plan '{plan.get('title') or plan['id']}' ({progress})",
             f"plan {plan.get('status')}")
+    for pr in state.get("prs") or []:
+        if pr.get("needs_action"):
+            add("pr", f"pr:{pr['number']}", f"Work on {pr['summary']}",
+                f"{pr['for_user']} item(s) need your decision" if pr.get("for_user") else "review on the platform")
     rc = state.get("rc")
     if rc and not rc.get("released"):
         if rc.get("not_run") or rc.get("failed"):
@@ -141,8 +146,11 @@ def summary(state: dict, opts: list, request: str, new: bool) -> str:
     release = f"current release {roadmap['current']}" if roadmap.get("current") else "no roadmap"
     bugs = len(state.get("bugs") or [])
     plans = len([o for o in opts if o["kind"] == "plan"])
+    prs = len([o for o in opts if o["kind"] == "pr"])
     line = (f"{release}, {bugs or 'no'} blocking bug{'s' if bugs != 1 else ''}, "
             f"{plans or 'no'} plan{'s' if plans != 1 else ''} in progress")
+    if prs:
+        line += f", {prs} pull request{'s' if prs != 1 else ''} waiting"
     kinds = {o["kind"] for o in opts}
     if request and not (kinds & COMPETING) and "setup" not in kinds and "baseline" not in kinds:
         return f"Project up to date ({line}). Going on with: {request}"

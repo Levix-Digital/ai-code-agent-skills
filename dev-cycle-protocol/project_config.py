@@ -27,6 +27,7 @@ ARCHITECTURE_STYLES = ["hexagonal", "layered", "mvc", "pipeline", "modular-monol
 BUG_SEVERITIES = ["critical", "high", "medium", "low"]
 OBSERVABILITY_PROFILES = ["cli", "service", "library", "desktop", "none"]
 SPECKIT_SCRIPTS = ["sh", "ps", "py"]
+REVIEW_PROVIDERS = ["auto", "github", "gitlab", "none"]
 
 # Sections and their defaults. `None` means "not set": skills fall back to auto-detection.
 DEFAULTS = {
@@ -69,6 +70,14 @@ DEFAULTS = {
         "vision": "docs/product/VISION.md",
         "tech_spec": "docs/product/TECH_SPEC.md",
         "max_lines": 400,
+    },
+    "review": {
+        "provider": "auto",
+        "host": None,
+        "marker": "[review]",
+        "reply_marker": "[reply]",
+        "auto_review": True,
+        "allowed_terms": [],
     },
     "speckit": {
         "enabled": False,
@@ -195,6 +204,13 @@ class ProjectConfig:
             problems.append("speckit.version must be set when speckit.enabled is true (run speckit_setup.py init)")
         if speckit.get("script") is not None and speckit.get("script") not in SPECKIT_SCRIPTS:
             problems.append(f"speckit.script '{speckit.get('script')}' is not one of: {', '.join(SPECKIT_SCRIPTS)}")
+        review = self.section("review")
+        if review.get("provider") not in REVIEW_PROVIDERS:
+            problems.append(f"review.provider '{review.get('provider')}' is not one of: {', '.join(REVIEW_PROVIDERS)}")
+        if not isinstance(review.get("auto_review"), bool):
+            problems.append("review.auto_review must be true or false")
+        if not isinstance(review.get("allowed_terms"), list):
+            problems.append("review.allowed_terms must be a list of phrases")
         known = set(DEFAULTS) | set(LEGACY_KEYS) | {"doc_files"}
         for key in self.raw:
             if key not in known:

@@ -13,6 +13,7 @@
     "./product-inception",
     "./plan-memory",
     "./backlog",
+    "./code-review",
     "./software-design",
     "./architecture-docs",
     "./quality-assurance",

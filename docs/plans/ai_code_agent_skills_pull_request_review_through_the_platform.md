@@ -6,7 +6,7 @@ version: v2.4.0
 status: in_progress
 author: Levix Digital
 created_at: '2026-10-23T20:11:03'
-updated_at: '2026-10-23T20:32:40'
+updated_at: '2026-10-23T20:34:24'
 session_id: null
 tags:
 - pull-requests
@@ -32,7 +32,9 @@ milestones:
   done_at: '2026-10-23'
   by: Levix Digital
 - name: M4 Reviewer and the cycle
-  done: false
+  done: true
+  done_at: '2026-10-23'
+  by: Levix Digital
 - name: M5 Documentation and release
   done: false
 status_log:
@@ -53,6 +55,9 @@ status_log:
 - at: '2026-10-23T20:32:40'
   by: Levix Digital
   note: 'Milestone ''M3 GitLab'' completed: GitLabProvider through glab api (merge request, discussions with pagination, approvals, pipeline; reply, resolve, comment, review with diff positions, reviewers), self-hosted hosts; recorded responses in tests'
+- at: '2026-10-23T20:34:24'
+  by: Levix Digital
+  note: 'Milestone ''M4 Reviewer and the cycle'' completed: code-review skill (checklist, levels, posting, never approves); Phase 7 as the review loop on the platform; open pull requests in the /dev-cycle diagnosis right after plans; review configuration section; devops-release rule'
 ---
 
 # Pull Request Review Through the Platform

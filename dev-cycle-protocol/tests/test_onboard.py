@@ -273,3 +273,28 @@ def test_attribution_false_or_local_settings_count(repo):
     (repo / ".claude").mkdir()
     (repo / ".claude" / "settings.local.json").write_text(json.dumps({"attribution": False}), encoding="utf-8")
     assert onboard.attribution_hidden(str(repo))
+
+
+# ---------------------------------------------------------------- pull requests
+
+def test_open_pull_requests_with_pending_items_come_right_after_plans():
+    s = state(plans=[{"id": "p", "title": "Export", "status": "in_progress", "done": 1, "total": 3}],
+              prs=[{"number": 12, "title": "Sharing", "summary": "PR #12 Sharing: 2 threads waiting (1 for you), CI red",
+                    "needs_action": True, "for_user": 1},
+                   {"number": 13, "title": "Docs", "summary": "PR #13 Docs: waiting for review", "needs_action": False, "for_user": 0}],
+              bugs=["BUG-1 (high) Crash"])
+    rec = recommendation(s, "add search")
+    assert [o["key"] for o in rec["options"]][:3] == ["plan:p", "pr:12", "bugs"]
+    assert rec["options"][1]["title"] == "Work on PR #12 Sharing: 2 threads waiting (1 for you), CI red"
+    assert rec["options"][1]["reason"] == "1 item(s) need your decision"
+    assert "1 pull request waiting" in rec["summary"]
+
+
+def test_a_pending_pull_request_stops_the_straight_path():
+    s = state(prs=[{"number": 12, "title": "x", "summary": "PR #12 x: CI red", "needs_action": True, "for_user": 0}])
+    assert recommendation(s, "add search")["ask"] is True
+
+
+def test_review_provider_none_skips_the_platform(repo):
+    (repo / ".dev-cycle.json").write_text(json.dumps({"review": {"provider": "none"}}), encoding="utf-8")
+    assert onboard.collect(str(repo))["prs"] == []
