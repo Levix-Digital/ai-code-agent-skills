@@ -43,7 +43,7 @@ def test_promote_one_bug_creates_a_draft_bug_plan(project):
     store = PlanStore(str(project))
     plan = store.get(f"{slugify_id(store.project)}_crash_on_start")
     assert plan.kind == "bug" and plan.meta["status"] == "draft" and plan.backlog_items == ["BUG-001"]
-    assert "## 1. Reproduction" in plan.body
+    assert "## 1. Triage" in plan.body and "## 2. Reproduction" in plan.body
     assert "### BUG-001: Crash on start" in plan.body and "- **Severity**: high" in plan.body
     item = items(project).find("BUG-001")
     assert (item.status, item.plan) == ("planned", plan.meta["plan_id"])
