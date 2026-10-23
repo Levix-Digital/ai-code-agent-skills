@@ -1,7 +1,7 @@
 ---
 name: backlog
-description: The /backlog command - capture a feature, improvement, adjustment or bug in the project backlog (docs/BACKLOG.md) in one line, without discovery or planning, or show the backlog summary. Use when the user types /backlog or asks to note, save or add something to the backlog for later.
-argument-hint: --feature|--improvement|--adjustment|--bug "<text>" [--priority high|medium|low] [--severity critical|high|medium|low]
+description: The /backlog command - capture a feature, improvement, adjustment, bug or epic in the project backlog (docs/BACKLOG.md) in one line, without discovery or planning, or show the backlog summary. Use when the user types /backlog or asks to note, save or add something to the backlog for later.
+argument-hint: --feature|--improvement|--adjustment|--bug|--epic "<text>" [--priority high|medium|low] [--severity critical|high|medium|low] [--in EPIC-NNN]
 ---
 
 # 📥 Backlog Command (`/backlog`)
@@ -20,6 +20,8 @@ Captures one item in the project backlog, the first level of planning owned by [
 | `--improvement "<text>"` | Better behavior of something that exists |
 | `--adjustment "<text>"` | Small change: wording, defaults, configuration, cleanup |
 | `--bug "<text>"` | Something that does not work as it should |
+| `--epic "<text>"` | A capability area of the product that groups items |
+| `--in EPIC-NNN` | The epic the item belongs to |
 | `--priority high\|medium\|low` | Priority of a feature, improvement or adjustment (default `medium`) |
 | `--severity critical\|high\|medium\|low` | Severity of a bug |
 | *(no type)* | Show the backlog summary |
@@ -32,11 +34,12 @@ Without arguments, or with text but no type, run the summary (or ask which type,
 2. From the user's text, write:
    - a **title**: short, imperative or descriptive, at most about ten words;
    - a **description**: the user's idea, faithfully, in **English** (translate when the user wrote in another language), without adding scope, solutions or details the user did not give.
-3. For `--bug` without `--severity`, estimate it: `critical` (data loss, security, nothing works), `high` (a main feature fails, no workaround), `medium` (a feature fails with a workaround), `low` (cosmetic, rare). Say that it was estimated.
-4. Run:
+3. With `--in`, pass the epic as `--epic`; without it, add the item to no epic (do not guess one). An epic itself never has `--in`.
+4. For `--bug` without `--severity`, estimate it: `critical` (data loss, security, nothing works), `high` (a main feature fails, no workaround), `medium` (a feature fails with a workaround), `low` (cosmetic, rare). Say that it was estimated.
+5. Run:
    ```powershell
-   python "<skills_root>/plan-memory/backlog.py" add --type <feature|improvement|adjustment|bug> --title "<title>" --description "<description>" [--priority <p>] [--severity <s>] [--found-in "<version, pull request or context, when known>"]
+   python "<skills_root>/plan-memory/backlog.py" add --type <feature|improvement|adjustment|bug|epic> --title "<title>" --description "<description>" [--priority <p>] [--severity <s>] [--epic <EPIC-NNN>] [--found-in "<version, pull request or context, when known>"]
    ```
    Summary: `python "<skills_root>/plan-memory/backlog.py" summary`.
-5. Answer with one line, in the user's language: the id, the title and the priority or severity, for example `FEAT-003: Export answers to Markdown (medium)`, and for an estimated severity add `severity estimated; change it with backlog.py set BUG-004 --severity <s>`.
-6. Do not commit unless the user asks; the backlog file is committed with the next change to the project, or on its own as `docs(backlog): <id> <title>`.
+6. Answer with one line, in the user's language: the id, the title and the priority or severity, for example `FEAT-003: Export answers to Markdown (medium)`, and for an estimated severity add `severity estimated; change it with backlog.py set BUG-004 --severity <s>`.
+7. Do not commit unless the user asks; the backlog file is committed with the next change to the project, or on its own as `docs(backlog): <id> <title>`.

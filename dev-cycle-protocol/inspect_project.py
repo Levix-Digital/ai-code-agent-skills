@@ -41,9 +41,45 @@ def backlog_profile(cwd: str) -> dict:
         return {
             "file": bf.rel,
             "exists": True,
-            "open": {kind: len(backlog.open_items(kind)) for kind in ("bug", "feature", "improvement", "adjustment")},
+            "open": {kind: len(backlog.open_items(kind)) for kind in ("bug", "feature", "improvement", "adjustment", "epic")},
             "blocking_bugs": [f"{b.id} ({b.rank}) {b.title}" for b in backlog.blocking_bugs(bf.blocking_severities)],
         }
+    except Exception as e:
+        return {"error": str(e)}
+
+
+def roadmap_profile(cwd: str) -> dict:
+    """The current release of the roadmap and its open items."""
+    try:
+        sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "plan-memory"))
+        from _roadmap_store import RoadmapFile
+        from _backlog_store import BacklogFile
+        import roadmap as roadmap_cli
+        rf = RoadmapFile(cwd)
+        if not rf.exists:
+            return {"file": rf.rel, "exists": False}
+        bf = BacklogFile(cwd)
+        data = roadmap_cli.current_data(rf.load(), bf.load() if bf.exists else None)
+        release = data["release"]
+        return {"file": rf.rel, "exists": True,
+                "current": f"{release['version']}: {release['name']}" if release else None,
+                "open_items": [f"{d['id']} ({d['rank']}) {d['title']}" for d in data["open_items"]],
+                "unscheduled": len(data["unscheduled"])}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+def product_profile(cfg) -> dict:
+    """Phase 0 baseline: which product documents exist."""
+    product = cfg.section("product")
+    return {key: {"file": product.get(key), "exists": bool(product.get(key)) and os.path.isfile(os.path.join(cfg.root, product.get(key)))}
+            for key in ("vision", "tech_spec")}
+
+
+def speckit_profile(cwd: str) -> dict:
+    try:
+        import speckit_setup
+        return speckit_setup.status_data(cwd)
     except Exception as e:
         return {"error": str(e)}
 
@@ -67,6 +103,9 @@ def detect_project_profile(workspace_dir: str = None) -> dict:
         "devops": {},
         "config_problems": [],
         "backlog": {},
+        "roadmap": {},
+        "product": {},
+        "speckit": {},
     }
 
     # Project configuration (.dev-cycle.json, shared by every skill)
@@ -79,6 +118,9 @@ def detect_project_profile(workspace_dir: str = None) -> dict:
         profile["devops"] = cfg.section("devops")
         profile["config_problems"] = cfg.validate()
         profile["backlog"] = backlog_profile(cwd)
+        profile["roadmap"] = roadmap_profile(cwd)
+        profile["product"] = product_profile(cfg)
+        profile["speckit"] = speckit_profile(cwd)
     except Exception as e:
         cfg = None
         profile["config_problems"] = [f"could not read .dev-cycle.json: {e}"]
@@ -201,6 +243,28 @@ def print_profile_report(profile: dict):
         print(f"📥 BACKLOG: none yet ({backlog['file']} is created by the first /backlog or backlog.py add)")
     elif backlog.get("error"):
         print(f"📥 BACKLOG: could not be read ({backlog['error']})")
+    roadmap = profile.get("roadmap") or {}
+    if roadmap.get("exists"):
+        print(f"🗺️ ROADMAP ({roadmap['file']}): current release {roadmap.get('current') or 'none (every release is released)'}")
+        for item in roadmap.get("open_items", []):
+            print(f"   · {item}")
+        if roadmap.get("unscheduled"):
+            print(f"   ℹ️ {roadmap['unscheduled']} open backlog item(s) in no release (plan-memory/roadmap.py current)")
+    elif roadmap.get("file"):
+        print(f"🗺️ ROADMAP: none yet ({roadmap['file']}; Phase 0 or plan-memory/roadmap.py add-release)")
+    elif roadmap.get("error"):
+        print(f"🗺️ ROADMAP: could not be read ({roadmap['error']})")
+    product = profile.get("product") or {}
+    if product:
+        state = ", ".join(f"{d['file']} {'✅' if d['exists'] else '❌'}" for d in product.values())
+        print(f"🌱 PRODUCT BASELINE: {state}" + ("" if all(d["exists"] for d in product.values())
+                                                else " (Phase 0: product-inception)"))
+    speckit = profile.get("speckit") or {}
+    if speckit.get("enabled"):
+        print(f"🧩 SPEC KIT: {speckit.get('pinned') or 'version not set'} ({speckit.get('integration')}, "
+              f"branches {speckit.get('branch_prefix') or '?'}/NNN-slug)")
+        for problem in speckit.get("problems", []):
+            print(f"   ⚠️ {problem}")
     print("-" * 85)
     print("📚 DOCUMENTATION STANDARD STATUS (Dual-Doc + Manual Tests):")
     print(f"   • UserDoc (Public Guide) : {docs.get('user_doc', '❌ MISSING (README.md recommended)')}")

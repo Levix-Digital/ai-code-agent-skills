@@ -24,6 +24,15 @@ Optional file at a project's root: the project configuration shared by every ski
   },
   "plans": { "dir": "docs/plans" },
   "backlog": { "file": "docs/BACKLOG.md", "blocking_severities": ["critical", "high"] },
+  "roadmap": { "file": "docs/ROADMAP.md" },
+  "product": { "vision": "docs/product/VISION.md", "tech_spec": "docs/product/TECH_SPEC.md", "max_lines": 400 },
+  "speckit": {
+    "enabled": true,
+    "version": "v1.2.3",
+    "integration": "claude",
+    "script": "sh",
+    "branch_prefix": "feat"
+  },
   "architecture_docs": {
     "index": "TECDOC.md",
     "architecture_dir": "docs/architecture",
@@ -64,6 +73,14 @@ Optional file at a project's root: the project configuration shared by every ski
 | `plans.dir` | Folder of the plan files | `docs/plans` |
 | `backlog.file` | The project backlog | `docs/BACKLOG.md` |
 | `backlog.blocking_severities` | Severities of open bugs that block plan approval of other work (bugs first); `[]` turns the rule off | `["critical", "high"]` |
+| `roadmap.file` | The roadmap of releases (`plan-memory/roadmap.py`) | `docs/ROADMAP.md` |
+| `product.vision`, `product.tech_spec` | The business document and the technical specification of Phase 0 (`product-inception`) | `docs/product/VISION.md`, `docs/product/TECH_SPEC.md` |
+| `product.max_lines` | Line limit of each product document | `400` |
+| `speckit.enabled` | Use GitHub Spec Kit for the detail of feature plans (Phases 1, 2 and 4) | `false` |
+| `speckit.version` | Exact Spec Kit release tag the project is pinned to; set by `speckit_setup.py init` and `upgrade` | not set |
+| `speckit.integration` | Coding agent integration passed to `specify init` | `claude` |
+| `speckit.script` | Script type of Spec Kit's commands: `sh`, `ps` or `py` | `sh` (`ps` on Windows) |
+| `speckit.branch_prefix` | Prefix of Spec Kit's feature branches (`<prefix>/NNN-slug`) | `feat` |
 | `architecture_docs` | Layout, line limit and language of the technical docs; add `"plans"` to `language_scope` to check plans too | see `architecture-docs` |
 | `drift_rules` | Technologies or patterns the project's plans reject | `[]` |
 
