@@ -65,6 +65,11 @@ DEFAULTS = {
     "roadmap": {
         "file": "docs/ROADMAP.md",
     },
+    "product": {
+        "vision": "docs/product/VISION.md",
+        "tech_spec": "docs/product/TECH_SPEC.md",
+        "max_lines": 400,
+    },
     "speckit": {
         "enabled": False,
         "version": None,
