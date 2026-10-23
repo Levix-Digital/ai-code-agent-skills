@@ -3,7 +3,7 @@ name: dev-cycle-protocol
 description: Orchestrator of the role-based development cycle - phases from product inception (Phase 0) and discovery to a verified release, the role skill called in each phase (product-inception, software-design, quality-assurance, devops-release, user-docs, architecture-docs, plan-memory, code review), a full path for features and a short path for small fixes, the project backlog with epics and bugs before new work, the roadmap of releases, GitHub Spec Kit as the optional executor of specification, planning and implementation, the user's approval gates (product baseline, plan, release candidate acceptance, merge into production), the shared .dev-cycle.json project configuration and automated gate verification. Use during all product, software design, exploration, implementation, review and release tasks.
 ---
 
-# 🛡️ Development Cycle Protocol (`dev-cycle-protocol` v3)
+# 🛡️ Development Cycle Protocol (`dev-cycle-protocol` v4)
 
 > **Paths**: `<skills_root>` is the folder that contains this skill (the parent of this `SKILL.md`'s folder). Use the real absolute path when running the commands.
 
@@ -182,7 +182,7 @@ The backlog (`backlog.file` in `.dev-cycle.json`, default `docs/BACKLOG.md`) is 
 - **Bugs found during work**: in scope and small, fix them now with a regression test. Otherwise capture them (`backlog.py add --type bug --severity <s> ...`) and report the ids in the phase report and in the pull request description, which links backlog ids instead of carrying loose "to decide" lists.
 - **Triage is the user's**: the agent never promotes, drops or re-prioritizes on its own; it shows the summary at discovery and asks.
 - **Bugs first**: gate 3 blocks a plan that is not a bug plan while an open bug with a blocking severity (`backlog.blocking_severities`, default `critical` and `high`) is outside it. Only when the user explicitly accepts the risk, run the gate with `--accept-open-bugs "<the user's reason>"`; the reason is recorded in the plan.
-- **Closing**: items close as done when their plan is completed, or with `backlog.py close <ID> --ref "PR #N"`; `drop` and `duplicate` record why.
+- **Closing**: items close as done when their plan is completed, or with `backlog.py close <ID> --ref "PR #N"`; `drop`, `duplicate` and `supersede` (replaced by different, better defined items) record why; the roadmap then asks for the replacements to take the superseded item's place.
 - **Epics** are never promoted: their items are. `roadmap.py assign EPIC-NNN --release vX.Y.Z` adds an epic's open items to a release.
 - **Roadmap**: Phase 0 creates it; discovery starts from `roadmap.py current` (the first release not released); moving items between releases (`assign --move`) is the user's decision, like triage.
 - **Release**: gate 8 validates the backlog and the roadmap, lists open blocking bugs (known limitations in the release notes) and the items of the release still open, which the user moves to the next release or finishes.

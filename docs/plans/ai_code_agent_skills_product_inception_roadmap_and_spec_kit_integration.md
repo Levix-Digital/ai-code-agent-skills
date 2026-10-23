@@ -123,6 +123,8 @@ Decisions:
   - **Gate 3** with Spec Kit: the envelope's `spec_dir` exists with `spec.md`, `plan.md` and `tasks.md`; no `[NEEDS CLARIFICATION]` marker is left; the constitution is current; the branch name follows D6.
   - **Gate 8**: the roadmap validates; items of the release being shipped that are still open are listed, and the user decides whether they move to the next release.
 
+- **D11 — Superseded backlog items** (added during M7 at the user's request). A new closed status, `superseded`: an item replaced by different, better defined items (an idea split or reshaped after inception), recorded as `superseded by <ID>[, <ID>...]` (`backlog.py supersede <ID> --by <IDs>`). It differs from `duplicate` (the same request captured twice). Replacements must be open items of the same kind (items for items, epics for epics); `validate` checks the references, and the roadmap asks for the replacements to take the superseded item's place in its release.
+
 Alternatives considered:
 
 - **Spec Kit for the inception**: Spec Kit specifies one feature at a time; it has no product vision, epics or roadmap. Rejected; inception is the protocol's.
