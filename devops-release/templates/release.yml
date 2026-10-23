@@ -1,7 +1,11 @@
 # Release workflow: builds and publishes a release for a version tag.
-# - vX.Y.Z-rc.N tags (pushed by the agent from the integration branch) publish a PRE-RELEASE.
-# - vX.Y.Z final tags are created by tag-on-merge.yml, which calls this workflow directly
-#   (a tag pushed with GITHUB_TOKEN would not trigger it).
+# - vX.Y.Z-rc.N tags (pushed by the agent on the candidate's branch: `branching.py rc-branch`)
+#   publish a PRE-RELEASE.
+# - vX.Y.Z final tags are created by the release gate, which calls this workflow directly (a tag
+#   pushed with GITHUB_TOKEN would not trigger it): tag-on-merge.yml under the integration model,
+#   promote.yml under trunk and release-branches.
+# - make_latest 'legacy' marks a final release latest only when its version is the highest, so a
+#   patch of an older release branch never replaces the latest release.
 name: Release
 
 on:
@@ -43,6 +47,6 @@ jobs:
           tag_name: ${{ env.TAG }}
           name: ${{ env.TAG }}
           prerelease: ${{ contains(env.TAG, '-rc') }}
-          make_latest: ${{ !contains(env.TAG, '-rc') }}
+          make_latest: ${{ contains(env.TAG, '-rc') && 'false' || 'legacy' }}
           generate_release_notes: true
           files: dist/*
