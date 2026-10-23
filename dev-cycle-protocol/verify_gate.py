@@ -179,6 +179,31 @@ def check_speckit(cwd: str) -> bool:
     return passed
 
 
+def check_commit_attribution(cwd: str, cfg) -> bool:
+    """Commit messages since the last tag (all of them when there is none) pass the principle 9 guard."""
+    import _no_ai
+    _, tag = run_cmd(["git", "describe", "--tags", "--abbrev=0"], cwd)
+    rng = [f"{tag}..HEAD"] if tag and not tag.startswith("fatal") else []
+    code, out = run_cmd(["git", "log", "--format=%h%x1f%B%x1e", *rng], cwd)
+    if code != 0:
+        print("ℹ️ Could not read the commit messages for the attribution check.")
+        return True
+    allowed = cfg.section("review").get("allowed_terms") or []
+    bad = []
+    for record in out.split("\x1e"):
+        sha, _, message = record.strip().partition("\x1f")
+        for hit, reason in _no_ai.findings(message, allowed):
+            bad.append(f"{sha}: '{hit}' ({reason})")
+    if bad:
+        print(f"❌ AI attribution in {len(bad)} place(s) of the commit messages since {tag or 'the first commit'} "
+              "(protocol principle 9); reword them before the release:")
+        for line in bad[:20]:
+            print(f"   {line}")
+        return False
+    print(f"✅ No AI attribution in the commit messages since {tag or 'the first commit'}.")
+    return True
+
+
 def verify_gate_0(cwd: str, project_name: str) -> bool:
     """Product baseline gate (Phase 0): vision, technical specification, architecture, backlog and roadmap."""
     print("=" * 80)
@@ -454,7 +479,10 @@ def verify_gate_8(cwd: str, project_name: str, run: str = None) -> bool:
         except Exception as e:
             print(f"ℹ️ Could not read the roadmap: {e}")
 
-    # 11. Secret hygiene
+    # 11. No AI attribution in the commits of the release (protocol principle 9)
+    passed &= check_commit_attribution(cwd, cfg)
+
+    # 12. Secret hygiene
     secrets = check_secret_hygiene(cwd)
     if secrets:
         for s in secrets:
@@ -463,7 +491,7 @@ def verify_gate_8(cwd: str, project_name: str, run: str = None) -> bool:
     else:
         print("✅ Secret hygiene check passed.")
 
-    # 12. Git status
+    # 13. Git status
     code, status_out = run_cmd(["git", "status", "--porcelain"], cwd)
     dirty = [l for l in status_out.splitlines() if l.strip()]
     if dirty:
