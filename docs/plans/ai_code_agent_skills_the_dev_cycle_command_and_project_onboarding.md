@@ -3,10 +3,10 @@ plan_id: ai_code_agent_skills_the_dev_cycle_command_and_project_onboarding
 project: ai-code-agent-skills
 title: The /dev-cycle command and project onboarding
 version: v2.3.0
-status: active
+status: in_progress
 author: Levi Silveira
 created_at: '2026-10-23T14:43:16'
-updated_at: '2026-10-23T14:45:11'
+updated_at: '2026-10-23T14:47:31'
 session_id: null
 tags:
 - dev-cycle
@@ -18,7 +18,9 @@ superseded_by: null
 parent_plan_id: null
 milestones:
 - name: M1 Diagnosis
-  done: false
+  done: true
+  done_at: '2026-10-23'
+  by: Levi Silveira
 - name: M2 Assisted setup
   done: false
 - name: M3 Spec Kit in onboarding
@@ -36,6 +38,9 @@ status_log:
   by: Levi Silveira
   status: active
   note: Approved by the user
+- at: '2026-10-23T14:47:31'
+  by: Levi Silveira
+  note: 'Milestone ''M1 Diagnosis'' completed: _onboard.py rules (D2-D4, new vs existing, setup items, Spec Kit states) and onboard.py diagnose (repository, config, branches, baseline, plans, release candidate, bugs, roadmap, Spec Kit); 15 tests'
 ---
 
 # The /dev-cycle Command and Project Onboarding
