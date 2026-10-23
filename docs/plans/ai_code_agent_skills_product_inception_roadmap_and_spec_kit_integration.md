@@ -3,10 +3,10 @@ plan_id: ai_code_agent_skills_product_inception_roadmap_and_spec_kit_integration
 project: ai-code-agent-skills
 title: Product inception, roadmap and Spec Kit integration
 version: v2.2.0
-status: active
+status: in_progress
 author: Levi Silveira
 created_at: '2026-10-23T13:51:22'
-updated_at: '2026-10-23T13:51:22'
+updated_at: '2026-10-23T14:00:26'
 session_id: null
 tags:
 - product-inception
@@ -19,7 +19,9 @@ superseded_by: null
 parent_plan_id: null
 milestones:
 - name: M1 Spec Kit spike and compatibility check
-  done: false
+  done: true
+  done_at: '2026-10-23'
+  by: Levi Silveira
 - name: M2 Epics and roadmap
   done: false
 - name: M3 Product inception and gate 0
@@ -37,6 +39,9 @@ status_log:
   by: Levi Silveira
   status: active
   note: Plan created
+- at: '2026-10-23T14:00:26'
+  by: Levi Silveira
+  note: 'Milestone ''M1 Spec Kit spike and compatibility check'' completed: speckit_setup.py check; v1.2.3 verified (compat.json); branches feat/NNN-slug natively via the git extension''s branch_prefix (D6 revised: no script wrappers); preset reduced to the plan template addendum; findings recorded in the plan'
 ---
 
 # Product Inception, Roadmap and Spec Kit Integration
@@ -69,10 +74,10 @@ Decisions:
 - **D3 — The roadmap.** One file, `docs/ROADMAP.md` (`roadmap.file` in `.dev-cycle.json`), owned by `plan-memory` like the backlog. Releases are ordered sections named by their target version, each with a goal, a status (`planned`, `in_progress`, `released`) and the list of backlog ids it delivers. **The roadmap is the single source of the item-to-release assignment**: backlog items do not repeat it. Releases are versions, so they meet the existing release flow (`devops-release`, gate 8). Discovery (Phase 1) shows the open items of the current release next to the bugs that come first; the user still decides what to promote.
 - **D4 — Spec Kit is optional, per project.** A `speckit` section in `.dev-cycle.json` (`enabled`, `version`, `integration`). Without it, or with `enabled: false`, the cycle works exactly as today. Spec Kit is used only in the **full path**, for **feature plans**; the short path never uses it. Bug plans keep the bug template (reproduction, root cause, regression test); whether Spec Kit's own bug workflow fits is evaluated in M1 and decided by the user, not assumed.
 - **D5 — Spec Kit is the detail; the plan file is the envelope.** Spec Kit's artifacts (`specs/NNN-slug/spec.md`, `plan.md`, `research.md`, `data-model.md`, `contracts/`, `tasks.md`) hold the detail. The `plan-memory` plan file keeps what the cycle needs and Spec Kit does not have: frontmatter (status, milestones, lineage, backlog items) plus a short body with the goal, a link to the spec folder (new frontmatter field `spec_dir`) and the protocol sections Spec Kit does not cover. Search and drift detection index the spec folder's files with the plan, so no detail is outside the index. Zero Compaction still holds: nothing is summarized away; the detail simply lives in the spec folder.
-- **D6 — Branch names stay `devops-release`'s, through a Spec Kit preset.** Work branches keep the form `<type>/NNN-slug` (for example `feat/001-photo-upload`): the type first, the Spec Kit feature number after it. Spec Kit today finds the feature from a numeric (or timestamp) prefix of the branch name, so the protocol ships a **Spec Kit preset** (`dev-cycle-protocol/speckit-preset/`), installed as a local preset. It **wraps** (does not replace) Spec Kit's scripts: branch creation produces `<type>/NNN-slug` and feature resolution strips the `<type>/` prefix before calling the original script. When Spec Kit ships configurable branching ([github/spec-kit#2047](https://github.com/github/spec-kit/issues/2047)), the branch part of the preset becomes configuration. Rejected: `001-feat/slug` (spec folder nested under the slash, breaks the type-first convention) and per-command environment variables without a preset (depends on the agent remembering them every time).
+- **D6 — Branch names stay `devops-release`'s, through Spec Kit's own configuration** (revised after M1). Work branches keep the form `feat/NNN-slug` (for example `feat/001-photo-upload`): the type first, the Spec Kit feature number after it. Spec Kit 1.2 no longer finds the feature from the branch name (it uses `.specify/feature.json`), and its git extension creates prefixed branches natively (`branch_prefix: "feat"` in `.specify/extensions/git/git-config.yml`), so **no script is wrapped or replaced**. `speckit_setup.py` sets the prefix (`speckit.branch_prefix`, default `feat`), and the compatibility check verifies it. The protocol's preset (`dev-cycle-protocol/speckit-preset/`) only carries the plan template addendum (D9). Spec Kit is used for feature plans only (D4), so the prefix is always `feat`; an exception uses Spec Kit's `GIT_BRANCH_NAME`. Rejected: `001-feat/slug` (breaks the type-first convention) and script wrappers (not needed since Spec Kit 1.2).
 - **D7 — The constitution is generated, never edited by hand.** `.specify/memory/constitution.md` is built from the existing sources of truth: `software-design`'s universal principles and the guide of the project's architecture style, the protocol's principles, and the product's decisions (`TECH_SPEC.md` constraints and non-functional requirements, accepted ADRs). It carries a "generated, do not edit" header with a hash of its sources. A principle changes in its source (for example an ADR that changes the architecture style) and the constitution is regenerated. Gate 3 fails when it is out of date. Spec Kit's "Constitution Check" in its plan then enforces the protocol's rules inside Spec Kit's own flow.
 - **D8 — The Spec Kit version is pinned per project, and adaptation is explicit.**
-  - The project's version is `speckit.version` in `.dev-cycle.json` (Spec Kit does not record it in the project). After `init`, Spec Kit's commands run from the project's own files; the CLI is needed only for `init` and `upgrade`, and the protocol always calls the exact version (`uvx --from git+https://github.com/github/spec-kit.git@vX.Y.Z specify ...`), never the machine's global install.
+  - The project's version is `speckit.version` in `.dev-cycle.json` (Spec Kit also records the version that set the project up in `.specify/integration.json`; `speckit_setup.py status` and gate 3 report a difference). After `init`, Spec Kit's commands run from the project's own files; the CLI is needed only for `init` and `upgrade`, and the protocol always calls the exact version (`uvx --from git+https://github.com/github/spec-kit.git@vX.Y.Z specify ...`), never the machine's global install.
   - The skills repository records the last **verified** version (`dev-cycle-protocol/speckit-preset/compat.json`).
   - For a new project, the protocol checks the latest release with an automatic compatibility check (`init` in a temporary folder, the commands, paths, templates and branch resolution the protocol depends on, the preset applied). If it passes, the project pins it and the verified version moves forward. If it fails, the project pins the last verified version and the agent writes an adaptation document in the **skills repository** (`docs/protocol-updates/speckit-vX.Y.Z.md`: what diverged, what the protocol must change) and captures it in this repository's backlog. When the skills repository cannot be written (for example a cloud session of another project), the agent gives the document to the user instead.
   - Existing projects never upgrade on their own: `upgrade` is an explicit action the user asks for, guarded by the same check.
@@ -101,6 +106,17 @@ Alternatives considered:
 - **Spec Kit mandatory**: makes every project depend on an external, fast-moving tool and `uv`. Rejected (D4).
 - **Replacing Spec Kit's scripts in the preset**: a copy that drifts on every Spec Kit release. Rejected in favor of wrapping (D6), unless M1 proves wrapping cannot work.
 
+### M1 findings (Spec Kit v1.2.3, 2026-10-23)
+
+- **Feature resolution** no longer depends on the branch name: `/speckit-specify` writes `.specify/feature.json` (`feature_directory`, git-ignored, per checkout) and the other commands read it, or `SPECIFY_FEATURE_DIRECTORY`. The spec folder name (`specs/NNN-slug`) and the branch name are independent. The plan envelope's `spec_dir` is therefore the shared, committed link between the plan and its spec.
+- **Branches**: the bundled git extension (`--extension git`) creates the branch in a `before_specify` hook, from the current HEAD, with `branch_prefix` / `branch_template` support; `feat/001-photo-upload` works without customization (D6 revised). The agent checks out the integration branch before `/speckit-specify`.
+- **Presets**: `specify preset add --dev <dir>` installs a local preset into `.specify/presets/<id>/` (committed with the project); the `append` strategy on `plan-template` works and `setup-plan` resolves it, so the protocol sections reach every new `plan.md`. `preset update --dev` reinstalls it on upgrades.
+- **Version**: the project records the Spec Kit version in `.specify/init-options.json` and `.specify/integration.json`. The CLI accepts `--non-interactive`, `--here --force`, `--script sh|ps|py` and `--integration <agent>`; Claude Code gets skills (`/speckit-specify`, `/speckit-plan`, ...).
+- **Script type**: `sh` (Linux, macOS, Git Bash) or `ps` (Windows PowerShell) by default; `py` works everywhere but calls `python3`, which is unreliable on Windows. It is a project setting (`speckit.script`) because the agent command files reference it.
+- **Constitution**: core reads `.specify/memory/constitution.md` and never rewrites it after `init` (unless the opt-in `constitution-sync` preset is installed, which the protocol does not use), so the generated constitution (D7) is safe.
+- **Bug workflow**: Spec Kit ships an optional `bug` extension (`assess`, `fix`, `test` reports under `.specify/bugs/<slug>/`). The protocol's bug plans already cover reproduction, root cause and the regression test and are linked to backlog ids and bugs first, so the extension is **not** installed; the user decides whether to revisit this.
+- **Compatibility check**: `speckit_setup.py check` verifies init, recorded version, core templates, agent commands, the `feat/NNN-slug` branch, the preset, feature resolution through `feature.json` and the Constitution Check in the plan. v1.2.3 passes with `sh` and `py`; v0.4.0 fails (no `--integration`). `compat.json` records v1.2.3 as verified.
+
 ## 2. Design (`software-design`)
 
 ### Components
@@ -115,7 +131,7 @@ Alternatives considered:
 | `plan-memory/roadmap.py` | CLI: `add-release`, `assign <ID...> --release V`, `unassign`, `move-release`, `set-status`, `show`, `current` (open items of the current release), `validate`; atomic writes, never commits |
 | `plan-memory/templates/ROADMAP_TEMPLATE.md` | Initial file |
 | `plan-memory/_store.py`, `save_plan.py`, `get_plan.py`, `search_plans.py`, `detect_drift.py`, `rebuild_index.py` | `spec_dir` field (`save_plan.py --spec-dir`); the index includes the spec folder's Markdown files; `get_plan.py` prints them after the envelope |
-| `dev-cycle-protocol/speckit-preset/` | `preset.yml`; script wrappers for branch creation and feature resolution, in Bash and PowerShell; the plan template with the protocol sections (append strategy); the constitution template; `compat.json` with the verified version |
+| `dev-cycle-protocol/speckit-preset/` | `preset.yml`; the plan template addendum with the protocol sections (append strategy); `compat.json` with the verified version |
 | `dev-cycle-protocol/speckit_setup.py` | `check --version V` (the compatibility check in a temporary folder), `latest`, `init` (pinned `specify init` with the configured integration, `specify preset add --dev`, writes `speckit.version`), `upgrade --to V` (check, then integration and preset upgrade), `status` |
 | `dev-cycle-protocol/constitution.py` | `generate` and `check` (D7): collects the sources, renders the constitution with the source hash |
 | `dev-cycle-protocol/project_config.py` | New sections `roadmap` (`file`) and `speckit` (`enabled`, `version`, `integration`), defaults and validation |
@@ -148,7 +164,7 @@ Automated (pytest):
 - Roadmap: round trip byte-identical; `assign` of an unknown id fails; an item in two releases fails `validate`; `move-release` keeps order; `current` lists the open items of the first release not `released`; closed items are shown as done.
 - `save_plan.py --spec-dir`: field stored; search and drift index the spec files; `get_plan.py` prints them.
 - `constitution.py`: generation is deterministic; changing a source (style, ADR, principles) makes `check` fail; regeneration makes it pass.
-- Preset wrappers (Bash and PowerShell where available in CI): `feat/001-x` resolves to feature `001-x`; branch creation with type `fix` gives `fix/NNN-slug`; a non-matching branch fails with the expected message.
+- Branch prefix: `speckit_setup.py` writes `branch_prefix` into the git extension configuration and `status` reports a different value; the online compatibility check creates `feat/001-compat-check`.
 - `speckit_setup.py`: version pinning in `.dev-cycle.json`; the exact `uvx` command line is built for each subcommand; a missing `uv` fails clearly. The real compatibility check runs only when `SPECKIT_ONLINE_TESTS=1` (network).
 - `verify_gate.py`: gate 0 pass and each failure; gate 3 Spec Kit checks (missing `tasks.md`, a `[NEEDS CLARIFICATION]` marker, stale constitution, wrong branch form) and unchanged behavior with Spec Kit disabled; gate 8 roadmap checks.
 - `project_config.py`: defaults and validation of `roadmap` and `speckit`.
