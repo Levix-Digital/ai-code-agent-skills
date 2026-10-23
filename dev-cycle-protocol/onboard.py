@@ -8,6 +8,7 @@ Usage:
     python onboard.py diagnose [--request "<text>"] [--dir <project>] [--json]
     python onboard.py propose-config [--dir <project>] [--json]
     python onboard.py write-config --file <proposal.json> [--dir <project>]
+    python onboard.py create-branch [--dir <project>]      (the integration branch, from the production branch)
 """
 import argparse
 import json
@@ -61,6 +62,101 @@ def has_code(root: str, limit: int = 3) -> bool:
 def branch_exists(root: str, name: str) -> bool:
     return any(git(root, "rev-parse", "--verify", "--quiet", ref)[0] == 0
                for ref in (f"refs/heads/{name}", f"refs/remotes/origin/{name}"))
+
+
+TEST_COMMANDS = {"pytest": "python -m pytest", "cargo test": "cargo test", "npm test": "npm test",
+                 "go test ./...": "go test ./..."}
+VERSION_FILES = ["pyproject.toml", "package.json", "Cargo.toml", "setup.cfg", "VERSION", "version.txt"]
+
+
+def detect_config(root: str) -> dict:
+    """A .dev-cycle.json filled from what can be detected. The architecture style is left out:
+    it is chosen with software-design."""
+    from inspect_project import detect_project_profile
+    profile = detect_project_profile(root)
+    production = "main"
+    for name in ("main", "master"):
+        if branch_exists(root, name):
+            production = name
+            break
+    data = {"project_name": os.path.basename(root)}
+    commands = [TEST_COMMANDS[r] for r in profile.get("test_runners", []) if r in TEST_COMMANDS]
+    if commands:
+        data["test_commands"] = commands
+    docs = profile.get("doc_files") or {}
+    if docs.get("user_doc") or docs.get("tec_doc"):
+        data["docs"] = {k: docs[k] for k in ("user_doc", "tec_doc") if docs.get(k)}
+    if docs.get("manual_tests"):
+        data["tests"] = {"manual_tests": docs["manual_tests"]}
+    data["devops"] = {"integration_branch": "dev", "production_branch": production,
+                      "version_files": [f for f in VERSION_FILES if os.path.isfile(os.path.join(root, f))]}
+    return data
+
+
+def missing_keys(existing: dict, proposal: dict, prefix: str = "") -> dict:
+    """The part of `proposal` that `existing` does not set (one level into sections)."""
+    out = {}
+    for key, value in proposal.items():
+        if key not in existing:
+            out[key] = value
+        elif isinstance(value, dict) and isinstance(existing.get(key), dict):
+            sub = {k: v for k, v in value.items() if k not in existing[key]}
+            if sub:
+                out[key] = sub
+    return out
+
+
+def merge_config(existing: dict, additions: dict) -> tuple:
+    """(merged, conflicts): additions are only added; a key the file already sets is never changed."""
+    merged = json.loads(json.dumps(existing))
+    conflicts = []
+    for key, value in additions.items():
+        if key not in merged:
+            merged[key] = value
+        elif isinstance(value, dict) and isinstance(merged[key], dict):
+            for k, v in value.items():
+                if k not in merged[key]:
+                    merged[key][k] = v
+                elif merged[key][k] != v:
+                    conflicts.append(f"{key}.{k}")
+        elif merged[key] != value:
+            conflicts.append(key)
+    return merged, conflicts
+
+
+def propose_config(root: str) -> dict:
+    cfg = load_project_config(root)
+    existing = raw_manifest(cfg)
+    proposal = missing_keys(existing, detect_config(root))
+    return {"file": cfg.manifest_path or os.path.join(root, MANIFEST_NAME), "exists": bool(cfg.manifest_path),
+            "additions": proposal}
+
+
+def write_config(root: str, additions: dict) -> tuple:
+    """Writes the confirmed additions. Returns (path, added keys). Raises ValueError on conflicts."""
+    cfg = load_project_config(root)
+    existing = raw_manifest(cfg)
+    merged, conflicts = merge_config(existing, additions)
+    if conflicts:
+        raise ValueError("the file already sets " + ", ".join(conflicts) + "; edit those keys by hand")
+    path = cfg.manifest_path or os.path.join(root, MANIFEST_NAME)
+    with open(path, "w", encoding="utf-8", newline="\n") as f:
+        f.write(json.dumps(merged, indent=2, ensure_ascii=False) + "\n")
+    added = [k if not isinstance(v, dict) else f"{k}.{{{', '.join(v)}}}" for k, v in missing_keys(existing, merged).items()]
+    return path, added
+
+
+def create_integration_branch(root: str) -> str:
+    cfg = load_project_config(root)
+    devops = cfg.section("devops")
+    integration, production = devops.get("integration_branch") or "dev", devops.get("production_branch") or "main"
+    if branch_exists(root, integration):
+        raise ValueError(f"'{integration}' already exists")
+    base = production if git(root, "rev-parse", "--verify", "--quiet", f"refs/heads/{production}")[0] == 0 else f"origin/{production}"
+    code, out = git(root, "branch", integration, base)
+    if code != 0:
+        raise ValueError(f"could not create '{integration}' from '{base}': {out}")
+    return f"{integration} (from {base}); push it with: git push -u origin {integration}"
 
 
 def raw_manifest(cfg) -> dict:
@@ -168,7 +264,7 @@ def rc_state(root: str, cfg):
 def speckit_state(root: str, cfg) -> dict:
     """undecided (never asked), declined (explicit false), enabled, or unmanaged (.specify without the protocol)."""
     raw = (raw_manifest(cfg).get("speckit") or {})
-    decided = "enabled" in raw
+    decided = cfg.is_set("speckit", "enabled")
     initialized = os.path.isdir(os.path.join(root, ".specify"))
     out = {"uv": bool(shutil.which("uvx")), "problems": [], "installed": None}
     if raw.get("enabled") is True:
@@ -213,9 +309,48 @@ def main(argv: list = None) -> int:
     p.add_argument("--request", default=None, help="The user's text after /dev-cycle (an idea or a request)")
     p.add_argument("--dir", default=None)
     p.add_argument("--json", action="store_true")
+    p = sub.add_parser("propose-config", help="The .dev-cycle.json keys that can be detected and are missing")
+    p.add_argument("--dir", default=None)
+    p.add_argument("--json", action="store_true")
+    p = sub.add_parser("write-config", help="Write confirmed additions to .dev-cycle.json (never overwrites)")
+    p.add_argument("--dir", default=None)
+    p.add_argument("--file", required=True, help="JSON file with the additions the user confirmed")
+    p = sub.add_parser("create-branch", help="Create the integration branch from the production branch")
+    p.add_argument("--dir", default=None)
     args = parser.parse_args(argv)
 
     root = project_root(args.dir)
+    if args.command == "propose-config":
+        data = propose_config(root)
+        if args.json:
+            print(json.dumps(data, indent=2, ensure_ascii=False))
+        elif not data["additions"]:
+            print(f"✅ {MANIFEST_NAME} already has every key that can be detected.")
+        else:
+            print(f"📝 Proposed {'additions to' if data['exists'] else 'new'} {data['file']} (written only after you confirm):")
+            print(json.dumps(data["additions"], indent=2, ensure_ascii=False))
+            print("ℹ️ architecture.style is chosen with software-design, not detected.")
+        return 0
+    if args.command == "write-config":
+        try:
+            with open(args.file, "r", encoding="utf-8") as f:
+                additions = json.load(f)
+            if not isinstance(additions, dict):
+                raise ValueError("the file must hold a JSON object")
+            path, added = write_config(root, additions)
+        except (OSError, ValueError) as e:
+            print(f"❌ {e}")
+            return 1
+        print(f"✅ {path}: added {', '.join(added) or 'nothing'}")
+        return 0
+    if args.command == "create-branch":
+        try:
+            print(f"✅ Created {create_integration_branch(root)}")
+        except ValueError as e:
+            print(f"❌ {e}")
+            return 1
+        return 0
+
     state = collect(root)
     rec = recommendation(state, (args.request or "").strip() or None)
     if args.json:

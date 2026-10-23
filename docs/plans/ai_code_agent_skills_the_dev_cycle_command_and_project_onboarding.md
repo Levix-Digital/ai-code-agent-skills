@@ -6,7 +6,7 @@ version: v2.3.0
 status: in_progress
 author: Levi Silveira
 created_at: '2026-10-23T14:43:16'
-updated_at: '2026-10-23T14:47:31'
+updated_at: '2026-10-23T14:48:40'
 session_id: null
 tags:
 - dev-cycle
@@ -22,7 +22,9 @@ milestones:
   done_at: '2026-10-23'
   by: Levi Silveira
 - name: M2 Assisted setup
-  done: false
+  done: true
+  done_at: '2026-10-23'
+  by: Levi Silveira
 - name: M3 Spec Kit in onboarding
   done: false
 - name: M4 The dev-cycle command
@@ -41,6 +43,9 @@ status_log:
 - at: '2026-10-23T14:47:31'
   by: Levi Silveira
   note: 'Milestone ''M1 Diagnosis'' completed: _onboard.py rules (D2-D4, new vs existing, setup items, Spec Kit states) and onboard.py diagnose (repository, config, branches, baseline, plans, release candidate, bugs, roadmap, Spec Kit); 15 tests'
+- at: '2026-10-23T14:48:40'
+  by: Levi Silveira
+  note: 'Milestone ''M2 Assisted setup'' completed: onboard.py propose-config (detected keys missing from the file), write-config (adds only, refuses to change existing keys), create-branch (integration from production); ProjectConfig.is_set tells undecided from an explicit false; 5 tests'
 ---
 
 # The /dev-cycle Command and Project Onboarding

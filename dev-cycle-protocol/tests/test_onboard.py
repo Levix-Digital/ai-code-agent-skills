@@ -191,3 +191,58 @@ def test_cli_json_and_text(repo, capsys):
     assert onboard.main(["diagnose", "--dir", str(repo)]) == 0
     out = capsys.readouterr().out
     assert "not set up for the cycle yet" in out and "1. Create .dev-cycle.json" in out and "(recommended)" in out
+
+
+# ---------------------------------------------------------------- assisted setup
+
+from project_config import load_project_config  # noqa: E402
+
+
+def test_proposal_from_detection(repo):
+    (repo / "README.md").write_text("# Demo\n", encoding="utf-8")
+    (repo / "pyproject.toml").write_text("[project]\nname='demo'\n", encoding="utf-8")
+    (repo / "tests").mkdir()
+    data = onboard.propose_config(str(repo))
+    assert data["exists"] is False
+    add = data["additions"]
+    assert add["project_name"] == repo.name and add["test_commands"] == ["python -m pytest"]
+    assert add["docs"] == {"user_doc": "README.md"}
+    assert add["devops"] == {"integration_branch": "dev", "production_branch": "main", "version_files": ["pyproject.toml"]}
+    assert "architecture" not in add
+
+
+def test_existing_keys_are_never_proposed_or_overwritten(repo):
+    (repo / ".dev-cycle.json").write_text(json.dumps({"project_name": "mine", "devops": {"integration_branch": "develop"}}),
+                                          encoding="utf-8")
+    add = onboard.propose_config(str(repo))["additions"]
+    assert "project_name" not in add and "integration_branch" not in add["devops"]
+    path, added = onboard.write_config(str(repo), add)
+    data = json.loads(open(path, encoding="utf-8").read())
+    assert data["project_name"] == "mine" and data["devops"]["integration_branch"] == "develop"
+    assert data["devops"]["production_branch"] == "main"
+    with pytest.raises(ValueError, match="already sets devops.integration_branch"):
+        onboard.write_config(str(repo), {"devops": {"integration_branch": "dev"}})
+    assert onboard.propose_config(str(repo))["additions"] == {}
+
+
+def test_write_config_cli(repo, tmp_path, capsys):
+    proposal = tmp_path / "add.json"
+    proposal.write_text(json.dumps({"project_name": "demo"}), encoding="utf-8")
+    assert onboard.main(["write-config", "--dir", str(repo), "--file", str(proposal)]) == 0
+    assert "added project_name" in capsys.readouterr().out
+    assert onboard.main(["write-config", "--dir", str(repo), "--file", str(tmp_path / "missing.json")]) == 1
+
+
+def test_create_integration_branch(repo):
+    assert "dev (from main)" in onboard.create_integration_branch(str(repo))
+    assert onboard.branch_exists(str(repo), "dev")
+    with pytest.raises(ValueError, match="already exists"):
+        onboard.create_integration_branch(str(repo))
+
+
+def test_explicit_false_is_a_decision(repo):
+    (repo / ".dev-cycle.json").write_text(json.dumps({"speckit": {"version": None}}), encoding="utf-8")
+    cfg = load_project_config(str(repo))
+    assert cfg.section("speckit")["enabled"] is False and not cfg.is_set("speckit", "enabled")
+    (repo / ".dev-cycle.json").write_text(json.dumps({"speckit": {"enabled": False}}), encoding="utf-8")
+    assert load_project_config(str(repo)).is_set("speckit", "enabled")

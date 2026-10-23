@@ -153,6 +153,12 @@ class ProjectConfig:
     def project_name(self) -> str:
         return self.data.get("project_name") or os.path.basename(self.root)
 
+    def is_set(self, section: str, key: str) -> bool:
+        """True when the file itself sets `section.key` (a default does not count): tells an
+        explicit `false` from a decision never taken."""
+        value = self.raw.get(section)
+        return isinstance(value, dict) and key in value
+
     def path(self, section: str, key: str):
         """Absolute path of a path-valued setting, or None when unset."""
         value = self.section(section).get(key)
