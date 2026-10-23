@@ -138,3 +138,24 @@ def test_cli_migrate_write_and_validate(tmp_path):
 
 def test_known_architecture_styles():
     assert ARCHITECTURE_STYLES == ["hexagonal", "layered", "mvc", "pipeline", "modular-monolith", "other"]
+
+
+def test_product_roadmap_and_speckit_defaults(tmp_path):
+    cfg = load_project_config(str(tmp_path))
+    assert cfg.section("roadmap") == {"file": "docs/ROADMAP.md"}
+    assert cfg.section("product")["vision"] == "docs/product/VISION.md"
+    assert cfg.section("product")["tech_spec"] == "docs/product/TECH_SPEC.md"
+    assert cfg.section("speckit") == {"enabled": False, "version": None, "integration": "claude",
+                                      "script": None, "branch_prefix": "feat"}
+    assert cfg.validate() == []
+
+
+def test_speckit_validation(tmp_path):
+    write_manifest(tmp_path, {"speckit": {"enabled": True, "version": "latest", "script": "bat"}})
+    problems = " | ".join(load_project_config(str(tmp_path)).validate())
+    assert "speckit.version 'latest' must be an exact release tag" in problems
+    assert "speckit.script 'bat'" in problems
+    write_manifest(tmp_path, {"speckit": {"enabled": True}})
+    assert any("must be set when speckit.enabled" in p for p in load_project_config(str(tmp_path)).validate())
+    write_manifest(tmp_path, {"speckit": {"enabled": True, "version": "v1.2.3", "script": "ps"}})
+    assert load_project_config(str(tmp_path)).validate() == []
