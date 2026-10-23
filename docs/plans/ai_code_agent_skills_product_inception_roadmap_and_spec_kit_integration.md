@@ -4,7 +4,7 @@ project: ai-code-agent-skills
 title: Product inception, roadmap and Spec Kit integration
 version: v2.2.0
 status: active
-author: Claude
+author: Levi Silveira
 created_at: '2026-10-23T13:51:22'
 updated_at: '2026-10-23T13:51:22'
 session_id: null
@@ -34,7 +34,7 @@ milestones:
   done: false
 status_log:
 - at: '2026-10-23T13:51:22'
-  by: Claude
+  by: Levi Silveira
   status: active
   note: Plan created
 ---
