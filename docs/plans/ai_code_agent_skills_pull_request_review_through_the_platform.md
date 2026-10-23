@@ -3,10 +3,10 @@ plan_id: ai_code_agent_skills_pull_request_review_through_the_platform
 project: ai-code-agent-skills
 title: Pull request review through the platform
 version: v2.4.0
-status: in_progress
+status: completed
 author: Levix Digital
 created_at: '2026-10-23T20:11:03'
-updated_at: '2026-10-23T20:34:24'
+updated_at: '2026-10-23T20:47:38'
 session_id: null
 tags:
 - pull-requests
@@ -36,7 +36,9 @@ milestones:
   done_at: '2026-10-23'
   by: Levix Digital
 - name: M5 Documentation and release
-  done: false
+  done: true
+  done_at: '2026-10-23'
+  by: Levix Digital
 status_log:
 - at: '2026-10-23T20:11:03'
   by: Levix Digital
@@ -58,6 +60,13 @@ status_log:
 - at: '2026-10-23T20:34:24'
   by: Levix Digital
   note: 'Milestone ''M4 Reviewer and the cycle'' completed: code-review skill (checklist, levels, posting, never approves); Phase 7 as the review loop on the platform; open pull requests in the /dev-cycle diagnosis right after plans; review configuration section; devops-release rule'
+- at: '2026-10-23T20:47:38'
+  by: Levix Digital
+  note: 'Milestone ''M5 Documentation and release'' completed: guide, README, configuration, manual tests, plugin 2.4.0; merged in PR #8'
+- at: '2026-10-23T20:47:38'
+  by: Levix Digital
+  status: completed
+  note: All milestones completed
 ---
 
 # Pull Request Review Through the Platform
