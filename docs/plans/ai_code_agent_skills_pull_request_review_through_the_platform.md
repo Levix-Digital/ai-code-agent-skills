@@ -3,10 +3,10 @@ plan_id: ai_code_agent_skills_pull_request_review_through_the_platform
 project: ai-code-agent-skills
 title: Pull request review through the platform
 version: v2.4.0
-status: active
+status: in_progress
 author: Levix Digital
 created_at: '2026-10-23T20:11:03'
-updated_at: '2026-10-23T20:27:28'
+updated_at: '2026-10-23T20:30:39'
 session_id: null
 tags:
 - pull-requests
@@ -20,7 +20,9 @@ parent_plan_id: null
 backlog_items: []
 milestones:
 - name: M1 Model and GitHub reads
-  done: false
+  done: true
+  done_at: '2026-10-23'
+  by: Levix Digital
 - name: M2 Writes and the guard
   done: false
 - name: M3 GitLab
@@ -38,6 +40,9 @@ status_log:
   by: Levix Digital
   status: active
   note: Approved by the user
+- at: '2026-10-23T20:30:39'
+  by: Levix Digital
+  note: 'Milestone ''M1 Model and GitHub reads'' completed: _pr_model.py (model, pending, triage hints, markers), GitHub provider through gh (pull request, threads by GraphQL, checks, reviews), pr_sync.py status and open; recorded responses in tests'
 ---
 
 # Pull Request Review Through the Platform
