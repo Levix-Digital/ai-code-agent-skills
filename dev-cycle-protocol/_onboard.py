@@ -14,6 +14,7 @@ State (dict, every key optional):
     bugs:     ["BUG-001 (high) Crash", ...]                 (open blocking bugs)
     roadmap:  {current, open_items: [...]}                  (current release)
     speckit:  {state, problems, uv, installed}              (state: undecided | declined | enabled | unmanaged)
+    agent:    {name, attribution_hidden}                    (name given by the command, e.g. claude-code)
     findings: ["<file>: could not be read (...)", ...]
 """
 
@@ -45,6 +46,10 @@ def setup_items(state: dict, new: bool) -> list:
         items.append(("branch", f"Create the integration branch '{branches['integration']}' "
                                 f"from '{branches.get('production') or 'main'}'",
                       "feature work goes through the integration branch"))
+    agent = state.get("agent") or {}
+    if agent.get("name") == "claude-code" and not agent.get("attribution_hidden"):
+        items.append(("attribution", "Turn off the agent's automatic attribution in commits and pull requests "
+                                     "(.claude/settings.json)", "authorship belongs to the repository's Git identity"))
     state_name = speckit.get("state")
     if state_name == "unmanaged":
         items.append(("speckit-adopt", "Adopt the Spec Kit already in the repository (pin its version, preset, "

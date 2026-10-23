@@ -3,6 +3,7 @@
 !/.gitignore
 !/.gitattributes
 !/.claude-plugin/
+!/.claude/
 !/README.md
 !/install.ps1
 !/install.sh
