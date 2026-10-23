@@ -10,15 +10,16 @@ Each item: `### <ID>: <title>` with the fields `Severity` (bugs: critical, high,
 
 ## Improvements
 
-### IMP-001: Triage section in the bug plan template
-- **Priority**: high
-- **Status**: open
-- **Found**: 2026-10-23, PR #5 discussion
-- **Plan**: -
-- **Description**: Borrow the assess step of Spec Kit's bug extension: before the fix is planned, a bug plan first judges whether the report is really a bug (reproduces, expected behavior, not a misuse or a feature request) and locates the suspected code paths. Add a 'Triage' section to the bug plan template (plan-memory/templates/BUG_PLAN_TEMPLATE.md) and the matching rule in quality-assurance.
-
 ## Adjustments
 
 ## Epics
 
 ## Closed
+
+### IMP-001: Triage section in the bug plan template
+- **Priority**: high
+- **Status**: done
+- **Found**: 2026-10-23, PR #5 discussion
+- **Plan**: -
+- **Closed**: 2026-10-23, Triage section in the bug plan template
+- **Description**: Borrow the assess step of Spec Kit's bug extension: before the fix is planned, a bug plan first judges whether the report is really a bug (reproduces, expected behavior, not a misuse or a feature request) and locates the suspected code paths. Add a 'Triage' section to the bug plan template (plan-memory/templates/BUG_PLAN_TEMPLATE.md) and the matching rule in quality-assurance.
