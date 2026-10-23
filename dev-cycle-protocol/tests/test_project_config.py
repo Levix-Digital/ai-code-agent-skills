@@ -159,3 +159,13 @@ def test_speckit_validation(tmp_path):
     assert any("must be set when speckit.enabled" in p for p in load_project_config(str(tmp_path)).validate())
     write_manifest(tmp_path, {"speckit": {"enabled": True, "version": "v1.2.3", "script": "ps"}})
     assert load_project_config(str(tmp_path)).validate() == []
+
+
+def test_branching_defaults_and_validation(tmp_path):
+    devops = load_project_config(str(tmp_path)).section("devops")
+    assert devops["branching"] == "integration" and devops["release_branch_prefix"] == "release"
+    write_manifest(tmp_path, {"devops": {"branching": "trunk"}})
+    assert load_project_config(str(tmp_path)).validate() == []
+    write_manifest(tmp_path, {"devops": {"branching": "gitflow", "release_branch_prefix": "rel ease"}})
+    text = "\n".join(load_project_config(str(tmp_path)).validate())
+    assert "devops.branching 'gitflow'" in text and "release_branch_prefix" in text

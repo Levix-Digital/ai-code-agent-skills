@@ -12,7 +12,7 @@ import subprocess
 import glob
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from project_config import load_project_config
+from project_config import branch_summary, load_project_config
 
 def run_cmd(cmd: list[str], cwd: str) -> tuple[int, str]:
     try:
@@ -227,7 +227,7 @@ def print_profile_report(profile: dict):
     print(f"   • Architecture   : {arch.get('style') or 'not set (architecture.style in .dev-cycle.json)'}")
     if devops:
         rc = "on" if devops.get("release_candidates") else "off"
-        print(f"   • Branches       : {devops.get('integration_branch')} -> {devops.get('production_branch')} (release candidates: {rc})")
+        print(f"   • Branching      : {branch_summary(devops)} (release candidates: {rc})")
         print(f"   • Releases Repo  : {devops.get('releases_repo') or 'not set'}")
     for problem in profile.get("config_problems", []):
         print(f"   ⚠️ Config: {problem}")
