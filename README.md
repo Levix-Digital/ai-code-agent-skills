@@ -15,7 +15,7 @@ Development skills in the open `SKILL.md` format, shared by every coding agent o
 | [`software-design`](#software-design) | Architect | Design principles, the project's architecture style with a guide per style, design input for plans, review checklist and core dependency check |
 | [`architecture-docs`](#architecture-docs) | Technical documentation | Keeps technical docs current: short index, one living page per subsystem, immutable ADRs, validation and migration of legacy docs |
 | [`quality-assurance`](#quality-assurance) | QA | Automated test strategy and one curated manual test suite with Pass/Fail/Blocked runs per release candidate |
-| [`devops-release`](#devops-release) | DevOps | Branching, pull request CI, versions, release candidates, the user's merge as release gate, observability |
+| [`devops-release`](#devops-release) | DevOps | The branching model (integration, trunk or release branches), pull request CI, versions, release candidates, the user's release gate, observability |
 | [`user-docs`](#user-docs) | Technical writer | End-user READMEs in English with a standard structure, template and checker |
 | [`session-memory`](#session-memory) | Session memory | Recovers and consolidates each developer's own session context per project (local ChromaDB) |
 | [`folder-sync`](#folder-sync) | Utility | Incremental RAG over any folder: `/sync` to index, `/folder` to ask |
@@ -140,7 +140,7 @@ Cloud sessions do not see your local folders. For them, this repository is also 
 
 ### dev-cycle
 
-The `/dev-cycle` command, a thin router over `dev-cycle-protocol/onboard.py`: `diagnose` reads the configuration, branches, product baseline, plans, the latest release candidate run, blocking bugs, the roadmap and Spec Kit; `propose-config` and `write-config` create or complete `.dev-cycle.json` from what can be detected (adding keys, never overwriting); `create-branch` creates the integration branch. Spec Kit is asked about once per project, and a repository that already uses it is adopted (`speckit_setup.py adopt`) with its hand-written constitution moved into the sources before it is replaced. Details: [dev-cycle/SKILL.md](dev-cycle/SKILL.md).
+The `/dev-cycle` command, a thin router over `dev-cycle-protocol/onboard.py`: `diagnose` reads the configuration, the branching model and branches, product baseline, plans, the latest release candidate run, blocking bugs, the roadmap and Spec Kit; `propose-config` and `write-config` create or complete `.dev-cycle.json` from what can be detected (adding keys, never overwriting); `create-branch` creates the integration branch (`integration` model). The branching model and Spec Kit are each asked about once per project (the model detected from the branches), and a repository that already uses Spec Kit is adopted (`speckit_setup.py adopt`) with its hand-written constitution moved into the sources before it is replaced. Details: [dev-cycle/SKILL.md](dev-cycle/SKILL.md).
 
 ### dev-cycle-protocol
 
@@ -170,12 +170,12 @@ python <skills_root>/dev-cycle-protocol/verify_gate.py --gate 0|3|rc|8 [--run vX
 python <skills_root>/dev-cycle-protocol/speckit_setup.py status|latest|check|init|upgrade
 python <skills_root>/dev-cycle-protocol/constitution.py generate|check
 ```
-- `inspect_project.py` detects languages, manifests, test runners, documentation files and Git state, and shows the configured architecture style, branches, releases repository, backlog, current release of the roadmap, product baseline and Spec Kit state.
+- `inspect_project.py` detects languages, manifests, test runners, documentation files and Git state, and shows the configured architecture style, branching model, releases repository, backlog, current release of the roadmap, product baseline and Spec Kit state.
 - `project_config.py` shows, validates or migrates `.dev-cycle.json`.
 - `verify_gate.py --gate 0` (before the product baseline approval): product documents, architecture style, technical docs, a backlog with epics, a roadmap with a first release, Spec Kit and the constitution when enabled; open questions are listed.
 - `verify_gate.py --gate 3` (before plan approval): working tree, active plan, bugs first (a plan that is not a bug plan is blocked while an open critical or high bug is outside it, unless you accept the risk: `--accept-open-bugs "<reason>"`), with Spec Kit the spec folder (no open clarification), branch and constitution, no secrets tracked or staged.
 - `verify_gate.py --gate rc --run <tag>` (candidate acceptance): every manual test of the run is Pass.
-- `verify_gate.py --gate 8` (before the release pull request): documentation and manual test files exist and the checkers of every role pass (`check_docs.py`, `check_readme.py`, `manual_tests.py validate`, `check_design.py`, `check_ci_policy.py`, `release_status.py version`, `backlog.py validate`, `roadmap.py validate`), plus the candidate run with `--run`, no secrets and a clean tree; open blocking bugs are listed for the release notes and open items of the release for you to move or finish.
+- `verify_gate.py --gate 8` (before the release gate: the release pull request, or the promotion of the candidate): documentation and manual test files exist and the checkers of every role pass (`check_docs.py`, `check_readme.py`, `manual_tests.py validate`, `check_design.py`, `check_ci_policy.py`, `release_status.py version`, `backlog.py validate`, `roadmap.py validate`), plus the candidate run with `--run`, no secrets and a clean tree; open blocking bugs are listed for the release notes and open items of the release for you to move or finish.
 
 **Spec Kit** ([GitHub Spec Kit](https://github.com/github/spec-kit)) can do the detail of feature plans in Discovery, Plan and Implementation, at a version pinned per project after a compatibility check, with a constitution generated from the project's rules: [docs/spec-kit.md](docs/spec-kit.md).
 
@@ -308,16 +308,17 @@ Details: [quality-assurance/SKILL.md](quality-assurance/SKILL.md).
 
 ### devops-release
 
-The DevOps role. Branches `main` (released), `dev` (integration) and short-lived `feat/`, `fix/`, `docs/`, `chore/` branches from `dev`; tests on every pull request into `dev` and `main`; versions bumped in `dev`; release candidates published as pre-releases; **the user's merge into `main` is the release gate**, and it creates the final tag and release automatically. It also plans and tests logs, diagnostics and telemetry (`devops.observability`).
+The DevOps role. Each project chooses its branching model (`devops.branching`), asked once by `/dev-cycle`: `integration` (default: `main` released, `dev` integration; you merge `dev` into `main`), `trunk` (`main` alone; you promote the accepted candidate) or `release-branches` (`main` and `release/X.Y`, candidates on the release branch; you promote). Work happens on short-lived `feat/`, `fix/`, `docs/`, `chore/` branches with tests on every pull request; versions are bumped before the candidate; release candidates are published as pre-releases; **your merge or promotion is the release gate**, and it creates the final tag and release automatically (the promotion tags the exact commit you accepted). It also plans and tests logs, diagnostics and telemetry (`devops.observability`).
 
 | Task | Command |
 |---|---|
+| The project's branching model | `branching.py show` / `rc-branch` |
 | Check the workflows against the policy | `check_ci_policy.py [--dir .]` |
 | Version in the version files | `release_status.py version` |
 | Next release candidate tag | `release_status.py next-rc` |
 | Verify a published release | `release_status.py verify --tag v1.4.0 [--asset "*.zip"]` |
 
-Workflow templates: [devops-release/templates](devops-release/templates) (`ci.yml`, `release.yml`, `tag-on-merge.yml`). Details: [devops-release/SKILL.md](devops-release/SKILL.md).
+Workflow templates: [devops-release/templates](devops-release/templates) (`ci.yml`, `release.yml`, `tag-on-merge.yml`, `promote.yml`). Details: [devops-release/SKILL.md](devops-release/SKILL.md).
 
 ### user-docs
 

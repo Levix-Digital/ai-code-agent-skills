@@ -79,7 +79,7 @@ For a cumulative file that grew by appending scenarios:
    ```powershell
    python "<skills_root>/quality-assurance/manual_tests.py" failed --run v1.4.0-rc.1
    ```
-   Each `Fail` or `Blocked` test, with its notes, becomes a fix in the integration branch (with a regression test when it can be automated), followed by a new candidate and a new run (`rc.2`) containing at least the failed tests.
+   Each `Fail` or `Blocked` test, with its notes, becomes a fix in the candidate's branch (`devops-release`: `dev`, `main` or `release/X.Y`, by branching model; with a regression test when it can be automated), followed by a new candidate and a new run (`rc.2`) containing at least the failed tests.
    When the user decides to release without fixing a failure now, capture it in the backlog instead, so it is not lost:
    ```powershell
    python "<skills_root>/plan-memory/backlog.py" add --from-failed --run v1.4.0-rc.1 [--severity medium]

@@ -3,10 +3,10 @@ plan_id: ai_code_agent_skills_branching_models
 project: ai-code-agent-skills
 title: Branching models
 version: v2.5.0
-status: active
+status: completed
 author: Levix Digital
 created_at: '2026-10-23T21:02:03'
-updated_at: '2026-10-23T21:02:03'
+updated_at: '2026-10-23T21:09:17'
 session_id: null
 tags:
 - devops-release
@@ -17,13 +17,21 @@ superseded_by: null
 parent_plan_id: null
 milestones:
 - name: BR-M1 Presets
-  done: false
+  done: true
+  done_at: '2026-10-23'
+  by: Levix Digital
 - name: BR-M2 CI policy and templates
-  done: false
+  done: true
+  done_at: '2026-10-23'
+  by: Levix Digital
 - name: BR-M3 Onboarding and gates
-  done: false
+  done: true
+  done_at: '2026-10-23'
+  by: Levix Digital
 - name: BR-M4 Documentation and release
-  done: false
+  done: true
+  done_at: '2026-10-23'
+  by: Levix Digital
 status_log:
 - at: '2026-10-23T21:02:03'
   by: Levix Digital
@@ -33,6 +41,22 @@ status_log:
   by: Levix Digital
   status: active
   note: 'Approved by the user: all three presets, starting with trunk'
+- at: '2026-10-23T21:09:17'
+  by: Levix Digital
+  note: Milestone 'BR-M1 Presets' completed
+- at: '2026-10-23T21:09:17'
+  by: Levix Digital
+  note: Milestone 'BR-M2 CI policy and templates' completed
+- at: '2026-10-23T21:09:17'
+  by: Levix Digital
+  note: Milestone 'BR-M3 Onboarding and gates' completed
+- at: '2026-10-23T21:09:17'
+  by: Levix Digital
+  note: Milestone 'BR-M4 Documentation and release' completed
+- at: '2026-10-23T21:09:17'
+  by: Levix Digital
+  status: completed
+  note: All milestones completed
 ---
 
 # Branching Models

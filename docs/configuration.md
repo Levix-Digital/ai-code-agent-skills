@@ -15,10 +15,12 @@ Optional file at a project's root: the project configuration shared by every ski
   "docs": { "user_doc": "README.md", "tec_doc": "TECDOC.md" },
   "tests": { "manual_tests": "tests/MANUAL_TESTS.md" },
   "devops": {
+    "branching": "integration",
     "integration_branch": "dev",
     "production_branch": "main",
     "releases_repo": "my-org/my-app-releases",
     "release_candidates": true,
+    "release_branch_prefix": "release",
     "version_files": ["Cargo.toml"],
     "observability": "cli"
   },
@@ -66,7 +68,9 @@ Optional file at a project's root: the project configuration shared by every ski
 | `docs.user_doc`, `docs.tec_doc` | User documentation and technical documentation index | `README.md`, `TECDOC.md` |
 | `docs.readme_max_lines` | Line limit checked by `user-docs/check_readme.py` | `400` |
 | `tests.manual_tests` | Curated manual test suite | `tests/MANUAL_TESTS.md` |
-| `devops.integration_branch`, `devops.production_branch` | Branch that receives feature work, branch that holds released code | `dev`, `main` |
+| `devops.branching` | Branching model: `integration` (`main` + `dev`, the user merges `dev` into `main`), `trunk` (`main` alone, the user promotes the accepted candidate) or `release-branches` (`main` + `release/X.Y`, the user promotes the accepted candidate). Written by `/dev-cycle` with the user's answer; see `devops-release` | `integration` |
+| `devops.integration_branch`, `devops.production_branch` | Branch that receives feature work (`integration` model only), branch that holds released code | `dev`, `main` |
+| `devops.release_branch_prefix` | Prefix of the release branches of the `release-branches` model (`<prefix>/X.Y`) | `release` |
 | `devops.releases_repo` | Repository where releases are published | not set |
 | `devops.release_candidates` | Publish `vX.Y.Z-rc.N` pre-releases for manual acceptance before the final release | `true` |
 | `devops.version_files` | Files that hold the version number | `[]` |

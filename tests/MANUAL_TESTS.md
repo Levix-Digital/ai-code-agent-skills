@@ -120,12 +120,12 @@ How to record a run: in each test of the current run, mark exactly one box of th
 - **Prerequisites**: an existing repository with code, a README and only a `main` branch; uv installed
 - **Steps**:
   1. Type `/dev-cycle`.
-  2. Answer "all", change one value of the proposed configuration, and answer "no" to Spec Kit.
+  2. Answer "all", change one value of the proposed configuration, keep the proposed branching model, and answer "no" to Spec Kit.
   3. Type `/dev-cycle` again.
 - **Expected**:
-  - Step 1 lists, in order: create `.dev-cycle.json`, create the `dev` branch, decide about Spec Kit, adopt a product baseline; nothing is written yet.
-  - Step 2 shows the proposed configuration before writing it, writes it with the changed value, creates `dev` from `main` and records `speckit.enabled: false`.
-  - Step 3 no longer lists the configuration, the branch or the Spec Kit question.
+  - Step 1 lists, in order: create `.dev-cycle.json`, decide about Spec Kit, adopt a product baseline; nothing is written yet. No `dev` branch is proposed.
+  - Step 2 shows the proposed configuration before writing it, with `devops.branching: trunk` detected from the lone `main`, explains the three models with that recommendation, writes it with the changed value and records `speckit.enabled: false`.
+  - Step 3 no longer lists the configuration, a branch or the Spec Kit question.
 - **Result**: [ ] Pass [ ] Fail [ ] Blocked
 - **Notes**:
 
@@ -204,6 +204,7 @@ How to record a run: in each test of the current run, mark exactly one box of th
   3. Approve each document as it is shown, then run gate 0.
 - **Expected**:
   - The agent asks at most five questions per round, each with a suggestion, and writes no product code.
+  - Before initializing the repository the agent shows the three branching models with a recommendation; `.dev-cycle.json` records the choice in `devops.branching`, and only `integration` creates a `dev` branch.
   - `docs/product/VISION.md` and `docs/product/TECH_SPEC.md` are in English, with every section filled; the open question is listed under Open Questions.
   - The architecture style is set in `.dev-cycle.json`, the technical docs exist with ADRs for the founding decisions.
   - `docs/BACKLOG.md` has epics with their features; `docs/ROADMAP.md` starts with an MVP release.
@@ -271,7 +272,7 @@ How to record a run: in each test of the current run, mark exactly one box of th
 ### MT-RC-001: A release candidate is published and its run prepared
 
 - **Covers**: devops-release, quality-assurance
-- **Prerequisites**: the sample project with the `devops-release` templates installed and a curated `tests/MANUAL_TESTS.md`
+- **Prerequisites**: the sample project (integration model) with the `devops-release` templates installed and a curated `tests/MANUAL_TESTS.md`
 - **Steps**:
   1. Ask the agent to prepare a release.
 - **Expected**:
@@ -294,7 +295,7 @@ How to record a run: in each test of the current run, mark exactly one box of th
 - **Result**: [ ] Pass [ ] Fail [ ] Blocked
 - **Notes**:
 
-### MT-RC-003: The user's merge releases the accepted candidate
+### MT-RC-003: The user's merge releases the accepted candidate (integration model)
 
 - **Covers**: devops-release
 - **Prerequisites**: a candidate whose run is all Pass
@@ -305,5 +306,35 @@ How to record a run: in each test of the current run, mark exactly one box of th
   - `verify_gate.py --gate 8 --run <rc>` passes before the pull request is opened.
   - The merge creates the final tag and release without manual steps.
   - The agent follows the workflow and reports the release verified with `release_status.py verify --tag vX.Y.Z`.
+- **Result**: [ ] Pass [ ] Fail [ ] Blocked
+- **Notes**:
+
+### MT-RC-004: The user's promotion releases the accepted candidate (trunk model)
+
+- **Covers**: devops-release, dev-cycle-protocol
+- **Prerequisites**: a sample project with `devops.branching: trunk`, `templates/ci.yml` (branches `[main]`), `release.yml` and `promote.yml`, a `release` environment with you as required reviewer, and a candidate whose run is all Pass
+- **Steps**:
+  1. Merge one more feature into `main` after the candidate was tagged.
+  2. Tell the agent the candidate is accepted.
+  3. Run the promote workflow with the candidate tag and approve it in the environment.
+- **Expected**:
+  - `check_ci_policy.py` reports no errors; with `tag-on-merge.yml` added it reports that every merge would release.
+  - The agent runs gate 8, which ends with "READY FOR THE PROMOTION", gives the release notes highlights and the promote command, and does not run it.
+  - The final tag `vX.Y.Z` points at the candidate's commit, not at the newer head of `main`; the release is published and the agent verifies it with `release_status.py verify --tag vX.Y.Z`.
+- **Result**: [ ] Pass [ ] Fail [ ] Blocked
+- **Notes**:
+
+### MT-RC-005: A release branch carries the candidate and its fixes (release-branches model)
+
+- **Covers**: devops-release, quality-assurance
+- **Prerequisites**: a sample project with `devops.branching: release-branches`, CI on pull requests into `main` and `release/**`, and the promote workflow
+- **Steps**:
+  1. Ask the agent to prepare release 1.4.0.
+  2. Mark one test of the run as Fail and tell the agent.
+  3. After the fix, accept the next candidate and promote it.
+- **Expected**:
+  - The version is bumped in `main`, `release/1.4` is cut from it (`branching.py rc-branch` gives the name) and `v1.4.0-rc.1` is tagged on `release/1.4`.
+  - The fix goes by pull request into `release/1.4`, `v1.4.0-rc.2` is tagged there, and the fix is brought forward into `main` by another pull request.
+  - The promotion releases `v1.4.0` from `release/1.4`; a later patch of an older line is not marked as the latest release.
 - **Result**: [ ] Pass [ ] Fail [ ] Blocked
 - **Notes**:

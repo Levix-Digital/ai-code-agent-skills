@@ -88,7 +88,8 @@ class BranchingModel:
             rc = f"vX.Y.Z-rc.N tagged on '{p}' after the version bump; fixes found in acceptance go into '{p}' and a new candidate"
             gate = "the user runs the promote workflow for the accepted candidate; it tags that commit vX.Y.Z and releases it"
             hotfix = (f"fix/<slug> into '{p}', patch bump, candidate, promote; when '{p}' holds unreleased work, "
-                      f"hotfix/<slug> from the release tag, candidate tagged there, then the fix into '{p}' by pull request")
+                      f"hotfix/X.Y.Z from the release tag, the fix by pull request into it, candidate tagged there, then the fix "
+                      f"into '{p}' by pull request")
         else:
             work += f"; fixes of a release in acceptance or maintenance from '{r}/X.Y', pull requests into it"
             rc = (f"cut '{r}/X.Y' from '{p}' after the version bump; vX.Y.Z-rc.N tagged on '{r}/X.Y'; "

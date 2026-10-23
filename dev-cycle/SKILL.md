@@ -1,6 +1,6 @@
 ---
 name: dev-cycle
-description: The /dev-cycle command - the single entry point of the development cycle. It diagnoses the repository (configuration, branches, product baseline, plans in progress, release candidates, blocking bugs, roadmap, Spec Kit), proposes where to start in the recommended order, sets up what is missing after the user confirms, and hands over to product inception (a new product from an idea) or to the cycle (a request in an existing project). Use when the user types /dev-cycle, starts working on a project, gives a product idea, or asks where to start or how the project stands.
+description: The /dev-cycle command - the single entry point of the development cycle. It diagnoses the repository (configuration, branching model and branches, product baseline, plans in progress, release candidates, blocking bugs, roadmap, Spec Kit), proposes where to start in the recommended order, sets up what is missing after the user confirms, and hands over to product inception (a new product from an idea) or to the cycle (a request in an existing project). Use when the user types /dev-cycle, starts working on a project, gives a product idea, or asks where to start or how the project stands.
 argument-hint: ["<product idea or request>"]
 ---
 
@@ -35,9 +35,10 @@ The one command the user needs: the protocol guides the user, not the other way 
 | `rc:<run>` | Release candidate: `quality-assurance/manual_tests.py summary --run <run>` and `failed --run <run>`; failures go back to Phase 4; when all pass, gate rc and then gate 8 (Phases 9 and 10). |
 | `bugs` | Phase 1 with the blocking bugs: show them, the user decides which to promote (`backlog.py promote`). |
 | `git` | Ask, then `git init` with the production branch (`main`). |
-| `config` | `onboard.py propose-config`, show the proposal, let the user change it, write only what they confirm: save it to a file and `onboard.py write-config --file <it>`. The architecture style is chosen later with `software-design` (or in Phase 0). |
+| `config` | `onboard.py propose-config`, show the proposal, let the user change it, write only what they confirm: save it to a file and `onboard.py write-config --file <it>`. The proposal carries the detected branching model (`devops.branching`): present the choice as in `branching` below before writing. The architecture style is chosen later with `software-design` (or in Phase 0). |
+| `branching` | Asked once. Show the three models in a short table (`devops-release`, "Branching Model": work base, candidate branch, release gate, what each fits) and recommend the detected one. Record the answer: `write-config` with `{"devops": {"branching": "<model>"}}` (with `integration_branch` for `integration` when it is not `dev`). For `integration` without its branch, the next item creates it; for `trunk` and `release-branches`, offer to add `templates/promote.yml` and the `release` environment when the project publishes releases. |
 | `attribution` | Ask, then `onboard.py set-attribution`: it turns off the automatic attribution in `.claude/settings.json` (commit trailer, pull request footer, session link); commit the file. Remove any attribution that still appears in a pull request description. |
-| `branch` | Ask, then `onboard.py create-branch`; offer to push it (`git push -u origin <branch>`). |
+| `branch` | `integration` model only. Ask, then `onboard.py create-branch`; offer to push it (`git push -u origin <branch>`). |
 | `speckit-ask` | Explain in two sentences what Spec Kit does in the cycle (the detail of features: specification, clarification, plan, tasks, implementation; at a version pinned per project; needs uv) and recommend it for products that will grow, not for small tools. Yes: `speckit_setup.py init`, then `constitution.py generate` (Phase 0 does it when the baseline is not there yet). No: record the decision so it is not asked again: `write-config` with `{"speckit": {"enabled": false}}`. |
 | `speckit-adopt` | `speckit_setup.py adopt`. If `constitution.py check` says the constitution is hand-written: show each of its principles, propose where it goes (constraints and non-functional requirements to `TECH_SPEC.md`, decisions to ADRs, general design rules as a suggestion for `software-design`), apply what the user confirms, then `constitution.py generate --replace-hand-written` (a copy is kept). |
 | `speckit-fix` | Fix each reported problem: version drift (`speckit_setup.py upgrade --to <version>` after the user agrees), preset or branch prefix (`adopt` again or `upgrade`), stale constitution (`constitution.py generate`). |
@@ -49,6 +50,6 @@ The one command the user needs: the protocol guides the user, not the other way 
 ## Rules
 
 - The diagnosis never changes anything. Every write (configuration, branch, Spec Kit, constitution) happens after the user's confirmation, and the configuration is only added to, never overwritten.
-- Spec Kit is asked about at most once per project: the answer is recorded in `.dev-cycle.json`.
+- Spec Kit and the branching model are asked about at most once per project: the answers are recorded in `.dev-cycle.json`.
 - Commits made while setting up follow `devops-release` (Conventional Commits, authored by the repository's Git identity); the configuration is committed as `chore: dev-cycle configuration`.
 - When `onboard.py` reports findings (a file it could not read), show them; they are not blocking unless the user's choice needs that file.
