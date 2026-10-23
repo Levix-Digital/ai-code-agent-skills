@@ -22,7 +22,7 @@ def get_plan(store: PlanStore, plan_id: str = None, output_file: str = None):
         out_dir = os.path.dirname(os.path.abspath(output_file))
         os.makedirs(out_dir, exist_ok=True)
         with open(output_file, "w", encoding="utf-8") as f:
-            f.write(plan.body)
+            f.write(store.full_text(plan))
         print(f"✅ Plan '{m['plan_id']}' body written to: {output_file}")
         return
 
@@ -37,10 +37,19 @@ def get_plan(store: PlanStore, plan_id: str = None, output_file: str = None):
         print(f"   • Superseded by: {m['superseded_by']}")
     if plan.backlog_items:
         print(f"   • Backlog    : {', '.join(plan.backlog_items)}")
+    if plan.spec_dir:
+        print(f"   • Spec Kit   : {plan.spec_dir}")
     if plan.milestones:
         print(f"   • Milestones : {progress_bar(len(plan.done_milestones), len(plan.milestones))}")
     print("=" * 90 + "\n")
     print(plan.body)
+    for rel, text in store.spec_files(plan):
+        print("\n" + "-" * 90)
+        print(f"📎 Spec Kit artifact: {rel}")
+        print("-" * 90 + "\n")
+        print(text.rstrip())
+    if plan.spec_dir and not store.spec_files(plan):
+        print(f"\n⚠️ Spec folder '{plan.spec_dir}' has no Spec Kit artifacts.")
     print("\n" + "=" * 90)
 
 

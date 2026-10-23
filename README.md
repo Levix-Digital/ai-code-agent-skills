@@ -6,9 +6,10 @@ Development skills in the open `SKILL.md` format, shared by every coding agent o
 
 | Skill | Role | What it does |
 |---|---|---|
-| [`dev-cycle-protocol`](#dev-cycle-protocol) | Orchestrator | Development cycle from discovery to a verified release: phases, the role called in each one, full and short paths, the user's gates, the shared `.dev-cycle.json` |
-| [`plan-memory`](#plan-memory) | Planner | The project backlog (`docs/BACKLOG.md`) and complete plans as versioned files (`docs/plans`), shared by the team, with promotion of backlog items, milestones, lineage, search and drift detection |
-| [`backlog`](#backlog) | Command | `/backlog --feature\|--improvement\|--adjustment\|--bug "<text>"`: capture an idea or bug for later in one line |
+| [`dev-cycle-protocol`](#dev-cycle-protocol) | Orchestrator | Development cycle from product inception to a verified release: phases, the role called in each one, full and short paths, the user's gates, GitHub Spec Kit as optional executor, the shared `.dev-cycle.json` |
+| [`product-inception`](#product-inception) | Product | Phase 0: from an idea to an approved product baseline (vision, architecture, technical specification, backlog with epics, roadmap), or adoption of an existing project |
+| [`plan-memory`](#plan-memory) | Planner | The project backlog with epics (`docs/BACKLOG.md`), the roadmap of releases (`docs/ROADMAP.md`) and complete plans as versioned files (`docs/plans`), shared by the team, with promotion of backlog items, milestones, lineage, search and drift detection |
+| [`backlog`](#backlog) | Command | `/backlog --feature\|--improvement\|--adjustment\|--bug\|--epic "<text>"`: capture an idea or bug for later in one line |
 | [`software-design`](#software-design) | Architect | Design principles, the project's architecture style with a guide per style, design input for plans, review checklist and core dependency check |
 | [`architecture-docs`](#architecture-docs) | Technical documentation | Keeps technical docs current: short index, one living page per subsystem, immutable ADRs, validation and migration of legacy docs |
 | [`quality-assurance`](#quality-assurance) | QA | Automated test strategy and one curated manual test suite with Pass/Fail/Blocked runs per release candidate |
@@ -38,7 +39,7 @@ Development skills in the open `SKILL.md` format, shared by every coding agent o
 ```
 ~/.ai-code-agent-skills/                 this repository (source of truth)
 ├── .claude-plugin/                      Claude Code marketplace + plugin manifests
-├── dev-cycle-protocol/  plan-memory/  session-memory/
+├── dev-cycle-protocol/  product-inception/  plan-memory/  backlog/  session-memory/
 ├── software-design/  architecture-docs/  quality-assurance/
 ├── devops-release/  user-docs/  folder-sync/
 ├── docs/plans/                          plans of this repository
@@ -55,6 +56,9 @@ Development skills in the open `SKILL.md` format, shared by every coding agent o
 └── session-memory/db                    this developer's session memory
 
 <project>/docs/plans/*.md                plans: versioned and shared in each project
+<project>/docs/BACKLOG.md, docs/ROADMAP.md   backlog with epics and the roadmap of releases
+<project>/docs/product/                  vision and technical specification (Phase 0)
+<project>/.specify/, specs/              Spec Kit setup and feature specs (when enabled)
 <project>/TECDOC.md, docs/architecture/, docs/adr/   technical docs (architecture-docs)
 ```
 
@@ -70,6 +74,7 @@ Development skills in the open `SKILL.md` format, shared by every coding agent o
 
 - Git and the GitHub CLI (`gh`) for the release helpers
 - Python 3.10 or later with `pip`
+- Optional, for projects that use GitHub Spec Kit: [uv](https://docs.astral.sh/uv/) and network access to GitHub
 - A coding agent that reads `SKILL.md` skills (Claude Code, Codex, Gemini, Copilot or similar)
 
 ## Setup
@@ -109,7 +114,8 @@ Restart the agent (or open a new session) after installing so it picks up the sk
 
 Agents load a skill on their own when the task matches its `description`; you can also ask for one by name ("use plan-memory to save this plan"). For project work, start with the orchestrator: it runs the cycle and calls the other roles in each phase.
 
-1. In a project, describe what you want ("add an export command"). The agent stays in **Discovery** until you agree on an approach.
+0. For a **new product**, start with the idea ("I want an app where families keep their photos"). The agent runs **product inception**: rounds of questions and suggestions, then the vision, the architecture, the technical specification, the backlog of the complete product (epics and their items) and the roadmap from the MVP, each for your approval. An existing project can adopt the same baseline.
+1. In a project, describe what you want ("add an export command"), or start from the next items of the roadmap. The agent stays in **Discovery** until you agree on an approach.
 2. It writes the **plan** with a section from each role and saves it in `docs/plans`. Reply "Approved" to start, or ask for changes.
 3. It implements on a branch, runs the tests, updates the docs and opens a **pull request into `dev`**, following CI until it is green.
 4. When you want to release, it cuts a **release candidate** (`vX.Y.Z-rc.N`) and prepares the manual tests to run. Install the candidate and mark each test Pass, Fail or Blocked in `tests/MANUAL_TESTS.md`; failures come back as fixes.
@@ -117,7 +123,9 @@ Agents load a skill on their own when the task matches its `description`; you ca
 
 Small fixes and documentation changes take the short path: no plan file and no release candidate.
 
-Ideas and bugs you do not want to work on yet go to the **backlog**: type `/backlog --feature "<your idea>"` (or `--improvement`, `--adjustment`, `--bug`) and the agent records it in `docs/BACKLOG.md` with an id. Bugs the agent finds outside the current change land there too. At the start of the next cycle the agent shows the backlog; you choose what to plan, and open critical or high bugs come before new features.
+Projects can let **GitHub Spec Kit** do the detail of each feature (specification, clarification, technical plan, tasks, implementation) inside the cycle, while the cycle keeps the gates, the documentation and the releases: [docs/spec-kit.md](docs/spec-kit.md).
+
+Ideas and bugs you do not want to work on yet go to the **backlog**: type `/backlog --feature "<your idea>"` (or `--improvement`, `--adjustment`, `--bug`, `--epic`) and the agent records it in `docs/BACKLOG.md` with an id. The **roadmap** (`docs/ROADMAP.md`) says which items go into which release. Bugs the agent finds outside the current change land there too. At the start of the next cycle the agent shows the backlog; you choose what to plan, and open critical or high bugs come before new features.
 
 ---
 
@@ -135,6 +143,7 @@ The orchestrator. It owns the phases, the gates and which role runs when; each r
 
 | Phase | Roles |
 |---|---|
+| 0. Product inception, once per product (user approves the baseline) | product-inception, software-design, architecture-docs, plan-memory |
 | 1. Discovery | orchestrator, plan-memory, software-design |
 | 2. Plan | plan-memory with a section from every role |
 | 3. Plan approval (user) | orchestrator |
@@ -146,33 +155,46 @@ The orchestrator. It owns the phases, the gates and which role runs when; each r
 | 9. Acceptance (user runs the manual tests) | quality-assurance |
 | 10. Release gate (user merges `dev` into `main`) and verified release | devops-release, plan-memory, session-memory |
 
-Phases 1 to 7 run for every change, phases 8 to 10 for every release. Small fixes and documentation-only changes take a short path (phases 1, 4 to 7).
+Phase 0 runs once per product, phases 1 to 7 for every change, phases 8 to 10 for every release. Small fixes and documentation-only changes take a short path (phases 1, 4 to 7).
 
 Scripts:
 ```bash
 python <skills_root>/dev-cycle-protocol/inspect_project.py [--dir .] [--json]
 python <skills_root>/dev-cycle-protocol/project_config.py [--json] [--validate] [--migrate [--write]]
-python <skills_root>/dev-cycle-protocol/verify_gate.py --gate 3|rc|8 [--run vX.Y.Z-rc.N] [--dir .]
+python <skills_root>/dev-cycle-protocol/verify_gate.py --gate 0|3|rc|8 [--run vX.Y.Z-rc.N] [--dir .]
+python <skills_root>/dev-cycle-protocol/speckit_setup.py status|latest|check|init|upgrade
+python <skills_root>/dev-cycle-protocol/constitution.py generate|check
 ```
-- `inspect_project.py` detects languages, manifests, test runners, documentation files and Git state, and shows the configured architecture style, branches and releases repository.
+- `inspect_project.py` detects languages, manifests, test runners, documentation files and Git state, and shows the configured architecture style, branches, releases repository, backlog, current release of the roadmap, product baseline and Spec Kit state.
 - `project_config.py` shows, validates or migrates `.dev-cycle.json`.
-- `verify_gate.py --gate 3` (before plan approval): working tree, active plan, bugs first (a plan that is not a bug plan is blocked while an open critical or high bug is outside it, unless you accept the risk: `--accept-open-bugs "<reason>"`), no secrets tracked or staged.
+- `verify_gate.py --gate 0` (before the product baseline approval): product documents, architecture style, technical docs, a backlog with epics, a roadmap with a first release, Spec Kit and the constitution when enabled; open questions are listed.
+- `verify_gate.py --gate 3` (before plan approval): working tree, active plan, bugs first (a plan that is not a bug plan is blocked while an open critical or high bug is outside it, unless you accept the risk: `--accept-open-bugs "<reason>"`), with Spec Kit the spec folder (no open clarification), branch and constitution, no secrets tracked or staged.
 - `verify_gate.py --gate rc --run <tag>` (candidate acceptance): every manual test of the run is Pass.
-- `verify_gate.py --gate 8` (before the release pull request): documentation and manual test files exist and the checkers of every role pass (`check_docs.py`, `check_readme.py`, `manual_tests.py validate`, `check_design.py`, `check_ci_policy.py`, `release_status.py version`, `backlog.py validate`), plus the candidate run with `--run`, no secrets and a clean tree; open blocking bugs are listed for the release notes.
+- `verify_gate.py --gate 8` (before the release pull request): documentation and manual test files exist and the checkers of every role pass (`check_docs.py`, `check_readme.py`, `manual_tests.py validate`, `check_design.py`, `check_ci_policy.py`, `release_status.py version`, `backlog.py validate`, `roadmap.py validate`), plus the candidate run with `--run`, no secrets and a clean tree; open blocking bugs are listed for the release notes and open items of the release for you to move or finish.
+
+**Spec Kit** ([GitHub Spec Kit](https://github.com/github/spec-kit)) can do the detail of feature plans in Discovery, Plan and Implementation, at a version pinned per project after a compatibility check, with a constitution generated from the project's rules: [docs/spec-kit.md](docs/spec-kit.md).
 
 Full protocol: [dev-cycle-protocol/SKILL.md](dev-cycle-protocol/SKILL.md).
 
+### product-inception
+
+Phase 0: turns an idea into an approved **product baseline** before the first change. The agent interviews you in rounds of up to five questions, each with a suggested answer, then writes, one at a time and each for your approval: the business document (`docs/product/VISION.md`), the architecture (style, technical docs, founding ADRs), the technical specification (`docs/product/TECH_SPEC.md`), the Spec Kit constitution when used, the backlog of the complete product as epics and items, and the roadmap from the MVP. It ends at gate 0. An existing project can adopt the same baseline: the agent drafts it from the code and asks only what the code cannot answer.
+
+`check_product.py --init` creates the two documents from the templates; `check_product.py` checks sections, placeholders, language and length, with open questions as warnings. Details: [product-inception/SKILL.md](product-inception/SKILL.md).
+
 ### plan-memory
 
-Keeps the project's planning in its repository, at two levels: the **backlog**, where work is captured for later, and **plans**, complete and uncompressed, shared by everyone on the project:
+Keeps the project's planning in its repository: the **backlog**, where work is captured for later, the **roadmap**, which orders the releases, and **plans**, complete and uncompressed, shared by everyone on the project:
 
-- **Backlog**: `docs/BACKLOG.md` (`backlog.file`), sections Bugs (`BUG-NNN`, with severity), Features (`FEAT-NNN`), Improvements (`IMP-NNN`) and Adjustments (`ADJ-NNN`, with priority), and Closed. `backlog.py promote <ID>` turns items into a draft plan (a bug plan for bugs, with reproduction, root cause and regression test); the items follow the plan and close when it is completed.
+- **Backlog**: `docs/BACKLOG.md` (`backlog.file`), sections Bugs (`BUG-NNN`, with severity), Features (`FEAT-NNN`), Improvements (`IMP-NNN`), Adjustments (`ADJ-NNN`) and Epics (`EPIC-NNN`, with priority), and Closed. An item may belong to an epic (`--epic EPIC-NNN`); epics group the complete product and are never promoted, their items are. `backlog.py promote <ID>` turns items into a draft plan (a bug plan for bugs, with reproduction, root cause and regression test); the items follow the plan and close when it is completed.
+- **Roadmap**: `docs/ROADMAP.md` (`roadmap.file`), releases in delivery order (`## vX.Y.Z: <name>` with status, goal and items). `roadmap.py` adds and orders releases, assigns items (an epic adds its open items), shows the current release and validates the ids against the backlog.
 - **Plan files**: `docs/plans/<plan_id>.md` in the project repository, with YAML frontmatter (status, version, author, milestones, lineage, status log) and the plan body. They are committed and reviewed like code. Change the folder with `plans.dir` in `.dev-cycle.json`.
 - **Local index**: a ChromaDB index for semantic search and drift detection, synced from the files on every command (including teammates' changes after `git pull`). It is disposable: `rebuild_index.py` recreates it.
 
 | Task | Command |
 |---|---|
-| Save or update a plan | `save_plan.py --title "<t>" --file plan.md [--version v1.2.0] [--milestones "A,B,C"] [--supersedes <old_id>] [--kind bug] [--backlog-items "BUG-001"]` |
+| Save or update a plan | `save_plan.py --title "<t>" --file plan.md [--version v1.2.0] [--milestones "A,B,C"] [--supersedes <old_id>] [--kind bug] [--backlog-items "BUG-001"] [--spec-dir specs/001-x]` |
+| Plan releases | `roadmap.py add-release v0.1.0 --name MVP --goal "<g>"`, `assign <ID...> --release v0.1.0`, `current`, `show`, `validate` |
 | List plans | `list_plans.py [--status active] [--kind bug]` |
 | Read a plan in full | `get_plan.py --id <plan_id>` or `get_plan.py` (latest active) |
 | Semantic search | `search_plans.py --query "<text>" [--limit 5] [--all-projects]` |
@@ -195,7 +217,7 @@ Details: [plan-memory/SKILL.md](plan-memory/SKILL.md).
 
 ### backlog
 
-The `/backlog` command captures without leaving the conversation: `/backlog --feature "I would like answers exportable to Markdown"`, `/backlog --bug "sync never finishes on network drives" --severity high`, or `/backlog` alone for the summary. The agent writes a short title and a faithful English description, runs `plan-memory/backlog.py add` and answers with one line (`FEAT-003: Export answers to Markdown (medium)`). Priority defaults to `medium`; a bug without `--severity` gets an estimated one, stated in the answer. In agents without slash commands, ask "add to the backlog as a feature: ...". Details: [backlog/SKILL.md](backlog/SKILL.md); backlog commands (`add`, `summary`, `promote`, `close`, ...): [plan-memory/SKILL.md](plan-memory/SKILL.md#-backlog-backlogpy).
+The `/backlog` command captures without leaving the conversation: `/backlog --feature "I would like answers exportable to Markdown"`, `/backlog --feature "Album sharing" --in EPIC-002`, `/backlog --epic "Photo organization"`, `/backlog --bug "sync never finishes on network drives" --severity high`, or `/backlog` alone for the summary. The agent writes a short title and a faithful English description, runs `plan-memory/backlog.py add` and answers with one line (`FEAT-003: Export answers to Markdown (medium)`). Priority defaults to `medium`; a bug without `--severity` gets an estimated one, stated in the answer. In agents without slash commands, ask "add to the backlog as a feature: ...". Details: [backlog/SKILL.md](backlog/SKILL.md); backlog commands (`add`, `summary`, `promote`, `close`, ...): [plan-memory/SKILL.md](plan-memory/SKILL.md#-backlog-backlogpy).
 
 ### session-memory
 
@@ -329,7 +351,7 @@ Details: [folder-sync/SKILL.md](folder-sync/SKILL.md).
 
 ## Project configuration: `.dev-cycle.json`
 
-Optional file at a project's root: the project configuration shared by every skill, one section per skill (`architecture`, `docs`, `tests`, `devops`, `plans`, `backlog`, `architecture_docs`, `drift_rules`) plus `test_commands`. Every key is optional and older files with flat keys keep working.
+Optional file at a project's root: the project configuration shared by every skill, one section per skill (`architecture`, `docs`, `tests`, `devops`, `plans`, `backlog`, `roadmap`, `product`, `speckit`, `architecture_docs`, `drift_rules`) plus `test_commands`. Every key is optional and older files with flat keys keep working.
 
 ```json
 {
@@ -350,30 +372,7 @@ Full key reference, defaults and drift rules: [docs/configuration.md](docs/confi
 
 ## Maintaining the repository
 
-**Add a skill**
-1. Create `<skill-name>/SKILL.md` with `name` and `description` frontmatter. The description is what makes agents load it, so say when to use it.
-2. Add `!/<skill-name>/` to [`.gitignore`](.gitignore) (allowlist).
-3. To ship it in the cloud plugin, add `./<skill-name>` to `skills` in [`.claude-plugin/plugin.json`](.claude-plugin/plugin.json) and bump `version`.
-4. Add tests under `<skill-name>/tests` for every script.
-5. Run `install.ps1` / `install.sh` again, then commit and push.
-
-**Run the tests**
-```bash
-python -m pytest plan-memory/tests dev-cycle-protocol/tests software-design/tests user-docs/tests quality-assurance/tests devops-release/tests
-```
-
-**Conventions**
-- Write in English.
-- Keep data out of skill folders: shared data in the project repository, personal data in `~/.ai-code-agent-memory/<skill>` with an environment variable override.
-- Refer to scripts as `<skills_root>/<skill>/...` and to other skills by relative links (`../plan-memory/SKILL.md`).
-
-**Personal / machine-specific skills** stay out of this repository, in `~/.ai-code-agent-skills-personal`, linked with `install.ps1 -Source`.
-
-**Update on another machine**
-```bash
-git -C ~/.ai-code-agent-skills pull
-```
-Links pick up the changes at once. Rerun the install script only when skills were added. Cloud sessions get the new plugin version at their next start.
+Adding a skill, running the tests, conventions, personal skills and updating other machines: [docs/maintaining.md](docs/maintaining.md).
 
 ---
 

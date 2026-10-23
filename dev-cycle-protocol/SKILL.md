@@ -1,9 +1,9 @@
 ---
 name: dev-cycle-protocol
-description: Orchestrator of the role-based development cycle - phases from discovery to a verified release, the role skill called in each phase (software-design, quality-assurance, devops-release, user-docs, architecture-docs, plan-memory, code review), a full path for features and a short path for small fixes, the project backlog with bugs before new work, the user's approval gates (plan, release candidate acceptance, merge into production), the shared .dev-cycle.json project configuration and automated gate verification. Use during all software design, exploration, implementation, review and release tasks.
+description: Orchestrator of the role-based development cycle - phases from product inception (Phase 0) and discovery to a verified release, the role skill called in each phase (product-inception, software-design, quality-assurance, devops-release, user-docs, architecture-docs, plan-memory, code review), a full path for features and a short path for small fixes, the project backlog with epics and bugs before new work, the roadmap of releases, GitHub Spec Kit as the optional executor of specification, planning and implementation, the user's approval gates (product baseline, plan, release candidate acceptance, merge into production), the shared .dev-cycle.json project configuration and automated gate verification. Use during all product, software design, exploration, implementation, review and release tasks.
 ---
 
-# 🛡️ Development Cycle Protocol (`dev-cycle-protocol` v3)
+# 🛡️ Development Cycle Protocol (`dev-cycle-protocol` v4)
 
 > **Paths**: `<skills_root>` is the folder that contains this skill (the parent of this `SKILL.md`'s folder). Use the real absolute path when running the commands.
 
@@ -17,8 +17,9 @@ description: Orchestrator of the role-based development cycle - phases from disc
 
 | Role | Skill | Owns |
 |---|---|---|
-| Orchestrator | `dev-cycle-protocol` | Phases, gates, the path for each change, `.dev-cycle.json` |
-| Planner | [`plan-memory`](../plan-memory/SKILL.md) | The backlog (`docs/BACKLOG.md`, `/backlog` command), plan files in `docs/plans`, milestones, drift detection |
+| Orchestrator | `dev-cycle-protocol` | Phases, gates, the path for each change, `.dev-cycle.json`, Spec Kit setup and the generated constitution |
+| Product | [`product-inception`](../product-inception/SKILL.md) | Phase 0: the product baseline, `docs/product/VISION.md` and `TECH_SPEC.md` |
+| Planner | [`plan-memory`](../plan-memory/SKILL.md) | The backlog with epics (`docs/BACKLOG.md`, `/backlog` command), the roadmap (`docs/ROADMAP.md`), plan files in `docs/plans`, milestones, drift detection |
 | Architect | [`software-design`](../software-design/SKILL.md) | Design principles, architecture style, design section of plans, structural review |
 | Technical documentation | [`architecture-docs`](../architecture-docs/SKILL.md) | `TECDOC.md`, `docs/architecture`, ADRs |
 | QA | [`quality-assurance`](../quality-assurance/SKILL.md) | Automated test strategy, curated manual test suite, release candidate runs |
@@ -26,8 +27,9 @@ description: Orchestrator of the role-based development cycle - phases from disc
 | Technical writer | [`user-docs`](../user-docs/SKILL.md) | README and end-user documentation |
 | Reviewer | code review (the agent's review capability or a second session) | Independent review of the diff before the pull request |
 | Session memory | [`session-memory`](../session-memory/SKILL.md) | The developer's own session context |
+| Spec executor (optional) | [GitHub Spec Kit](https://github.com/github/spec-kit) | The detail of a feature in Phases 1, 2 and 4: `specs/NNN-slug/` (spec, plan, tasks) |
 
-A role is a set of rules and a checker, not a separate person: load the role skill when its phase starts, follow it, and run its checker before leaving the phase.
+A role is a set of rules and a checker, not a separate person: load the role skill when its phase starts, follow it, and run its checker before leaving the phase. Spec Kit is a tool, not a role: the protocol decides when it runs and checks what it produces (see "Spec Kit").
 
 ---
 
@@ -48,6 +50,7 @@ A role is a set of rules and a checker, not a separate person: load the role ski
 
 | Path | When | Phases |
 |---|---|---|
+| **Inception** | A new product from an idea, or an existing project without a product baseline (adoption) | 0, once per product; then the full path for the first items of the roadmap |
 | **Full** | New features, refactors, data or schema changes, changes to commands, configuration, file formats or public APIs, CI/release changes, anything spanning several modules | 1 to 7 per change; 8 to 10 per release |
 | **Short** | Small bug fixes, documentation-only, test-only or typo changes that fit in one small pull request and change no interface or data | 1, 4, 5, 6 (only what is affected), 7 |
 
@@ -59,6 +62,7 @@ For the short path, the user's request is the approval when it names the change 
 
 ```mermaid
 graph TD
+    P0["0. Product inception (once)<br/>product-inception, gate 0 (user)"] -.-> P1
     P1["1. Discovery<br/>orchestrator, plan-memory, software-design"] --> P2["2. Plan<br/>plan-memory + all roles"]
     P2 --> G3{"3. Plan approval<br/>(user)"}
     G3 -- "questions / changes" --> P1
@@ -74,7 +78,14 @@ graph TD
     G10 --> P11["Final release followed and verified<br/>devops-release, plan-memory, session-memory"]
 ```
 
-Phases 1 to 7 run for every change. Phases 8 to 10 run when the user wants to release what has accumulated in the integration branch.
+Phase 0 runs once per product. Phases 1 to 7 run for every change. Phases 8 to 10 run when the user wants to release what has accumulated in the integration branch. The steps marked **Spec Kit** apply only to feature plans of a project with `speckit.enabled` (see "Spec Kit").
+
+### 0. 🌱 Product Inception (once per product)
+Follow [`product-inception`](../product-inception/SKILL.md): interview, business document, architecture, technical specification, constitution (Spec Kit), product backlog with epics, roadmap, each approved by the user. It ends at **gate 0**, the user's approval of the product baseline:
+```powershell
+python "<skills_root>/dev-cycle-protocol/verify_gate.py" --gate 0
+```
+A project without a baseline that is already under way can adopt it (adoption mode) or skip it: Phase 0 is required for new products, recommended for existing ones.
 
 ### 1. 💡 Discovery
 - Stay **consultative**: while the user is asking, debating or proposing, do not edit files or start code.
@@ -85,8 +96,9 @@ Phases 1 to 7 run for every change. Phases 8 to 10 run when the user wants to re
   ```
 - **Logs first**: for any reported error, read the real logs before forming hypotheses.
 - Read the active plans (`plan-memory/list_plans.py`, `check_milestone.py --list`) and the architecture style and structure (`software-design`).
-- Read the backlog (`plan-memory/backlog.py summary`; `inspect_project.py` shows it too). Show the user the open bugs that come before new work and the items related to the request; the user decides what to promote, re-prioritize or drop (see "Backlog").
+- Read the backlog and the roadmap (`plan-memory/backlog.py summary`, `plan-memory/roadmap.py current`; `inspect_project.py` shows both). Show the user the open bugs that come before new work, then the open items of the current release and the items related to the request; the user decides what to promote, re-prioritize, move or drop (see "Backlog and Roadmap").
 - To plan backlog items, promote them (`backlog.py promote <ID> ...`): the draft plan (a bug plan for bugs) is where the discovery is written.
+- **Spec Kit**: check out the integration branch, then run `/speckit-specify` with the items' description: it creates the work branch `feat/NNN-slug` and `specs/NNN-slug/spec.md`. Run `/speckit-clarify` until no `[NEEDS CLARIFICATION]` marker is left; the user answers its questions. The promoted plan is the envelope; the discovery lives in the spec.
 - Exhaust the open questions and converge on an approach with the user.
 
 ### 2. 📋 Plan
@@ -101,10 +113,12 @@ Write the complete plan with this template, collecting each role's section:
 7. **Security, migration and rollback**: secrets, data migrations (backward compatible), how to roll back.
 8. **Execution steps and milestones**.
 
+**Spec Kit**: run `/speckit-plan` (its plan carries the protocol sections above through the `dev-cycle` preset: tests, documentation, CI and release, security and rollback), `/speckit-tasks` and `/speckit-analyze`, and fix what the analysis reports. The plan file in `docs/plans` becomes the **envelope**: goal and decisions, backlog items, a link to the spec folder (`--spec-dir`) and milestones taken from the phases of `tasks.md`; the detail is not copied (search and drift detection read the spec folder with it).
+
 Check for drift and save the plan in full:
 ```powershell
 python "<skills_root>/plan-memory/detect_drift.py" --proposal "<proposal summary>"
-python "<skills_root>/plan-memory/save_plan.py" --title "<title>" --file "<plan.md>" --version "<target version>" --milestones "<m1,m2,...>" [--supersedes "<old_plan_id>"]
+python "<skills_root>/plan-memory/save_plan.py" --title "<title>" --file "<plan.md>" --version "<target version>" --milestones "<m1,m2,...>" [--spec-dir specs/NNN-slug] [--supersedes "<old_plan_id>"]
 ```
 End with (in the user's language): *"This is the complete plan. Would you like to adjust anything, or do you approve the start of implementation?"*
 
@@ -113,11 +127,13 @@ End with (in the user's language): *"This is the complete plan. Would you like t
 python "<skills_root>/dev-cycle-protocol/verify_gate.py" --gate 3
 ```
 - Implementation starts **only** after a short, explicit approval from the user ("Approved", "Go ahead"). A reply with a question, a reservation or a new idea goes back to Phase 1.
-- After approval, commit the plan file (`docs(plan): <title>`) on the work branch.
+- With Spec Kit, the gate also checks the spec folder (spec, plan and tasks exist, no open clarification), the branch name and that the constitution is current.
+- After approval, commit the plan file (`docs(plan): <title>`) on the work branch, with the spec folder when Spec Kit is used.
 
 ### 4. 🛠️ Implementation
-- Create the branch from the integration branch (`devops-release` naming: `feat/`, `fix/`, `docs/`, ...).
+- Create the branch from the integration branch (`devops-release` naming: `feat/`, `fix/`, `docs/`, ...). With Spec Kit the branch already exists (`feat/NNN-slug`, from Phase 1).
 - Follow `software-design`: core and domain first, then storage, then the adapters of each affected surface; one responsibility per unit; explicit errors.
+- **Spec Kit**: run `/speckit-implement`, which executes `tasks.md` in order. The protocol's rules still hold: a regression test per bug, never move on with a failing test, the plan's milestones marked as the phases of `tasks.md` complete.
 - Mark plan milestones as they are completed (`plan-memory/check_milestone.py`).
 
 ### 5. 🧪 Automated Tests
@@ -153,21 +169,43 @@ python "<skills_root>/dev-cycle-protocol/verify_gate.py" --gate 3
   ```
 - **The user merges.** The agent never merges into the production branch, never pushes a final tag by hand and never publishes a final release.
 - The merge creates the final tag and release (`devops-release` tag-on-merge). Follow the workflow to the end and verify the published release (`release_status.py verify --tag vX.Y.Z`). If the releases repository is unknown, ask the user.
-- Close the plan milestones and update the plan status (`plan-memory`), and record the session (`session-memory`).
+- Close the plan milestones and update the plan status (`plan-memory`), mark the release released in the roadmap (`roadmap.py set-release vX.Y.Z --status released`), and record the session (`session-memory`).
 - Report: what was released, the verified release link, and anything left open.
 
 ---
 
-## 📥 Backlog
+## 📥 Backlog and Roadmap
 
-The backlog (`backlog.file` in `.dev-cycle.json`, default `docs/BACKLOG.md`) is the first level of planning: bugs, features, improvements and adjustments captured for later, without discovery. The second level is the plan, created when the user promotes items.
+The backlog (`backlog.file` in `.dev-cycle.json`, default `docs/BACKLOG.md`) is the first level of planning: bugs, features, improvements and adjustments captured for later, without discovery, grouped under **epics** (`EPIC-NNN`) when the product is planned as a whole. The **roadmap** (`roadmap.file`, default `docs/ROADMAP.md`) orders the releases and says which items each one delivers; it is the only place that assigns an item to a release. The plan is the next level, created when the user promotes items.
 
 - **Capture**: the user types `/backlog --feature|--improvement|--adjustment|--bug "<text>"` (the [`backlog`](../backlog/SKILL.md) command) or asks to note something for later; the agent runs `plan-memory/backlog.py add` and answers with the new id.
 - **Bugs found during work**: in scope and small, fix them now with a regression test. Otherwise capture them (`backlog.py add --type bug --severity <s> ...`) and report the ids in the phase report and in the pull request description, which links backlog ids instead of carrying loose "to decide" lists.
 - **Triage is the user's**: the agent never promotes, drops or re-prioritizes on its own; it shows the summary at discovery and asks.
 - **Bugs first**: gate 3 blocks a plan that is not a bug plan while an open bug with a blocking severity (`backlog.blocking_severities`, default `critical` and `high`) is outside it. Only when the user explicitly accepts the risk, run the gate with `--accept-open-bugs "<the user's reason>"`; the reason is recorded in the plan.
-- **Closing**: items close as done when their plan is completed, or with `backlog.py close <ID> --ref "PR #N"`; `drop` and `duplicate` record why.
-- **Release**: gate 8 validates the backlog and lists open blocking bugs, which go into the release notes as known limitations.
+- **Closing**: items close as done when their plan is completed, or with `backlog.py close <ID> --ref "PR #N"`; `drop`, `duplicate` and `supersede` (replaced by different, better defined items) record why; the roadmap then asks for the replacements to take the superseded item's place.
+- **Epics** are never promoted: their items are. `roadmap.py assign EPIC-NNN --release vX.Y.Z` adds an epic's open items to a release.
+- **Roadmap**: Phase 0 creates it; discovery starts from `roadmap.py current` (the first release not released); moving items between releases (`assign --move`) is the user's decision, like triage.
+- **Release**: gate 8 validates the backlog and the roadmap, lists open blocking bugs (known limitations in the release notes) and the items of the release still open, which the user moves to the next release or finishes.
+
+---
+
+## 🧩 Spec Kit (optional executor)
+
+[GitHub Spec Kit](https://github.com/github/spec-kit) does the detail of a feature: specification, clarification, technical plan, tasks, consistency analysis and implementation. The protocol stays the guide: it decides when Spec Kit runs, keeps the gates and the user's decisions, and covers what Spec Kit does not (product inception, backlog and roadmap, documentation, release candidates, manual acceptance, releases).
+
+| Phase | Spec Kit |
+|---|---|
+| 0. Inception | `speckit_setup.py init`, then the constitution is generated (`constitution.py generate`) |
+| 1. Discovery | `/speckit-specify` (creates `feat/NNN-slug` and `specs/NNN-slug/spec.md`), `/speckit-clarify` |
+| 2. Plan | `/speckit-plan` (with the protocol sections from the `dev-cycle` preset), `/speckit-tasks`, `/speckit-analyze`; the plan file is the envelope (`--spec-dir`) |
+| 3. Approval | gate 3 checks the spec folder, the branch and the constitution |
+| 4–5. Implementation, tests | `/speckit-implement` under the protocol's rules |
+| 6–10 | not used |
+
+- **When**: only on the full path, for feature plans. The short path and bug plans (reproduction, root cause, regression test) never use it.
+- **Setup** (`.dev-cycle.json` section `speckit`): `speckit_setup.py init` installs Spec Kit in the project at an exact version, through `uvx` (requires [uv](https://docs.astral.sh/uv/)), with the agent integration (`speckit.integration`, default `claude`), the script type (`speckit.script`: `sh`, or `ps` on Windows), branches `feat/NNN-slug` (`speckit.branch_prefix`) and the protocol's preset; commit `.specify/`, the agent command files and `.dev-cycle.json`.
+- **Version pinned per project**: `speckit.version` is an exact release tag; the CLI is always called at that version, never through a global install. A new project takes the latest release when it passes the **compatibility check** (`speckit_setup.py check`: init, version, templates, commands, branch naming, preset, feature resolution, constitution check in a temporary repository), and the protocol's verified version (`speckit-preset/compat.json`) moves forward. When the latest release fails the check, the project pins the last verified version and the agent drafts an adaptation document in the skills repository (`docs/protocol-updates/speckit-vX.Y.Z.md`) and captures it in that repository's backlog. Existing projects change versions only when the user asks (`speckit_setup.py upgrade --to vX.Y.Z`, which runs the check first).
+- **Constitution**: `.specify/memory/constitution.md` is generated from `software-design` (principles and the project's style guide), the protocol's principles, the technical specification (requirements and constraints) and the accepted ADRs, so Spec Kit's Constitution Check enforces the protocol's rules. It is never edited by hand: change the source, run `constitution.py generate` and commit it with the change. Gates 0 and 3 block a stale or hand-edited constitution.
 
 ---
 
@@ -183,20 +221,23 @@ The backlog (`backlog.file` in `.dev-cycle.json`, default `docs/BACKLOG.md`) is 
 
 | Gate | When | Checks |
 |---|---|---|
-| `--gate 3 [--accept-open-bugs R]` | Before asking for plan approval | Working tree state, active plan saved (and committed after approval), bugs first (no open blocking bug outside a non-bug plan, unless the user accepts with reason `R`), secret hygiene |
+| `--gate 0` | Before asking for the product baseline approval (Phase 0) | Product documents (`check_product.py`), architecture style, technical docs, a valid backlog with epics, a valid roadmap with a first release, Spec Kit setup and constitution when enabled, secret hygiene; open questions are listed |
+| `--gate 3 [--accept-open-bugs R]` | Before asking for plan approval | Working tree state, active plan saved (and committed after approval), bugs first (no open blocking bug outside a non-bug plan, unless the user accepts with reason `R`), with Spec Kit the spec folder, branch, setup and constitution, secret hygiene |
 | `--gate rc --run R` | Before declaring a candidate accepted | Every manual test of run `R` is Pass (`quality-assurance/manual_tests.py gate`) |
-| `--gate 8 [--run R]` | Before opening the release pull request | Documentation and manual test files exist; `check_docs.py`, `check_readme.py`, `manual_tests.py validate`, `check_design.py`, `check_ci_policy.py` and `backlog.py validate` have no errors (open blocking bugs are listed for the release notes); version files agree; the candidate run passed (required with `--run` when release candidates are on); secret hygiene; clean working tree |
+| `--gate 8 [--run R]` | Before opening the release pull request | Documentation and manual test files exist; `check_docs.py`, `check_readme.py`, `manual_tests.py validate`, `check_design.py`, `check_ci_policy.py`, `backlog.py validate` and `roadmap.py validate` have no errors (open blocking bugs are listed for the release notes, open items of the release are listed for the user); version files agree; the candidate run passed (required with `--run` when release candidates are on); secret hygiene; clean working tree |
 
 ```powershell
-python "<skills_root>/dev-cycle-protocol/verify_gate.py" --gate 3|rc|8 [--run <rc tag>] [--accept-open-bugs "<reason>"] [--dir <project>]
+python "<skills_root>/dev-cycle-protocol/verify_gate.py" --gate 0|3|rc|8 [--run <rc tag>] [--accept-open-bugs "<reason>"] [--dir <project>]
 python "<skills_root>/dev-cycle-protocol/inspect_project.py" [--json]
 python "<skills_root>/dev-cycle-protocol/project_config.py" [--json] [--validate] [--migrate [--write]]
+python "<skills_root>/dev-cycle-protocol/speckit_setup.py" status|latest|check|init|upgrade [...]
+python "<skills_root>/dev-cycle-protocol/constitution.py" generate|check [--dir <project>]
 ```
 
 ---
 
 ## ⚙️ Project Configuration (`.dev-cycle.json`)
 
-Optional file at the repository root: the project configuration shared by every skill, with one section per skill (`architecture`, `docs`, `tests`, `devops`, `plans`, `backlog`, `architecture_docs`, `drift_rules`) and `test_commands`. Read it through the single loader, which fills defaults, accepts the legacy flat keys of older files and validates the result (`project_config.py`). Scripts of other skills import it from the sibling folder (`from project_config import load_project_config`). The full key reference is in the skills repository README ("Project configuration").
+Optional file at the repository root: the project configuration shared by every skill, with one section per skill (`architecture`, `docs`, `tests`, `devops`, `plans`, `backlog`, `roadmap`, `product`, `speckit`, `architecture_docs`, `drift_rules`) and `test_commands`. Read it through the single loader, which fills defaults, accepts the legacy flat keys of older files and validates the result (`project_config.py`). Scripts of other skills import it from the sibling folder (`from project_config import load_project_config`). The full key reference is in the skills repository README ("Project configuration").
 
 If the file does not exist, `inspect_project.py` and `verify_gate.py` detect the repository's standard stack and use the defaults.

@@ -1,18 +1,20 @@
 """
 Backlog model - plan-memory Skill
 Parses, validates and renders the project backlog (default: docs/BACKLOG.md), the first
-level of planning: bugs, features, improvements and adjustments captured for later.
+level of planning: bugs, features, improvements and adjustments captured for later, grouped
+under epics when the product is planned as a whole.
 Pure functions over text; reading and writing the file is done by backlog.py.
 
 Format (see templates/BACKLOG_TEMPLATE.md):
-    ## Bugs | Features | Improvements | Adjustments | Closed
-    ### <BUG|FEAT|IMP|ADJ>-NNN: <title>
+    ## Bugs | Features | Improvements | Adjustments | Epics | Closed
+    ### <BUG|FEAT|IMP|ADJ|EPIC>-NNN: <title>
     - **Severity**: critical | high | medium | low      (bugs)
     - **Priority**: high | medium | low                 (other types)
-    - **Status**: open | planned | in_progress          (done | dropped | duplicate under Closed)
+    - **Epic**: <EPIC id>                               (optional; not on epics)
+    - **Status**: open | planned | in_progress          (done | dropped | duplicate | superseded under Closed; epics: open)
     - **Found**: <date>[, <version, pull request or test>]
-    - **Plan**: <plan id> | -
-    - **Closed**: <date>, <pull request | reason | duplicate of <ID>>   (Closed only)
+    - **Plan**: <plan id> | -                           (not on epics: an epic is never promoted, its items are)
+    - **Closed**: <date>, <pull request | reason | duplicate of <ID> | superseded by <ID>[, <ID>...]>   (Closed only)
     - **Description**: <text, may continue on indented lines>
 """
 import re
@@ -23,25 +25,28 @@ TYPES = {
     "feature": ("FEAT", "Features"),
     "improvement": ("IMP", "Improvements"),
     "adjustment": ("ADJ", "Adjustments"),
+    "epic": ("EPIC", "Epics"),
 }
 CLOSED_SECTION = "Closed"
 SECTIONS = [heading for _, heading in TYPES.values()] + [CLOSED_SECTION]
+OPTIONAL_SECTIONS = {"Epics"}
 PREFIX_TYPE = {prefix: t for t, (prefix, _) in TYPES.items()}
 SECTION_TYPE = {heading: t for t, (_, heading) in TYPES.items()}
 
 SEVERITIES = ["critical", "high", "medium", "low"]
 PRIORITIES = ["high", "medium", "low"]
 OPEN_STATUSES = ["open", "planned", "in_progress"]
-CLOSED_STATUSES = ["done", "dropped", "duplicate"]
+CLOSED_STATUSES = ["done", "dropped", "duplicate", "superseded"]
 NO_PLAN = "-"
 
 SECTION_RE = re.compile(r"^##\s+(?!#)(.+?)\s*$")
 ITEM_RE = re.compile(r"^###\s+(?!#)(\S+?):\s*(.+?)\s*$")
-ID_RE = re.compile(r"^(BUG|FEAT|IMP|ADJ)-(\d{3,})$")
+ID_RE = re.compile(r"^(BUG|FEAT|IMP|ADJ|EPIC)-(\d{3,})$")
 FIELD_RE = re.compile(r"^-\s+\*\*([A-Za-z ]+)\*\*\s*:\s?(.*)$")
-DUPLICATE_RE = re.compile(r"duplicate of\s+((?:BUG|FEAT|IMP|ADJ)-\d{3,})", re.I)
+DUPLICATE_RE = re.compile(r"duplicate of\s+((?:BUG|FEAT|IMP|ADJ|EPIC)-\d{3,})", re.I)
+SUPERSEDED_RE = re.compile(r"superseded by\s+((?:BUG|FEAT|IMP|ADJ|EPIC)-\d{3,}(?:\s*,\s*(?:BUG|FEAT|IMP|ADJ|EPIC)-\d{3,})*)", re.I)
 
-FIELD_ORDER = ["Severity", "Priority", "Status", "Found", "Plan", "Closed", "Description"]
+FIELD_ORDER = ["Severity", "Priority", "Epic", "Status", "Found", "Plan", "Closed", "Description"]
 
 
 class BacklogError(ValueError):
@@ -87,6 +92,16 @@ class Item:
         return None if value in ("", NO_PLAN) else value
 
     @property
+    def epic(self):
+        value = self.get("Epic")
+        return value.upper() if value and value != NO_PLAN else None
+
+    @property
+    def superseded_by(self) -> list:
+        m = SUPERSEDED_RE.search(self.get("Closed")) if self.status == "superseded" else None
+        return [i.strip().upper() for i in m.group(1).split(",")] if m else []
+
+    @property
     def rank(self) -> str:
         """Severity for bugs, priority for everything else."""
         return self.get("Severity") if self.type == "bug" else self.get("Priority")
@@ -100,7 +115,7 @@ class Item:
         return {
             "id": self.id, "type": self.type, "title": self.title, "section": self.section,
             "severity": self.get("Severity") or None, "priority": self.get("Priority") or None,
-            "status": self.status, "found": self.get("Found"), "plan": self.plan,
+            "epic": self.epic, "status": self.status, "found": self.get("Found"), "plan": self.plan,
             "closed": self.get("Closed") or None, "description": self.get("Description"),
         }
 
@@ -113,6 +128,7 @@ class Backlog:
         self.sections = {name: [] for name in SECTIONS}
         self.section_notes = {name: [] for name in SECTIONS}  # text between a section heading and its first item
         self.unknown_sections = []
+        self.seen_sections = set()
         self.errors = []
         self._parse(lines)
 
@@ -128,6 +144,7 @@ class Backlog:
                 item, field = None, None
                 if name in self.sections:
                     section = name
+                    self.seen_sections.add(name)
                 else:
                     section = None
                     self.unknown_sections.append((i, name))
@@ -186,16 +203,30 @@ class Backlog:
     def blocking_bugs(self, severities: list) -> list:
         return [i for i in self.open_items("bug") if i.get("Severity") in severities]
 
+    def epic_items(self, epic_id: str, include_closed: bool = True) -> list:
+        return [i for i in self.items if i.epic == epic_id.upper() and (include_closed or not i.closed)]
+
+    def _check_epic(self, epic_id: str) -> str:
+        epic = self.find(epic_id)
+        if epic.type != "epic":
+            raise BacklogError(f"{epic.id} is not an epic")
+        if epic.closed:
+            raise BacklogError(f"{epic.id} is closed ({epic.status})")
+        return epic.id
+
     # ------------------------------------------------------------ changes
 
     def add(self, item_type: str, title: str, description: str, found: str,
-            severity: str = None, priority: str = None) -> Item:
+            severity: str = None, priority: str = None, epic: str = None) -> Item:
         if item_type not in TYPES:
             raise BacklogError(f"type '{item_type}' is not one of: {', '.join(TYPES)}")
         if not title.strip():
             raise BacklogError("the title must not be empty")
         if not description.strip():
             raise BacklogError("the description must not be empty")
+        if epic and item_type == "epic":
+            raise BacklogError("an epic cannot belong to another epic")
+        epic_id = self._check_epic(epic) if epic else None
         item = Item(self.next_id(item_type), title.strip(), TYPES[item_type][1])
         if item_type == "bug":
             if severity not in SEVERITIES:
@@ -206,16 +237,21 @@ class Backlog:
             if priority not in PRIORITIES:
                 raise BacklogError(f"priority '{priority}' is not one of: {', '.join(PRIORITIES)}")
             item.set("Priority", priority)
+        if epic_id:
+            item.set("Epic", epic_id)
         item.set("Status", "open")
         item.set("Found", found)
-        item.set("Plan", NO_PLAN)
+        if item_type != "epic":
+            item.set("Plan", NO_PLAN)
         item.set("Description", description.strip())
         self.sections[item.section].append(item)
         return item
 
     def update(self, item_id: str, title: str = None, description: str = None, severity: str = None,
-               priority: str = None, status: str = None, plan: str = None) -> Item:
+               priority: str = None, status: str = None, plan: str = None, epic: str = None) -> Item:
         item = self.find(item_id)
+        if item.type == "epic" and (plan is not None or status not in (None, "open")):
+            raise BacklogError(f"{item.id} is an epic; its items are promoted, not the epic")
         if item.closed and (status or plan):
             raise BacklogError(f"{item.id} is closed; reopen it first")
         if title is not None:
@@ -236,6 +272,13 @@ class Backlog:
             if priority not in PRIORITIES:
                 raise BacklogError(f"priority '{priority}' is not one of: {', '.join(PRIORITIES)}")
             item.set("Priority", priority)
+        if epic is not None:
+            if item.type == "epic":
+                raise BacklogError("an epic cannot belong to another epic")
+            if epic.strip() in ("", NO_PLAN):
+                item.fields.pop("Epic", None)
+            else:
+                item.set("Epic", self._check_epic(epic.strip()))
         if plan is not None:
             item.set("Plan", plan.strip() or NO_PLAN)
         if status is not None:
@@ -261,6 +304,24 @@ class Backlog:
         self.sections[CLOSED_SECTION].append(item)
         return item
 
+    def supersede(self, item_id: str, by: list, on: str) -> Item:
+        """Closes an item replaced by one or more different, better defined items."""
+        item = self.find(item_id)
+        replacements = []
+        for other_id in by:
+            other = self.find(other_id)
+            if other.id == item.id:
+                raise BacklogError("an item cannot supersede itself")
+            if other.closed:
+                raise BacklogError(f"{other.id} is closed ({other.status}); an item is superseded by open items")
+            if (other.type == "epic") != (item.type == "epic"):
+                raise BacklogError(f"{other.id}: an epic is superseded by epics, an item by items")
+            if other.id not in replacements:
+                replacements.append(other.id)
+        if not replacements:
+            raise BacklogError("name the items that replace it (--by)")
+        return self.close(item.id, "superseded", f"{on}, superseded by {', '.join(replacements)}")
+
     def reopen(self, item_id: str) -> Item:
         item = self.find(item_id)
         if not item.closed:
@@ -271,7 +332,8 @@ class Backlog:
         item.section = TYPES[item.type][1]
         item.fields.pop("Closed", None)
         item.set("Status", "open")
-        item.set("Plan", NO_PLAN)
+        if item.type != "epic":
+            item.set("Plan", NO_PLAN)
         self.sections[item.section].append(item)
         return item
 
@@ -287,7 +349,7 @@ class Backlog:
             where = f"line {item.line + 1}: {item.id}" if item.line is not None else item.id
             m = ID_RE.match(item.id)
             if not m:
-                problems.append(f"{where}: id must be BUG-NNN, FEAT-NNN, IMP-NNN or ADJ-NNN")
+                problems.append(f"{where}: id must be BUG-NNN, FEAT-NNN, IMP-NNN, ADJ-NNN or EPIC-NNN")
                 continue
             if item.id in seen:
                 problems.append(f"{where}: duplicate id (first at line {seen[item.id] + 1})")
@@ -295,7 +357,8 @@ class Backlog:
             if not item.closed and SECTION_TYPE.get(item.section) != item.type:
                 problems.append(f"{where}: a {item.type} belongs under '## {TYPES[item.type][1]}'")
 
-            required = ["Status", "Found", "Plan", "Description"] + (["Closed"] if item.closed else [])
+            required = ["Status", "Found"] + ([] if item.type == "epic" else ["Plan"]) + ["Description"] \
+                + (["Closed"] if item.closed else [])
             required.insert(0, "Severity" if item.type == "bug" else "Priority")
             for name in required:
                 if not item.get(name):
@@ -309,6 +372,18 @@ class Backlog:
             if item.status and item.status not in allowed:
                 place = "under '## Closed'" if item.closed else "outside '## Closed'"
                 problems.append(f"{where}: status {place} must be one of: {', '.join(allowed)}")
+            if item.type == "epic":
+                if item.status in ("planned", "in_progress"):
+                    problems.append(f"{where}: an epic is never promoted; its status stays 'open' until it is closed")
+                if item.plan:
+                    problems.append(f"{where}: an epic has no plan; promote its items")
+                if item.epic:
+                    problems.append(f"{where}: an epic cannot belong to another epic")
+            elif item.epic:
+                if item.epic not in ids:
+                    problems.append(f"{where}: epic {item.epic} is not in the backlog")
+                elif not ID_RE.match(item.epic) or ID_RE.match(item.epic).group(1) != "EPIC":
+                    problems.append(f"{where}: {item.epic} is not an epic")
             if item.status in ("planned", "in_progress") and not item.plan:
                 problems.append(f"{where}: a {item.status} item needs its plan id in '- **Plan**:'")
             if item.status == "duplicate":
@@ -317,7 +392,32 @@ class Backlog:
                     problems.append(f"{where}: a duplicate needs 'duplicate of <ID>' in '- **Closed**:'")
                 elif m_dup.group(1).upper() not in ids:
                     problems.append(f"{where}: duplicate of unknown item {m_dup.group(1)}")
+            if item.status == "superseded":
+                if not item.superseded_by:
+                    problems.append(f"{where}: a superseded item needs 'superseded by <ID>[, <ID>...]' in '- **Closed**:'")
+                for other in item.superseded_by:
+                    if other not in ids:
+                        problems.append(f"{where}: superseded by unknown item {other}")
+                    elif other == item.id:
+                        problems.append(f"{where}: an item cannot supersede itself")
         return problems
+
+    def warnings(self) -> list:
+        """Things worth a look that do not make the file invalid."""
+        notes = []
+        for epic in self.open_items("epic"):
+            items = self.epic_items(epic.id)
+            if items and all(i.closed for i in items):
+                notes.append(f"{epic.id}: every item is closed; close the epic (backlog.py close {epic.id})")
+        for item in self.open_items():
+            if item.epic:
+                try:
+                    epic = self.find(item.epic)
+                except BacklogError:
+                    continue
+                if epic.closed:
+                    notes.append(f"{item.id} is open under the closed epic {epic.id}")
+        return notes
 
     # ------------------------------------------------------------ rendering
 
@@ -326,6 +426,8 @@ class Backlog:
         while out and not out[-1].strip():
             out.pop()
         for name in SECTIONS:
+            if name in OPTIONAL_SECTIONS and name not in self.seen_sections and not self.sections[name]:
+                continue   # backlogs written before epics existed stay byte-identical
             out += ["", f"## {name}"]
             notes = list(self.section_notes[name])
             while notes and not notes[0].strip():

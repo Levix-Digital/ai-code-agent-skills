@@ -18,6 +18,7 @@ import argparse
 import copy
 import json
 import os
+import re
 import sys
 
 MANIFEST_NAME = ".dev-cycle.json"
@@ -25,6 +26,7 @@ MANIFEST_NAME = ".dev-cycle.json"
 ARCHITECTURE_STYLES = ["hexagonal", "layered", "mvc", "pipeline", "modular-monolith", "other"]
 BUG_SEVERITIES = ["critical", "high", "medium", "low"]
 OBSERVABILITY_PROFILES = ["cli", "service", "library", "desktop", "none"]
+SPECKIT_SCRIPTS = ["sh", "ps", "py"]
 
 # Sections and their defaults. `None` means "not set": skills fall back to auto-detection.
 DEFAULTS = {
@@ -59,6 +61,21 @@ DEFAULTS = {
     "backlog": {
         "file": "docs/BACKLOG.md",
         "blocking_severities": ["critical", "high"],
+    },
+    "roadmap": {
+        "file": "docs/ROADMAP.md",
+    },
+    "product": {
+        "vision": "docs/product/VISION.md",
+        "tech_spec": "docs/product/TECH_SPEC.md",
+        "max_lines": 400,
+    },
+    "speckit": {
+        "enabled": False,
+        "version": None,
+        "integration": "claude",
+        "script": None,
+        "branch_prefix": "feat",
     },
     # Owned by other skills; passed through untouched.
     "architecture_docs": {},
@@ -162,6 +179,16 @@ class ProjectConfig:
         blocking = self.section("backlog").get("blocking_severities")
         if not isinstance(blocking, list) or any(s not in BUG_SEVERITIES for s in blocking):
             problems.append(f"backlog.blocking_severities must be a list of: {', '.join(BUG_SEVERITIES)}")
+        speckit = self.section("speckit")
+        if not isinstance(speckit.get("enabled"), bool):
+            problems.append("speckit.enabled must be true or false")
+        version = speckit.get("version")
+        if version is not None and not (isinstance(version, str) and re.match(r"^v\d+\.\d+\.\d+$", version)):
+            problems.append(f"speckit.version '{version}' must be an exact release tag like v1.2.3")
+        if speckit.get("enabled") and not version:
+            problems.append("speckit.version must be set when speckit.enabled is true (run speckit_setup.py init)")
+        if speckit.get("script") is not None and speckit.get("script") not in SPECKIT_SCRIPTS:
+            problems.append(f"speckit.script '{speckit.get('script')}' is not one of: {', '.join(SPECKIT_SCRIPTS)}")
         known = set(DEFAULTS) | set(LEGACY_KEYS) | {"doc_files"}
         for key in self.raw:
             if key not in known:
@@ -247,6 +274,9 @@ def main() -> int:
         print(f"   Releases repo      : {devops.get('releases_repo') or 'not set'}")
         backlog = cfg.section("backlog")
         print(f"   Backlog            : {backlog.get('file')} (bugs first: {', '.join(backlog.get('blocking_severities') or []) or 'off'})")
+        speckit = cfg.section("speckit")
+        print(f"   Spec Kit           : " + (f"{speckit.get('version') or 'version not set'} ({speckit.get('integration')}, "
+                                             f"branches {speckit.get('branch_prefix')}/NNN-slug)" if speckit.get("enabled") else "off"))
         if cfg.legacy_keys_used:
             print(f"   ℹ️  Legacy keys in use: {', '.join(cfg.legacy_keys_used)} (run with --migrate --write)")
 

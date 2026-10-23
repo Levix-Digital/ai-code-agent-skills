@@ -1,14 +1,15 @@
 {
   "name": "dev-skills",
   "displayName": "Dev Skills (Levix)",
-  "version": "2.1.0",
-  "description": "Role-based development skills: cycle orchestrator, backlog and /backlog command, architect, QA, DevOps, technical writer, technical docs, shared plans, session memory and folder RAG sync.",
+  "version": "2.2.0",
+  "description": "Role-based development skills: cycle orchestrator with GitHub Spec Kit integration, product inception, backlog with epics and /backlog command, roadmap, architect, QA, DevOps, technical writer, technical docs, shared plans, session memory and folder RAG sync.",
   "author": {
     "name": "Levi Silveira"
   },
   "license": "UNLICENSED",
   "skills": [
     "./dev-cycle-protocol",
+    "./product-inception",
     "./plan-memory",
     "./backlog",
     "./software-design",

@@ -21,8 +21,11 @@ STATUSES = ["draft", "planned", "active", "in_progress", "completed", "supersede
 KINDS = ["feature", "bug"]   # a plan without `kind` is a feature plan
 FIELD_ORDER = [
     "plan_id", "project", "title", "kind", "version", "status", "author", "created_at", "updated_at",
-    "session_id", "tags", "supersedes", "superseded_by", "parent_plan_id", "backlog_items", "milestones", "status_log",
+    "session_id", "tags", "supersedes", "superseded_by", "parent_plan_id", "backlog_items", "spec_dir", "milestones",
+    "status_log",
 ]
+# Spec Kit artifacts of a plan's spec folder (`spec_dir`), in reading order.
+SPEC_FILES = ["spec.md", "plan.md", "research.md", "data-model.md", "quickstart.md", "tasks.md"]
 
 
 def setup_stdout():
@@ -123,6 +126,40 @@ class PlanStore:
     def author(self) -> str:
         return git_user(self.root)
 
+    # ------------------------------------------------------------ Spec Kit artifacts
+
+    def spec_files(self, plan) -> list:
+        """(relative path, text) of the Spec Kit artifacts in the plan's `spec_dir`, in reading order."""
+        if not plan.spec_dir:
+            return []
+        folder = os.path.join(self.root, plan.spec_dir)
+        if not os.path.isdir(folder):
+            return []
+        paths = [os.path.join(folder, n) for n in SPEC_FILES]
+        contracts = os.path.join(folder, "contracts")
+        if os.path.isdir(contracts):
+            paths += [os.path.join(contracts, n) for n in sorted(os.listdir(contracts)) if n.endswith(".md")]
+        out = []
+        for path in paths:
+            if os.path.isfile(path):
+                with open(path, "r", encoding="utf-8") as f:
+                    out.append((os.path.relpath(path, self.root).replace("\\", "/"), f.read()))
+        return out
+
+    def full_text(self, plan) -> str:
+        """The plan body followed by its Spec Kit artifacts: the complete plan, as indexed and checked for drift."""
+        parts = [plan.body]
+        for rel, text in self.spec_files(plan):
+            parts.append(f"\n\n<!-- Spec Kit artifact: {rel} -->\n\n{text}")
+        return "".join(parts)
+
+    def index_sha(self, plan) -> str:
+        h = hashlib.sha256((plan.sha256 or "").encode("utf-8"))
+        for rel, text in self.spec_files(plan):
+            h.update(rel.encode("utf-8"))
+            h.update(text.encode("utf-8"))
+        return h.hexdigest()
+
     # ------------------------------------------------------------ index
 
     def collection(self):
@@ -145,13 +182,14 @@ class PlanStore:
             indexed = {"ids": [], "metadatas": []}
         known = {i: (m or {}).get("sha256") for i, m in zip(indexed["ids"], indexed["metadatas"])}
 
-        changed = [p for p in plans if known.get(p.meta["plan_id"]) != p.sha256]
+        shas = {p.meta["plan_id"]: self.index_sha(p) for p in plans}
+        changed = [p for p in plans if known.get(p.meta["plan_id"]) != shas[p.meta["plan_id"]]]
         stale = [i for i in known if i not in {p.meta["plan_id"] for p in plans}]
         if changed:
             col.upsert(
                 ids=[p.meta["plan_id"] for p in changed],
-                documents=[p.body for p in changed],
-                metadatas=[index_metadata(p, self.project) for p in changed],
+                documents=[self.full_text(p) for p in changed],
+                metadatas=[{**index_metadata(p, self.project), "sha256": shas[p.meta["plan_id"]]} for p in changed],
             )
         if stale:
             col.delete(ids=stale)
@@ -181,6 +219,11 @@ class Plan:
     @property
     def backlog_items(self) -> list:
         return [str(i) for i in self.meta.get("backlog_items") or []]
+
+    @property
+    def spec_dir(self):
+        value = self.meta.get("spec_dir")
+        return str(value).strip().rstrip("/") if value else None
 
     @property
     def done_milestones(self) -> list:

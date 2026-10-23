@@ -15,7 +15,7 @@ How to record a run: in each test of the current run, mark exactly one box of th
   2. Run it a second time.
   3. Open a new agent session and ask "which skills do you have?".
 - **Expected**:
-  - The first run shows `+` or `=` for `dev-cycle-protocol`, `plan-memory`, `backlog`, `software-design`, `architecture-docs`, `quality-assurance`, `devops-release`, `user-docs`, `session-memory` and `folder-sync` in every target folder.
+  - The first run shows `+` or `=` for `dev-cycle-protocol`, `product-inception`, `plan-memory`, `backlog`, `software-design`, `architecture-docs`, `quality-assurance`, `devops-release`, `user-docs`, `session-memory` and `folder-sync` in every target folder.
   - The second run shows only `=`.
   - The agent lists the ten skills.
 - **Result**: [ ] Pass [ ] Fail [ ] Blocked
@@ -81,6 +81,97 @@ How to record a run: in each test of the current run, mark exactly one box of th
   - At discovery the agent shows the backlog and asks what to do; it promotes, drops or re-prioritizes nothing on its own.
   - The feature plan does not pass gate 3 while the high bug is open, unless you accept the risk and the reason is recorded in the plan.
   - Planning the bug runs `backlog.py promote` and produces a bug plan with reproduction, root cause and a regression test; the item becomes `planned`.
+- **Result**: [ ] Pass [ ] Fail [ ] Blocked
+- **Notes**:
+
+### MT-BACKLOG-003: Epics, roadmap and superseded items
+
+- **Covers**: backlog, plan-memory
+- **Prerequisites**: a sample Git project
+- **Steps**:
+  1. Type `/backlog --epic "Photo organization"`, then `/backlog --feature "albums" --in EPIC-001` and `/backlog --feature "sharing" --in EPIC-001`.
+  2. Ask the agent to plan release v0.1.0 "MVP" with the whole epic, then to show the current release.
+  3. Ask the agent to replace the sharing item by two better defined items (share by link, invite relatives).
+  4. Ask the agent to promote the epic.
+- **Expected**:
+  - Step 1 creates `EPIC-001` and two features with `- **Epic**: EPIC-001`.
+  - Step 2 creates `docs/ROADMAP.md` with `v0.1.0: MVP` holding both features; `roadmap.py current` lists them.
+  - Step 3 captures the two new items, closes the old one as `superseded by` them, and the roadmap (`roadmap.py validate`) asks for the new items to take its place in v0.1.0.
+  - Step 4 is refused: the agent offers to promote the epic's items instead.
+- **Result**: [ ] Pass [ ] Fail [ ] Blocked
+- **Notes**:
+
+## Product Inception
+
+### MT-INCEPT-001: A new product from a one-line idea
+
+- **Covers**: product-inception, dev-cycle-protocol, software-design, architecture-docs, plan-memory
+- **Prerequisites**: an empty folder
+- **Steps**:
+  1. Write, in Portuguese: "quero um app onde famílias guardam e compartilham fotos".
+  2. Answer the interview rounds (accept some suggestions, change others, leave one question open).
+  3. Approve each document as it is shown, then run gate 0.
+- **Expected**:
+  - The agent asks at most five questions per round, each with a suggestion, and writes no product code.
+  - `docs/product/VISION.md` and `docs/product/TECH_SPEC.md` are in English, with every section filled; the open question is listed under Open Questions.
+  - The architecture style is set in `.dev-cycle.json`, the technical docs exist with ADRs for the founding decisions.
+  - `docs/BACKLOG.md` has epics with their features; `docs/ROADMAP.md` starts with an MVP release.
+  - `verify_gate.py --gate 0` passes and lists the open question; the agent asks for the baseline approval and, after it, starts Phase 1 with the first items of the MVP.
+- **Result**: [ ] Pass [ ] Fail [ ] Blocked
+- **Notes**:
+
+### MT-INCEPT-002: An existing project adopts a product baseline
+
+- **Covers**: product-inception
+- **Prerequisites**: an existing project with a README and code, without `docs/product`
+- **Steps**:
+  1. Ask the agent to adopt the project into the cycle with a product baseline.
+- **Expected**:
+  - The documents are drafted from the code base; the agent asks only what the code cannot answer (users, business model, metrics, priorities).
+  - Work in progress becomes backlog items; the roadmap starts at the version after the current one.
+- **Result**: [ ] Pass [ ] Fail [ ] Blocked
+- **Notes**:
+
+## Spec Kit
+
+### MT-SPECKIT-001: A feature goes through Spec Kit inside the cycle
+
+- **Covers**: dev-cycle-protocol, plan-memory
+- **Prerequisites**: a sample project with a product baseline, `uv` installed, network access
+- **Steps**:
+  1. Ask the agent to use Spec Kit in the project.
+  2. Ask for the first feature of the current release and answer the clarification questions.
+  3. Approve the plan, let the agent implement it and open the pull request.
+- **Expected**:
+  - Step 1 runs `speckit_setup.py init` (version pinned in `.dev-cycle.json`, preset installed) and `constitution.py generate`.
+  - Step 2 creates the branch `feat/001-...` from `dev`, `specs/001-.../spec.md` without `[NEEDS CLARIFICATION]`, then `plan.md` with the "Dev Cycle Protocol" sections, `tasks.md` and the analysis; the plan in `docs/plans` has `spec_dir` and milestones from the task phases.
+  - Gate 3 reports the Spec Kit artifacts complete and the constitution current.
+  - Implementation follows `tasks.md`; tests, documentation and the pull request follow the protocol as usual.
+- **Result**: [ ] Pass [ ] Fail [ ] Blocked
+- **Notes**:
+
+### MT-SPECKIT-002: An incompatible Spec Kit release falls back to the verified one
+
+- **Covers**: dev-cycle-protocol
+- **Prerequisites**: a release newer than `speckit-preset/compat.json` that fails `speckit_setup.py check` (or a temporary edit making the check fail)
+- **Steps**:
+  1. Run `speckit_setup.py init` in a new project.
+- **Expected**:
+  - The project pins the last verified version.
+  - `docs/protocol-updates/speckit-<version>.md` is drafted in the skills repository with the failed checks, and the agent offers to capture it in that repository's backlog.
+- **Result**: [ ] Pass [ ] Fail [ ] Blocked
+- **Notes**:
+
+### MT-SPECKIT-003: The constitution follows its sources
+
+- **Covers**: dev-cycle-protocol, architecture-docs
+- **Prerequisites**: the project of MT-SPECKIT-001
+- **Steps**:
+  1. Accept a new ADR, then run gate 3 on a new plan.
+  2. Edit `.specify/memory/constitution.md` by hand and run gate 3 again.
+- **Expected**:
+  - Step 1: gate 3 reports the constitution as stale until `constitution.py generate` is run; the regenerated file lists the ADR and its version moves to `1.1.0`.
+  - Step 2: gate 3 reports the hand edit; regenerating replaces it.
 - **Result**: [ ] Pass [ ] Fail [ ] Blocked
 - **Notes**:
 
