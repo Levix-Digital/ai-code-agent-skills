@@ -321,3 +321,61 @@ def test_backlog_cli_epic_options(project, capsys):
     assert ids == ["FEAT-002", "FEAT-005", "FEAT-003"]   # by priority
     assert backlog_cli.main(["summary", "--dir", str(project)]) == 0
     assert "(0/3 items closed)" in capsys.readouterr().out
+
+
+# ---------------------------------------------------------------- superseded items
+
+def test_supersede_closes_with_the_replacements():
+    backlog = Backlog(BACKLOG)
+    a = backlog.add("feature", "Share album by link", "Link", "2026-10-23", epic="EPIC-001")
+    b = backlog.add("feature", "Invite relatives", "Invite", "2026-10-23", epic="EPIC-001")
+    item = backlog.supersede("FEAT-003", [a.id, b.id.lower(), a.id], "2026-10-23")
+    assert item.closed and item.status == "superseded"
+    assert item.get("Closed") == f"2026-10-23, superseded by {a.id}, {b.id}"
+    assert item.superseded_by == [a.id, b.id]
+    assert backlog.validate() == []
+    rendered = Backlog(backlog.render())
+    assert rendered.find("FEAT-003").superseded_by == [a.id, b.id]
+
+
+def test_supersede_rules():
+    backlog = Backlog(BACKLOG)
+    with pytest.raises(BacklogError, match="itself"):
+        backlog.supersede("FEAT-002", ["FEAT-002"], "2026-10-23")
+    with pytest.raises(BacklogError, match="closed"):
+        backlog.supersede("FEAT-002", ["FEAT-001"], "2026-10-23")
+    with pytest.raises(BacklogError, match="an epic is superseded by epics"):
+        backlog.supersede("FEAT-002", ["EPIC-001"], "2026-10-23")
+    with pytest.raises(BacklogError, match="no such"):
+        backlog.supersede("FEAT-002", ["FEAT-099"], "2026-10-23")
+    with pytest.raises(BacklogError, match="--by"):
+        backlog.supersede("FEAT-002", [], "2026-10-23")
+
+
+def test_superseded_validation():
+    closed = """
+### FEAT-009: Old idea
+- **Priority**: low
+- **Status**: superseded
+- **Found**: 2026-10-01
+- **Plan**: -
+- **Closed**: 2026-10-20, superseded by {by}
+- **Description**: Old.
+"""
+    assert Backlog(BACKLOG + closed.format(by="FEAT-004")).validate() == []
+    problems = " | ".join(Backlog(BACKLOG + closed.format(by="FEAT-077")).validate())
+    assert "superseded by unknown item FEAT-077" in problems
+    problems = " | ".join(Backlog(BACKLOG + closed.replace("superseded by {by}", "replaced")).validate())
+    assert "needs 'superseded by <ID>" in problems
+
+
+def test_cli_supersede_and_roadmap_hint(project, capsys):
+    run(project, "add-release", "v0.1.0", "--name", "MVP", "--goal", "First version")
+    run(project, "assign", "FEAT-002", "--release", "v0.1.0")
+    assert backlog_cli.main(["supersede", "FEAT-002", "--by", "FEAT-004", "--dir", str(project)]) == 0
+    assert "closed as superseded by FEAT-004" in capsys.readouterr().out
+    assert run(project, "validate") == 0
+    out = capsys.readouterr().out
+    assert "FEAT-002 in v0.1.0 was superseded; unassign it; assign FEAT-004" in out
+    assert backlog_cli.main(["supersede", "FEAT-003", "--by", "FEAT-004", "--dir", str(project)]) == 0
+    assert "was in plan 'share_albums'" in capsys.readouterr().out
