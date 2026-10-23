@@ -26,6 +26,7 @@ Optional file at a project's root: the project configuration shared by every ski
   "backlog": { "file": "docs/BACKLOG.md", "blocking_severities": ["critical", "high"] },
   "roadmap": { "file": "docs/ROADMAP.md" },
   "product": { "vision": "docs/product/VISION.md", "tech_spec": "docs/product/TECH_SPEC.md", "max_lines": 400 },
+  "review": { "provider": "auto", "host": null, "marker": "[review]", "reply_marker": "[reply]", "auto_review": true, "allowed_terms": [] },
   "speckit": {
     "enabled": true,
     "version": "v1.2.3",
@@ -76,6 +77,10 @@ Optional file at a project's root: the project configuration shared by every ski
 | `roadmap.file` | The roadmap of releases (`plan-memory/roadmap.py`) | `docs/ROADMAP.md` |
 | `product.vision`, `product.tech_spec` | The business document and the technical specification of Phase 0 (`product-inception`) | `docs/product/VISION.md`, `docs/product/TECH_SPEC.md` |
 | `product.max_lines` | Line limit of each product document | `400` |
+| `review.provider`, `review.host` | Platform of the pull requests: `auto` (from the `origin` remote), `github`, `gitlab` or `none`; the host for a self-hosted instance | `auto`, from the remote |
+| `review.marker`, `review.reply_marker` | Prefixes of the protocol's review findings and answers on the platform | `[review]`, `[reply]` |
+| `review.auto_review` | Review every pull request when it opens and after pushes that change code (`code-review`) | `true` |
+| `review.allowed_terms` | Phrases the principle 9 guard accepts because they are the project's subject | `[]` |
 | `speckit.enabled` | Use GitHub Spec Kit for the detail of feature plans (Phases 1, 2 and 4). Written by `/dev-cycle` with the user's answer; an explicit `false` is a decision and is not asked again, while a missing key means it was never asked | `false` |
 | `speckit.version` | Exact Spec Kit release tag the project is pinned to; set by `speckit_setup.py init` and `upgrade` | not set |
 | `speckit.integration` | Coding agent integration passed to `specify init` | `claude` |

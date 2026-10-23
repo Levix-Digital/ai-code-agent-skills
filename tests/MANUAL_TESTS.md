@@ -15,7 +15,7 @@ How to record a run: in each test of the current run, mark exactly one box of th
   2. Run it a second time.
   3. Open a new agent session and ask "which skills do you have?".
 - **Expected**:
-  - The first run shows `+` or `=` for `dev-cycle`, `dev-cycle-protocol`, `product-inception`, `plan-memory`, `backlog`, `software-design`, `architecture-docs`, `quality-assurance`, `devops-release`, `user-docs`, `session-memory` and `folder-sync` in every target folder.
+  - The first run shows `+` or `=` for `dev-cycle`, `dev-cycle-protocol`, `product-inception`, `plan-memory`, `backlog`, `code-review`, `software-design`, `architecture-docs`, `quality-assurance`, `devops-release`, `user-docs`, `session-memory` and `folder-sync` in every target folder.
   - The second run shows only `=`.
   - The agent lists the ten skills.
 - **Result**: [ ] Pass [ ] Fail [ ] Blocked
@@ -151,6 +151,44 @@ How to record a run: in each test of the current run, mark exactly one box of th
 - **Expected**:
   - The installed version is pinned in `.dev-cycle.json`, the preset is installed and branches are `feat/NNN-slug`; existing `specs/` are untouched.
   - The agent shows each principle of the old constitution and proposes where it goes; after the user confirms, the constitution is generated and the old one is kept in `.specify/memory/constitution.hand-written.md`.
+- **Result**: [ ] Pass [ ] Fail [ ] Blocked
+- **Notes**:
+
+## Pull Request Review
+
+### MT-PR-001: A pull request is reviewed and corrected on GitHub
+
+- **Covers**: code-review, dev-cycle-protocol
+- **Prerequisites**: a sample project on GitHub, `gh` logged in, a planned change ready for Phase 7
+- **Steps**:
+  1. Let the agent open the pull request.
+  2. On GitHub, leave a nit, a `suggestion` block and a design question on three lines.
+  3. Tell the agent you commented.
+- **Expected**:
+  - Step 1: the protocol's review appears on the pull request; every line comment starts with **[review]** and a level; the review does not approve; nothing mentions an AI.
+  - Step 3: the nit and the suggestion are fixed in commits on the same branch, answered with **[reply]** and the commit, and resolved; the design question is brought to the user in the chat with options and is not answered on GitHub until the user decides.
+- **Result**: [ ] Pass [ ] Fail [ ] Blocked
+- **Notes**:
+
+### MT-PR-002: The same flow on a GitLab merge request
+
+- **Covers**: code-review, dev-cycle-protocol
+- **Prerequisites**: a sample project on GitLab (gitlab.com or self-hosted), `glab` logged in
+- **Steps**:
+  1. Repeat MT-PR-001 on a merge request.
+- **Expected**:
+  - The review comments sit on the diff lines; replies and resolutions happen on the discussions; a failed pipeline is read and fixed.
+- **Result**: [ ] Pass [ ] Fail [ ] Blocked
+- **Notes**:
+
+### MT-PR-003: A new session starts from the pending pull request
+
+- **Covers**: dev-cycle, dev-cycle-protocol
+- **Prerequisites**: a pull request with an unanswered comment and red CI
+- **Steps**:
+  1. Start a new session and type `/dev-cycle`.
+- **Expected**:
+  - The diagnosis lists the pull request with its pending items right after any plan in progress, and choosing it continues Phase 7.
 - **Result**: [ ] Pass [ ] Fail [ ] Blocked
 - **Notes**:
 

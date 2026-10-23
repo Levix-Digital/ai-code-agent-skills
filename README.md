@@ -11,6 +11,7 @@ Development skills in the open `SKILL.md` format, shared by every coding agent o
 | [`product-inception`](#product-inception) | Product | Phase 0: from an idea to an approved product baseline (vision, architecture, technical specification, backlog with epics, roadmap), or adoption of an existing project |
 | [`plan-memory`](#plan-memory) | Planner | The project backlog with epics (`docs/BACKLOG.md`), the roadmap of releases (`docs/ROADMAP.md`) and complete plans as versioned files (`docs/plans`), shared by the team, with promotion of backlog items, milestones, lineage, search and drift detection |
 | [`backlog`](#backlog) | Command | `/backlog --feature\|--improvement\|--adjustment\|--bug\|--epic "<text>"`: capture an idea or bug for later in one line |
+| [`code-review`](#code-review) | Reviewer | Reviews every pull request on GitHub or GitLab with line comments and levels; the agent fixes small threads and brings large ones to you |
 | [`software-design`](#software-design) | Architect | Design principles, the project's architecture style with a guide per style, design input for plans, review checklist and core dependency check |
 | [`architecture-docs`](#architecture-docs) | Technical documentation | Keeps technical docs current: short index, one living page per subsystem, immutable ADRs, validation and migration of legacy docs |
 | [`quality-assurance`](#quality-assurance) | QA | Automated test strategy and one curated manual test suite with Pass/Fail/Blocked runs per release candidate |
@@ -117,7 +118,7 @@ Agents load a skill on their own when the task matches its `description`; you ca
 0. For a **new product**, start with the idea ("I want an app where families keep their photos"). The agent runs **product inception**: rounds of questions and suggestions, then the vision, the architecture, the technical specification, the backlog of the complete product (epics and their items) and the roadmap from the MVP, each for your approval. An existing project can adopt the same baseline.
 1. In a project, describe what you want ("add an export command"), or start from the next items of the roadmap. The agent stays in **Discovery** until you agree on an approach.
 2. It writes the **plan** with a section from each role and saves it in `docs/plans`. Reply "Approved" to start, or ask for changes.
-3. It implements on a branch, runs the tests, updates the docs and opens a **pull request into `dev`**, following CI until it is green.
+3. It implements on a branch, runs the tests, updates the docs and opens a **pull request into `dev`**, following CI until it is green. The pull request is where review happens: the protocol posts its own review there, and the agent reads your comments on the platform, fixes the small ones and asks you about the large ones ([docs/pull-requests.md](docs/pull-requests.md)).
 4. When you want to release, it cuts a **release candidate** (`vX.Y.Z-rc.N`) and prepares the manual tests to run. Install the candidate and mark each test Pass, Fail or Blocked in `tests/MANUAL_TESTS.md`; failures come back as fixes.
 5. When the candidate passes, it opens the pull request from `dev` into `main`. **Your merge releases it**; the agent follows the release until every asset is published.
 
@@ -210,13 +211,7 @@ Keeps the project's planning in its repository: the **backlog**, where work is c
 
 All scripts are in `<skills_root>/plan-memory/`. They work on the Git repository of the current directory; use `--dir` for another one and `--project` to override the project name.
 
-- **Statuses**: `draft`, `planned`, `active`, `in_progress`, `completed`, `superseded`. Saving with `--supersedes` marks the old plan as `superseded` and links both.
-- **Milestones** record who completed them and when; the first one moves the plan to `in_progress`, the last to `completed`.
-- **The scripts never commit.** Commit the plan after approval (Phase 3) and its milestone/status changes with the work that completes them.
-- **Drift detection** combines similarity to the active plan, milestone coverage and order, and the project's own `drift_rules` (see [`.dev-cycle.json`](#project-configuration-dev-cyclejson)).
-- **Index location**: `~/.ai-code-agent-memory/plan-memory/db` (override with `PLAN_MEMORY_DB`).
-
-Details: [plan-memory/SKILL.md](plan-memory/SKILL.md).
+Plans move through `draft`, `planned`, `active`, `in_progress`, `completed` and `superseded` (`--supersedes` links the old plan); milestones record who completed them and when; the scripts never commit; drift detection combines similarity, milestone coverage and the project's `drift_rules`; the index lives in `~/.ai-code-agent-memory/plan-memory/db` (`PLAN_MEMORY_DB`). Details: [plan-memory/SKILL.md](plan-memory/SKILL.md).
 
 ### backlog
 
@@ -271,6 +266,10 @@ All scripts are in `<skills_root>/architecture-docs/`.
 - **Language**: English by default (`architecture_docs.language`). Mark a line with `<!-- lang-ok -->` to exempt a proper name or quote.
 
 Details: [architecture-docs/SKILL.md](architecture-docs/SKILL.md).
+
+### code-review
+
+The reviewer role. Every pull request (merge request on GitLab) is reviewed on its platform against the plan, design, tests, documentation, security and release safety; each finding is a line comment marked `[review]` with a level (`blocking`, `suggestion`, `nit`) and a concrete fix, and the review never approves. `dev-cycle-protocol/pr_sync.py` reads the pull request through `gh` or `glab` and posts replies, resolutions and reviews; nothing it posts may mention an AI. Details: [code-review/SKILL.md](code-review/SKILL.md), [docs/pull-requests.md](docs/pull-requests.md).
 
 ### software-design
 
