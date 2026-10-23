@@ -41,8 +41,9 @@ Rules:
 - Never commit directly to `main` or `dev`; always a pull request.
 - Delete branches after merge.
 - Commit messages follow Conventional Commits (`feat:`, `fix:`, `docs:`, `refactor:`, `test:`, `ci:`, `chore:`, `perf:`), with a scope when it helps (`fix(storage): ...`). The prefix of the branch matches the main commit type.
-- **Authorship**: commits, tags, plans, pull requests and release notes are authored by the identity configured in the repository's Git (`user.name`, `user.email`). They never name a coding agent or AI tool as author or co-author: no `Co-Authored-By` trailer, session link or "generated with" footer for the agent. When the environment's Git identity is the agent's, set the repository's own identity first (`git config user.name` / `user.email`, as the user says).
+- **Authorship**: commits, tags, plans, pull requests, reviews, review comments and release notes are authored by the identity configured in the repository's Git (`user.name`, `user.email`). They never mention an AI, a model or a coding agent (protocol principle 9): no `Co-Authored-By` trailer, session link or "generated with" footer, and no such mention in titles, descriptions or comments. Where the agent's tool adds attribution on its own, turn it off in the tool's settings (for Claude Code, `attribution` in `.claude/settings.json`; `/dev-cycle` proposes it) and remove any that still appears. When the environment's Git identity is the agent's, set the repository's own identity first (`git config user.name` / `user.email`, as the user says).
 - Branch protection on `main` and `dev`: pull requests required, required status checks green, no force pushes.
+- **Corrections go through the pull request**: once a pull request is open, every correction of that change is a commit on its branch, answered on the thread that asked for it (`dev-cycle-protocol` Phase 7, `pr_sync.py`).
 
 ---
 

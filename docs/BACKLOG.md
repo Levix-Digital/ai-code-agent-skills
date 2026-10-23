@@ -8,6 +8,13 @@ Each item: `### <ID>: <title>` with the fields `Severity` (bugs: critical, high,
 
 ## Features
 
+### FEAT-001: Pull request review on Bitbucket, Azure DevOps and Gitea
+- **Priority**: medium
+- **Status**: open
+- **Found**: 2026-10-23, pull request review plan discussion
+- **Plan**: -
+- **Description**: The pull request review flow starts with GitHub and GitLab. Analyze and add adapters for Bitbucket, Azure DevOps and Gitea (reading threads, comments, suggestions, reviews and CI; replying, resolving and posting reviews).
+
 ## Improvements
 
 ## Adjustments

@@ -3,6 +3,7 @@
 !/.gitignore
 !/.gitattributes
 !/.claude-plugin/
+!/.claude/
 !/README.md
 !/install.ps1
 !/install.sh
@@ -11,6 +12,7 @@
 !/docs/
 !/architecture-docs/
 !/backlog/
+!/code-review/
 !/dev-cycle-protocol/
 !/dev-cycle/
 !/devops-release/

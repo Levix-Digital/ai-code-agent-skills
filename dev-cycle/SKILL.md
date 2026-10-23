@@ -18,8 +18,9 @@ The one command the user needs: the protocol guides the user, not the other way 
 
 1. **Diagnose** (it only reads):
    ```powershell
-   python "<skills_root>/dev-cycle-protocol/onboard.py" diagnose --json [--request "<the text>"]
+   python "<skills_root>/dev-cycle-protocol/onboard.py" diagnose --json [--request "<the text>"] [--agent claude-code]
    ```
+   Pass `--agent claude-code` when the command runs in Claude Code, so the diagnosis can check its attribution settings.
    The result has `mode` (`new` or `existing`), `summary`, `ask`, `options` (in the recommended order) and `recommended`.
 2. **Nothing to decide** (`ask` is false): tell the user the summary in one line and go on:
    - `new`: [`product-inception`](../product-inception/SKILL.md) Phase 0 with the idea;
@@ -30,10 +31,12 @@ The one command the user needs: the protocol guides the user, not the other way 
 | Option (`key`) | What to do |
 |---|---|
 | `plan:<id>` | Resume the plan: `plan-memory/get_plan.py --id <id>`, `check_milestone.py --list`, continue from the next milestone (Phase 4 onwards). |
+| `pr:<number>` | The pull request on its platform: `pr_sync.py status --pr <number>`; then `dev-cycle-protocol` Phase 7: fix and resolve the small threads, bring the large ones to the user, answer questions, fix CI and conflicts. |
 | `rc:<run>` | Release candidate: `quality-assurance/manual_tests.py summary --run <run>` and `failed --run <run>`; failures go back to Phase 4; when all pass, gate rc and then gate 8 (Phases 9 and 10). |
 | `bugs` | Phase 1 with the blocking bugs: show them, the user decides which to promote (`backlog.py promote`). |
 | `git` | Ask, then `git init` with the production branch (`main`). |
 | `config` | `onboard.py propose-config`, show the proposal, let the user change it, write only what they confirm: save it to a file and `onboard.py write-config --file <it>`. The architecture style is chosen later with `software-design` (or in Phase 0). |
+| `attribution` | Ask, then `onboard.py set-attribution`: it turns off the automatic attribution in `.claude/settings.json` (commit trailer, pull request footer, session link); commit the file. Remove any attribution that still appears in a pull request description. |
 | `branch` | Ask, then `onboard.py create-branch`; offer to push it (`git push -u origin <branch>`). |
 | `speckit-ask` | Explain in two sentences what Spec Kit does in the cycle (the detail of features: specification, clarification, plan, tasks, implementation; at a version pinned per project; needs uv) and recommend it for products that will grow, not for small tools. Yes: `speckit_setup.py init`, then `constitution.py generate` (Phase 0 does it when the baseline is not there yet). No: record the decision so it is not asked again: `write-config` with `{"speckit": {"enabled": false}}`. |
 | `speckit-adopt` | `speckit_setup.py adopt`. If `constitution.py check` says the constitution is hand-written: show each of its principles, propose where it goes (constraints and non-functional requirements to `TECH_SPEC.md`, decisions to ADRs, general design rules as a suggestion for `software-design`), apply what the user confirms, then `constitution.py generate --replace-hand-written` (a copy is kept). |

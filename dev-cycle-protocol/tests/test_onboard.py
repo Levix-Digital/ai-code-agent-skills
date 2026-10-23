@@ -246,3 +246,55 @@ def test_explicit_false_is_a_decision(repo):
     assert cfg.section("speckit")["enabled"] is False and not cfg.is_set("speckit", "enabled")
     (repo / ".dev-cycle.json").write_text(json.dumps({"speckit": {"enabled": False}}), encoding="utf-8")
     assert load_project_config(str(repo)).is_set("speckit", "enabled")
+
+
+# ---------------------------------------------------------------- agent attribution
+
+def test_attribution_item_only_for_claude_code_without_settings():
+    keys = lambda s: [o["key"] for o in options(s)]
+    assert "attribution" not in keys(state())
+    assert "attribution" not in keys(state(agent={"name": "codex", "attribution_hidden": False}))
+    assert keys(state(agent={"name": "claude-code", "attribution_hidden": False}))[0] == "attribution"
+    assert "attribution" not in keys(state(agent={"name": "claude-code", "attribution_hidden": True}))
+
+
+def test_set_attribution_keeps_other_settings(repo):
+    (repo / ".claude").mkdir()
+    (repo / ".claude" / "settings.json").write_text(json.dumps({"enabledPlugins": {"x@y": True}}), encoding="utf-8")
+    assert not onboard.attribution_hidden(str(repo))
+    assert onboard.collect(str(repo), "claude-code")["agent"] == {"name": "claude-code", "attribution_hidden": False}
+    assert onboard.main(["set-attribution", "--dir", str(repo)]) == 0
+    data = json.loads((repo / ".claude" / "settings.json").read_text(encoding="utf-8"))
+    assert data == {"enabledPlugins": {"x@y": True}, "attribution": {"commit": "", "pr": "", "sessionUrl": False}}
+    assert onboard.attribution_hidden(str(repo))
+
+
+def test_attribution_false_or_local_settings_count(repo):
+    (repo / ".claude").mkdir()
+    (repo / ".claude" / "settings.local.json").write_text(json.dumps({"attribution": False}), encoding="utf-8")
+    assert onboard.attribution_hidden(str(repo))
+
+
+# ---------------------------------------------------------------- pull requests
+
+def test_open_pull_requests_with_pending_items_come_right_after_plans():
+    s = state(plans=[{"id": "p", "title": "Export", "status": "in_progress", "done": 1, "total": 3}],
+              prs=[{"number": 12, "title": "Sharing", "summary": "PR #12 Sharing: 2 threads waiting (1 for you), CI red",
+                    "needs_action": True, "for_user": 1},
+                   {"number": 13, "title": "Docs", "summary": "PR #13 Docs: waiting for review", "needs_action": False, "for_user": 0}],
+              bugs=["BUG-1 (high) Crash"])
+    rec = recommendation(s, "add search")
+    assert [o["key"] for o in rec["options"]][:3] == ["plan:p", "pr:12", "bugs"]
+    assert rec["options"][1]["title"] == "Work on PR #12 Sharing: 2 threads waiting (1 for you), CI red"
+    assert rec["options"][1]["reason"] == "1 item(s) need your decision"
+    assert "1 pull request waiting" in rec["summary"]
+
+
+def test_a_pending_pull_request_stops_the_straight_path():
+    s = state(prs=[{"number": 12, "title": "x", "summary": "PR #12 x: CI red", "needs_action": True, "for_user": 0}])
+    assert recommendation(s, "add search")["ask"] is True
+
+
+def test_review_provider_none_skips_the_platform(repo):
+    (repo / ".dev-cycle.json").write_text(json.dumps({"review": {"provider": "none"}}), encoding="utf-8")
+    assert onboard.collect(str(repo))["prs"] == []

@@ -31,7 +31,7 @@ The user starts with one command, [`/dev-cycle`](../dev-cycle/SKILL.md) (with a 
 | QA | [`quality-assurance`](../quality-assurance/SKILL.md) | Automated test strategy, curated manual test suite, release candidate runs |
 | DevOps | [`devops-release`](../devops-release/SKILL.md) | Branches, CI, versions, release candidates, releases, observability |
 | Technical writer | [`user-docs`](../user-docs/SKILL.md) | README and end-user documentation |
-| Reviewer | code review (the agent's review capability or a second session) | Independent review of the diff before the pull request |
+| Reviewer | [`code-review`](../code-review/SKILL.md) | The review of every pull request on its platform: line comments with a level, never an approval |
 | Session memory | [`session-memory`](../session-memory/SKILL.md) | The developer's own session context |
 | Spec executor (optional) | [GitHub Spec Kit](https://github.com/github/spec-kit) | The detail of a feature in Phases 1, 2 and 4: `specs/NNN-slug/` (spec, plan, tasks) |
 
@@ -49,6 +49,7 @@ A role is a set of rules and a checker, not a separate person: load the role ski
 6. **Security**: no secrets in Git, backward-compatible data migrations, a rollback path for every release.
 7. **Bugs first**: open `critical` and `high` bugs are planned and fixed before new features, improvements and adjustments, unless the user explicitly accepts the risk; nothing found is lost, it is fixed now or captured in the backlog.
 8. **Follow-through**: the agent follows CI and releases to the end and fixes what fails; the user's decisions (plan approval, candidate acceptance, merge into production) are never taken by the agent.
+9. **No AI attribution, anywhere**: no artifact names an AI, a model or a coding agent as author, co-author, reviewer or source: commits and their trailers, tags, branches, pull and merge requests, reviews and review comments, issues, plans, documentation, release notes and code comments. Everything is authored by the repository's Git identity (`devops-release`). Configuration a project needs for its tools (an agent's settings folder, an integration name) is technical, not attribution.
 
 ---
 
@@ -150,10 +151,21 @@ python "<skills_root>/dev-cycle-protocol/verify_gate.py" --gate 3
 - README: edit the affected sections with `user-docs` and run `check_readme.py` (zero errors).
 - Manual tests: curate the suite for the features touched (`quality-assurance`) and run `manual_tests.py validate`.
 
-### 7. 🔍 Review and Pull Request
-- Review the diff (code review), run the `software-design` checklist and `check_design.py`.
-- Commit with Conventional Commits, push, and open the pull request **into the integration branch**.
-- Follow CI to the end; read the logs of any failure, reproduce, fix and push until every check is green (`devops-release`). The user merges the pull request (or authorizes the agent to merge into the integration branch).
+### 7. 🔍 Pull Request and Review (on the platform)
+- Run the `software-design` checklist and `check_design.py`, commit with Conventional Commits, push, and open the pull request **into the integration branch** (a merge request on GitLab). Its description follows principle 9.
+- **The pull request is the channel from here on**: every correction of the change is a commit on the same branch, and every answer goes to the thread it answers, not only to the chat. Read its state with `pr_sync.py status` (threads waiting, comments, changes requested, CI, conflicts).
+- **The protocol reviews it** (`code-review`): right after it is opened and again after pushes that change code, the review is posted on the platform as line comments marked `[review]` with a level (`blocking`, `suggestion`, `nit`). It never approves.
+- **Every waiting thread, the protocol's findings included, is handled**:
+
+  | Thread (`pr_sync.py status` hint) | What the agent does |
+  |---|---|
+  | `nit`, `suggestion`, `small` | Fix, push, reply on the thread (`pr_sync.py reply`, for example "Fixed in `<sha>`") and resolve it (`pr_sync.py resolve`) |
+  | `large` (design, interface or data change, several files, unclear intent) | Bring it to the user with the context and options; reply on the thread only after the user decides; a deferred ask becomes a backlog item linked in the reply |
+  | `question` | Answer from the code and the plan |
+
+  A thread is resolved only after its fix is pushed or the reviewer agrees. After changes a person requested, ask them to review again (`pr_sync.py request-review`).
+- **When the agent reads the pull request**: where the agent receives pull request events, as they arrive; elsewhere at the start of every session (the `/dev-cycle` diagnosis lists open pull requests with pending items), after every push until CI finishes, when the user says they reviewed or commented, and on a timer where the agent can schedule one.
+- Follow CI to the end; read the logs of any failure, reproduce, fix and push until every check is green (`devops-release`). People approve; the user merges the pull request (or authorizes the agent to merge into the integration branch). Without a supported platform CLI (`gh`, `glab`), review and answers happen in the chat as before.
 
 ### 8. 🧪 Release Candidate (per release)
 - `devops-release`: bump the version in `devops.version_files` (on a branch, through a pull request), then tag `vX.Y.Z-rc.N` from the integration branch, follow the pipeline and verify the pre-release (`release_status.py verify`).
@@ -237,6 +249,7 @@ The backlog (`backlog.file` in `.dev-cycle.json`, default `docs/BACKLOG.md`) is 
 python "<skills_root>/dev-cycle-protocol/verify_gate.py" --gate 0|3|rc|8 [--run <rc tag>] [--accept-open-bugs "<reason>"] [--dir <project>]
 python "<skills_root>/dev-cycle-protocol/inspect_project.py" [--json]
 python "<skills_root>/dev-cycle-protocol/project_config.py" [--json] [--validate] [--migrate [--write]]
+python "<skills_root>/dev-cycle-protocol/pr_sync.py" status|open|reply|resolve|comment|review|request-review [...]
 python "<skills_root>/dev-cycle-protocol/onboard.py" diagnose [--request "<text>"] [--json] | propose-config | write-config --file <f> | create-branch
 python "<skills_root>/dev-cycle-protocol/speckit_setup.py" status|latest|check|init|adopt|upgrade [...]
 python "<skills_root>/dev-cycle-protocol/constitution.py" generate [--replace-hand-written] | check [--dir <project>]

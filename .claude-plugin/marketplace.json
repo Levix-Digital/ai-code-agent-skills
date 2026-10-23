@@ -8,7 +8,7 @@
     {
       "name": "dev-skills",
       "source": "./",
-      "description": "Role-based development skills: the /dev-cycle entry command, cycle orchestrator with GitHub Spec Kit integration, product inception, backlog with epics and /backlog command, roadmap, architect, QA, DevOps, technical writer, technical docs, shared plans, session memory and folder RAG sync."
+      "description": "Role-based development skills: the /dev-cycle entry command, cycle orchestrator with GitHub Spec Kit integration and pull request review on GitHub and GitLab, product inception, backlog with epics and /backlog command, roadmap, reviewer, architect, QA, DevOps, technical writer, technical docs, shared plans, session memory and folder RAG sync."
     }
   ]
 }

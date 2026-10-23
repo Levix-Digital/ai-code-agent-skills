@@ -9,6 +9,7 @@ Usage:
     python onboard.py propose-config [--dir <project>] [--json]
     python onboard.py write-config --file <proposal.json> [--dir <project>]
     python onboard.py create-branch [--dir <project>]      (the integration branch, from the production branch)
+    python onboard.py set-attribution [--dir <project>]    (Claude Code: no automatic attribution, .claude/settings.json)
 """
 import argparse
 import json
@@ -159,6 +160,40 @@ def create_integration_branch(root: str) -> str:
     return f"{integration} (from {base}); push it with: git push -u origin {integration}"
 
 
+CLAUDE_SETTINGS = (os.path.join(".claude", "settings.json"), os.path.join(".claude", "settings.local.json"))
+HIDDEN_ATTRIBUTION = {"commit": "", "pr": "", "sessionUrl": False}
+
+
+def attribution_hidden(root: str) -> bool:
+    """True when the project's Claude Code settings turn off commit and pull request attribution."""
+    for rel in CLAUDE_SETTINGS:
+        try:
+            with open(os.path.join(root, rel), "r", encoding="utf-8") as f:
+                value = json.load(f).get("attribution")
+        except (OSError, ValueError, AttributeError):
+            continue
+        if value is False or (isinstance(value, dict) and value.get("commit") == "" and value.get("pr") == ""
+                              and value.get("sessionUrl") is False):
+            return True
+    return False
+
+
+def set_attribution(root: str) -> str:
+    """Adds the hidden attribution to .claude/settings.json, keeping every other key."""
+    path = os.path.join(root, CLAUDE_SETTINGS[0])
+    data = {}
+    if os.path.isfile(path):
+        with open(path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        if not isinstance(data, dict):
+            raise ValueError(f"{CLAUDE_SETTINGS[0]} must hold a JSON object")
+    data["attribution"] = dict(HIDDEN_ATTRIBUTION)
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w", encoding="utf-8", newline="\n") as f:
+        f.write(json.dumps(data, indent=2, ensure_ascii=False) + "\n")
+    return path
+
+
 def raw_manifest(cfg) -> dict:
     if not cfg.manifest_path:
         return {}
@@ -170,7 +205,7 @@ def raw_manifest(cfg) -> dict:
         return {}
 
 
-def collect(root: str) -> dict:
+def collect(root: str, agent: str = None) -> dict:
     """The state of the repository, as read by the diagnosis (see _onboard.py)."""
     state = {"findings": []}
     is_git = git(root, "rev-parse", "--is-inside-work-tree")[0] == 0
@@ -234,8 +269,34 @@ def collect(root: str) -> dict:
         state["findings"].append(f"plans: could not be read ({e})")
 
     state["rc"] = rc_state(root, cfg)
+    state["prs"] = prs_state(root, cfg, state["findings"])
     state["speckit"] = speckit_state(root, cfg)
+    state["agent"] = {"name": agent, "attribution_hidden": attribution_hidden(root)}
     return state
+
+
+def prs_state(root: str, cfg, findings: list) -> list:
+    """Open pull requests on the platform with what is pending; [] when the platform is not reachable."""
+    if cfg.section("review").get("provider") == "none":
+        return []
+    try:
+        import pr_sync
+        from _pr_model import needs_action, summary_line
+        from _pr_providers import cli_available
+        ctx = pr_sync.Context(root)
+        if not ctx.provider_name or not cli_available(ctx.provider_name):
+            if ctx.provider_name:
+                findings.append(f"pull requests: the {ctx.provider_name} CLI is not installed, so they were not read")
+            return []
+        out = []
+        for pr in ctx.provider().open_pull_requests():
+            p = pr_sync.pending_of(ctx, pr)
+            out.append({"number": pr["number"], "title": pr.get("title"), "summary": summary_line(pr, p),
+                        "needs_action": needs_action(p), "for_user": len([t for t in p["threads"] if t["hint"] == "large"])})
+        return out
+    except Exception as e:
+        findings.append(f"pull requests: could not be read ({e})")
+        return []
 
 
 def rc_state(root: str, cfg):
@@ -307,6 +368,7 @@ def main(argv: list = None) -> int:
     sub = parser.add_subparsers(dest="command", required=True)
     p = sub.add_parser("diagnose", help="Where to start, in the recommended order")
     p.add_argument("--request", default=None, help="The user's text after /dev-cycle (an idea or a request)")
+    p.add_argument("--agent", default=None, help="The coding agent running the command, e.g. claude-code")
     p.add_argument("--dir", default=None)
     p.add_argument("--json", action="store_true")
     p = sub.add_parser("propose-config", help="The .dev-cycle.json keys that can be detected and are missing")
@@ -315,6 +377,8 @@ def main(argv: list = None) -> int:
     p = sub.add_parser("write-config", help="Write confirmed additions to .dev-cycle.json (never overwrites)")
     p.add_argument("--dir", default=None)
     p.add_argument("--file", required=True, help="JSON file with the additions the user confirmed")
+    p = sub.add_parser("set-attribution", help="Claude Code: turn off automatic commit and pull request attribution")
+    p.add_argument("--dir", default=None)
     p = sub.add_parser("create-branch", help="Create the integration branch from the production branch")
     p.add_argument("--dir", default=None)
     args = parser.parse_args(argv)
@@ -343,6 +407,13 @@ def main(argv: list = None) -> int:
             return 1
         print(f"✅ {path}: added {', '.join(added) or 'nothing'}")
         return 0
+    if args.command == "set-attribution":
+        try:
+            print(f"✅ {set_attribution(root)}: commit and pull request attribution off; commit it with the configuration")
+        except (OSError, ValueError) as e:
+            print(f"❌ {e}")
+            return 1
+        return 0
     if args.command == "create-branch":
         try:
             print(f"✅ Created {create_integration_branch(root)}")
@@ -351,7 +422,7 @@ def main(argv: list = None) -> int:
             return 1
         return 0
 
-    state = collect(root)
+    state = collect(root, args.agent)
     rec = recommendation(state, (args.request or "").strip() or None)
     if args.json:
         print(json.dumps({**rec, "state": state}, indent=2, ensure_ascii=False))

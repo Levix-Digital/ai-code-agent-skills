@@ -180,3 +180,16 @@ def test_plan_envelope_reads_its_spec_kit_artifacts(tmp_path):
     before = store.index_sha(plan)
     (root / "specs" / "001-photo-upload" / "tasks.md").write_text("# Tasks\n- [x] T001 Upload\n", encoding="utf-8")
     assert store.index_sha(plan) != before
+
+
+def test_gate_8_blocks_ai_attribution_in_commit_messages(tmp_path):
+    d = make_project(tmp_path)
+    git(tmp_path, "init", "-q", "-b", "main")
+    git(tmp_path, "add", "-A")
+    git(tmp_path, "commit", "-q", "-m", "feat: first\n\nCo-Authored-By: Claude <noreply@anthropic.com>")
+    res = gate(d, "--gate", "8")
+    assert res.returncode == 1 and "AI attribution in 1 place(s)" in res.stdout and "co-author trailer" in res.stdout
+    git(tmp_path, "tag", "v1.0.0")
+    git(tmp_path, "commit", "-q", "--allow-empty", "-m", "fix: second")
+    res = gate(d, "--gate", "8")
+    assert "No AI attribution in the commit messages since v1.0.0" in res.stdout
