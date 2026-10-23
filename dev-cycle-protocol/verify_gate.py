@@ -4,7 +4,8 @@ Automated gate checks of the role-based development cycle:
   gate 0  - before asking for the product baseline approval (Phase 0, product inception)
   gate 3  - before asking for plan approval (bugs first: open blocking bugs hold back other plans)
   gate rc - release candidate acceptance (all manual tests of the run Pass)
-  gate 8  - release readiness, before the release pull request (runs every role's checker)
+  gate 8  - release readiness, before the release gate of the branching model: the release pull
+            request (integration) or the promotion of the candidate (trunk, release-branches)
 Project-agnostic: adapts to the project's .dev-cycle.json and detected stack.
 """
 import argparse
@@ -17,6 +18,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from project_config import load_project_config  # noqa: E402
 
 SKILLS_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(SKILLS_ROOT, "devops-release"))
+from branching import GATES  # noqa: E402
 
 
 def run_cmd(cmd: list, cwd: str) -> tuple:
@@ -374,13 +377,14 @@ def verify_gate_rc(cwd: str, project_name: str, run: str) -> bool:
 
 
 def verify_gate_8(cwd: str, project_name: str, run: str = None) -> bool:
-    """Release readiness gate, before opening the pull request into the production branch."""
+    """Release readiness gate, before the release gate of the branching model."""
     print("=" * 80)
     print(f"🚀 VERIFYING GATE 8 (RELEASE READINESS): {project_name}")
     print("=" * 80)
 
     passed = True
     cfg = load_project_config(cwd)
+    promote = GATES.get(cfg.section("devops").get("branching")) == "promote"
 
     # 1. Documentation and manual tests at the configured paths
     for label, rel in (("UserDoc", cfg.section("docs").get("user_doc")),
@@ -433,6 +437,8 @@ def verify_gate_8(cwd: str, project_name: str, run: str = None) -> bool:
             if code is None:
                 print(f"❌ {out}")
             passed &= ok
+            if promote and not run_cmd(["git", "tag", "-l", run], cwd)[1]:
+                print(f"⚠️ Tag {run} not found locally (git fetch --tags): the promote workflow releases that tag's commit.")
         else:
             print("⚠️ Release candidates are on but no --run was given: acceptance of the candidate not checked.")
 
@@ -500,8 +506,12 @@ def verify_gate_8(cwd: str, project_name: str, run: str = None) -> bool:
         print("✅ Working directory clean for release commit.")
 
     print("-" * 80)
-    print("🟢 GATE 8 STATUS: READY FOR THE RELEASE PULL REQUEST (the user merges)" if passed
-          else "🚨 GATE 8 STATUS: BLOCKED BY COMPLIANCE CHECKS")
+    if not passed:
+        print("🚨 GATE 8 STATUS: BLOCKED BY COMPLIANCE CHECKS")
+    elif promote:
+        print(f"🟢 GATE 8 STATUS: READY FOR THE PROMOTION (the user runs the promote workflow{' for ' + run if run else ''})")
+    else:
+        print("🟢 GATE 8 STATUS: READY FOR THE RELEASE PULL REQUEST (the user merges)")
     print("=" * 80 + "\n")
     return passed
 
