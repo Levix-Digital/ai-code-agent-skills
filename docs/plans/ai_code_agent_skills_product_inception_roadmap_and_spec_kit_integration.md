@@ -6,7 +6,7 @@ version: v2.2.0
 status: in_progress
 author: Levi Silveira
 created_at: '2026-10-23T13:51:22'
-updated_at: '2026-10-23T14:10:37'
+updated_at: '2026-10-23T14:13:56'
 session_id: null
 tags:
 - product-inception
@@ -39,7 +39,9 @@ milestones:
   done_at: '2026-10-23'
   by: Levi Silveira
 - name: M6 Protocol integration
-  done: false
+  done: true
+  done_at: '2026-10-23'
+  by: Levi Silveira
 - name: M7 Documentation and release
   done: false
 status_log:
@@ -62,6 +64,9 @@ status_log:
 - at: '2026-10-23T14:10:37'
   by: Levi Silveira
   note: 'Milestone ''M5 Generated constitution'' completed: constitution.py generate/check from software-design, the style guide, the protocol principles, TECH_SPEC requirements and constraints and accepted ADRs; content and sources hashes detect hand edits and stale files; gates 0 and 3 run it when Spec Kit is enabled; 8 tests'
+- at: '2026-10-23T14:13:56'
+  by: Levi Silveira
+  note: 'Milestone ''M6 Protocol integration'' completed: spec_dir envelopes (save_plan --spec-dir, get_plan prints the artifacts, index and drift read them); gate 3 Spec Kit checks (artifacts, clarifications, branch, setup, constitution); gate 8 roadmap checks; inspect_project shows roadmap, baseline and Spec Kit; protocol SKILL with Phase 0, Backlog and Roadmap, Spec Kit; 7 tests'
 ---
 
 # Product Inception, Roadmap and Spec Kit Integration
