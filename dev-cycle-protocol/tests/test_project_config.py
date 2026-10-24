@@ -169,3 +169,15 @@ def test_branching_defaults_and_validation(tmp_path):
     write_manifest(tmp_path, {"devops": {"branching": "gitflow", "release_branch_prefix": "rel ease"}})
     text = "\n".join(load_project_config(str(tmp_path)).validate())
     assert "devops.branching 'gitflow'" in text and "release_branch_prefix" in text
+
+
+def test_gedo_is_off_by_default_and_validated(tmp_path):
+    cfg = load_project_config(str(tmp_path))
+    assert cfg.section("gedo") == {"enabled": False, "feedback": True, "feedback_dir": "docs/gedo-feedback",
+                                   "repo": "Levix-Digital/gedo"}
+    write_manifest(tmp_path, {"gedo": {"enabled": True}})
+    assert load_project_config(str(tmp_path)).validate() == []
+    write_manifest(tmp_path, {"gedo": {"enabled": "yes", "feedback_dir": "", "repo": "gedo"}})
+    text = "\n".join(load_project_config(str(tmp_path)).validate())
+    assert "gedo.enabled must be true or false" in text
+    assert "gedo.feedback_dir" in text and "gedo.repo 'gedo'" in text
