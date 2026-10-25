@@ -42,6 +42,7 @@ flowchart LR
 <!-- architecture-docs:adrs:start -->
 | ADR | Title | Status | Version | Date |
 |---|---|---|---|---|
+| [ADR-0006](docs/adr/0006-gedo-contract-discovered-by-capability-with-safe-fallback-pe.md) | Gedo contract discovered by capability with safe fallback per check | accepted | v3.1.0 | 2026-10-25 |
 | [ADR-0005](docs/adr/0005-parallel-agents-only-with-gedo.md) | Parallel agents only with Gedo | accepted |  | 2026-10-25 |
 | [ADR-0004](docs/adr/0004-gedo-integration-only-through-its-command-line.md) | Gedo integration only through its command line | accepted |  | 2026-10-25 |
 | [ADR-0003](docs/adr/0003-pull-requests-through-the-platform-clis-on-the-rest-api.md) | Pull requests through the platform CLIs on the REST API | accepted | v2.8.1 | 2026-10-25 |

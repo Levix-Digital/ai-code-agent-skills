@@ -36,3 +36,4 @@ The diagnosis never writes. Competing work comes first, in this order: a plan in
 - [ADR-0002](../adr/0002-modular-monolith-of-skills-by-role.md): modular monolith of skills by role
 - [ADR-0004](../adr/0004-gedo-integration-only-through-its-command-line.md): Gedo only through its command line
 - [ADR-0005](../adr/0005-parallel-agents-only-with-gedo.md): parallel agents only with Gedo
+- [ADR-0006](../adr/0006-gedo-contract-discovered-by-capability-with-safe-fallback-pe.md): Gedo commands discovered by capability, safe fallback per check, `dc.*` labels

@@ -30,7 +30,7 @@ Today each developer copes with prompts, personal checklists and manual review. 
 
 ## Business Model
 
-Open-core. The Dev Cycle Protocol and Gedo are the two free engines and stay separate repositories. The paid Levix platform (Team Cloud as a service, Enterprise self-hosted) joins them in a visual and cloud layer: managed relay, real-time pull request service, synced memory, team dashboard and compliance reports. The protocol stays internal and unlicensed until the open source launch (FEAT-007), then opens under a permissive license. Price per developer is a hypothesis of the platform, not of this product.
+Open-core. The Dev Cycle Protocol and Gedo are the two free engines and stay separate repositories. The paid Levix platform (Team Cloud as a service, Enterprise self-hosted) joins them in a visual and cloud layer: managed relay, real-time pull request service, synced memory, the team dashboard Mission Control and compliance reports. The protocol stays internal and unlicensed until the open source launch (FEAT-007), then opens under a permissive license. Price per developer is a hypothesis of the platform, not of this product.
 
 ## Success Metrics
 

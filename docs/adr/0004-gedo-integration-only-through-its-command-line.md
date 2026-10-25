@@ -8,7 +8,7 @@ subsystems: [cycle, quality-release]
 supersedes: []
 superseded_by: []
 amends: []
-amended_by: []
+amended_by: [6]
 ---
 
 # ADR-0004: Gedo integration only through its command line
