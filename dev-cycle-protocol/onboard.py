@@ -44,10 +44,27 @@ def git(root: str, *args) -> tuple:
         return 127, ""
 
 
-def project_root(start_dir: str = None) -> str:
+def child_repos(folder: str) -> list:
+    """Git repositories directly under a folder that is not one itself (a cloud session that starts in /home/user)."""
+    try:
+        names = sorted(os.listdir(folder))
+    except OSError:
+        return []
+    return [os.path.join(folder, n) for n in names
+            if not n.startswith(".") and os.path.exists(os.path.join(folder, n, ".git"))]
+
+
+def resolve_root(start_dir: str = None) -> tuple:
+    """(root, repositories): the repository holding the start folder; outside a repository, the only repository
+    under it. With more than one, root is None and the user chooses (`--dir`); with none, the folder itself."""
     start = os.path.abspath(start_dir or os.getcwd())
     code, out = git(start, "rev-parse", "--show-toplevel")
-    return os.path.abspath(out) if code == 0 and out else start
+    if code == 0 and out:
+        return os.path.abspath(out), []
+    repos = child_repos(start)
+    if len(repos) == 1:
+        return repos[0], repos
+    return (None if repos else start), repos
 
 
 def has_code(root: str, limit: int = 3) -> bool:
@@ -383,6 +400,18 @@ def render(rec: dict, state: dict) -> str:
     return "\n".join(lines)
 
 
+def choose_repository(start: str, repos: list, as_json: bool) -> int:
+    """The session started above several repositories: nothing is diagnosed until the user picks one."""
+    summary = f"{start} is not a repository and holds {len(repos)}. Which one is the project?"
+    options = [{"kind": "repository", "key": f"dir:{r}", "title": os.path.basename(r), "reason": r} for r in repos]
+    if as_json:
+        print(json.dumps({"mode": "choose", "ask": True, "recommended": None, "options": options, "summary": summary},
+                         indent=2, ensure_ascii=False))
+    else:
+        print("\n".join([f"🧭 {summary}"] + [f"   {n}. {o['title']} — {o['reason']}" for n, o in enumerate(options, 1)]))
+    return 0
+
+
 def main(argv: list = None) -> int:
     if sys.stdout.encoding != "utf-8":
         try:
@@ -408,7 +437,16 @@ def main(argv: list = None) -> int:
     p.add_argument("--dir", default=None)
     args = parser.parse_args(argv)
 
-    root = project_root(args.dir)
+    start = os.path.abspath(args.dir or os.getcwd())
+    root, repos = resolve_root(start)
+    if root is None:
+        if args.command == "diagnose":
+            return choose_repository(start, repos, args.json)
+        print(f"❌ {start} is not a repository and holds {len(repos)}: choose one with --dir")
+        return 1
+    note = f"Using {root}: {start} is not a repository." if repos else None
+    if note and args.command != "diagnose":
+        print(f"ℹ️ {note}")
     if args.command == "propose-config":
         data = propose_config(root)
         if args.json:
@@ -451,7 +489,11 @@ def main(argv: list = None) -> int:
         return 0
 
     state = collect(root, args.agent)
+    if note:
+        state["root"] = {"path": root, "start": start, "note": note}
     rec = recommendation(state, (args.request or "").strip() or None)
+    if note:
+        rec["summary"] = f"{note} {rec['summary']}"
     if args.json:
         print(json.dumps({**rec, "state": state}, indent=2, ensure_ascii=False))
     else:

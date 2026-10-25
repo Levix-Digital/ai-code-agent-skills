@@ -5,7 +5,7 @@ description: Orchestrator of the role-based development cycle - phases from prod
 
 # 🛡️ Development Cycle Protocol (`dev-cycle-protocol` v4)
 
-> **Paths**: `<skills_root>` is the folder that contains this skill (the parent of this `SKILL.md`'s folder). Use the real absolute path when running the commands.
+> **Paths**: `<skills_root>` is the folder that contains this skill (the parent of this `SKILL.md`'s folder). Use the real absolute path when running the commands. Run them from the project's repository (or pass `--dir`): a session that starts above it, such as a cloud session in `/home/user`, would otherwise read the wrong folder.
 
 **`dev-cycle-protocol`** orchestrates software work like a team of specialists. It owns the **phases, the gates and which role runs when**; each role skill owns its own artifact, rules and checker. It is language- and project-agnostic.
 
