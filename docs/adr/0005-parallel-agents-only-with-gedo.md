@@ -28,5 +28,5 @@ The protocol runs agents in parallel only when Gedo is enabled (`gedo.enabled`).
 
 ## Consequences
 
-- Parallel work waits for Gedo v0.4.0 and Gedo support for the project's language (Python in v0.6.0 for this repository).
+- Parallel work waits for Gedo v0.5.0 (local streams and hidden checkouts for agents; v0.4.0 only brings the command line) and Gedo support for the project's language (Python in v0.6.0 for this repository).
 - Role isolation ships earlier, in sequence, with the same benefit for review quality and a longer run time.

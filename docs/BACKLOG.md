@@ -30,7 +30,7 @@ Each item: `### <ID>: <title>` with the fields `Severity` (bugs: critical, high,
 - **Status**: open
 - **Found**: 2026-10-25, 2026-10-25, platform strategy discussion
 - **Plan**: -
-- **Description**: With gedo.enabled only: resolve the milestone DAG of an approved plan and run independent milestones as parallel workers on Gedo virtual streams within their allowed scopes, with a shared build lock for test commands; run the FEAT-002 specialists concurrently. Needs Gedo v0.4.0 and Gedo support for the project's language. No worktree fallback.
+- **Description**: With gedo.enabled only: resolve the milestone DAG of an approved plan and run independent milestones as parallel workers on Gedo virtual streams within their allowed scopes, with a shared build lock for test commands; run the FEAT-002 specialists concurrently. Needs Gedo v0.5.0 (local streams and agent checkouts) and Gedo support for the project's language. No worktree fallback.
 
 ### FEAT-004: Gedo checks in the protocol's scripts
 - **Priority**: high
@@ -38,7 +38,7 @@ Each item: `### <ID>: <title>` with the fields `Severity` (bugs: critical, high,
 - **Status**: open
 - **Found**: 2026-10-25, 2026-10-25, platform strategy discussion
 - **Plan**: -
-- **Description**: When gedo.enabled: gedo doctor and radar in the diagnosis, symbol-level drift from gedo delta in detect_drift, contract checks in check_design, non-overlapping scopes at gate 3 and a clean gedo doctor at gate 8, the delta summary on the pull request. Only through the command line with --json (ADR-0004). Needs Gedo v0.4.0.
+- **Description**: When gedo.enabled: gedo doctor and radar in the diagnosis, symbol-level drift from gedo delta in detect_drift, contract checks in check_design, non-overlapping scopes at gate 3 and a clean gedo doctor at gate 8, the delta summary on the pull request. Only through the command line with --json (ADR-0004). Needs Gedo v0.4.0 for the reads; the scope check at gate 3 needs streams from Gedo v0.5.0.
 
 ### FEAT-005: Role runners for the main coding agents
 - **Priority**: high
