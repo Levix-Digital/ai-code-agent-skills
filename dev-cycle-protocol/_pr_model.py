@@ -10,7 +10,10 @@ A pull request:
      checks:   [{name, status: pending|success|failure|skipped, url}],
      reviews:  [{author, state: approved|changes_requested|commented|dismissed}],
      threads:  [{id, path, line, resolved, outdated, comments: [{id, author, body, created}]}],
+     threads_note: why the resolution of the threads could not be read, or None,
      comments: [{id, author, body, created}]}
+A thread's `resolved` is None when the platform could not say: it counts as open, and a blocking
+finding in that state holds the merge, because it cannot be shown to be resolved.
 """
 import re
 
@@ -120,8 +123,12 @@ def merge_blockers(pr: dict, review_marker: str = REVIEW_MARKER) -> list:
     if pr.get("draft"):
         out.append("the pull request is a draft")
     for t in pr.get("threads") or []:
-        if not t.get("resolved") and is_blocking_finding(t, review_marker):
-            out.append(f"blocking finding still open at {t.get('path')}:{t.get('line')} (thread {t.get('id')})")
+        if t.get("resolved") or not is_blocking_finding(t, review_marker):
+            continue
+        where = f"{t.get('path')}:{t.get('line')} (thread {t.get('id')})"
+        out.append(f"blocking finding still open at {where}" if t.get("resolved") is False else
+                   f"blocking finding at {where}: whether it is resolved could not be read; check it on the "
+                   f"pull request page")
     for author in sorted(a for a, s in latest_reviews(pr).items() if s == "changes_requested"):
         out.append(f"changes requested by {author}")
     for c in pr.get("checks") or []:

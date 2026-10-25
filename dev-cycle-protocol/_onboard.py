@@ -45,6 +45,11 @@ def setup_items(state: dict, new: bool) -> list:
                       "the project has no configuration"))
     elif config.get("problems"):
         items.append(("config", "Fix .dev-cycle.json", "; ".join(config["problems"])))
+    hidden = state.get("ignored") or []
+    if hidden:
+        entries = sorted({i["entry"] for i in hidden})
+        items.append(("gitignore", f"Let the protocol's files into Git: add {', '.join(entries)} to .gitignore",
+                      "ignored now: " + ", ".join(i["path"] for i in hidden)))
     model = branches.get("model") or "integration"
     detected = (branches.get("detected") or {}).get("model")
     # The repository follows another model than the default and nobody chose yet: ask once (D4 of branching models).

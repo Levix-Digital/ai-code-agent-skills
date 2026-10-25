@@ -13,18 +13,18 @@ import pr_sync  # noqa: E402
 from _pr_model import format_post, needs_action, pending, summary_line, triage  # noqa: E402
 from _pr_providers import GitHubProvider, ProviderError, detect_provider, parse_remote  # noqa: E402
 
-GH_VIEW = {
-    "number": 12, "url": "https://github.com/acme/photos/pull/12", "title": "Album sharing", "state": "OPEN",
-    "isDraft": False, "author": {"login": "levi"}, "baseRefName": "dev", "headRefName": "feat/012-sharing",
-    "mergeable": "CONFLICTING",
-    "reviews": [{"author": {"login": "ana"}, "state": "COMMENTED"}, {"author": {"login": "ana"}, "state": "CHANGES_REQUESTED"},
-                {"author": {"login": "bob"}, "state": "APPROVED"}],
-    "comments": [{"id": "IC_1", "author": {"login": "ana"}, "body": "Can we ship this before Friday?", "createdAt": "2026-10-23T10:00:00Z"}],
-    "statusCheckRollup": [
-        {"__typename": "CheckRun", "name": "tests", "status": "COMPLETED", "conclusion": "FAILURE", "detailsUrl": "https://ci/1"},
-        {"__typename": "CheckRun", "name": "lint", "status": "IN_PROGRESS", "conclusion": None, "detailsUrl": "https://ci/2"},
-        {"__typename": "StatusContext", "context": "deploy/preview", "state": "SUCCESS", "targetUrl": "https://ci/3"}],
+GH_PR = {
+    "number": 12, "html_url": "https://github.com/acme/photos/pull/12", "title": "Album sharing", "state": "open",
+    "merged": False, "draft": False, "user": {"login": "levi"}, "base": {"ref": "dev"},
+    "head": {"ref": "feat/012-sharing", "sha": "abc123"}, "mergeable": False, "mergeable_state": "dirty",
 }
+GH_REVIEWS = [{"user": {"login": "ana"}, "state": "COMMENTED"}, {"user": {"login": "ana"}, "state": "CHANGES_REQUESTED"},
+              {"user": {"login": "bob"}, "state": "APPROVED"}]
+GH_COMMENTS = [{"id": 501, "user": {"login": "ana"}, "body": "Can we ship this before Friday?", "created_at": "2026-10-23T10:00:00Z"}]
+GH_CHECK_RUNS = {"total_count": 2, "check_runs": [
+    {"name": "tests", "status": "completed", "conclusion": "failure", "details_url": "https://ci/1"},
+    {"name": "lint", "status": "in_progress", "conclusion": None, "details_url": "https://ci/2"}]}
+GH_STATUS = {"state": "success", "statuses": [{"context": "deploy/preview", "state": "success", "target_url": "https://ci/3"}]}
 
 
 def thread(tid, path, line, comments, resolved=False, outdated=False):
@@ -43,22 +43,51 @@ GH_THREADS = {"data": {"repository": {"pullRequest": {"reviewThreads": {"nodes":
 ]}}}}}
 
 
+def review_comment(cid, path, line, author, body, reply_to=None):
+    return {"id": cid, "in_reply_to_id": reply_to, "path": path, "line": line, "original_line": line,
+            "user": {"login": author}, "body": body, "created_at": f"2026-10-23T1{cid % 10}:00:00Z"}
+
+
+GH_REVIEW_COMMENTS = [
+    review_comment(101, "app/share.py", 10, "ana", "nit: rename `x` to `album_id`"),
+    review_comment(103, "app/api.py", 9, "ana", "Why is this async?"),
+    review_comment(104, "app/api.py", 9, "levi", "**[reply]** It calls the network.", reply_to=103),
+    review_comment(106, "app/db.py", 7, "levi", "**[review]** `blocking` Missing regression test for the empty album."),
+]
+
+
 class FakeGh:
-    def __init__(self, view=GH_VIEW, threads=GH_THREADS, fail=None):
-        self.calls, self.view, self.threads, self.fail = [], view, threads, fail
+    """The GitHub REST API, and GraphQL for the review threads unless `graphql` is False (refused)."""
+
+    def __init__(self, pr=GH_PR, threads=GH_THREADS, reviews=GH_REVIEWS, checks=GH_CHECK_RUNS, graphql=True, fail=None):
+        self.calls, self.pr, self.threads, self.reviews, self.checks = [], pr, threads, reviews, checks
+        self.graphql, self.fail, self.open = graphql, fail, [{"number": 12}]
 
     def __call__(self, cmd, input_text=None):
         self.calls.append((cmd, input_text))
         if self.fail:
             return self.fail
-        joined = " ".join(cmd)
-        if cmd[:3] == ["gh", "pr", "list"]:
-            return 0, json.dumps([{"number": 12}]), ""
-        if cmd[:3] == ["gh", "pr", "view"]:
-            return 0, json.dumps(self.view), ""
-        if "graphql" in joined and "reviewThreads" in joined:
-            return 0, json.dumps(self.threads), ""
-        if cmd[:3] == ["gh", "api", "user"]:
+        assert cmd[:2] == ["gh", "api"], cmd                     # everything goes through the API, never `gh pr`
+        endpoint = cmd[2]
+        if endpoint == "graphql":
+            if not self.graphql:
+                return 1, "", "gh: GitHub GraphQL is not available here (HTTP 403)"
+            return 0, json.dumps(self.threads if "reviewThreads" in " ".join(cmd) else {"data": {}}), ""
+        if endpoint.startswith("repos/acme/photos/pulls?state=open"):
+            return 0, json.dumps(self.open), ""
+        if endpoint == "repos/acme/photos/pulls/12":
+            return 0, json.dumps(self.pr), ""
+        if endpoint.startswith("repos/acme/photos/pulls/12/reviews?"):
+            return 0, json.dumps(self.reviews[:1]) + "\n" + json.dumps(self.reviews[1:]), ""   # two pages
+        if endpoint.startswith("repos/acme/photos/issues/12/comments?"):
+            return 0, json.dumps(GH_COMMENTS), ""
+        if endpoint.startswith("repos/acme/photos/pulls/12/comments?"):
+            return 0, json.dumps(GH_REVIEW_COMMENTS), ""
+        if endpoint.startswith("repos/acme/photos/commits/abc123/check-runs"):
+            return 0, json.dumps(self.checks), ""
+        if endpoint == "repos/acme/photos/commits/abc123/status":
+            return 0, json.dumps(GH_STATUS), ""
+        if endpoint == "user":
             return 0, "levi\n", ""
         return 0, "{}", ""
 
@@ -100,7 +129,7 @@ def test_pending_and_triage():
     assert hints == {"T1": "nit", "T2": "suggestion", "T3": "large", "T6": "small"}   # T4 answered, T5 resolved
     assert p["changes_requested"] == ["ana"] and p["approved"] == ["bob"]
     assert [c["name"] for c in p["failed_checks"]] == ["tests"] and p["conflict"]
-    assert [c["id"] for c in p["comments"]] == ["IC_1"]
+    assert [c["id"] for c in p["comments"]] == [501]
     assert needs_action(p)
     line = summary_line(model(), p)
     assert line.startswith("PR #12 Album sharing: 4 threads waiting (1 for you), 1 comment to answer")
@@ -132,8 +161,9 @@ def test_github_reads_use_the_cli():
     fake = FakeGh()
     pr = GitHubProvider("acme/photos", runner=fake).pull_request(None, "feat/012-sharing")
     assert pr["number"] == 12
-    assert fake.calls[0][0][:6] == ["gh", "pr", "list", "--head", "feat/012-sharing", "--state"]
+    assert fake.calls[0][0][2] == "repos/acme/photos/pulls?state=open&head=acme:feat%2F012-sharing&per_page=1"
     assert any("reviewThreads" in " ".join(c[0]) and "number=12" in c[0] for c in fake.calls)
+    assert pr["threads_note"] is None
 
 
 def test_github_writes():
@@ -150,7 +180,45 @@ def test_github_writes():
     assert "repos/acme/photos/issues/12/comments" in cmds[2] and json.loads(fake.calls[2][1]) == {"body": "**[reply]** Done."}
     review = json.loads(fake.calls[3][1])
     assert review["event"] == "COMMENT" and review["comments"][0] == {"path": "a.py", "line": 3, "side": "RIGHT", "body": "**[review]** `nit` x"}
-    assert cmds[4].startswith("gh pr edit 12 --add-reviewer ana")
+    assert cmds[4].startswith("gh api repos/acme/photos/pulls/12/requested_reviewers --method POST")
+    assert json.loads(fake.calls[4][1]) == {"reviewers": ["ana"]}
+
+
+def test_github_without_graphql_reads_threads_from_rest():
+    """Where GraphQL is refused (some agent environments, proxies or tokens), everything else still
+    works: threads come from the REST review comments, with their resolution unknown."""
+    pr = GitHubProvider("acme/photos", runner=FakeGh(graphql=False)).pull_request(12)
+    assert "GraphQL" in pr["threads_note"]
+    assert [(t["id"], len(t["comments"]), t["resolved"]) for t in pr["threads"]] == [
+        ("101", 1, None), ("103", 2, None), ("106", 1, None)]
+    p = pending(pr)
+    assert [t["id"] for t in p["threads"]] == ["101", "106"]             # 103 answered by the protocol
+    assert p["changes_requested"] == ["ana"] and [c["name"] for c in p["failed_checks"]] == ["tests"]
+    assert "blocking finding at app/db.py:7 (thread 106): whether it is resolved could not be read" in " ".join(merge_blockers(pr))
+
+
+def test_github_without_graphql_replies_through_rest_and_refuses_to_resolve():
+    fake = FakeGh(graphql=False)
+    gh = GitHubProvider("acme/photos", runner=fake)
+    gh.reply(12, "106", "**[reply]** Added in abc.")
+    assert fake.calls[0][0][2] == "repos/acme/photos/pulls/12/comments/106/replies"
+    assert json.loads(fake.calls[0][1]) == {"body": "**[reply]** Added in abc."}
+    with pytest.raises(ProviderError, match="pull request page"):
+        gh.resolve(12, "106")
+
+
+def test_github_enterprise_passes_the_hostname():
+    fake = FakeGh()
+    GitHubProvider("acme/photos", "github.acme.io", fake).pull_request(12)
+    assert all(c[0][-2:] == ["--hostname", "github.acme.io"] for c in fake.calls)
+
+
+def test_cli_gate_merge_without_graphql(repo, capsys):
+    fake = ProtectedGh(protection=(0, json.dumps({"required_conversation_resolution": {"enabled": True}}), ""),
+                       graphql=False, **CLEAN)
+    assert pr_sync.main(["gate-merge", "--dir", str(repo)], runner=fake) == 1
+    out = capsys.readouterr().out
+    assert "could not be read; check it on the pull request page" in out and "ℹ️" in out and "not ready to merge" in out
 
 
 def test_cli_errors_are_explained():
@@ -225,7 +293,7 @@ def test_cli_review_file(repo, tmp_path, capsys):
         {"path": "app/share.py", "line": 12, "level": "nit", "body": "Name it album_id."}]}), encoding="utf-8")
     fake = FakeGh()
     assert pr_sync.main(["review", "--dir", str(repo), "--file", str(review)], runner=fake) == 0
-    payload = json.loads([c for c in fake.calls if "pulls/12/reviews" in " ".join(c[0])][0][1])
+    payload = json.loads([c for c in fake.calls if "pulls/12/reviews" in c[0][2] and "POST" in c[0]][0][1])
     assert payload["body"] == "**[review]** Looks good apart from two points."
     assert [c["body"] for c in payload["comments"]] == ["**[review]** `blocking` No test for an empty album.",
                                                        "**[review]** `nit` Name it album_id."]
@@ -243,7 +311,7 @@ def test_cli_without_a_known_platform(tmp_path, capsys):
 def test_cli_no_open_pull_request(repo, capsys):
     class Empty(FakeGh):
         def __call__(self, cmd, input_text=None):
-            if cmd[:3] == ["gh", "pr", "list"]:
+            if cmd[2].startswith("repos/acme/photos/pulls?state=open"):
                 return 0, "[]", ""
             return super().__call__(cmd, input_text)
     assert pr_sync.main(["status", "--dir", str(repo)], runner=Empty()) == 1
@@ -372,8 +440,8 @@ def test_a_reply_does_not_release_a_blocking_finding():
     assert merge_blockers({**pr, "draft": True, "threads": []}) == ["the pull request is a draft"]
 
 
-CLEAN_VIEW = {**GH_VIEW, "mergeable": "MERGEABLE", "reviews": [], "statusCheckRollup": [
-    {"__typename": "CheckRun", "name": "tests", "status": "COMPLETED", "conclusion": "SUCCESS", "detailsUrl": "https://ci/1"}]}
+CLEAN = {"pr": {**GH_PR, "mergeable": True, "mergeable_state": "clean"}, "reviews": [], "checks": {"check_runs": [
+    {"name": "tests", "status": "completed", "conclusion": "success", "details_url": "https://ci/1"}]}}
 CLEAN_THREADS = {"data": {"repository": {"pullRequest": {"reviewThreads": {"nodes": [
     thread("T6", "app/db.py", 7, [("levi", "**[review]** `blocking` Missing regression test.")], resolved=True)]}}}}}
 
@@ -396,14 +464,14 @@ def test_cli_gate_merge(repo, capsys):
     out = capsys.readouterr().out
     assert "❌ blocking finding still open at app/db.py:7" in out and "not ready to merge" in out
     on = (0, json.dumps({"required_conversation_resolution": {"enabled": True}}), "")
-    fake = ProtectedGh(protection=on, view=CLEAN_VIEW, threads=CLEAN_THREADS)
+    fake = ProtectedGh(protection=on, threads=CLEAN_THREADS, **CLEAN)
     assert pr_sync.main(["gate-merge", "--dir", str(repo)], runner=fake) == 0
     out = capsys.readouterr().out
     assert "✅ ready to merge" in out and "⚠️" not in out and "ℹ️" not in out
 
 
 def test_gate_merge_reports_the_conversation_resolution_setting(repo, capsys):
-    clean = {"view": CLEAN_VIEW, "threads": CLEAN_THREADS}
+    clean = {"threads": CLEAN_THREADS, **CLEAN}
     unprotected = (1, "", "gh: Branch not protected (HTTP 404)")
     assert pr_sync.main(["gate-merge", "--dir", str(repo)], runner=ProtectedGh(protection=unprotected, **clean)) == 0
     assert "does not require resolved conversations" in capsys.readouterr().out

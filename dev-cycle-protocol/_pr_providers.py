@@ -1,7 +1,8 @@
 """
 Pull request providers - dev-cycle-protocol Skill
 Read and write pull requests (merge requests on GitLab) through the platform CLIs, which keep
-the authentication: `gh` for GitHub, `glab` for GitLab. Each provider returns the model of
+the authentication: `gh` for GitHub, `glab` for GitLab, both on the platform's REST API so they
+work the same on a local machine, a self-hosted instance or a cloud agent environment. Each provider returns the model of
 _pr_model.py. Commands go through an injectable runner, so the tests replay recorded responses.
 
     runner(cmd: list, input_text: str = None) -> (exit_code, stdout, stderr)
@@ -34,12 +35,33 @@ mutation($thread: ID!, $body: String!) {
 GITHUB_RESOLVE_MUTATION = """
 mutation($thread: ID!) { resolveReviewThread(input: {threadId: $thread}) { thread { id isResolved } } }
 """
-GITHUB_PR_FIELDS = ("number,url,title,state,isDraft,author,baseRefName,headRefName,mergeable,"
-                    "reviews,comments,statusCheckRollup")
+# Only the GraphQL API says whether a review thread is resolved and lets one be resolved. Everything
+# else goes through the REST API, which works wherever `gh` does (some environments refuse GraphQL).
+GRAPHQL_ONLY = ("whether a review thread is resolved can only be read through GitHub's GraphQL API, "
+                "which was refused here")
 
 
 class ProviderError(RuntimeError):
     """A platform call that failed; the message says what to do (log in, install the CLI, ...)."""
+
+
+def decode_pages(out: str, what: str):
+    """One JSON value, or the pages `--paginate` prints one after the other (arrays are joined)."""
+    decoder, values, i, text = json.JSONDecoder(), [], 0, out.strip()
+    try:
+        while i < len(text):
+            value, end = decoder.raw_decode(text, i)
+            values.append(value)
+            i = end
+            while i < len(text) and text[i].isspace():
+                i += 1
+    except ValueError:
+        raise ProviderError(f"{what} returned no JSON: {out[:200]}")
+    if not values:
+        return None
+    if len(values) == 1:
+        return values[0]
+    return [x for page in values for x in (page if isinstance(page, list) else [page])]
 
 
 def run(cmd: list, input_text: str = None) -> tuple:
@@ -77,25 +99,46 @@ def detect_provider(remote_url: str, configured: str = None, configured_host: st
 
 # ---------------------------------------------------------------- GitHub
 
-def _gh_check(item: dict) -> dict:
-    if item.get("__typename") == "StatusContext" or "context" in item:
-        state = (item.get("state") or "").upper()
-        status = {"SUCCESS": "success", "PENDING": "pending", "EXPECTED": "pending"}.get(state, "failure")
-        return {"name": item.get("context"), "status": status, "url": item.get("targetUrl")}
-    if (item.get("status") or "").upper() != "COMPLETED":
+def _gh_check_run(run_: dict) -> dict:
+    if (run_.get("status") or "").lower() != "completed":
         status = "pending"
     else:
-        conclusion = (item.get("conclusion") or "").upper()
-        status = ("success" if conclusion in ("SUCCESS", "NEUTRAL") else
-                  "skipped" if conclusion == "SKIPPED" else "failure")
-    return {"name": item.get("name"), "status": status, "url": item.get("detailsUrl")}
+        conclusion = (run_.get("conclusion") or "").lower()
+        status = ("success" if conclusion in ("success", "neutral") else
+                  "skipped" if conclusion == "skipped" else "failure")
+    return {"name": run_.get("name"), "status": status, "url": run_.get("details_url") or run_.get("html_url")}
+
+
+def _gh_status(item: dict) -> dict:
+    status = {"success": "success", "pending": "pending"}.get((item.get("state") or "").lower(), "failure")
+    return {"name": item.get("context"), "status": status, "url": item.get("target_url")}
 
 
 def _login(user) -> str:
     return (user or {}).get("login") if isinstance(user, dict) else user
 
 
+def _rest_threads(review_comments: list) -> list:
+    """Review threads from the REST review comments: a thread is a top comment and its replies.
+    REST does not say whether a thread is resolved: `resolved` is None (unknown)."""
+    threads, by_root = [], {}
+    for c in sorted(review_comments or [], key=lambda c: c.get("created_at") or ""):
+        root = c.get("in_reply_to_id")
+        comment = {"id": str(c.get("id")), "author": _login(c.get("user")), "body": c.get("body"),
+                   "created": c.get("created_at")}
+        if root and root in by_root:
+            by_root[root]["comments"].append(comment)
+            continue
+        thread = {"id": str(c.get("id")), "path": c.get("path"), "line": c.get("line") or c.get("original_line"),
+                  "resolved": None, "outdated": c.get("line") is None, "comments": [comment]}
+        by_root[c.get("id")] = thread
+        threads.append(thread)
+    return threads
+
+
 class GitHubProvider:
+    """Pull requests through `gh api` (github.com or GitHub Enterprise Server): the REST API for
+    everything it covers, the GraphQL API only for review thread resolution."""
     name = "github"
     cli = "gh"
 
@@ -118,56 +161,89 @@ class GitHubProvider:
         return out
 
     def _json(self, args: list, input_text: str = None):
-        out = self._gh(args, input_text)
-        try:
-            return json.loads(out) if out.strip() else None
-        except ValueError:
-            raise ProviderError(f"gh {' '.join(args[:3])} returned no JSON: {out[:200]}")
+        return decode_pages(self._gh(args, input_text), f"gh {' '.join(args[:2])}")
+
+    def _rest(self, endpoint: str, method: str = None, payload: dict = None, paginate: bool = False):
+        args = ["api", endpoint]
+        if method:
+            args += ["--method", method]
+        if paginate:
+            args.append("--paginate")
+        if payload is not None:
+            args += ["--input", "-"]
+        return self._json(args, json.dumps(payload) if payload is not None else None)
+
+    def _graphql(self, query: str, **variables):
+        args = ["api", "graphql", "-f", f"query={query}"]
+        for key, value in variables.items():
+            args += ["-F" if isinstance(value, int) else "-f", f"{key}={value}"]
+        return self._json(args)
 
     def me(self) -> str:
         return (self._gh(["api", "user", "--jq", ".login"]) or "").strip()
 
     def pull_request(self, number=None, branch: str = None) -> dict:
         """The pull request `number`, or the open one of `branch`; None when there is none."""
-        repo = ["--repo", f"{self.host}/{self.path}" if self.host != "github.com" else self.path]
+        base = f"repos/{self.path}/pulls"
         if number is None:
-            found = self._json(["pr", "list", "--head", branch, "--state", "open", "--json", "number"] + repo) or []
+            head = urllib.parse.quote(f"{self.owner}:{branch or ''}", safe=":")
+            found = self._rest(f"{base}?state=open&head={head}&per_page=1") or []
             if not found:
                 return None
             number = found[0]["number"]
-        data = self._json(["pr", "view", str(number), "--json", GITHUB_PR_FIELDS] + repo)
-        threads = self._json(["api", "graphql", "-f", f"query={GITHUB_THREADS_QUERY}", "-F", f"owner={self.owner}",
-                              "-F", f"repo={self.repo}", "-F", f"number={int(number)}"])
-        return self._model(data, threads)
+        number = int(number)
+        data = self._rest(f"{base}/{number}") or {}
+        sha = (data.get("head") or {}).get("sha")
+        reviews = self._rest(f"{base}/{number}/reviews?per_page=100", paginate=True) or []
+        comments = self._rest(f"repos/{self.path}/issues/{number}/comments?per_page=100", paginate=True) or []
+        checks = []
+        if sha:
+            pages = self._rest(f"repos/{self.path}/commits/{sha}/check-runs?per_page=100", paginate=True) or []
+            for page in pages if isinstance(pages, list) else [pages]:
+                checks += [_gh_check_run(r) for r in page.get("check_runs") or []]
+            status = self._rest(f"repos/{self.path}/commits/{sha}/status") or {}
+            checks += [_gh_status(s) for s in status.get("statuses") or []]
+        pr = self._model(data, reviews, comments, checks)
+        pr["threads"], pr["threads_note"] = self._threads(number)
+        return pr
 
-    def _model(self, data: dict, threads: dict) -> dict:
-        nodes = (((((threads or {}).get("data") or {}).get("repository") or {}).get("pullRequest") or {})
+    def _threads(self, number: int) -> tuple:
+        """(threads, note): from GraphQL with their resolution; where GraphQL is refused, from the
+        REST review comments with the resolution unknown and a note that says so."""
+        try:
+            data = self._graphql(GITHUB_THREADS_QUERY, owner=self.owner, repo=self.repo, number=number)
+        except ProviderError as e:
+            rest = self._rest(f"repos/{self.path}/pulls/{number}/comments?per_page=100", paginate=True) or []
+            return _rest_threads(rest), f"{GRAPHQL_ONLY} ({str(e)[:160]})"
+        nodes = (((((data or {}).get("data") or {}).get("repository") or {}).get("pullRequest") or {})
                  .get("reviewThreads") or {}).get("nodes") or []
-        state = (data.get("state") or "").lower()
-        mergeable = {"MERGEABLE": "clean", "CONFLICTING": "conflict"}.get(data.get("mergeable"), "unknown")
+        return [{"id": t.get("id"), "path": t.get("path"), "line": t.get("line") or t.get("originalLine"),
+                 "resolved": bool(t.get("isResolved")), "outdated": bool(t.get("isOutdated")),
+                 "comments": [{"id": c.get("id"), "author": _login(c.get("author")), "body": c.get("body"),
+                               "created": c.get("createdAt")} for c in (t.get("comments") or {}).get("nodes") or []]}
+                for t in nodes], None
+
+    def _model(self, data: dict, reviews: list, comments: list, checks: list) -> dict:
+        state = "merged" if data.get("merged") or data.get("merged_at") else (data.get("state") or "").lower()
+        mergeable = ("conflict" if data.get("mergeable_state") == "dirty" or data.get("mergeable") is False else
+                     "clean" if data.get("mergeable") else "unknown")
         review_state = {"APPROVED": "approved", "CHANGES_REQUESTED": "changes_requested",
                         "COMMENTED": "commented", "DISMISSED": "dismissed"}
         return {
-            "provider": "github", "number": data.get("number"), "url": data.get("url"), "title": data.get("title"),
-            "state": "open" if state == "open" else state, "draft": bool(data.get("isDraft")),
-            "author": _login(data.get("author")), "base": data.get("baseRefName"), "head": data.get("headRefName"),
-            "mergeable": mergeable,
-            "checks": [_gh_check(c) for c in data.get("statusCheckRollup") or []],
-            "reviews": [{"author": _login(r.get("author")), "state": review_state.get(r.get("state"), "commented")}
-                        for r in data.get("reviews") or []],
-            "threads": [{"id": t.get("id"), "path": t.get("path"), "line": t.get("line") or t.get("originalLine"),
-                         "resolved": bool(t.get("isResolved")), "outdated": bool(t.get("isOutdated")),
-                         "comments": [{"id": c.get("id"), "author": _login(c.get("author")), "body": c.get("body"),
-                                       "created": c.get("createdAt")} for c in (t.get("comments") or {}).get("nodes") or []]}
-                        for t in nodes],
-            "comments": [{"id": c.get("id"), "author": _login(c.get("author")), "body": c.get("body"),
-                          "created": c.get("createdAt")} for c in data.get("comments") or []],
+            "provider": "github", "number": data.get("number"), "url": data.get("html_url"), "title": data.get("title"),
+            "state": state, "draft": bool(data.get("draft")),
+            "author": _login(data.get("user")), "base": (data.get("base") or {}).get("ref"),
+            "head": (data.get("head") or {}).get("ref"), "mergeable": mergeable, "checks": checks,
+            "reviews": [{"author": _login(r.get("user")), "state": review_state.get(r.get("state"), "commented")}
+                        for r in reviews],
+            "threads": [],
+            "comments": [{"id": c.get("id"), "author": _login(c.get("user")), "body": c.get("body"),
+                          "created": c.get("created_at")} for c in comments],
         }
 
     def open_pull_requests(self, limit: int = 10) -> list:
-        repo = ["--repo", f"{self.host}/{self.path}" if self.host != "github.com" else self.path]
-        found = self._json(["pr", "list", "--state", "open", "--limit", str(limit), "--json", "number"] + repo) or []
-        return [self.pull_request(item["number"]) for item in found]
+        found = self._rest(f"repos/{self.path}/pulls?state=open&per_page={int(limit)}") or []
+        return [self.pull_request(item["number"]) for item in found[:limit]]
 
     resolution_setting = "Settings > Branches (or Rules): Require conversation resolution before merging"
 
@@ -190,26 +266,29 @@ class GitHubProvider:
     # ------------------------------------------------------------ writes
 
     def reply(self, number: int, thread_id: str, body: str):
-        self._json(["api", "graphql", "-f", f"query={GITHUB_REPLY_MUTATION}", "-F", f"thread={thread_id}",
-                    "-f", f"body={body}"])
+        if str(thread_id).isdigit():
+            self._rest(f"repos/{self.path}/pulls/{int(number)}/comments/{thread_id}/replies", "POST", {"body": body})
+            return
+        self._graphql(GITHUB_REPLY_MUTATION, thread=thread_id, body=body)
 
     def resolve(self, number: int, thread_id: str):
-        self._json(["api", "graphql", "-f", f"query={GITHUB_RESOLVE_MUTATION}", "-F", f"thread={thread_id}"])
+        if str(thread_id).isdigit():
+            raise ProviderError("resolving a review thread needs GitHub's GraphQL API, which was refused here: "
+                                "resolve it on the pull request page (or with another GitHub tool you have); "
+                                "the merge gate keeps blocking findings open until it can read them as resolved")
+        self._graphql(GITHUB_RESOLVE_MUTATION, thread=thread_id)
 
     def comment(self, number: int, body: str):
-        self._json(["api", f"repos/{self.path}/issues/{int(number)}/comments", "--method", "POST", "--input", "-"],
-                   json.dumps({"body": body}))
+        self._rest(f"repos/{self.path}/issues/{int(number)}/comments", "POST", {"body": body})
 
     def review(self, number: int, body: str, comments: list):
         payload = {"event": "COMMENT", "body": body,
                    "comments": [{"path": c["path"], "line": int(c["line"]), "side": "RIGHT", "body": c["body"]}
                                 for c in comments]}
-        self._json(["api", f"repos/{self.path}/pulls/{int(number)}/reviews", "--method", "POST", "--input", "-"],
-                   json.dumps(payload))
+        self._rest(f"repos/{self.path}/pulls/{int(number)}/reviews", "POST", payload)
 
     def request_review(self, number: int, reviewers: list):
-        repo = ["--repo", f"{self.host}/{self.path}" if self.host != "github.com" else self.path]
-        self._gh(["pr", "edit", str(number), "--add-reviewer", ",".join(reviewers)] + repo)
+        self._rest(f"repos/{self.path}/pulls/{int(number)}/requested_reviewers", "POST", {"reviewers": list(reviewers)})
 
 
 # ---------------------------------------------------------------- GitLab
@@ -248,22 +327,7 @@ class GitLabProvider:
 
     @staticmethod
     def _decode(endpoint: str, out: str):
-        """One JSON value, or the pages `--paginate` prints one after the other (arrays are joined)."""
-        decoder, values, i, text = json.JSONDecoder(), [], 0, out.strip()
-        try:
-            while i < len(text):
-                value, end = decoder.raw_decode(text, i)
-                values.append(value)
-                i = end
-                while i < len(text) and text[i].isspace():
-                    i += 1
-        except ValueError:
-            raise ProviderError(f"glab api {endpoint} returned no JSON: {out[:200]}")
-        if not values:
-            return None
-        if len(values) == 1:
-            return values[0]
-        return [x for page in values for x in (page if isinstance(page, list) else [page])]
+        return decode_pages(out, f"glab api {endpoint}")
 
     def me(self) -> str:
         return (self._api("user") or {}).get("username", "")
