@@ -1,0 +1,29 @@
+{
+  "project_name": "ai-code-agent-skills",
+  "test_commands": [
+    "python -m pytest"
+  ],
+  "docs": {
+    "user_doc": "README.md"
+  },
+  "tests": {
+    "manual_tests": "tests/MANUAL_TESTS.md"
+  },
+  "devops": {
+    "branching": "trunk",
+    "production_branch": "main",
+    "version_files": [
+      ".claude-plugin/plugin.json"
+    ]
+  },
+  "speckit": {
+    "enabled": true,
+    "version": "v1.2.3",
+    "integration": "claude",
+    "script": "sh",
+    "branch_prefix": "feat"
+  },
+  "architecture": {
+    "style": "modular-monolith"
+  }
+}
