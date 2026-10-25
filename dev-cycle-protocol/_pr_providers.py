@@ -169,6 +169,24 @@ class GitHubProvider:
         found = self._json(["pr", "list", "--state", "open", "--limit", str(limit), "--json", "number"] + repo) or []
         return [self.pull_request(item["number"]) for item in found]
 
+    resolution_setting = "Settings > Branches (or Rules): Require conversation resolution before merging"
+
+    def requires_thread_resolution(self, branch: str):
+        """Whether merging into `branch` needs every conversation resolved (a ruleset or the classic
+        branch protection); None when the platform does not let it be read."""
+        try:
+            rules = self._json(["api", f"repos/{self.path}/rules/branches/{branch}"]) or []
+        except ProviderError:
+            rules = None
+        if any(r.get("type") == "pull_request" and (r.get("parameters") or {}).get("required_review_thread_resolution")
+               for r in rules or []):
+            return True
+        try:
+            protection = self._json(["api", f"repos/{self.path}/branches/{branch}/protection"]) or {}
+        except ProviderError as e:
+            return False if rules is not None and "Branch not protected" in str(e) else None
+        return bool((protection.get("required_conversation_resolution") or {}).get("enabled"))
+
     # ------------------------------------------------------------ writes
 
     def reply(self, number: int, thread_id: str, body: str):
@@ -300,6 +318,17 @@ class GitLabProvider:
     def open_pull_requests(self, limit: int = 10) -> list:
         found = self._api(f"{self.project}/merge_requests?state=opened&per_page={int(limit)}") or []
         return [self.pull_request(item["iid"]) for item in found[:limit]]
+
+    resolution_setting = "Settings > Merge requests: All threads must be resolved"
+
+    def requires_thread_resolution(self, branch: str):
+        """Whether merge requests need every thread resolved (a project setting on GitLab); None when
+        it cannot be read."""
+        try:
+            value = (self._api(self.project) or {}).get("only_allow_merge_if_all_discussions_are_resolved")
+        except ProviderError:
+            return None
+        return None if value is None else bool(value)
 
     # ------------------------------------------------------------ writes
 

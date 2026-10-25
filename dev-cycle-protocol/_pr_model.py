@@ -52,6 +52,12 @@ def thread_waiting(thread: dict, reply_marker: str = REPLY_MARKER) -> bool:
     return bool(last) and not marked(last.get("body"), reply_marker)
 
 
+def is_blocking_finding(thread: dict, review_marker: str = REVIEW_MARKER) -> bool:
+    """A thread opened by the protocol's review with the level `blocking`."""
+    first = (thread.get("comments") or [{}])[0].get("body") or ""
+    return marked(first, review_marker) and "`blocking`" in first.split("\n", 1)[0]
+
+
 def triage(thread: dict, review_marker: str = REVIEW_MARKER) -> str:
     """A hint for the agent: suggestion | nit | question | large | small. The agent decides; a large
     ask always goes to the user."""
@@ -60,7 +66,7 @@ def triage(thread: dict, review_marker: str = REVIEW_MARKER) -> str:
     text = last if len(thread.get("comments") or []) > 1 else first
     if SUGGESTION_RE.search(text):
         return "suggestion"
-    if marked(first, review_marker) and "`blocking`" in first.split("\n", 1)[0]:
+    if is_blocking_finding(thread, review_marker):
         return "large" if LARGE_WORDS.search(first) else "small"
     if NIT_RE.search(text):
         return "nit"
@@ -103,6 +109,29 @@ def pending(pr: dict, reply_marker: str = REPLY_MARKER, review_marker: str = REV
         "conflict": pr.get("mergeable") == "conflict",
         "draft": bool(pr.get("draft")),
     }
+
+
+def merge_blockers(pr: dict, review_marker: str = REVIEW_MARKER) -> list:
+    """Why the pull request cannot be merged yet; empty when it can. A blocking finding of the
+    protocol's review holds the merge until its thread is resolved, a reply alone does not release it."""
+    out = []
+    if pr.get("state") != "open":
+        out.append(f"the pull request is {pr.get('state')}")
+    if pr.get("draft"):
+        out.append("the pull request is a draft")
+    for t in pr.get("threads") or []:
+        if not t.get("resolved") and is_blocking_finding(t, review_marker):
+            out.append(f"blocking finding still open at {t.get('path')}:{t.get('line')} (thread {t.get('id')})")
+    for author in sorted(a for a, s in latest_reviews(pr).items() if s == "changes_requested"):
+        out.append(f"changes requested by {author}")
+    for c in pr.get("checks") or []:
+        if c.get("status") == "failure":
+            out.append(f"check {c.get('name')} failed")
+        elif c.get("status") == "pending":
+            out.append(f"check {c.get('name')} still running")
+    if pr.get("mergeable") == "conflict":
+        out.append("merge conflict with the base branch")
+    return out
 
 
 def needs_action(p: dict) -> bool:

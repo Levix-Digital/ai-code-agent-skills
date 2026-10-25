@@ -61,7 +61,7 @@ Rules:
 - Delete branches after merge.
 - Commit messages follow Conventional Commits (`feat:`, `fix:`, `docs:`, `refactor:`, `test:`, `ci:`, `chore:`, `perf:`), with a scope when it helps (`fix(storage): ...`). The prefix of the branch matches the main commit type.
 - **Authorship**: commits, tags, plans, pull requests, reviews, review comments and release notes are authored by the identity configured in the repository's Git (`user.name`, `user.email`). They never mention an AI, a model or a coding agent (protocol principle 9): no `Co-Authored-By` trailer, session link or "generated with" footer, and no such mention in titles, descriptions or comments. Where the agent's tool adds attribution on its own, turn it off in the tool's settings (for Claude Code, `attribution` in `.claude/settings.json`; `/dev-cycle` proposes it) and remove any that still appears. When the environment's Git identity is the agent's, set the repository's own identity first (`git config user.name` / `user.email`, as the user says).
-- Branch protection on every long-lived branch (`release/*` included): pull requests required, required status checks green, no force pushes.
+- Branch protection on every long-lived branch (`release/*` included): pull requests required, required status checks green (tests and lint), conversations resolved before merging (GitHub: "Require conversation resolution before merging"; GitLab: Settings > Merge requests, "All threads must be resolved"), no force pushes. Required approvals stay off by default: the agent works with the user's identity, and the platform does not let the author approve their own pull request; a team turns them on when other people review. `pr_sync.py gate-merge` warns when conversation resolution is off.
 - **Corrections go through the pull request**: once a pull request is open, every correction of that change is a commit on its branch, answered on the thread that asked for it (`dev-cycle-protocol` Phase 7, `pr_sync.py`).
 
 ---
@@ -69,7 +69,7 @@ Rules:
 ## ✅ Pull Request CI Policy
 
 - The test workflow runs on **pull requests into every branch that receives them** (`integration`: `dev` and `main`; `trunk`: `main`; `release-branches`: `main` and `release/**`), and on pushes to the branches work is merged into. A pull request without checks cannot be merged.
-- The checks run the project's `test_commands` on every supported platform.
+- The checks run the project's `test_commands` on every supported platform, and the stack's linters and static analysis once (the `lint` job of `templates/ci.yml`: for example `cargo fmt --check` and `cargo clippy -- -D warnings`, `ruff check`, `eslint`, `golangci-lint`). `check_ci_policy.py` warns when no workflow lints the pull requests.
 - Optional external components that tests need (runtimes, models) are provisioned in CI so those tests are mandatory there.
 - Concurrency: cancel superseded runs of the same pull request; a cancelled run on a push to a long-lived branch is fine when a newer push contains it.
 - **CI failures are fixed, never ignored**: read the failed logs (`gh run view <id> --log-failed`), reproduce locally, fix on the branch, push, and follow the new run to green. Re-running without a change is only for a demonstrated infrastructure flake, and the flake is reported.
@@ -170,4 +170,4 @@ For every change, the plan answers: what new failure modes exist, how an operato
 | `release_status.py next-rc` | Next `vX.Y.Z-rc.N` for the current version; fails when the final `vX.Y.Z` tag already exists (bump first). |
 | `release_status.py verify --tag T [--asset PATTERN ...]` | Checks with `gh` that the release exists in `devops.releases_repo`, is a pre-release exactly when the tag has `-rc`, has assets, and has every asset pattern given. |
 
-Workflow templates in [`templates/`](templates/): `ci.yml` (pull request CI, with the branch lists of each model), `release.yml` (build and publish, pre-release for `-rc` tags), `tag-on-merge.yml` (`integration`: final tag and release when the production branch receives the merge) and `promote.yml` (`trunk`, `release-branches`: final tag on the accepted candidate's commit and release, run by the user).
+Workflow templates in [`templates/`](templates/): `ci.yml` (pull request CI: lint and tests, with the branch lists of each model), `release.yml` (build and publish, pre-release for `-rc` tags), `tag-on-merge.yml` (`integration`: final tag and release when the production branch receives the merge) and `promote.yml` (`trunk`, `release-branches`: final tag on the accepted candidate's commit and release, run by the user).

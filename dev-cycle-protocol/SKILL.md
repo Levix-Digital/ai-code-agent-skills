@@ -174,7 +174,9 @@ python "<skills_root>/dev-cycle-protocol/verify_gate.py" --gate 3
 
   A thread is resolved only after its fix is pushed or the reviewer agrees. After changes a person requested, ask them to review again (`pr_sync.py request-review`).
 - **When the agent reads the pull request**: where the agent receives pull request events, as they arrive; elsewhere at the start of every session (the `/dev-cycle` diagnosis lists open pull requests with pending items), after every push until CI finishes, when the user says they reviewed or commented, and on a timer where the agent can schedule one.
-- Follow CI to the end; read the logs of any failure, reproduce, fix and push until every check is green (`devops-release`). People approve; the user merges the pull request (or authorizes the agent to merge into the work base). Without a supported platform CLI (`gh`, `glab`), review and answers happen in the chat as before.
+- Follow CI to the end; read the logs of any failure, reproduce, fix and push until every check is green (`devops-release`).
+- **Merge gate**: before asking the user to merge, and before merging when the user authorized it, run `pr_sync.py gate-merge`. It fails while a `[review]` `blocking` thread is open (a reply alone does not release it; the thread is resolved after the fix is pushed or the user accepts the risk), a person requested changes, a check failed or is still running, the pull request is a draft or has a conflict. It also warns when the base branch does not require resolved conversations on the platform (`devops-release` branch protection).
+- People approve; the user merges the pull request (or authorizes the agent to merge into the work base). Without a supported platform CLI (`gh`, `glab`), review and answers happen in the chat as before.
 
 ### 8. 🧪 Release Candidate (per release)
 - `devops-release`: bump the version in `devops.version_files` (on a branch, through a pull request), then tag `vX.Y.Z-rc.N` on the candidate branch (`branching.py rc-branch`; with `release-branches`, cut `release/X.Y` from `main` first), follow the pipeline and verify the pre-release (`release_status.py verify`).

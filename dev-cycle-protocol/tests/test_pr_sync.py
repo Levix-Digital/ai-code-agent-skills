@@ -346,3 +346,80 @@ def test_cli_on_gitlab(tmp_path, capsys):
     subprocess.run(["git", "remote", "add", "origin", "git@gitlab.acme.io:team/photos.git"], cwd=tmp_path, check=True)
     assert pr_sync.main(["status", "--dir", str(tmp_path)], runner=FakeGlab()) == 0
     assert "MR !7 Albums" in capsys.readouterr().out
+
+
+# ---------------------------------------------------------------- merge gate
+
+from _pr_model import merge_blockers  # noqa: E402
+
+
+def test_merge_blockers():
+    blockers = merge_blockers(model())
+    assert "blocking finding still open at app/db.py:7 (thread T6)" in blockers
+    assert "changes requested by ana" in blockers
+    assert "check tests failed" in blockers and "check lint still running" in blockers
+    assert "merge conflict with the base branch" in blockers
+    assert not any("app/share.py" in b for b in blockers)              # nits and suggestions never hold the merge
+
+
+def test_a_reply_does_not_release_a_blocking_finding():
+    pr = {"state": "open", "threads": [
+        {"id": "T6", "path": "a.py", "line": 1, "resolved": False,
+         "comments": [{"body": "**[review]** `blocking` No test."}, {"body": "**[reply]** Added in abc."}]},
+        {"id": "T7", "path": "a.py", "line": 2, "resolved": True, "comments": [{"body": "**[review]** `blocking` x"}]}]}
+    assert merge_blockers(pr) == ["blocking finding still open at a.py:1 (thread T6)"]
+    assert merge_blockers({**pr, "threads": pr["threads"][1:]}) == []
+    assert merge_blockers({**pr, "draft": True, "threads": []}) == ["the pull request is a draft"]
+
+
+CLEAN_VIEW = {**GH_VIEW, "mergeable": "MERGEABLE", "reviews": [], "statusCheckRollup": [
+    {"__typename": "CheckRun", "name": "tests", "status": "COMPLETED", "conclusion": "SUCCESS", "detailsUrl": "https://ci/1"}]}
+CLEAN_THREADS = {"data": {"repository": {"pullRequest": {"reviewThreads": {"nodes": [
+    thread("T6", "app/db.py", 7, [("levi", "**[review]** `blocking` Missing regression test.")], resolved=True)]}}}}}
+
+
+class ProtectedGh(FakeGh):
+    def __init__(self, rules="[]", protection=(0, "{}", ""), **kw):
+        super().__init__(**kw)
+        self.rules, self.protection = rules, protection
+
+    def __call__(self, cmd, input_text=None):
+        if cmd[:2] == ["gh", "api"] and cmd[2].startswith("repos/acme/photos/rules/branches/"):
+            return (0, self.rules, "") if self.rules is not None else (1, "", "gh: Not Found (HTTP 404)")
+        if cmd[:2] == ["gh", "api"] and cmd[2].endswith("/protection"):
+            return self.protection
+        return super().__call__(cmd, input_text)
+
+
+def test_cli_gate_merge(repo, capsys):
+    assert pr_sync.main(["gate-merge", "--dir", str(repo)], runner=ProtectedGh()) == 1
+    out = capsys.readouterr().out
+    assert "❌ blocking finding still open at app/db.py:7" in out and "not ready to merge" in out
+    on = (0, json.dumps({"required_conversation_resolution": {"enabled": True}}), "")
+    fake = ProtectedGh(protection=on, view=CLEAN_VIEW, threads=CLEAN_THREADS)
+    assert pr_sync.main(["gate-merge", "--dir", str(repo)], runner=fake) == 0
+    out = capsys.readouterr().out
+    assert "✅ ready to merge" in out and "⚠️" not in out and "ℹ️" not in out
+
+
+def test_gate_merge_reports_the_conversation_resolution_setting(repo, capsys):
+    clean = {"view": CLEAN_VIEW, "threads": CLEAN_THREADS}
+    unprotected = (1, "", "gh: Branch not protected (HTTP 404)")
+    assert pr_sync.main(["gate-merge", "--dir", str(repo)], runner=ProtectedGh(protection=unprotected, **clean)) == 0
+    assert "does not require resolved conversations" in capsys.readouterr().out
+    ruleset = json.dumps([{"type": "pull_request", "parameters": {"required_review_thread_resolution": True}}])
+    assert pr_sync.main(["gate-merge", "--dir", str(repo)], runner=ProtectedGh(rules=ruleset, protection=unprotected, **clean)) == 0
+    assert "⚠️" not in capsys.readouterr().out
+    forbidden = (1, "", "gh: Resource not accessible by integration (HTTP 403)")
+    assert pr_sync.main(["gate-merge", "--dir", str(repo)], runner=ProtectedGh(rules=None, protection=forbidden, **clean)) == 0
+    assert "could not read whether" in capsys.readouterr().out
+
+
+def test_gitlab_thread_resolution_setting():
+    def runner(project):
+        def run(cmd, input_text=None):
+            return (0, json.dumps(project), "") if cmd[2] == "projects/team%2Fphotos" else (0, "{}", "")
+        return run
+    assert GitLabProvider("team/photos", runner=runner({"only_allow_merge_if_all_discussions_are_resolved": True})).requires_thread_resolution("dev")
+    assert GitLabProvider("team/photos", runner=runner({"only_allow_merge_if_all_discussions_are_resolved": False})).requires_thread_resolution("dev") is False
+    assert GitLabProvider("team/photos", runner=lambda c, i=None: (1, "", "403 Forbidden")).requires_thread_resolution("dev") is None
