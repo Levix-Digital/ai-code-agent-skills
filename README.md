@@ -270,7 +270,7 @@ Details: [architecture-docs/SKILL.md](architecture-docs/SKILL.md).
 
 ### code-review
 
-The reviewer role. Every pull request (merge request on GitLab) is reviewed on its platform against the plan, design, tests, documentation, security and release safety; each finding is a line comment marked `[review]` with a level (`blocking`, `suggestion`, `nit`) and a concrete fix, and the review never approves. `dev-cycle-protocol/pr_sync.py` reads the pull request through `gh` or `glab` and posts replies, resolutions and reviews; nothing it posts may mention an AI. Details: [code-review/SKILL.md](code-review/SKILL.md), [docs/pull-requests.md](docs/pull-requests.md).
+The reviewer role. Every pull request (merge request on GitLab) is reviewed on its platform against the plan, design, tests, documentation, security and release safety; each finding is a line comment marked `[review]` with a level (`blocking`, `suggestion`, `nit`) and a concrete fix, and the review never approves. `dev-cycle-protocol/pr_sync.py` reads the pull request through `gh` or `glab`, posts replies, resolutions and reviews, and its merge gate (`gate-merge`) fails while a `blocking` finding is open; nothing it posts may mention an AI. Details: [code-review/SKILL.md](code-review/SKILL.md), [docs/pull-requests.md](docs/pull-requests.md).
 
 ### software-design
 

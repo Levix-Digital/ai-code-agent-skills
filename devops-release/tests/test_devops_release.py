@@ -36,8 +36,13 @@ def template(name):
 
 # --- check_ci_policy ---------------------------------------------------------------
 
+LINT_PLACEHOLDER = 'echo "replace with the stack\'s linters" && exit 1'
+TEST_PLACEHOLDER = 'echo "replace with the project\'s test_commands" && exit 1'
+
+
 def test_templates_pass_the_policy(tmp_path):
-    ci = template("ci.yml").replace('echo "replace with the project\'s test_commands" && exit 1', "cargo test --workspace")
+    ci = template("ci.yml").replace(TEST_PLACEHOLDER, "cargo test --workspace").replace(
+        LINT_PLACEHOLDER, "cargo clippy --all-targets -- -D warnings")
     d = repo(tmp_path, {"version_files": ["version.txt"]},
              {"ci.yml": ci, "release.yml": template("release.yml"), "tag-on-merge.yml": template("tag-on-merge.yml")},
              {"version.txt": "1.2.3\n"})
@@ -47,7 +52,7 @@ def test_templates_pass_the_policy(tmp_path):
 
 def ci_for(branches):
     return template("ci.yml").replace("branches: [dev, main]", f"branches: {branches}").replace(
-        'echo "replace with the project\'s test_commands" && exit 1', "pytest")
+        TEST_PLACEHOLDER, "pytest").replace(LINT_PLACEHOLDER, "ruff check .")
 
 
 def test_trunk_templates_pass_and_tag_on_merge_is_refused(tmp_path):
@@ -82,6 +87,16 @@ def test_release_branches_need_ci_into_release_branches(tmp_path):
     errors, _ = check_ci(repo(tmp_path, {"branching": "release-branches"},
                               {**flows, "ci.yml": ci_for("[main, 'release/**']")}))
     assert errors == []
+
+
+def test_pull_requests_without_a_linter_are_warned(tmp_path):
+    ci = template("ci.yml").replace(TEST_PLACEHOLDER, "pytest")
+    errors, warnings = check_ci(repo(tmp_path, {}, {"ci.yml": ci}))
+    assert not any("linter" in e for e in errors)
+    assert any("no workflow runs a linter or static analysis on pull requests into 'dev'" in w for w in warnings)
+    lint = "on:\n  pull_request:\n    branches: [dev, main]\njobs:\n  l:\n    runs-on: ubuntu-latest\n    steps:\n      - run: npm run lint\n"
+    _, warnings = check_ci(repo(tmp_path, {}, {"ci.yml": ci, "lint.yml": lint}))
+    assert not any("linter" in w for w in warnings)
 
 
 def test_unknown_branching_model_is_an_error(tmp_path):

@@ -2,7 +2,7 @@
 Check CI Policy - devops-release Skill
 Checks a repository's GitHub Actions workflows against the devops-release policy, for the
 project's branching model (`devops.branching`): tests on pull requests into every branch
-that receives them, pre-releases for -rc tags, the release gate (a tag-on-merge job, or a
+that receives them, a linter or static analysis on the same pull requests, pre-releases for -rc tags, the release gate (a tag-on-merge job, or a
 promote workflow) able to actually trigger the release, release permissions, and existing
 version files.
 
@@ -27,6 +27,9 @@ from branching import BranchingModel  # noqa: E402
 
 RELEASE_ACTION_RE = re.compile(r"softprops/action-gh-release|ncipollo/release-action|gh\s+release\s+create")
 TEST_STEP_RE = re.compile(r"\b(cargo\s+test|pytest|npm\s+(run\s+)?test|pnpm\s+(run\s+)?test|yarn\s+test|go\s+test|dotnet\s+test|mvn\s+test|gradle\w*\s+test|make\s+test|tox)\b")
+LINT_STEP_RE = re.compile(r"\b(clippy|cargo\s+fmt\b[^\n]*--check|ruff|flake8|pylint|mypy|black\s+--check|eslint|"
+                          r"biome|prettier\s+--check|golangci-lint|go\s+vet|gofmt|staticcheck|rubocop|ktlint|detekt|"
+                          r"dotnet\s+format|shellcheck|codeql|(npm|pnpm|yarn)\s+(run\s+)?lint|make\s+lint)\b")
 TAG_PUSH_RE = re.compile(r"git\s+tag\b[\s\S]*?git\s+push\b|git\s+push\s+origin\s+\S*v\$|gh\s+release\s+create")
 REUSABLE_CALL_RE = re.compile(r"^\s*uses:\s*\./\.github/workflows/", re.M)
 PRERELEASE_RE = re.compile(r"^\s*prerelease\s*:|--prerelease", re.I | re.M)
@@ -43,6 +46,11 @@ class Workflow:
         with open(path, "r", encoding="utf-8") as f:
             self.text = f.read()
         data = yaml.safe_load(self.text) or {}
+        jobs = data.get("jobs") if isinstance(data, dict) else None
+        steps = [step for job in (jobs or {}).values() if isinstance(job, dict)
+                 for step in job.get("steps") or [] if isinstance(step, dict)]
+        # What the steps run, without the comments (a template names linters in its comments).
+        self.commands = "\n".join(str(step.get(k) or "") for step in steps for k in ("run", "uses"))
         # PyYAML reads the bare key `on` as boolean True.
         raw = data.get("on", data.get(True, {})) if isinstance(data, dict) else {}
         if isinstance(raw, str):
@@ -78,6 +86,10 @@ class Workflow:
     @property
     def runs_tests(self) -> bool:
         return bool(TEST_STEP_RE.search(self.text))
+
+    @property
+    def runs_lint(self) -> bool:
+        return bool(LINT_STEP_RE.search(self.commands))
 
     @property
     def publishes_release(self) -> bool:
@@ -128,6 +140,9 @@ def run(project_dir: str = None):
         sample = target.replace("*", "0.0")   # release/* is checked with a branch it must cover
         if not any(w.pr_covers(sample) for w in tests):
             errors.append(f"no test workflow runs on pull requests into '{target}' (see templates/ci.yml)")
+        if not any(w.runs_lint and w.pr_covers(sample) for w in workflows):
+            warnings.append(f"no workflow runs a linter or static analysis on pull requests into '{target}' "
+                            "(see the lint job of templates/ci.yml)")
 
     releases = [w for w in workflows if w.publishes_release]
     if not releases:

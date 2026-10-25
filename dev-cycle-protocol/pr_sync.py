@@ -8,6 +8,7 @@ protocol principle 9 (no AI attribution) and carries the protocol's marker.
 Usage:
     python pr_sync.py status  [--pr N] [--json]
     python pr_sync.py open    [--json]                      (open pull requests with what is pending)
+    python pr_sync.py gate-merge [--pr N]                   (exit 1 while something holds the merge)
     python pr_sync.py reply   --thread ID (--body TEXT | --body-file F) [--pr N]
     python pr_sync.py resolve --thread ID [--pr N]
     python pr_sync.py comment (--body TEXT | --body-file F) [--pr N]
@@ -25,7 +26,8 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import _no_ai  # noqa: E402
-from _pr_model import LEVELS, REPLY_MARKER, REVIEW_MARKER, format_post, needs_action, pending, summary_line  # noqa: E402
+from _pr_model import (LEVELS, REPLY_MARKER, REVIEW_MARKER, format_post, merge_blockers, needs_action,  # noqa: E402
+                       pending, summary_line)
 from _pr_providers import ProviderError, detect_provider, provider_for  # noqa: E402
 from project_config import load_project_config  # noqa: E402
 
@@ -122,6 +124,22 @@ def load_review(path: str, ctx: Context) -> tuple:
     return body, comments
 
 
+def gate_merge(ctx: Context, provider, pr: dict) -> int:
+    """Phase 7, before the merge is asked for (or done, when the user authorized it)."""
+    blockers = merge_blockers(pr, ctx.marker)
+    print(f"🔀 {summary_line(pr, pending_of(ctx, pr))}")
+    for b in blockers:
+        print(f"   ❌ {b}")
+    required = provider.requires_thread_resolution(pr.get("base"))
+    if required is False:
+        print(f"   ⚠️ merging into '{pr.get('base')}' does not require resolved conversations; turn it on in "
+              f"{provider.resolution_setting}")
+    elif required is None:
+        print(f"   ℹ️ could not read whether merging into '{pr.get('base')}' requires resolved conversations")
+    print(f"{'✅ ready to merge' if not blockers else '❌ not ready to merge'}")
+    return 1 if blockers else 0
+
+
 def main(argv: list = None, runner=None) -> int:
     if sys.stdout.encoding != "utf-8":
         try:
@@ -142,6 +160,7 @@ def main(argv: list = None, runner=None) -> int:
     p.add_argument("--json", action="store_true")
     p = command("open", "Open pull requests with what is pending", pr=False)
     p.add_argument("--json", action="store_true")
+    command("gate-merge", "Fail while a blocking finding, a change request, CI or a conflict holds the merge")
     for name, help_text in (("reply", "Answer a review thread"), ("comment", "Comment on the pull request")):
         p = command(name, help_text)
         if name == "reply":
@@ -183,6 +202,8 @@ def main(argv: list = None, runner=None) -> int:
                 print_status(pr, p)
             return 0
         provider = ctx.provider()
+        if args.command == "gate-merge":
+            return gate_merge(ctx, provider, pr)
         if args.command == "reply":
             text = format_post(ctx.reply_marker, read_body(args))
             ctx.guard(text, "the reply")
