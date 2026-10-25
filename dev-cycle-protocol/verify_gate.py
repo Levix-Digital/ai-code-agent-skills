@@ -31,29 +31,49 @@ def run_cmd(cmd: list, cwd: str) -> tuple:
         return -1, str(e)
 
 
+# Credential files are matched on the file name only, never on a directory or on the
+# contents: source code and docs about secrets (secrets.rs, an ADR on redaction) are fine.
+CREDENTIAL_NAMES = {
+    ".env", "id_rsa", "id_dsa", "id_ecdsa", "id_ed25519", "credentials.json",
+    ".netrc", ".pgpass", ".htpasswd",
+}
+CREDENTIAL_EXTENSIONS = {".env", ".pem", ".p12", ".pfx", ".key", ".jks", ".keystore", ".ppk"}
+SECRET_DATA_EXTENSIONS = {".json", ".yaml", ".yml", ".toml", ".ini", ".properties"}
+SECRET_WORDS = ("secret", "private_key", "private-key")
+SAFE_MARKERS = (".example", ".sample", ".template", ".dist")
+
+
+def is_credential_file(path: str) -> bool:
+    """True when a path looks like a real credential file: an exact credential name, a key or
+    certificate store extension, or a secret-named data file. Templates are never flagged."""
+    name = path.replace("\\", "/").rsplit("/", 1)[-1].lower()
+    if any(marker in name for marker in SAFE_MARKERS):
+        return False
+    if name in CREDENTIAL_NAMES or name.startswith(".env."):
+        return True
+    stem, ext = os.path.splitext(name)
+    if ext in CREDENTIAL_EXTENSIONS:
+        return True
+    return ext in SECRET_DATA_EXTENSIONS and any(word in stem for word in SECRET_WORDS)
+
+
 def check_secret_hygiene(cwd: str) -> list:
     violations = []
-    dangerous_patterns = [".env", ".env.local", "id_rsa", "credentials.json", "*secret*", "*private_key*"]
+    git = ["git", "-c", "core.quotepath=off"]
 
-    # 1. Dangerous files tracked in Git
-    for pat in dangerous_patterns:
-        code, out = run_cmd(["git", "ls-files", pat], cwd)
-        if code == 0 and out.strip():
-            for f in out.splitlines():
-                if f.strip():
-                    violations.append(f"Tracked credential file committed to Git: {f.strip()}")
+    # 1. Credential files committed to Git
+    code, out = run_cmd([*git, "ls-tree", "-r", "--name-only", "HEAD"], cwd)
+    committed = set(out.splitlines()) if code == 0 else set()
+    for f in sorted(committed):
+        if is_credential_file(f):
+            violations.append(f"Tracked credential file committed to Git: {f}")
 
-    # 2. Dangerous files staged for commit
-    code, status_out = run_cmd(["git", "status", "--porcelain"], cwd)
-    if code == 0 and status_out.strip():
-        for line in status_out.splitlines():
-            status_tag = line[:2]
-            filename = line[3:].strip()
-            if status_tag[0] in ["A", "M", "R"]:
-                for pat in [".env", "id_rsa", "credentials.json"]:
-                    if pat in filename.lower():
-                        if not any(safe in filename.lower() for safe in [".example", ".sample", "template"]):
-                            violations.append(f"Staged credential file ready to be committed: {filename}")
+    # 2. Credential files staged for commit (added, modified or renamed, not yet committed)
+    code, out = run_cmd([*git, "diff", "--cached", "--name-only", "--diff-filter=AMR"], cwd)
+    if code == 0:
+        for f in out.splitlines():
+            if f and f not in committed and is_credential_file(f):
+                violations.append(f"Staged credential file ready to be committed: {f}")
     return violations
 
 

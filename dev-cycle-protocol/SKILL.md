@@ -262,6 +262,8 @@ The backlog (`backlog.file` in `.dev-cycle.json`, default `docs/BACKLOG.md`) is 
 | `--gate rc --run R` | Before declaring a candidate accepted | Every manual test of run `R` is Pass (`quality-assurance/manual_tests.py gate`) |
 | `--gate 8 [--run R]` | Before the release gate (the release pull request, or the promotion) | Documentation and manual test files exist; `check_docs.py`, `check_readme.py`, `manual_tests.py validate`, `check_design.py`, `check_ci_policy.py`, `backlog.py validate` and `roadmap.py validate` have no errors (open blocking bugs are listed for the release notes, open items of the release are listed for the user); version files agree; the candidate run passed (required with `--run` when release candidates are on); secret hygiene; clean working tree |
 
+Secret hygiene flags committed or staged credential files by file name only: exact names (`.env`, `.env.*`, `id_rsa`, `credentials.json`, `.netrc`...), key and certificate stores (`*.pem`, `*.key`, `*.p12`, `*.pfx`, `*.jks`, `*.keystore`, `*.ppk`, `*.env`) and secret-named data files (`*secret*` or `*private_key*` as `.json`, `.yaml`, `.yml`, `.toml`, `.ini`, `.properties`). Source code and docs about secrets are never flagged, nor are templates (`.example`, `.sample`, `.template`, `.dist`).
+
 ```powershell
 python "<skills_root>/dev-cycle-protocol/verify_gate.py" --gate 0|3|rc|8 [--run <rc tag>] [--accept-open-bugs "<reason>"] [--dir <project>]
 python "<skills_root>/dev-cycle-protocol/inspect_project.py" [--json]
