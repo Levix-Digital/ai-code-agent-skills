@@ -6,6 +6,20 @@ Each item: `### <ID>: <title>` with the fields `Severity` (bugs: critical, high,
 
 ## Bugs
 
+### BUG-001: Pull request flow fails where the platform's GraphQL API is not available
+- **Severity**: high
+- **Status**: open
+- **Found**: 2026-10-25, 2.8.0, /dev-cycle run on this repository
+- **Plan**: -
+- **Description**: The GitHub provider reads pull requests with 'gh pr list/view' and review threads with 'gh api graphql', both GraphQL. Where GraphQL is refused (HTTP 403 seen in Claude Code cloud sessions; other agents, proxies or tokens may do the same), the diagnosis cannot list pull requests and pr_sync status, gate-merge, reply and resolve fail. Fix without code specific to one environment: REST for everything REST covers, GraphQL only for what only it has (thread resolution), and a clear, safe result when that part cannot be read. Must keep working on a local machine, GitHub Enterprise and GitLab.
+
+### BUG-002: Configuration written into a path the project's .gitignore ignores
+- **Severity**: medium
+- **Status**: open
+- **Found**: 2026-10-25, 2.8.0, /dev-cycle run on this repository
+- **Plan**: -
+- **Description**: write-config (and Spec Kit setup) write .dev-cycle.json, .specify/ and specs/ without checking git check-ignore. In a repository whose .gitignore is an allowlist (like this one) the files are never versioned and the decisions are lost in the next clone. Detect it, warn before writing and propose the .gitignore entry.
+
 ## Features
 
 ### FEAT-001: Pull request review on Bitbucket, Azure DevOps and Gitea
@@ -16,6 +30,13 @@ Each item: `### <ID>: <title>` with the fields `Severity` (bugs: critical, high,
 - **Description**: The pull request review flow starts with GitHub and GitLab. Analyze and add adapters for Bitbucket, Azure DevOps and Gitea (reading threads, comments, suggestions, reviews and CI; replying, resolving and posting reviews).
 
 ## Improvements
+
+### IMP-002: Adopt the protocol in this repository (dogfooding)
+- **Priority**: high
+- **Status**: open
+- **Found**: 2026-10-25, 2.8.0, /dev-cycle run on this repository
+- **Plan**: -
+- **Description**: This repository has no .dev-cycle.json, product baseline (VISION, TECH_SPEC, epics) or ROADMAP, so the protocol's own rules (bugs first, low bugs by the next release, gate 8) do not apply to it. Run the /dev-cycle setup: configuration (trunk detected), the Spec Kit decision, and adoption mode for the baseline.
 
 ## Adjustments
 
