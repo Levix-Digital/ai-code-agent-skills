@@ -19,7 +19,12 @@ Each release: `## vX.Y.Z: <name>` with the fields `Status` (planned, in_progress
 - **Goal**: Plan sections and review lenses are written by separate specialists in sequence, so the one who reviews is not the one who wrote
 - **Items**: FEAT-002
 
-## v3.1.0: Parallel work on Gedo
+## v3.1.0: Gedo checks
 - **Status**: planned
-- **Goal**: With Gedo v0.5.0 enabled (local streams and agent checkouts, FEAT-129 and FEAT-130 there), independent milestones and specialists run in parallel on Gedo streams, and Gedo's checks join the gates
-- **Items**: FEAT-003, FEAT-004
+- **Goal**: With Gedo v0.4.0 enabled, the diagnosis, drift detection, design checks, review and gate 8 use Gedo's checks through its versioned --json contract, and skip them safely when a capability is missing
+- **Items**: FEAT-004
+
+## v3.2.0: Parallel work on Gedo
+- **Status**: planned
+- **Goal**: With Gedo v0.5.0 enabled (agent streams, local intents and gedo scope: FEAT-129, FEAT-130 and FEAT-133 there), independent milestones and specialists run in parallel on Gedo agent streams after gate 3 confirms their scopes do not overlap
+- **Items**: FEAT-003, FEAT-008

@@ -1,7 +1,7 @@
 <!-- dev-cycle-constitution
 generated-by: dev-cycle-protocol/constitution.py (do not edit; change a source and regenerate)
-sources-sha256: ff8d1ac82097f776edc866a25d0a8c342e0373d834571531a2b7d0b3cf91144e
-content-sha256: 67281262fb849693cd4c901e7483b92abe758e33dae904bee2269d89244946a0
+sources-sha256: 7b3719640b6086675a023922df345922648026a6a4b11b49e0a3d6ed47f3ab49
+content-sha256: fbc660519fc20d844436e343e9c8ce3aed6e20b0e8c578de3a7b220ee50c35d2
 -->
 # ai-code-agent-skills Constitution
 
@@ -160,6 +160,7 @@ Accepted decisions; a plan that contradicts one needs a new ADR that supersedes 
 - ADR-0003: Pull requests through the platform CLIs on the REST API (`docs/adr/0003-pull-requests-through-the-platform-clis-on-the-rest-api.md`)
 - ADR-0004: Gedo integration only through its command line (`docs/adr/0004-gedo-integration-only-through-its-command-line.md`)
 - ADR-0005: Parallel agents only with Gedo (`docs/adr/0005-parallel-agents-only-with-gedo.md`)
+- ADR-0006: Gedo contract discovered by capability with safe fallback per check (`docs/adr/0006-gedo-contract-discovered-by-capability-with-safe-fallback-pe.md`)
 
 ## Governance
 
@@ -167,4 +168,4 @@ Accepted decisions; a plan that contradicts one needs a new ADR that supersedes 
 - Amendments change the source, not this file: an ADR for decisions, the technical specification for requirements and constraints, `.dev-cycle.json` for the architecture style, the skills for principles. Then run `constitution.py generate` and commit the result with the change.
 - Gate 3 of the development cycle blocks a plan while this file is stale or edited by hand.
 
-**Version**: 1.0.0 | **Ratified**: 2026-10-25 | **Last Amended**: 2026-10-25
+**Version**: 1.1.0 | **Ratified**: 2026-10-25 | **Last Amended**: 2026-10-25

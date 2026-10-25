@@ -30,3 +30,4 @@ Called by the cycle in Phases 2, 4, 5, 8 to 10 and by gates `rc` and 8.
 
 - [ADR-0001](../adr/0001-skills-in-the-open-skill-md-format-with-python-scripts.md): checkers as Python scripts
 - [ADR-0004](../adr/0004-gedo-integration-only-through-its-command-line.md): Gedo checks join the gates only through its command line
+- [ADR-0006](../adr/0006-gedo-contract-discovered-by-capability-with-safe-fallback-pe.md): a missing Gedo capability skips that check safely and is recorded as feedback

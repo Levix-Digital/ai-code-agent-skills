@@ -30,7 +30,7 @@ Each item: `### <ID>: <title>` with the fields `Severity` (bugs: critical, high,
 - **Status**: open
 - **Found**: 2026-10-25, 2026-10-25, platform strategy discussion
 - **Plan**: -
-- **Description**: With gedo.enabled only: resolve the milestone DAG of an approved plan and run independent milestones as parallel workers on Gedo virtual streams within their allowed scopes, with a shared build lock for test commands; run the FEAT-002 specialists concurrently. Needs Gedo v0.5.0 (local streams and agent checkouts) and Gedo support for the project's language. No worktree fallback.
+- **Description**: With gedo.enabled only: resolve the milestone DAG of an approved plan and run independent milestones as parallel workers on Gedo agent streams (gedo stream new --agent with dc.plan, dc.milestone and dc.role labels) within their allowed scopes, with a build lock owned by the protocol for test commands; run the FEAT-002 specialists concurrently. Needs Gedo v0.5.0 (agent streams and local intents) and Gedo support for the project's language. No worktree fallback (ADR-0005).
 
 ### FEAT-004: Gedo checks in the protocol's scripts
 - **Priority**: high
@@ -38,7 +38,7 @@ Each item: `### <ID>: <title>` with the fields `Severity` (bugs: critical, high,
 - **Status**: open
 - **Found**: 2026-10-25, 2026-10-25, platform strategy discussion
 - **Plan**: -
-- **Description**: When gedo.enabled: gedo doctor and radar in the diagnosis, symbol-level drift from gedo delta in detect_drift, contract checks in check_design, non-overlapping scopes at gate 3 and a clean gedo doctor at gate 8, the delta summary on the pull request. Only through the command line with --json (ADR-0004). Needs Gedo v0.4.0 for the reads; the scope check at gate 3 needs streams from Gedo v0.5.0.
+- **Description**: When gedo.enabled: gedo doctor and radar in the diagnosis, symbol-level drift from gedo delta in detect_drift, contract checks from gedo check contracts in check_design, gedo trace in the review, a clean gedo doctor at gate 8 and the delta summary on the pull request. Only through the command line with --json, discovered by capability and skipped safely when missing (ADR-0004, ADR-0006). Needs Gedo v0.4.0.
 
 ### FEAT-005: Role runners for the main coding agents
 - **Priority**: high
@@ -63,6 +63,14 @@ Each item: `### <ID>: <title>` with the fields `Severity` (bugs: critical, high,
 - **Found**: 2026-10-25, 2026-10-25, platform strategy discussion
 - **Plan**: -
 - **Description**: Choose the license (MIT, Apache-2.0 or both), prepare public docs and a contribution guide, and publish together with Gedo v0.5.0 or v0.6.0. Until then the repository stays unlicensed.
+
+### FEAT-008: Non-overlapping milestone scopes at gate 3 with gedo scope
+- **Priority**: high
+- **Epic**: EPIC-004
+- **Status**: open
+- **Found**: 2026-10-25, Gedo integration contract 2026-10-25
+- **Plan**: -
+- **Description**: When gedo.enabled and Gedo has the scope capability: at gate 3, check with gedo scope --json that the milestones marked to run in parallel do not share entities or their dependency closure; overlapping milestones run in sequence. Needs Gedo v0.5.0 (FEAT-133 there) and Gedo support for the project's language.
 
 ## Improvements
 
