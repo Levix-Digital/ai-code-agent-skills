@@ -10,7 +10,7 @@ A set of skills in the open `SKILL.md` format, each a module with its instructio
 - **Third-party Python packages** (`requirements.txt`): `chromadb` for the plan and session search indexes and folder RAG, `pyyaml` for frontmatter and CI files, `python-docx` and `pypdf` for folder extraction. IMP-003 makes them optional: execution through `uv` and a standard-library SQLite FTS5 fallback for search.
 - **Platform command lines**: `gh` (GitHub, REST API) and `glab` (GitLab) for pull requests; they keep the user's authentication.
 - **GitHub Spec Kit**, optional per project, at a pinned and verified version (v1.2.3 today), run through `uvx`.
-- **Gedo**, optional per project (`gedo.enabled`), through its command line with `--json` only, once it has one (v0.4.0).
+- **Gedo**, optional per project (`gedo.enabled`), through its command line with `--json` only, once it has one (v0.4.0); streams for parallel work from v0.5.0.
 
 ## Architecture Overview
 
@@ -50,7 +50,7 @@ Not applicable as a service: the protocol runs locally. Its state is the project
 | GitHub (`gh`, REST API; GraphQL only for thread resolution) | read and write pull requests, reviews, checks, rules | the diagnosis reports it as a finding; the merge gate fails safe |
 | GitLab (`glab`, REST API) | read and write merge requests, discussions, pipelines | same as GitHub |
 | GitHub Spec Kit (`uvx`, pinned version) | installs and upgrades the project's Spec Kit | setup stops with a message; the cycle runs without Spec Kit |
-| Gedo (command line with `--json`, from v0.4.0) | diagnosis, drift, gates, streams for parallel milestones | no parallelism; the cycle runs in sequence |
+| Gedo (command line with `--json`: reads from v0.4.0, streams from v0.5.0) | diagnosis, drift, gates, streams for parallel milestones | no parallelism; the cycle runs in sequence |
 | Coding agents (Claude Code, Codex, Gemini, Copilot) | runners start a role in its own context (FEAT-005) | the current agent plays the role in its own context |
 
 ## Data

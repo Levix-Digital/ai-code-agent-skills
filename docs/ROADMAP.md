@@ -21,5 +21,5 @@ Each release: `## vX.Y.Z: <name>` with the fields `Status` (planned, in_progress
 
 ## v3.1.0: Parallel work on Gedo
 - **Status**: planned
-- **Goal**: With Gedo v0.4.0 enabled, independent milestones and specialists run in parallel on Gedo streams, and Gedo's checks join the gates
+- **Goal**: With Gedo v0.5.0 enabled (local streams and agent checkouts, FEAT-129 and FEAT-130 there), independent milestones and specialists run in parallel on Gedo streams, and Gedo's checks join the gates
 - **Items**: FEAT-003, FEAT-004

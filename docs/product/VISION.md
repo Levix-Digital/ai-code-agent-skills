@@ -63,7 +63,7 @@ Open-core. The Dev Cycle Protocol and Gedo are the two free engines and stay sep
 
 ## Risks and Assumptions
 
-- **Gedo timing**: parallel work needs Gedo v0.4.0 (command line) and Gedo support for the project's language (Python in v0.6.0). Mitigation: role isolation in sequence ships first (v3.0.0); nothing in a release depends on an unreleased Gedo version.
+- **Gedo timing**: parallel work needs Gedo v0.5.0 (local streams and agent checkouts; v0.4.0 brings only the command line) and Gedo support for the project's language (Python in v0.6.0). Mitigation: role isolation in sequence ships first (v3.0.0); nothing in a release depends on an unreleased Gedo version.
 - **Agent and platform drift**: agent command lines and platform APIs change (GraphQL refused in some environments, for example). Mitigation: REST first, provider adapters behind one model, tests with recorded responses.
 - **Process weight**: the full cycle may feel heavy for small changes. Mitigation: the short path, and onboarding in three levels (FEAT-006).
 - **Python environment friction**: users hit missing modules when the agent's Python is not the one with the dependencies. Mitigation: execution through `uv` and a standard-library search fallback (IMP-003).
