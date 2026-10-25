@@ -27,6 +27,7 @@ class BacklogFile:
         section = self.config.section("backlog")
         self.path = os.path.join(self.config.root, section.get("file") or os.path.join("docs", "BACKLOG.md"))
         self.blocking_severities = section.get("blocking_severities") or []
+        self.bug_deadline = section.get("bug_deadline") or "next_release"
 
     @property
     def exists(self) -> bool:
@@ -44,6 +45,14 @@ class BacklogFile:
             raise BacklogError(f"no backlog at {self.rel}; the first 'add' creates it")
         with open(TEMPLATE, "r", encoding="utf-8") as f:
             return Backlog(f.read())
+
+    def triage(self, backlog: Backlog, exclude=()) -> dict:
+        """Open bugs not triaged yet (see _bug_triage), reading the project roadmap when there is one."""
+        from _bug_triage import bug_triage
+        from _roadmap_store import RoadmapFile
+        rf = RoadmapFile(self.config.root)
+        roadmap = rf.load() if rf.exists else None
+        return bug_triage(backlog, roadmap, self.blocking_severities, self.bug_deadline, exclude)
 
     def save(self, backlog: Backlog):
         """Atomic write; refuses a file whose structure it could not read, so nothing is lost."""

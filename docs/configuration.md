@@ -25,7 +25,7 @@ Optional file at a project's root: the project configuration shared by every ski
     "observability": "cli"
   },
   "plans": { "dir": "docs/plans" },
-  "backlog": { "file": "docs/BACKLOG.md", "blocking_severities": ["critical", "high"] },
+  "backlog": { "file": "docs/BACKLOG.md", "blocking_severities": ["critical", "high", "medium"], "bug_deadline": "next_release" },
   "roadmap": { "file": "docs/ROADMAP.md" },
   "product": { "vision": "docs/product/VISION.md", "tech_spec": "docs/product/TECH_SPEC.md", "max_lines": 400 },
   "review": { "provider": "auto", "host": null, "marker": "[review]", "reply_marker": "[reply]", "auto_review": true, "allowed_terms": [] },
@@ -78,7 +78,8 @@ Optional file at a project's root: the project configuration shared by every ski
 | `devops.observability` | `cli`, `service`, `library`, `desktop` or `none` | not set |
 | `plans.dir` | Folder of the plan files | `docs/plans` |
 | `backlog.file` | The project backlog | `docs/BACKLOG.md` |
-| `backlog.blocking_severities` | Severities of open bugs that block plan approval of other work (bugs first); `[]` turns the rule off | `["critical", "high"]` |
+| `backlog.blocking_severities` | Severities of open bugs that block plan approval of other work (bugs first); `[]` turns the rule off | `["critical", "high", "medium"]` |
+| `backlog.bug_deadline` | Deadline of the open bugs whose severity does not block: `next_release` (they must be in the first release of the roadmap not released, or gates 3 and 8 report them as not triaged) or `off` | `"next_release"` |
 | `roadmap.file` | The roadmap of releases (`plan-memory/roadmap.py`) | `docs/ROADMAP.md` |
 | `product.vision`, `product.tech_spec` | The business document and the technical specification of Phase 0 (`product-inception`) | `docs/product/VISION.md`, `docs/product/TECH_SPEC.md` |
 | `product.max_lines` | Line limit of each product document | `400` |

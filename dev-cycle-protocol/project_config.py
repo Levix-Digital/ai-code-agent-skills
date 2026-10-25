@@ -25,6 +25,7 @@ MANIFEST_NAME = ".dev-cycle.json"
 
 ARCHITECTURE_STYLES = ["hexagonal", "layered", "mvc", "pipeline", "modular-monolith", "other"]
 BUG_SEVERITIES = ["critical", "high", "medium", "low"]
+BUG_DEADLINES = ["next_release", "off"]
 OBSERVABILITY_PROFILES = ["cli", "service", "library", "desktop", "none"]
 SPECKIT_SCRIPTS = ["sh", "ps", "py"]
 REVIEW_PROVIDERS = ["auto", "github", "gitlab", "none"]
@@ -64,7 +65,8 @@ DEFAULTS = {
     },
     "backlog": {
         "file": "docs/BACKLOG.md",
-        "blocking_severities": ["critical", "high"],
+        "blocking_severities": ["critical", "high", "medium"],
+        "bug_deadline": "next_release",
     },
     "roadmap": {
         "file": "docs/ROADMAP.md",
@@ -209,6 +211,8 @@ class ProjectConfig:
         blocking = self.section("backlog").get("blocking_severities")
         if not isinstance(blocking, list) or any(s not in BUG_SEVERITIES for s in blocking):
             problems.append(f"backlog.blocking_severities must be a list of: {', '.join(BUG_SEVERITIES)}")
+        if self.section("backlog").get("bug_deadline") not in BUG_DEADLINES:
+            problems.append(f"backlog.bug_deadline must be one of: {', '.join(BUG_DEADLINES)}")
         speckit = self.section("speckit")
         if not isinstance(speckit.get("enabled"), bool):
             problems.append("speckit.enabled must be true or false")
@@ -329,7 +333,8 @@ def main() -> int:
               f" (release candidates: {'on' if devops.get('release_candidates') else 'off'})")
         print(f"   Releases repo      : {devops.get('releases_repo') or 'not set'}")
         backlog = cfg.section("backlog")
-        print(f"   Backlog            : {backlog.get('file')} (bugs first: {', '.join(backlog.get('blocking_severities') or []) or 'off'})")
+        print(f"   Backlog            : {backlog.get('file')} (bugs first: {', '.join(backlog.get('blocking_severities') or []) or 'off'}"
+              f"; other bugs by: {backlog.get('bug_deadline')})")
         speckit = cfg.section("speckit")
         print(f"   Spec Kit           : " + (f"{speckit.get('version') or 'version not set'} ({speckit.get('integration')}, "
                                              f"branches {speckit.get('branch_prefix')}/NNN-slug)" if speckit.get("enabled") else "off"))

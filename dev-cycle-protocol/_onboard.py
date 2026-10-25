@@ -14,6 +14,7 @@ State (dict, every key optional):
     prs:      [{number, title, summary, needs_action, for_user}]   (open pull requests on the platform)
     rc:       {run, version, not_run, failed, released}    (latest release candidate run)
     bugs:     ["BUG-001 (high) Crash", ...]                 (open blocking bugs)
+    untriaged: ["BUG-004 (low) Typo: not scheduled; ...", ...] (open bugs not triaged yet)
     roadmap:  {current, open_items: [...]}                  (current release)
     speckit:  {state, problems, uv, installed}              (state: undecided | declined | enabled | unmanaged)
     agent:    {name, attribution_hidden}                    (name given by the command, e.g. claude-code)
@@ -119,6 +120,10 @@ def options(state: dict, request: str = None) -> list:
     bugs = state.get("bugs") or []
     if bugs:
         add("bugs", "bugs", f"Plan the open blocking bugs: {', '.join(b.split(' ')[0] for b in bugs)}", "bugs come first")
+    untriaged = state.get("untriaged") or []
+    if untriaged:
+        add("bugs", "triage", f"Triage the open bugs: {', '.join(b.split(' ')[0] for b in untriaged)}",
+            "no known bug stays untriaged")
     for key, title, reason in setup_items(state, new):
         add("setup", key, title, reason)
     baseline = state.get("baseline") or {}

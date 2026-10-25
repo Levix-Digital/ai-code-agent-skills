@@ -26,7 +26,8 @@ def test_defaults_without_manifest(tmp_path):
     assert cfg.section("docs")["user_doc"] == "README.md"
     assert cfg.section("tests")["manual_tests"] == "tests/MANUAL_TESTS.md"
     assert cfg.section("plans")["dir"] == "docs/plans"
-    assert cfg.section("backlog") == {"file": "docs/BACKLOG.md", "blocking_severities": ["critical", "high"]}
+    assert cfg.section("backlog") == {"file": "docs/BACKLOG.md", "blocking_severities": ["critical", "high", "medium"],
+                                      "bug_deadline": "next_release"}
     assert cfg.section("architecture")["style"] is None
     assert cfg.validate() == []
 

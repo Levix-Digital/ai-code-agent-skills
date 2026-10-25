@@ -26,7 +26,7 @@ The one command the user needs: the protocol guides the user, not the other way 
 2. **Nothing to decide** (`ask` is false): tell the user the summary in one line and go on:
    - `new`: [`product-inception`](../product-inception/SKILL.md) Phase 0 with the idea;
    - `existing`: `dev-cycle-protocol` Phase 1 with the request (full or short path as usual).
-3. **Something to decide** (`ask` is true): show the summary and the options as a numbered list, mark the recommended one, and wait for the user's choice. For a list of initial setup items, the user may answer "all" or pick items; do them in the listed order. Never start the request while a plan in progress, a pending release candidate or an open blocking bug is listed above it, unless the user chooses so.
+3. **Something to decide** (`ask` is true): show the summary and the options as a numbered list, mark the recommended one, and wait for the user's choice. For a list of initial setup items, the user may answer "all" or pick items; do them in the listed order. Never start the request while a plan in progress, a pending release candidate, an open blocking bug or a bug not triaged is listed above it, unless the user chooses so.
 4. **Do what was chosen** (table below), then run the diagnosis again and continue with what comes next, until the user reaches the work they came for.
 
 | Option (`key`) | What to do |
@@ -35,6 +35,7 @@ The one command the user needs: the protocol guides the user, not the other way 
 | `pr:<number>` | The pull request on its platform: `pr_sync.py status --pr <number>`; then `dev-cycle-protocol` Phase 7: fix and resolve the small threads, bring the large ones to the user, answer questions, fix CI and conflicts. |
 | `rc:<run>` | Release candidate: `quality-assurance/manual_tests.py summary --run <run>` and `failed --run <run>`; failures go back to Phase 4; when all pass, gate rc and then gate 8 (Phases 9 and 10). |
 | `bugs` | Phase 1 with the blocking bugs: show them, the user decides which to promote (`backlog.py promote`). |
+| `triage` | Show the open bugs not triaged and why; with the user, give each a severity (`backlog.py set <ID> --severity <s>`) and schedule the ones that do not block in the next release at the latest (`roadmap.py assign <ID> --release <vX.Y.Z> [--move]`), or promote them. |
 | `git` | Ask, then `git init` with the production branch (`main`). |
 | `config` | `onboard.py propose-config`, show the proposal, let the user change it, write only what they confirm: save it to a file and `onboard.py write-config --file <it>`. The proposal carries the detected branching model (`devops.branching`): present the choice as in `branching` below before writing. The architecture style is chosen later with `software-design` (or in Phase 0). |
 | `branching` | Asked once. Show the three models in a short table (`devops-release`, "Branching Model": work base, candidate branch, release gate, what each fits) and recommend the detected one. Record the answer: `write-config` with `{"devops": {"branching": "<model>"}}` (with `integration_branch` for `integration` when it is not `dev`). For `integration` without its branch, the next item creates it; for `trunk` and `release-branches`, offer to add `templates/promote.yml` and the `release` environment when the project publishes releases. |

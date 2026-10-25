@@ -43,6 +43,7 @@ def backlog_profile(cwd: str) -> dict:
             "exists": True,
             "open": {kind: len(backlog.open_items(kind)) for kind in ("bug", "feature", "improvement", "adjustment", "epic")},
             "blocking_bugs": [f"{b.id} ({b.rank}) {b.title}" for b in backlog.blocking_bugs(bf.blocking_severities)],
+            "untriaged_bugs": [f"{b.id} ({b.rank or '?'}) {b.title}: {why}" for b, why in bf.triage(backlog)["untriaged"]],
         }
     except Exception as e:
         return {"error": str(e)}
@@ -238,6 +239,8 @@ def print_profile_report(profile: dict):
         print(f"📥 BACKLOG ({backlog['file']}): open {counts}")
         for bug in backlog["blocking_bugs"]:
             print(f"   🐞 Comes before new work: {bug}")
+        for bug in backlog.get("untriaged_bugs") or []:
+            print(f"   🏷️ Not triaged (comes before new work): {bug}")
         print("   Triage with the user: promote, re-prioritize or drop (plan-memory/backlog.py summary).")
     elif backlog.get("file"):
         print(f"📥 BACKLOG: none yet ({backlog['file']} is created by the first /backlog or backlog.py add)")

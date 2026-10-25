@@ -56,6 +56,12 @@ def test_competing_items_come_first_in_order_and_ask():
     assert "BUG-007" in rec["options"][2]["title"]
 
 
+def test_untriaged_bugs_compete_with_the_request():
+    rec = recommendation(state(untriaged=["BUG-004 (low) Typo: not scheduled; it goes into v0.2.0 at the latest"]), "add search")
+    assert rec["ask"] is True and rec["recommended"] == "triage"
+    assert "Triage the open bugs: BUG-004" in rec["options"][0]["title"]
+
+
 def test_finished_plans_and_released_candidates_are_not_pending():
     s = state(plans=[{"id": "p", "title": "Done", "status": "in_progress", "done": 3, "total": 3}],
               rc={"run": "v1.0.0-rc.2", "version": "v1.0.0", "not_run": 0, "failed": 0, "released": True})
