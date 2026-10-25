@@ -184,6 +184,46 @@ def write_config(root: str, additions: dict) -> tuple:
     return path, added
 
 
+def ignored(root: str, paths: list) -> list:
+    """The paths (relative to the root) that the project's ignore rules keep out of Git. Files
+    already tracked are never reported: Git keeps versioning them."""
+    if not paths:
+        return []
+    res = subprocess.run(["git", "check-ignore", "--stdin"], cwd=root, input="\n".join(paths), capture_output=True,
+                         text=True, encoding="utf-8", errors="replace")
+    found = {line.strip().replace("\\", "/") for line in res.stdout.splitlines() if line.strip()}
+    return [p for p in paths if p in found]
+
+
+def gitignore_entry(path: str) -> str:
+    """The .gitignore line that lets `path` back in: its first folder, or the file at the root."""
+    head, _, rest = path.partition("/")
+    return f"!/{head}/" if rest else f"!/{head}"
+
+
+def protocol_files(root: str, cfg, speckit: str = None, agent: str = None) -> list:
+    """Files the protocol keeps in the repository, a sample path for each folder, so the ignore
+    rules can be checked before anything is written there."""
+    def rel(path):
+        return os.path.relpath(os.path.join(root, path), root).replace("\\", "/")
+    product = cfg.section("product")
+    paths = [MANIFEST_NAME, cfg.section("backlog").get("file") or "docs/BACKLOG.md",
+             cfg.section("roadmap").get("file") or "docs/ROADMAP.md",
+             f"{cfg.section('plans').get('dir') or 'docs/plans'}/plan.md",
+             product.get("vision") or "docs/product/VISION.md", product.get("tech_spec") or "docs/product/TECH_SPEC.md"]
+    if speckit not in ("declined",):
+        paths += [".specify/memory/constitution.md", "specs/001-feature/spec.md"]
+    if agent == "claude-code":
+        paths.append(".claude/settings.json")
+    return [rel(p) for p in dict.fromkeys(paths)]
+
+
+def ignored_protocol_files(root: str, cfg, speckit: str = None, agent: str = None) -> list:
+    """[{path, entry}] for the protocol's files that would never reach Git (an allowlist .gitignore, a
+    docs/ entry): the decisions they hold would be lost in the next clone."""
+    return [{"path": p, "entry": gitignore_entry(p)} for p in ignored(root, protocol_files(root, cfg, speckit, agent))]
+
+
 def create_integration_branch(root: str) -> str:
     cfg = load_project_config(root)
     devops = cfg.section("devops")
@@ -315,6 +355,7 @@ def collect(root: str, agent: str = None) -> dict:
     state["prs"] = prs_state(root, cfg, state["findings"])
     state["speckit"] = speckit_state(root, cfg)
     state["agent"] = {"name": agent, "attribution_hidden": attribution_hidden(root)}
+    state["ignored"] = ignored_protocol_files(root, cfg, state["speckit"].get("state"), agent) if is_git else []
     return state
 
 
@@ -473,6 +514,9 @@ def main(argv: list = None) -> int:
             print(f"❌ {e}")
             return 1
         print(f"✅ {path}: added {', '.join(added) or 'nothing'}")
+        if ignored(root, [os.path.relpath(path, root).replace("\\", "/")]):
+            print(f"⚠️ .gitignore keeps {MANIFEST_NAME} out of Git: add '{gitignore_entry(MANIFEST_NAME)}' to it, "
+                  f"or the configuration is lost in the next clone")
         return 0
     if args.command == "set-attribution":
         try:

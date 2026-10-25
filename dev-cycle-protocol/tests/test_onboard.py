@@ -376,3 +376,30 @@ def test_outside_several_repositories_the_user_chooses(tmp_path, capsys):
 
 def test_a_folder_without_repositories_is_still_a_new_project(tmp_path):
     assert onboard.resolve_root(str(tmp_path)) == (str(tmp_path), [])
+
+
+# ---------------------------------------------------------------- files the .gitignore keeps out
+
+def test_an_allowlist_gitignore_hides_the_protocol_files(repo, tmp_path, capsys):
+    (repo / ".gitignore").write_text("/*\n!/.gitignore\n!/app.py\n!/docs/\n", encoding="utf-8")
+    s = onboard.collect(str(repo), agent="claude-code")
+    assert {i["path"]: i["entry"] for i in s["ignored"]} == {
+        ".dev-cycle.json": "!/.dev-cycle.json", ".specify/memory/constitution.md": "!/.specify/",
+        "specs/001-feature/spec.md": "!/specs/", ".claude/settings.json": "!/.claude/"}
+    item = [o for o in recommendation(s)["options"] if o["key"] == "gitignore"][0]
+    assert "!/.claude/, !/.dev-cycle.json, !/.specify/, !/specs/" in item["title"]
+    proposal = repo / "add.json"
+    proposal.write_text(json.dumps({"project_name": "demo"}), encoding="utf-8")
+    assert onboard.main(["write-config", "--dir", str(repo), "--file", str(proposal)]) == 0
+    assert "keeps .dev-cycle.json out of Git: add '!/.dev-cycle.json'" in capsys.readouterr().out
+
+
+def test_tracked_or_allowed_files_and_declined_spec_kit_are_not_reported(repo):
+    (repo / ".gitignore").write_text("docs/\n", encoding="utf-8")
+    (repo / ".dev-cycle.json").write_text(json.dumps({"speckit": {"enabled": False}}), encoding="utf-8")
+    s = onboard.collect(str(repo))
+    assert [i["path"] for i in s["ignored"]] == ["docs/BACKLOG.md", "docs/ROADMAP.md", "docs/plans/plan.md",
+                                                 "docs/product/VISION.md", "docs/product/TECH_SPEC.md"]
+    assert s["ignored"][0]["entry"] == "!/docs/"
+    (repo / ".gitignore").write_text("", encoding="utf-8")
+    assert onboard.collect(str(repo))["ignored"] == []
