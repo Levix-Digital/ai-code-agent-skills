@@ -206,6 +206,47 @@ def test_cli_summary_list_and_closing(tmp_path, capsys):
     assert run(tmp_path, "validate") == 0
 
 
+ROADMAP = """# Roadmap
+
+## v0.1.0: MVP
+- **Status**: in_progress
+- **Goal**: First usable version.
+- **Items**: BUG-002
+"""
+
+
+def test_bug_triage_needs_a_severity_and_the_next_release():
+    from _bug_triage import bug_triage
+    from _roadmap import Roadmap
+    backlog = Backlog(SAMPLE)
+    result = bug_triage(backlog, Roadmap(ROADMAP), ["critical", "high", "medium"])
+    assert result["untriaged"] == [] and result["next_release"] == "v0.1.0"
+    result = bug_triage(backlog, Roadmap(ROADMAP.replace("BUG-002", "-")), ["critical", "high", "medium"])
+    assert [(b.id, why) for b, why in result["untriaged"]] == [("BUG-002", "not scheduled; it goes into v0.1.0 at the latest")]
+    assert bug_triage(backlog, Roadmap(ROADMAP.replace("BUG-002", "-")), ["critical", "high", "medium"],
+                      exclude=["bug-002"])["untriaged"] == []
+    assert bug_triage(backlog, Roadmap(ROADMAP.replace("in_progress", "released")), [])["untriaged"][0][1] \
+        == "no release left in the roadmap to schedule it"
+    assert bug_triage(backlog, None, [])["untriaged"] == [] and bug_triage(backlog, None, [])["deadline_checked"] is False
+    assert bug_triage(backlog, Roadmap(ROADMAP.replace("BUG-002", "-")), [], deadline="off")["untriaged"] == []
+    no_severity = Backlog(SAMPLE.replace("- **Severity**: high\n", ""))
+    assert [(b.id, why) for b, why in bug_triage(no_severity, None, ["high"])["untriaged"]] == [("BUG-001", "no severity")]
+
+
+def test_cli_add_says_where_a_bug_goes_and_summary_lists_the_untriaged(tmp_path, capsys):
+    (tmp_path / "docs").mkdir()
+    (tmp_path / "docs" / "ROADMAP.md").write_text(ROADMAP.replace("BUG-002", "-"), encoding="utf-8")
+    assert run(tmp_path, "add", "--type", "bug", "--title", "Crash", "--description", "Crashes.", "--severity", "medium") == 0
+    assert "comes before new features" in capsys.readouterr().out
+    assert run(tmp_path, "add", "--type", "bug", "--title", "Typo", "--description", "Typo.", "--severity", "low") == 0
+    assert "roadmap.py assign BUG-002 --release v0.1.0" in capsys.readouterr().out
+    assert run(tmp_path, "summary", "--json") == 0
+    data = json.loads(capsys.readouterr().out)
+    assert data["blocking_bugs"] == ["BUG-001"] and [u["id"] for u in data["untriaged_bugs"]] == ["BUG-002"]
+    assert run(tmp_path, "summary") == 0
+    assert "not triaged yet" in capsys.readouterr().out
+
+
 def test_cli_custom_file_from_config(tmp_path):
     (tmp_path / ".dev-cycle.json").write_text(json.dumps({"backlog": {"file": "BACKLOG.md"}}), encoding="utf-8")
     assert run(tmp_path, "add", "--type", "adjustment", "--title", "Rename", "--description", "Rename it.") == 0

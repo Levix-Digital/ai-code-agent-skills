@@ -113,7 +113,7 @@ def load_backlog(cwd: str):
 
 
 def check_bugs_first(cwd: str, plan, store, accept_reason: str = None) -> bool:
-    """Open bugs with a blocking severity come before any plan that is not a bug plan."""
+    """Open bugs with a blocking severity, and bugs not triaged yet, come before any plan that is not a bug plan."""
     bf, backlog = load_backlog(cwd)
     if backlog is None:
         return True
@@ -121,26 +121,43 @@ def check_bugs_first(cwd: str, plan, store, accept_reason: str = None) -> bool:
     if problems:
         print(f"⚠️ Backlog {bf.rel} has {len(problems)} problem(s); run plan-memory/backlog.py validate.")
     blocking = [b for b in backlog.blocking_bugs(bf.blocking_severities) if b.id not in plan.backlog_items]
-    others = [b for b in backlog.open_items("bug") if b not in blocking and b.id not in plan.backlog_items]
+    triage = bf.triage(backlog, exclude=plan.backlog_items)
+    untriaged = [(b, why) for b, why in triage["untriaged"] if b not in blocking]
+    others = [b for b in backlog.open_items("bug")
+              if b not in blocking and b.id not in plan.backlog_items and b not in [u for u, _ in untriaged]]
     if others:
-        print(f"ℹ️ Other open bugs in {bf.rel}: {', '.join(b.id for b in others)}")
-    if not blocking:
-        print(f"✅ Bugs first: no open {'/'.join(bf.blocking_severities) or 'blocking'} bug outside this plan.")
+        print(f"ℹ️ Other open bugs in {bf.rel} (triaged): {', '.join(b.id for b in others)}")
+    if bf.bug_deadline == "next_release" and not triage["deadline_checked"] and others:
+        print("⚠️ No roadmap: the deadline of the bugs that do not block (the next release) is not checked.")
+    if not blocking and not untriaged:
+        print(f"✅ Bugs first: no open {'/'.join(bf.blocking_severities) or 'blocking'} bug outside this plan"
+              + (", every other bug is triaged." if bf.bug_deadline == "next_release" else "."))
         return True
-    listing = ", ".join(f"{b.id} ({b.rank})" for b in blocking)
+    listing = ", ".join([f"{b.id} ({b.rank})" for b in blocking] + [f"{b.id} (not triaged)" for b, _ in untriaged])
     if plan.kind == "bug":
-        print(f"ℹ️ Bug plan; other blocking bugs still open: {listing}")
+        print(f"ℹ️ Bug plan; other bugs still come before new work: {listing}")
         return True
     if accept_reason:
-        plan.add_log(store.author(), f"Approved with open blocking bugs {', '.join(b.id for b in blocking)}: {accept_reason}")
+        ids = ", ".join([b.id for b in blocking] + [b.id for b, _ in untriaged])
+        plan.add_log(store.author(), f"Approved with open bugs before new work {ids}: {accept_reason}")
         store.save(plan)
         print(f"⚠️ Bugs first overridden by the user: {listing}. Recorded in the plan's status log; commit the plan file.")
         return True
-    print(f"❌ Bugs first: open {', '.join(bf.blocking_severities)} bugs come before this {plan.kind} plan: {listing}")
-    for b in blocking:
-        print(f"   {b.id}: {b.title}")
-    print("   Plan them first (plan-memory/backlog.py promote), or, only when the user explicitly accepts the risk,")
-    print('   run this gate again with --accept-open-bugs "<the user\'s reason>".')
+    if blocking:
+        print(f"❌ Bugs first: open {', '.join(bf.blocking_severities)} bugs come before this {plan.kind} plan: "
+              + ", ".join(f"{b.id} ({b.rank})" for b in blocking))
+        for b in blocking:
+            print(f"   {b.id}: {b.title}")
+        print("   Plan them first (plan-memory/backlog.py promote).")
+    if untriaged:
+        nxt = triage["next_release"]
+        print(f"❌ Bugs first: open bugs not triaged come before this {plan.kind} plan:")
+        for b, why in untriaged:
+            print(f"   {b.id} ({b.rank or '?'}) {b.title}: {why}")
+        print("   Triage them: a severity (backlog.py set <ID> --severity <s>) and, for the bugs that do not block,")
+        print(f"   the next release{f' {nxt}' if nxt else ''} at the latest (roadmap.py assign <ID> --release "
+              f"{nxt or '<vX.Y.Z>'} [--move]); or fix them first.")
+    print('   Only when the user explicitly accepts the risk, run this gate again with --accept-open-bugs "<the user\'s reason>".')
     return False
 
 
@@ -473,6 +490,13 @@ def verify_gate_8(cwd: str, project_name: str, run: str = None) -> bool:
                 if open_bugs:
                     print(f"⚠️ Open {'/'.join(bf.blocking_severities)} bugs; list them as known limitations in the release notes: "
                           + ", ".join(f"{b.id} {b.title}" for b in open_bugs))
+                untriaged = bf.triage(backlog)["untriaged"]
+                if untriaged:
+                    print("❌ Open bugs not triaged (a severity, and the next release at the latest for the bugs that "
+                          "do not block; roadmap.py assign <ID> --release <vX.Y.Z> [--move]):")
+                    for b, why in untriaged:
+                        print(f"   {b.id} ({b.rank or '?'}) {b.title}: {why}")
+                    passed = False
         except Exception as e:
             print(f"ℹ️ Could not read the backlog: {e}")
 

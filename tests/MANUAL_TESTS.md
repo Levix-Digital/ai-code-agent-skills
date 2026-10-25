@@ -84,6 +84,21 @@ How to record a run: in each test of the current run, mark exactly one box of th
 - **Result**: [ ] Pass [ ] Fail [ ] Blocked
 - **Notes**:
 
+### MT-BACKLOG-004: Medium bugs come first, low bugs go into the next release
+
+- **Covers**: dev-cycle-protocol, plan-memory, backlog
+- **Prerequisites**: the sample project with `docs/ROADMAP.md` whose first release not released is `v0.2.0`, and no open bug
+- **Steps**:
+  1. `/backlog --bug "The export button is slow" --severity medium`, then ask for a new feature.
+  2. Close the medium bug, then `/backlog --bug "Typo in the About page" --severity low` and ask for the feature again.
+  3. Let the agent schedule the low bug and ask for the feature again.
+- **Expected**:
+  - Step 1: the feature plan does not pass gate 3 while the medium bug is open.
+  - Step 2: the agent says the low bug goes into `v0.2.0` at the latest; while it is not in the roadmap, gate 3 fails with the bug as not triaged and `/dev-cycle` offers to triage it.
+  - Step 3: after `roadmap.py assign BUG-NNN --release v0.2.0`, gate 3 passes and gate 8 of `v0.2.0` lists the bug as an open item of the release.
+- **Result**: [ ] Pass [ ] Fail [ ] Blocked
+- **Notes**:
+
 ### MT-BACKLOG-003: Epics, roadmap and superseded items
 
 - **Covers**: backlog, plan-memory

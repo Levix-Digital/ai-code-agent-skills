@@ -80,11 +80,90 @@ def test_bug_plans_and_plans_that_include_the_bug_are_not_blocked(tmp_path):
     assert gate(root, "--gate", "3").returncode == 0
 
 
-def test_low_bugs_only_inform(tmp_path):
+ROADMAP = """# Roadmap
+
+## v0.1.0: MVP
+- **Status**: released
+- **Released**: 2026-10-01
+- **Goal**: First usable version.
+- **Items**: -
+
+## v0.2.0: Albums
+- **Status**: in_progress
+- **Goal**: Albums.
+- **Items**: {next_items}
+
+## v1.0.0: Launch
+- **Status**: planned
+- **Goal**: Public launch.
+- **Items**: {later_items}
+"""
+
+
+def write_roadmap(root, next_items="-", later_items="-"):
+    (root / "docs" / "ROADMAP.md").write_text(ROADMAP.format(next_items=next_items, later_items=later_items),
+                                              encoding="utf-8")
+
+
+def test_medium_bugs_block_by_default(tmp_path):
+    root = project(tmp_path, severity="medium")
+    write_plan(root, "export", "feature")
+    res = gate(root, "--gate", "3")
+    assert res.returncode == 1 and "BUG-001 (medium)" in res.stdout
+
+
+def test_low_bugs_without_a_roadmap_only_inform(tmp_path):
     root = project(tmp_path, severity="low")
     write_plan(root, "export", "feature")
     res = gate(root, "--gate", "3")
-    assert res.returncode == 0 and "Other open bugs" in res.stdout
+    assert res.returncode == 0 and "Other open bugs" in res.stdout and "No roadmap" in res.stdout
+
+
+def test_low_bug_in_the_next_release_is_triaged(tmp_path):
+    root = project(tmp_path, severity="low")
+    write_roadmap(root, next_items="BUG-001")
+    write_plan(root, "export", "feature")
+    res = gate(root, "--gate", "3")
+    assert res.returncode == 0, res.stdout
+    assert "every other bug is triaged" in res.stdout
+
+
+def test_low_bug_not_scheduled_or_scheduled_later_blocks(tmp_path):
+    root = project(tmp_path, severity="low")
+    write_roadmap(root)
+    write_plan(root, "export", "feature")
+    res = gate(root, "--gate", "3")
+    assert res.returncode == 1, res.stdout
+    assert "not triaged" in res.stdout and "goes into v0.2.0 at the latest" in res.stdout
+    assert "roadmap.py assign <ID> --release v0.2.0" in res.stdout
+    write_roadmap(root, later_items="BUG-001")
+    res = gate(root, "--gate", "3")
+    assert res.returncode == 1 and "scheduled for v1.0.0; the deadline is v0.2.0" in res.stdout
+
+
+def test_bug_without_severity_is_not_triaged(tmp_path):
+    root = project(tmp_path, severity="")
+    write_plan(root, "export", "feature")
+    res = gate(root, "--gate", "3")
+    assert res.returncode == 1 and "BUG-001 (?) Crash on start: no severity" in res.stdout
+
+
+def test_untriaged_bugs_can_be_accepted_or_turned_off(tmp_path):
+    root = project(tmp_path, severity="low")
+    write_roadmap(root)
+    path = write_plan(root, "export", "feature")
+    assert gate(root, "--gate", "3", "--accept-open-bugs", "Cosmetic, after the demo").returncode == 0
+    assert "Cosmetic, after the demo" in path.read_text(encoding="utf-8")
+    (root / ".dev-cycle.json").write_text(json.dumps({"backlog": {"bug_deadline": "off"}}), encoding="utf-8")
+    assert gate(root, "--gate", "3").returncode == 0
+
+
+def test_bug_plan_is_not_blocked_by_untriaged_bugs(tmp_path):
+    root = project(tmp_path, severity="low")
+    write_roadmap(root)
+    write_plan(root, "other-bug", "bug")
+    res = gate(root, "--gate", "3")
+    assert res.returncode == 0 and "BUG-001 (not triaged)" in res.stdout
 
 
 def test_configured_blocking_severities(tmp_path):
@@ -111,3 +190,17 @@ def test_inspect_project_reports_the_backlog(tmp_path):
     root = project(tmp_path)
     info = backlog_profile(str(root))
     assert info["open"]["bug"] == 1 and info["blocking_bugs"] == ["BUG-001 (high) Crash on start"]
+    assert info["untriaged_bugs"] == []
+    root = project(tmp_path, severity="low")
+    write_roadmap(root)
+    assert backlog_profile(str(root))["untriaged_bugs"] == [
+        "BUG-001 (low) Crash on start: not scheduled; it goes into v0.2.0 at the latest"]
+
+
+def test_gate_8_fails_while_a_bug_is_not_triaged(tmp_path):
+    root = make_project(tmp_path)
+    (tmp_path / "docs").mkdir(exist_ok=True)
+    (tmp_path / "docs" / "BACKLOG.md").write_text(BACKLOG.format(severity="low"), encoding="utf-8")
+    write_roadmap(tmp_path, later_items="BUG-001")
+    res = gate(root, "--gate", "8", "--run", "v0.2.0-rc.1")
+    assert res.returncode == 1 and "Open bugs not triaged" in res.stdout and "deadline is v0.2.0" in res.stdout

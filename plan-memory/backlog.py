@@ -54,9 +54,10 @@ def epic_progress(backlog: Backlog, epic) -> str:
     return f"{done}/{len(items)} items closed"
 
 
-def summary_data(backlog: Backlog, blocking: list) -> dict:
+def summary_data(backlog: Backlog, blocking: list, untriaged: list = ()) -> dict:
     data = {"types": {}, "blocking_severities": blocking,
             "blocking_bugs": [i.id for i in backlog.blocking_bugs(blocking)],
+            "untriaged_bugs": [{"id": i.id, "reason": why} for i, why in untriaged],
             "closed": len([i for i in backlog.items if i.closed])}
     for item_type in TYPES:
         items = backlog.open_items(item_type)
@@ -77,8 +78,14 @@ def print_summary(backlog: Backlog, bf: BacklogFile):
         print(f"\n🐞 Open bugs that come before new work ({', '.join(bf.blocking_severities)}):")
         for item in blocking:
             print(f"   {line_of(item)}")
+    triage = bf.triage(backlog)
+    untriaged = [b for b, _ in triage["untriaged"]]
+    if untriaged:
+        print("\n🏷️ Open bugs not triaged yet (they also come before new work):")
+        for item, why in triage["untriaged"]:
+            print(f"   {line_of(item)}  - {why}")
     for item_type in TYPES:
-        items = [i for i in backlog.open_items(item_type) if i not in blocking]
+        items = [i for i in backlog.open_items(item_type) if i not in blocking and i not in untriaged]
         if items:
             print(f"\n{TYPES[item_type][1]}:")
             for item in items:
@@ -224,6 +231,12 @@ def cmd(args) -> int:
         item = backlog.add(args.type, args.title, args.description, found, args.severity, args.priority, args.epic)
         bf.save(backlog)
         print(f"✅ {item.id}: {item.title} ({item.rank}) added to {bf.rel}")
+        if item.type == "bug" and item.rank in bf.blocking_severities:
+            print(f"   🐞 {item.rank} bug: it comes before new features, improvements and adjustments.")
+        elif item.type == "bug" and bf.bug_deadline == "next_release":
+            nxt = bf.triage(backlog)["next_release"]
+            print(f"   ⏳ {item.rank} bug: schedule it in the next release at the latest: "
+                  f"roadmap.py assign {item.id} --release {nxt or '<vX.Y.Z>'}")
         return 0
 
     if not bf.exists:
@@ -238,7 +251,7 @@ def cmd(args) -> int:
 
     if args.command == "summary":
         if args.json:
-            print(json.dumps(summary_data(backlog, bf.blocking_severities), indent=2))
+            print(json.dumps(summary_data(backlog, bf.blocking_severities, bf.triage(backlog)["untriaged"]), indent=2))
         else:
             print_summary(backlog, bf)
         return 0

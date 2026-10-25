@@ -283,6 +283,7 @@ def collect(root: str, agent: str = None) -> dict:
             backlog = bf.load()
             baseline["epics"] = len(backlog.open_items("epic"))
             state["bugs"] = [f"{b.id} ({b.rank}) {b.title}" for b in backlog.blocking_bugs(bf.blocking_severities)]
+            state["untriaged"] = [f"{b.id} ({b.rank or '?'}) {b.title}: {why}" for b, why in bf.triage(backlog)["untriaged"]]
     except Exception as e:
         state["findings"].append(f"backlog: could not be read ({e})")
 
