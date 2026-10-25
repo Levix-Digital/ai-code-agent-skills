@@ -338,3 +338,20 @@ How to record a run: in each test of the current run, mark exactly one box of th
   - The promotion releases `v1.4.0` from `release/1.4`; a later patch of an older line is not marked as the latest release.
 - **Result**: [ ] Pass [ ] Fail [ ] Blocked
 - **Notes**:
+
+## Gedo Feedback
+
+### MT-GEDO-001: Gedo feedback stays off until the project uses Gedo
+
+- **Covers**: gedo-feedback, dev-cycle-protocol
+- **Prerequisites**: a sample Git project with a `.dev-cycle.json` without a `gedo` section
+- **Steps**:
+  1. Tell the agent that `gedo radar` missed a collision between two threads and ask it to record that.
+  2. Set `"gedo": {"enabled": true}` in `.dev-cycle.json` and ask again.
+  3. Ask the agent to report the entry to Gedo.
+- **Expected**:
+  - Step 1: the agent says Gedo feedback is off because the project does not use Gedo, and writes nothing.
+  - Step 2: one file appears in `docs/gedo-feedback/` with kind `missed-collision`, the scenario, expected and actual behavior in English, and no project code.
+  - Step 3: the agent asks before creating the issue in `Levix-Digital/gedo`; after it is created, the entry is `reported` with the issue link.
+- **Result**: [ ] Pass [ ] Fail [ ] Blocked
+- **Notes**:

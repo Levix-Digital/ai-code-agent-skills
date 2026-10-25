@@ -33,6 +33,7 @@ The user starts with one command, [`/dev-cycle`](../dev-cycle/SKILL.md) (with a 
 | Technical writer | [`user-docs`](../user-docs/SKILL.md) | README and end-user documentation |
 | Reviewer | [`code-review`](../code-review/SKILL.md) | The review of every pull request on its platform: line comments with a level, never an approval |
 | Session memory | [`session-memory`](../session-memory/SKILL.md) | The developer's own session context |
+| Gedo feedback (temporary, off by default) | [`gedo-feedback`](../gedo-feedback/SKILL.md) | What goes wrong with Gedo in real work, recorded for Gedo's backlog while the project uses Gedo (`gedo.enabled`) |
 | Spec executor (optional) | [GitHub Spec Kit](https://github.com/github/spec-kit) | The detail of a feature in Phases 1, 2 and 4: `specs/NNN-slug/` (spec, plan, tasks) |
 
 A role is a set of rules and a checker, not a separate person: load the role skill when its phase starts, follow it, and run its checker before leaving the phase. Spec Kit is a tool, not a role: the protocol decides when it runs and checks what it produces (see "Spec Kit").
@@ -235,6 +236,12 @@ The backlog (`backlog.file` in `.dev-cycle.json`, default `docs/BACKLOG.md`) is 
 - **Setup** (`.dev-cycle.json` section `speckit`): `speckit_setup.py init` installs Spec Kit in the project at an exact version, through `uvx` (requires [uv](https://docs.astral.sh/uv/)), with the agent integration (`speckit.integration`, default `claude`), the script type (`speckit.script`: `sh`, or `ps` on Windows), branches `feat/NNN-slug` (`speckit.branch_prefix`) and the protocol's preset; commit `.specify/`, the agent command files and `.dev-cycle.json`.
 - **Version pinned per project**: `speckit.version` is an exact release tag; the CLI is always called at that version, never through a global install. A new project takes the latest release when it passes the **compatibility check** (`speckit_setup.py check`: init, version, templates, commands, branch naming, preset, feature resolution, constitution check in a temporary repository), and the protocol's verified version (`speckit-preset/compat.json`) moves forward. When the latest release fails the check, the project pins the last verified version and the agent drafts an adaptation document in the skills repository (`docs/protocol-updates/speckit-vX.Y.Z.md`) and captures it in that repository's backlog. Existing projects change versions only when the user asks (`speckit_setup.py upgrade --to vX.Y.Z`, which runs the check first).
 - **Constitution**: `.specify/memory/constitution.md` is generated from `software-design` (principles and the project's style guide), the protocol's principles, the technical specification (requirements and constraints) and the accepted ADRs, so Spec Kit's Constitution Check enforces the protocol's rules. It is never edited by hand: change the source, run `constitution.py generate` and commit it with the change. Gates 0 and 3 block a stale or hand-edited constitution.
+
+---
+
+## 🧪 Gedo (off by default)
+
+[Gedo](https://github.com/Levix-Digital/gedo), Levix's collaboration overlay on Git, is the layer meant to let the cycle run parallel threads like several developers. It is still being built, so the protocol does not use it yet: `gedo.enabled` stays `false` until the user turns it on. While it is on, every problem Gedo shows in real work (a missed or false collision, a merge that falls back to text, a contract break that slips through, slowness, a crash, a workaround) is recorded with [`gedo-feedback`](../gedo-feedback/SKILL.md) when it happens; the open entries are linked in the pull request (Phase 7) and offered to the user for reporting as Gedo issues at the release (Phase 10). Recording is temporary: `gedo.feedback: false` turns it off once Gedo is mature.
 
 ---
 

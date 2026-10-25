@@ -36,6 +36,7 @@ Optional file at a project's root: the project configuration shared by every ski
     "script": "sh",
     "branch_prefix": "feat"
   },
+  "gedo": { "enabled": false, "feedback": true, "feedback_dir": "docs/gedo-feedback", "repo": "Levix-Digital/gedo" },
   "architecture_docs": {
     "index": "TECDOC.md",
     "architecture_dir": "docs/architecture",
@@ -90,6 +91,10 @@ Optional file at a project's root: the project configuration shared by every ski
 | `speckit.integration` | Coding agent integration passed to `specify init` | `claude` |
 | `speckit.script` | Script type of Spec Kit's commands: `sh`, `ps` or `py` | `sh` (`ps` on Windows) |
 | `speckit.branch_prefix` | Prefix of Spec Kit's feature branches (`<prefix>/NNN-slug`) | `feat` |
+| `gedo.enabled` | The project uses [Gedo](https://github.com/Levix-Digital/gedo); the user's decision, never turned on by the agent | `false` |
+| `gedo.feedback` | While Gedo is used, record what goes wrong with it (`gedo-feedback`); temporary, until Gedo is mature | `true` |
+| `gedo.feedback_dir` | Folder of the Gedo feedback entries, one file each | `docs/gedo-feedback` |
+| `gedo.repo` | Repository that receives the Gedo issues | `Levix-Digital/gedo` |
 | `architecture_docs` | Layout, line limit and language of the technical docs; add `"plans"` to `language_scope` to check plans too | see `architecture-docs` |
 | `drift_rules` | Technologies or patterns the project's plans reject | `[]` |
 

@@ -89,6 +89,12 @@ DEFAULTS = {
         "script": None,
         "branch_prefix": "feat",
     },
+    "gedo": {
+        "enabled": False,
+        "feedback": True,
+        "feedback_dir": "docs/gedo-feedback",
+        "repo": "Levix-Digital/gedo",
+    },
     # Owned by other skills; passed through untouched.
     "architecture_docs": {},
     "drift_rules": [],
@@ -220,6 +226,14 @@ class ProjectConfig:
             problems.append("review.auto_review must be true or false")
         if not isinstance(review.get("allowed_terms"), list):
             problems.append("review.allowed_terms must be a list of phrases")
+        gedo = self.section("gedo")
+        for key in ("enabled", "feedback"):
+            if not isinstance(gedo.get(key), bool):
+                problems.append(f"gedo.{key} must be true or false")
+        if not (isinstance(gedo.get("feedback_dir"), str) and gedo.get("feedback_dir")):
+            problems.append("gedo.feedback_dir must be a folder path")
+        if not (isinstance(gedo.get("repo"), str) and re.match(r"^[\w.-]+/[\w.-]+$", gedo.get("repo"))):
+            problems.append(f"gedo.repo '{gedo.get('repo')}' must be an owner/name repository")
         known = set(DEFAULTS) | set(LEGACY_KEYS) | {"doc_files"}
         for key in self.raw:
             if key not in known:
@@ -319,6 +333,9 @@ def main() -> int:
         speckit = cfg.section("speckit")
         print(f"   Spec Kit           : " + (f"{speckit.get('version') or 'version not set'} ({speckit.get('integration')}, "
                                              f"branches {speckit.get('branch_prefix')}/NNN-slug)" if speckit.get("enabled") else "off"))
+        gedo = cfg.section("gedo")
+        print(f"   Gedo               : " + ((f"on (feedback {'on' if gedo.get('feedback') else 'off'}: {gedo.get('feedback_dir')})")
+                                             if gedo.get("enabled") else "off"))
         if cfg.legacy_keys_used:
             print(f"   ℹ️  Legacy keys in use: {', '.join(cfg.legacy_keys_used)} (run with --migrate --write)")
 

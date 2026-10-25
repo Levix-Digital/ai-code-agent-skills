@@ -18,6 +18,7 @@ Development skills in the open `SKILL.md` format, shared by every coding agent o
 | [`devops-release`](#devops-release) | DevOps | The branching model (integration, trunk or release branches), pull request CI, versions, release candidates, the user's release gate, observability |
 | [`user-docs`](#user-docs) | Technical writer | End-user READMEs in English with a standard structure, template and checker |
 | [`session-memory`](#session-memory) | Session memory | Recovers and consolidates each developer's own session context per project (local ChromaDB) |
+| [`gedo-feedback`](gedo-feedback/SKILL.md) | Gedo feedback (temporary) | Off until a project uses [Gedo](https://github.com/Levix-Digital/gedo) (`gedo.enabled`): records what goes wrong with Gedo in real parallel work, one file per entry in `docs/gedo-feedback/`, and turns entries into Gedo issues with your confirmation |
 | [`folder-sync`](#folder-sync) | Utility | Incremental RAG over any folder: `/sync` to index, `/folder` to ask |
 
 ---
@@ -43,7 +44,7 @@ Development skills in the open `SKILL.md` format, shared by every coding agent o
 ├── .claude-plugin/                      Claude Code marketplace + plugin manifests
 ├── dev-cycle/  dev-cycle-protocol/  product-inception/  plan-memory/  backlog/
 ├── software-design/  architecture-docs/  quality-assurance/
-├── devops-release/  user-docs/  session-memory/  folder-sync/
+├── devops-release/  user-docs/  session-memory/  gedo-feedback/  folder-sync/
 ├── docs/plans/                          plans of this repository
 ├── tests/MANUAL_TESTS.md                manual tests of this repository
 ├── install.ps1 / install.sh             link the skills into each agent
@@ -354,7 +355,7 @@ Details: [folder-sync/SKILL.md](folder-sync/SKILL.md).
 
 ## Project configuration: `.dev-cycle.json`
 
-Optional file at a project's root: the project configuration shared by every skill, one section per skill (`architecture`, `docs`, `tests`, `devops`, `plans`, `backlog`, `roadmap`, `product`, `speckit`, `architecture_docs`, `drift_rules`) plus `test_commands`. Every key is optional and older files with flat keys keep working.
+Optional file at a project's root: the project configuration shared by every skill, one section per skill (`architecture`, `docs`, `tests`, `devops`, `plans`, `backlog`, `roadmap`, `product`, `speckit`, `gedo`, `architecture_docs`, `drift_rules`) plus `test_commands`. Every key is optional and older files with flat keys keep working.
 
 ```json
 {
@@ -365,9 +366,7 @@ Optional file at a project's root: the project configuration shared by every ski
 }
 ```
 
-```bash
-python ~/.ai-code-agent-skills/dev-cycle-protocol/project_config.py --validate
-```
+Check it with `python ~/.ai-code-agent-skills/dev-cycle-protocol/project_config.py --validate`.
 
 Full key reference, defaults and drift rules: [docs/configuration.md](docs/configuration.md).
 
