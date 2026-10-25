@@ -22,6 +22,7 @@ The one command the user needs: the protocol guides the user, not the other way 
    ```
    Pass `--agent claude-code` when the command runs in Claude Code, so the diagnosis can check its attribution settings.
    The result has `mode` (`new` or `existing`), `summary`, `ask`, `options` (in the recommended order) and `recommended`.
+   When the session started outside a repository, the diagnosis uses the only repository below it and says so in the summary: work from that repository from then on. With more than one, `mode` is `choose` and the options are the repositories: ask which one is the project and run the diagnosis again with `--dir <it>`.
 2. **Nothing to decide** (`ask` is false): tell the user the summary in one line and go on:
    - `new`: [`product-inception`](../product-inception/SKILL.md) Phase 0 with the idea;
    - `existing`: `dev-cycle-protocol` Phase 1 with the request (full or short path as usual).

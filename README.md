@@ -389,7 +389,7 @@ Adding a skill, running the tests, conventions, personal skills and updating oth
 | A memory script finds nothing for a project | Run `read_memory.py --list-projects` or `list_plans.py`; the project may be stored under another name. Names are normalized (`AnyContext` = `any-context`), but `anycontext` cannot be split. |
 | `check_docs.py` reports many errors after `extract_adrs.py` | Expected: they are the migration work list (translate and restructure ADRs, rewrite the index and subsystem pages). |
 | `detect_drift.py` reports `Drift Rules: none` | Run it from the project folder (or pass `--dir`) and add `drift_rules` to `.dev-cycle.json`. |
-| Cloud session has no `dev-skills:*` skills | Check the branch has `.claude/settings.json`, the GitHub app can access this repository, and `/plugin` for load errors. |
+| Cloud session has no `dev-skills:*` skills | `claude plugin list`. A session that starts outside the repository (Claude Projects, several repositories) never reads the project's `.claude/settings.json`: install with the environment's Setup script ([docs/cloud-sessions.md](docs/cloud-sessions.md)). Otherwise check the branch has `.claude/settings.json`, the GitHub app can access this repository, and `/plugin` for load errors. |
 
 ---
 

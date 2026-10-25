@@ -335,3 +335,38 @@ def test_a_pending_pull_request_stops_the_straight_path():
 def test_review_provider_none_skips_the_platform(repo):
     (repo / ".dev-cycle.json").write_text(json.dumps({"review": {"provider": "none"}}), encoding="utf-8")
     assert onboard.collect(str(repo))["prs"] == []
+
+
+# ---------------------------------------------------------------- session started outside the repository
+def make_repo(path):
+    path.mkdir()
+    run_git(path, "init", "-q", "-b", "main")
+    (path / "app.py").write_text("print('hi')\n", encoding="utf-8")
+    run_git(path, "add", "-A")
+    run_git(path, "commit", "-q", "-m", "init")
+    return path
+
+
+def test_outside_a_repository_the_only_repository_below_is_used(tmp_path, capsys):
+    project = make_repo(tmp_path / "app")
+    (tmp_path / "notes").mkdir()
+    assert onboard.resolve_root(str(tmp_path)) == (str(project), [str(project)])
+    assert onboard.main(["diagnose", "--dir", str(tmp_path), "--json"]) == 0
+    data = json.loads(capsys.readouterr().out)
+    assert data["state"]["repo"]["git"] is True and data["summary"].startswith(f"Using {project}")
+    assert all(o["key"] != "git" for o in data["options"])
+
+
+def test_outside_several_repositories_the_user_chooses(tmp_path, capsys):
+    for name in ("web", "api"):
+        make_repo(tmp_path / name)
+    assert onboard.resolve_root(str(tmp_path))[0] is None
+    assert onboard.main(["diagnose", "--dir", str(tmp_path), "--json"]) == 0
+    data = json.loads(capsys.readouterr().out)
+    assert data["mode"] == "choose" and data["ask"] is True
+    assert [o["title"] for o in data["options"]] == ["api", "web"]
+    assert onboard.main(["propose-config", "--dir", str(tmp_path)]) == 1
+
+
+def test_a_folder_without_repositories_is_still_a_new_project(tmp_path):
+    assert onboard.resolve_root(str(tmp_path)) == (str(tmp_path), [])
