@@ -384,10 +384,11 @@ def test_an_allowlist_gitignore_hides_the_protocol_files(repo, tmp_path, capsys)
     (repo / ".gitignore").write_text("/*\n!/.gitignore\n!/app.py\n!/docs/\n", encoding="utf-8")
     s = onboard.collect(str(repo), agent="claude-code")
     assert {i["path"]: i["entry"] for i in s["ignored"]} == {
-        ".dev-cycle.json": "!/.dev-cycle.json", ".specify/memory/constitution.md": "!/.specify/",
+        ".dev-cycle.json": "!/.dev-cycle.json", "TECDOC.md": "!/TECDOC.md", "tests/MANUAL_TESTS.md": "!/tests/",
+        ".specify/memory/constitution.md": "!/.specify/",
         "specs/001-feature/spec.md": "!/specs/", ".claude/settings.json": "!/.claude/"}
     item = [o for o in recommendation(s)["options"] if o["key"] == "gitignore"][0]
-    assert "!/.claude/, !/.dev-cycle.json, !/.specify/, !/specs/" in item["title"]
+    assert "!/.claude/, !/.dev-cycle.json, !/.specify/, !/TECDOC.md, !/specs/, !/tests/" in item["title"]
     proposal = repo / "add.json"
     proposal.write_text(json.dumps({"project_name": "demo"}), encoding="utf-8")
     assert onboard.main(["write-config", "--dir", str(repo), "--file", str(proposal)]) == 0
@@ -399,7 +400,8 @@ def test_tracked_or_allowed_files_and_declined_spec_kit_are_not_reported(repo):
     (repo / ".dev-cycle.json").write_text(json.dumps({"speckit": {"enabled": False}}), encoding="utf-8")
     s = onboard.collect(str(repo))
     assert [i["path"] for i in s["ignored"]] == ["docs/BACKLOG.md", "docs/ROADMAP.md", "docs/plans/plan.md",
-                                                 "docs/product/VISION.md", "docs/product/TECH_SPEC.md"]
+                                                 "docs/product/VISION.md", "docs/product/TECH_SPEC.md",
+                                                 "docs/architecture/subsystem.md", "docs/adr/0001-decision.md"]
     assert s["ignored"][0]["entry"] == "!/docs/"
     (repo / ".gitignore").write_text("", encoding="utf-8")
     assert onboard.collect(str(repo))["ignored"] == []

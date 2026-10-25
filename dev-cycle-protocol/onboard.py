@@ -206,11 +206,14 @@ def protocol_files(root: str, cfg, speckit: str = None, agent: str = None) -> li
     rules can be checked before anything is written there."""
     def rel(path):
         return os.path.relpath(os.path.join(root, path), root).replace("\\", "/")
-    product = cfg.section("product")
+    product, docs = cfg.section("product"), cfg.section("architecture_docs")
     paths = [MANIFEST_NAME, cfg.section("backlog").get("file") or "docs/BACKLOG.md",
              cfg.section("roadmap").get("file") or "docs/ROADMAP.md",
              f"{cfg.section('plans').get('dir') or 'docs/plans'}/plan.md",
-             product.get("vision") or "docs/product/VISION.md", product.get("tech_spec") or "docs/product/TECH_SPEC.md"]
+             product.get("vision") or "docs/product/VISION.md", product.get("tech_spec") or "docs/product/TECH_SPEC.md",
+             docs.get("index") or "TECDOC.md", f"{docs.get('architecture_dir') or 'docs/architecture'}/subsystem.md",
+             f"{docs.get('adr_dir') or 'docs/adr'}/0001-decision.md",
+             cfg.section("tests").get("manual_tests") or "tests/MANUAL_TESTS.md"]
     if speckit not in ("declined",):
         paths += [".specify/memory/constitution.md", "specs/001-feature/spec.md"]
     if agent == "claude-code":
