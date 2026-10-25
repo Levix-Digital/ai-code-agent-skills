@@ -91,6 +91,8 @@ def print_status(pr: dict, p: dict):
         print(f"   ⏳ check {c.get('name')} running")
     if p["conflict"]:
         print("   ⚠️ merge conflict with the base branch")
+    if pr.get("threads_note"):
+        print(f"   ℹ️ {pr['threads_note']}: threads are shown as open")
     if not needs_action(p):
         print("   ✅ nothing to do on the pull request now")
 
@@ -130,6 +132,8 @@ def gate_merge(ctx: Context, provider, pr: dict) -> int:
     print(f"🔀 {summary_line(pr, pending_of(ctx, pr))}")
     for b in blockers:
         print(f"   ❌ {b}")
+    if pr.get("threads_note"):
+        print(f"   ℹ️ {pr['threads_note']}")
     required = provider.requires_thread_resolution(pr.get("base"))
     if required is False:
         print(f"   ⚠️ merging into '{pr.get('base')}' does not require resolved conversations; turn it on in "
