@@ -8,6 +8,7 @@
 !/.specify/
 !/specs/
 !/README.md
+!/TECDOC.md
 !/install.ps1
 !/install.sh
 !/requirements.txt

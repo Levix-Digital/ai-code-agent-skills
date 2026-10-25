@@ -10,23 +10,125 @@ Each item: `### <ID>: <title>` with the fields `Severity` (bugs: critical, high,
 
 ### FEAT-001: Pull request review on Bitbucket, Azure DevOps and Gitea
 - **Priority**: medium
+- **Epic**: EPIC-003
 - **Status**: open
 - **Found**: 2026-10-23, pull request review plan discussion
 - **Plan**: -
 - **Description**: The pull request review flow starts with GitHub and GitLab. Analyze and add adapters for Bitbucket, Azure DevOps and Gitea (reading threads, comments, suggestions, reviews and CI; replying, resolving and posting reviews).
 
+### FEAT-002: Role isolation in sequence
+- **Priority**: high
+- **Epic**: EPIC-004
+- **Status**: open
+- **Found**: 2026-10-25, 2026-10-25, platform strategy discussion
+- **Plan**: -
+- **Description**: Run each role specialist in its own context, one after the other: plan sections in Phase 2 (design, tests, documentation, release) and review lenses in Phase 7 (plan and architecture, complexity and security, tests and docs), with the orchestrator merging the results. No parallelism (ADR-0005); concurrent runs come with Gedo (FEAT-003).
+
+### FEAT-003: Parallel milestones and roles on Gedo streams
+- **Priority**: high
+- **Epic**: EPIC-004
+- **Status**: open
+- **Found**: 2026-10-25, 2026-10-25, platform strategy discussion
+- **Plan**: -
+- **Description**: With gedo.enabled only: resolve the milestone DAG of an approved plan and run independent milestones as parallel workers on Gedo virtual streams within their allowed scopes, with a shared build lock for test commands; run the FEAT-002 specialists concurrently. Needs Gedo v0.4.0 and Gedo support for the project's language. No worktree fallback.
+
+### FEAT-004: Gedo checks in the protocol's scripts
+- **Priority**: high
+- **Epic**: EPIC-004
+- **Status**: open
+- **Found**: 2026-10-25, 2026-10-25, platform strategy discussion
+- **Plan**: -
+- **Description**: When gedo.enabled: gedo doctor and radar in the diagnosis, symbol-level drift from gedo delta in detect_drift, contract checks in check_design, non-overlapping scopes at gate 3 and a clean gedo doctor at gate 8, the delta summary on the pull request. Only through the command line with --json (ADR-0004). Needs Gedo v0.4.0.
+
+### FEAT-005: Role runners for the main coding agents
+- **Priority**: high
+- **Epic**: EPIC-005
+- **Status**: open
+- **Found**: 2026-10-25, 2026-10-25, platform strategy discussion
+- **Plan**: -
+- **Description**: Start a role in its own context with the agent configured per role (orchestration.role_runners): Claude Code, Codex, Gemini and Copilot, using the agent's native sub-agents when it has them. Prompt = the plan section, the role's SKILL.md and, with Gedo, the milestone scopes and stream.
+
+### FEAT-006: Onboarding in three levels
+- **Priority**: medium
+- **Epic**: EPIC-006
+- **Status**: open
+- **Found**: 2026-10-25, 2026-10-25, platform strategy discussion
+- **Plan**: -
+- **Description**: Lite (dev-cycle, backlog and pull request review, no Phase 0 or release candidates), Standard (plans, design checks, technical docs) and Full (phases 0 to 10, Spec Kit, release candidates, Gedo when enabled), in the README and as a choice in /dev-cycle.
+
+### FEAT-007: Open source launch
+- **Priority**: medium
+- **Epic**: EPIC-006
+- **Status**: open
+- **Found**: 2026-10-25, 2026-10-25, platform strategy discussion
+- **Plan**: -
+- **Description**: Choose the license (MIT, Apache-2.0 or both), prepare public docs and a contribution guide, and publish together with Gedo v0.5.0 or v0.6.0. Until then the repository stays unlicensed.
+
 ## Improvements
 
 ### IMP-002: Adopt the protocol in this repository (dogfooding)
 - **Priority**: high
+- **Epic**: EPIC-001
 - **Status**: open
 - **Found**: 2026-10-25, 2.8.0, /dev-cycle run on this repository
 - **Plan**: -
 - **Description**: This repository has no .dev-cycle.json, product baseline (VISION, TECH_SPEC, epics) or ROADMAP, so the protocol's own rules (bugs first, low bugs by the next release, gate 8) do not apply to it. Run the /dev-cycle setup: configuration (trunk detected), the Spec Kit decision, and adoption mode for the baseline.
 
+### IMP-003: Run every script without manual installs
+- **Priority**: high
+- **Epic**: EPIC-006
+- **Status**: open
+- **Found**: 2026-10-25, 2026-10-25, platform strategy discussion
+- **Plan**: -
+- **Description**: Run the skills' scripts through uv (PEP 723 inline metadata or one wrapper) so dependencies install themselves, and add a standard-library SQLite FTS5 (BM25) search backend for plan-memory and session-memory, used when chromadb is missing or memory_backend is sqlite.
+
+### IMP-004: Milestone dependencies in plans
+- **Priority**: high
+- **Epic**: EPIC-002
+- **Status**: open
+- **Found**: 2026-10-25, 2026-10-25, platform strategy discussion
+- **Plan**: -
+- **Description**: Plan frontmatter milestones gain optional id, depends_on, role and allowed_scopes (backward compatible); check_milestone and gate 3 validate the DAG (no cycles, known ids); Spec Kit [P] tasks map to independent milestones. Prepares FEAT-003; useful in sequence too.
+
 ## Adjustments
 
 ## Epics
+
+### EPIC-001: Cycle and gates
+- **Priority**: high
+- **Status**: open
+- **Found**: 2026-10-25, 2026-10-25, platform strategy discussion
+- **Description**: The /dev-cycle command, phases 0 to 10, gates and the merge gate, and the project configuration.
+
+### EPIC-002: Product and planning
+- **Priority**: high
+- **Status**: open
+- **Found**: 2026-10-25, 2026-10-25, platform strategy discussion
+- **Description**: Product inception, backlog with epics, roadmap of releases and versioned plans with milestones and their dependencies.
+
+### EPIC-003: Pull requests and review
+- **Priority**: medium
+- **Status**: open
+- **Found**: 2026-10-25, 2026-10-25, platform strategy discussion
+- **Description**: The pull request as the channel and the protocol's code review on GitHub, GitLab, Bitbucket, Azure DevOps and Gitea.
+
+### EPIC-004: Multi-agent orchestration
+- **Priority**: high
+- **Status**: open
+- **Found**: 2026-10-25, 2026-10-25, platform strategy discussion
+- **Description**: Each role in its own context; with Gedo only (ADR-0005), parallel milestones over streams and Gedo's checks in the gates.
+
+### EPIC-005: Agents and environments
+- **Priority**: high
+- **Status**: open
+- **Found**: 2026-10-25, 2026-10-25, platform strategy discussion
+- **Description**: Runners for the main coding agents (Claude Code, Codex, Gemini, Copilot) on a local machine and in cloud sessions, with no code specific to one environment.
+
+### EPIC-006: Zero-friction adoption
+- **Priority**: high
+- **Status**: open
+- **Found**: 2026-10-25, 2026-10-25, platform strategy discussion
+- **Description**: Execution without manual installs, standard-library search, onboarding in three levels and the open source launch.
 
 ## Closed
 

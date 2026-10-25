@@ -22,5 +22,8 @@
     "integration": "claude",
     "script": "sh",
     "branch_prefix": "feat"
+  },
+  "architecture": {
+    "style": "modular-monolith"
   }
 }
