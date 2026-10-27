@@ -20,7 +20,7 @@ The QA role of the development cycle. It owns **evidence that the software works
 
 ---
 
-## 🤖 Automated Tests
+## ✅ Automated Tests
 
 - **Run the project's commands** (`test_commands` in `.dev-cycle.json`, otherwise the stack's standard runner: `cargo test`, `pytest`, `npm test`, `go test ./...`). CI must run the same commands.
 - **Pyramid**: most tests are fast unit tests of pure logic; integration tests cover boundaries (database, file system, HTTP with local fakes); end-to-end tests only for the main user paths.

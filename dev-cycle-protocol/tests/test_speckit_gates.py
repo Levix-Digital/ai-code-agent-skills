@@ -192,4 +192,14 @@ def test_gate_8_blocks_ai_attribution_in_commit_messages(tmp_path):
     git(tmp_path, "tag", "v1.0.0")
     git(tmp_path, "commit", "-q", "--allow-empty", "-m", "fix: second")
     res = gate(d, "--gate", "8")
-    assert "No AI attribution in the commit messages since v1.0.0" in res.stdout
+    assert "No AI attribution in the commits since v1.0.0" in res.stdout
+
+
+def test_gate_8_blocks_an_ai_git_identity(tmp_path):
+    d = make_project(tmp_path)
+    git(tmp_path, "init", "-q", "-b", "main")
+    git(tmp_path, "add", "-A")
+    subprocess.run(["git", "-c", "user.name=Claude", "-c", "user.email=noreply@anthropic.com", "commit", "-q", "-m",
+                    "feat: first"], cwd=tmp_path, check=True, capture_output=True)
+    res = gate(d, "--gate", "8")
+    assert res.returncode == 1 and "AI attribution in 1 place(s)" in res.stdout and "AI identity" in res.stdout

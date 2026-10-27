@@ -220,27 +220,33 @@ def check_speckit(cwd: str) -> bool:
 
 
 def check_commit_attribution(cwd: str, cfg) -> bool:
-    """Commit messages since the last tag (all of them when there is none) pass the principle 9 guard."""
+    """Commit messages and identities since the last tag (all commits when there is none) pass the principle 9 guard."""
     import _no_ai
     _, tag = run_cmd(["git", "describe", "--tags", "--abbrev=0"], cwd)
     rng = [f"{tag}..HEAD"] if tag and not tag.startswith("fatal") else []
-    code, out = run_cmd(["git", "log", "--format=%h%x1f%B%x1e", *rng], cwd)
+    code, out = run_cmd(["git", "log", "--format=%h%x1f%an%x1f%ae%x1f%cn%x1f%ce%x1f%B%x1e", *rng], cwd)
     if code != 0:
         print("ℹ️ Could not read the commit messages for the attribution check.")
         return True
     allowed = cfg.section("review").get("allowed_terms") or []
     bad = []
     for record in out.split("\x1e"):
-        sha, _, message = record.strip().partition("\x1f")
-        for hit, reason in _no_ai.findings(message, allowed):
+        if not record.strip():
+            continue
+        sha, author, author_email, committer, committer_email, message = record.strip().split("\x1f", 5)
+        found = _no_ai.findings(message, allowed)
+        found += _no_ai.identity_findings(author, author_email)
+        if (committer, committer_email) != (author, author_email):
+            found += _no_ai.identity_findings(committer, committer_email)
+        for hit, reason in found:
             bad.append(f"{sha}: '{hit}' ({reason})")
     if bad:
-        print(f"❌ AI attribution in {len(bad)} place(s) of the commit messages since {tag or 'the first commit'} "
-              "(protocol principle 9); reword them before the release:")
+        print(f"❌ AI attribution in {len(bad)} place(s) of the commits since {tag or 'the first commit'} "
+              "(protocol principle 9); reword them or set the repository's Git identity before the release:")
         for line in bad[:20]:
             print(f"   {line}")
         return False
-    print(f"✅ No AI attribution in the commit messages since {tag or 'the first commit'}.")
+    print(f"✅ No AI attribution in the commits since {tag or 'the first commit'}.")
     return True
 
 
