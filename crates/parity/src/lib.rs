@@ -279,6 +279,10 @@ pub fn diff(reference: &Outcome, candidate: &Outcome) -> Vec<String> {
     ] {
         if let Some(d) = first_difference(a, b) {
             out.push(format!("{label}: {d}"));
+            // A different stderr is usually a traceback or an error message: show it whole.
+            if label == "stderr" {
+                out.extend(b.lines().take(40).map(|l| format!("  | {l}")));
+            }
         }
     }
     let paths: BTreeSet<&String> = reference
