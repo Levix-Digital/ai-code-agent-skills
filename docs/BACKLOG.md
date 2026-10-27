@@ -98,6 +98,14 @@ Each item: `### <ID>: <title>` with the fields `Severity` (bugs: critical, high,
 - **Plan**: -
 - **Description**: Plan frontmatter milestones gain optional id, depends_on, role and allowed_scopes (backward compatible); check_milestone and gate 3 validate the DAG (no cycles, known ids); Spec Kit [P] tasks map to independent milestones. Prepares FEAT-003; useful in sequence too.
 
+### IMP-005: Translate the scripts to Rust with identical behavior
+- **Priority**: high
+- **Epic**: EPIC-006
+- **Status**: open
+- **Found**: 2026-10-27, 2026-10-27, Rust migration discussion
+- **Plan**: -
+- **Description**: Translate every Python script of the skills into one Rust binary with no change in behavior: same commands, flags, stdout, stderr, exit codes and files written, proven by comparing the Python and Rust outputs on the same fixtures. One script per pull request: when the outputs are identical, the SKILL.md calls the Rust command and the Python script is deleted. When no script is left, the Python requirements and tests are removed.
+
 ## Adjustments
 
 ## Epics

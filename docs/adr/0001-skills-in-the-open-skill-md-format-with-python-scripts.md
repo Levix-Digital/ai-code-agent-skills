@@ -8,7 +8,7 @@ subsystems: [cycle, configuration, planning, quality-release, documentation, mem
 supersedes: []
 superseded_by: []
 amends: []
-amended_by: []
+amended_by: [7]
 ---
 
 # ADR-0001: Skills in the open SKILL.md format with Python scripts
