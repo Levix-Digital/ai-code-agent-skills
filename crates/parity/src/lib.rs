@@ -341,7 +341,9 @@ fn text(bytes: &[u8], what: &str) -> Result<String, String> {
     String::from_utf8(bytes.to_vec()).map_err(|_| format!("{what}: not UTF-8"))
 }
 
-fn canonical(p: &Path) -> PathBuf {
+/// Resolved path without the Windows verbatim prefix (`\\?\`), which breaks the `..` joins the
+/// Python scripts make from `__file__`.
+pub fn canonical(p: &Path) -> PathBuf {
     let c = fs::canonicalize(p).unwrap_or_else(|_| p.to_path_buf());
     // Windows: drop the verbatim prefix, which no script prints.
     let s = c.to_string_lossy();

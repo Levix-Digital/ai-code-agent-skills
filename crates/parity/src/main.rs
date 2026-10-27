@@ -5,7 +5,7 @@
 //! `PARITY_PYTHON` picks the Python executable; `PARITY_RUST` the `dev-cycle` binary
 //! (default: `target/debug/dev-cycle`, built by `cargo build`).
 
-use parity::{Case, Harness, Outcome, diff, fold_newlines};
+use parity::{Case, Harness, Outcome, canonical, diff, fold_newlines};
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::ExitCode;
@@ -22,7 +22,7 @@ fn main() -> ExitCode {
         return ExitCode::from(2);
     }
     let repo = Path::new(env!("CARGO_MANIFEST_DIR")).join("..").join("..");
-    let repo = fs::canonicalize(&repo).unwrap_or(repo);
+    let repo = canonical(&repo);
     let exe = if cfg!(windows) {
         "dev-cycle.exe"
     } else {
