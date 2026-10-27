@@ -189,9 +189,11 @@ def ignored(root: str, paths: list) -> list:
     already tracked are never reported: Git keeps versioning them."""
     if not paths:
         return []
-    res = subprocess.run(["git", "check-ignore", "--stdin"], cwd=root, input="\n".join(paths), capture_output=True,
-                         text=True, encoding="utf-8", errors="replace")
-    found = {line.strip().replace("\\", "/") for line in res.stdout.splitlines() if line.strip()}
+    # Bytes, not text: in text mode Windows turns each "\n" into "\r\n" and Git would look for "path\r".
+    res = subprocess.run(["git", "check-ignore", "--stdin"], cwd=root, input="\n".join(paths).encode("utf-8"),
+                         capture_output=True)
+    out = res.stdout.decode("utf-8", errors="replace")
+    found = {line.strip().replace("\\", "/") for line in out.splitlines() if line.strip()}
     return [p for p in paths if p in found]
 
 

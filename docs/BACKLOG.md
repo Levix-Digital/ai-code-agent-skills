@@ -6,6 +6,13 @@ Each item: `### <ID>: <title>` with the fields `Severity` (bugs: critical, high,
 
 ## Bugs
 
+### BUG-003: Ignored protocol files reported only partially on Windows
+- **Severity**: medium
+- **Status**: open
+- **Found**: 2026-10-27, 2026-10-27, first CI run on Windows (PR #22)
+- **Plan**: -
+- **Description**: onboard.py sends the list of protocol files to 'git check-ignore --stdin' in text mode. On Windows each newline becomes CRLF, Git looks for 'path\r' and only the last path matches, so the diagnosis and write-config warn about one ignored file instead of all of them (the BUG-002 protection). Send the input as bytes.
+
 ## Features
 
 ### FEAT-001: Pull request review on Bitbucket, Azure DevOps and Gitea
