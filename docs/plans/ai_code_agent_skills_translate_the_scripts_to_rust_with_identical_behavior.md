@@ -7,7 +7,7 @@ version: v2.10.0
 status: in_progress
 author: Levi Silveira
 created_at: '2026-10-27T18:17:46'
-updated_at: '2026-10-27T18:31:33'
+updated_at: '2026-10-27T22:51:27'
 session_id: null
 tags:
 - rust
@@ -24,7 +24,9 @@ milestones:
   done_at: '2026-10-27'
   by: Levi Silveira
 - name: M2 Binary distribution and launcher
-  done: false
+  done: true
+  done_at: '2026-10-27'
+  by: Levi Silveira
 - name: M3 project_config
   done: false
 - name: M4 new_subsystem
@@ -119,6 +121,9 @@ status_log:
 - at: '2026-10-27T18:31:33'
   by: Levi Silveira
   note: Milestone 'M1 Rust workspace parity harness and CI' completed
+- at: '2026-10-27T22:51:27'
+  by: Levi Silveira
+  note: Milestone 'M2 Binary distribution and launcher' completed
 ---
 
 # Translate the scripts to Rust with identical behavior
@@ -168,6 +173,7 @@ Decisions taken with the plan approval (2026-10-27) and the one still open:
 - Scripts without tests today (architecture-docs, session-memory, folder-sync) get parity cases written against the Python script first.
 - Manual test per swap: run the skill's documented commands from its `SKILL.md` on this repository and compare with the Python output.
 - Acceptance: at the end, `/dev-cycle` and gates 0, 3, rc and 8 give the same results on this repository as before the migration.
+- Projects that use the protocol keep working without any change, during and after the migration (user's rule, 2026-10-27): same commands for the agents, same project files and formats. Before M43 removes Python, `/dev-cycle` and the gates run on a sample project (and on this repository) with the last Python version and with the Rust engine, and the results are compared.
 
 ## 5. Documentation (`architecture-docs`, `user-docs`)
 
