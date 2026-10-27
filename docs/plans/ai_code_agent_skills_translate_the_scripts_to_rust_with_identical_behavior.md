@@ -138,7 +138,7 @@ Decisions (ADR-0007, proposed):
 
 Decisions taken with the plan approval (2026-10-27) and the one still open:
 
-- **D-dist (decided)**: a binary per target on GitHub Releases, fetched and checksum-verified by a small launcher (`sh` and `ps1`) on first use, through `gh release download` while the repository is private.
+- **D-dist (decided)**: a binary per target on GitHub Releases, fetched and checksum-verified by a small launcher (`sh` and `ps1`) on first use over plain HTTPS (the repository is public).
 - **D-embed (decided)**: chromadb's similarity scores (`detect_drift`, `search_plans`, session memory and folder search) come from an embedding model; the same model run from Rust may differ in the last decimals. Results must come in the same order with scores equal within a stated tolerance.
 - **D-store (open, before M27)**: session memory lives only in chromadb's local store; reading it from Rust needs a SQLite library compiled from C by Cargo. Whether that fits "pure Rust".
 - **D-pdf (decided 2026-10-27)**: PDF text extraction in `folder-sync` uses a pure-Rust library (`pdf-extract`, on `lopdf`) and is the one accepted exception to identity: the text of a PDF page may differ from pypdf's in spacing, line breaks and order. Everything around it (other formats, page markers, sections, chunking, index metadata, output) stays identical; PDF parity cases check the page and section structure instead of the extracted text.

@@ -45,7 +45,6 @@ Add to the project's `.claude/settings.json` and push it to the branch the cloud
 ## Notes
 
 - In the plugin, skill names are prefixed: `dev-skills:session-memory`.
-- The Claude GitHub app must have access to this private repository.
 - In the cloud, plans come with the project clone (the index is built on first use, which needs `pip install -r requirements.txt` and downloads a small embedding model). Session memory is written to the session's own environment and does not reach your local database.
 - When the session starts above the repositories, `/dev-cycle` works from the only repository below it, or asks which one when there are several.
 - Locally, a project with the plugin enabled shows each skill twice (from `~/.claude/skills` and from the plugin). Both read the same files.
