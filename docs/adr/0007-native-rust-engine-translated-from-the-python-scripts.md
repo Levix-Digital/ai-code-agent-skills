@@ -23,6 +23,7 @@ ADR-0001 runs every check through Python 3.10+ scripts with third-party packages
 - The translation changes no behavior: same commands and flags, same stdout and stderr, same exit codes, same files read and written. A bug found on the way is kept identical or fixed in both languages, never in Rust only.
 - Identity is proven by a parity harness that runs the Python script and the Rust command on the same fixtures and compares everything above byte for byte; the Python outputs are kept as golden files once the script is deleted.
 - One script per pull request: when its outputs are identical, its `SKILL.md` lines and callers switch to the Rust command and the Python script is deleted. Shared modules go when their last importer goes. When none is left, `requirements.txt` and the pytest suites are removed.
+- One exception, decided by the user: PDF text in `folder-sync` comes from a pure-Rust library (`pdf-extract`) and may differ from pypdf's text; the rest of `folder-sync` stays identical.
 - Integration with Gedo stays as in ADR-0004 and ADR-0006: through its command line only, no Gedo crates.
 
 ## Alternatives Considered
@@ -35,5 +36,5 @@ ADR-0001 runs every check through Python 3.10+ scripts with third-party packages
 
 - No Python, `pip` or virtual environment needed to run the protocol, once the binary reaches the agent (distribution decided before the first swap).
 - During the translation the protocol is mixed: Python callers such as `verify_gate.py` call the Rust command for swapped checkers.
-- The chromadb scripts need decisions before their turn: tolerance for embedding scores, how Rust reads the existing local store, and PDF text extraction.
+- The chromadb scripts need decisions before their turn: tolerance for embedding scores, and how Rust reads the existing local store.
 - Verify: after each swap the parity cases and the existing tests pass; at the end `/dev-cycle` and gates 0, 3, rc and 8 give the same results on this repository as before.

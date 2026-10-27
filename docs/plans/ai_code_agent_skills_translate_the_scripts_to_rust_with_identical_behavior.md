@@ -137,7 +137,7 @@ Open decisions, asked of the user before the milestones that need them:
 - **D-dist (before M2)**: how the binary reaches every agent, locally and in cloud sessions. Proposal: a binary per target on GitHub Releases, fetched and checksum-verified by a small launcher (`sh` and `ps1`) on first use, through `gh release download` while the repository is private.
 - **D-embed (before M27)**: chromadb's similarity scores (`detect_drift`, `search_plans`, session memory and folder search) come from an embedding model; the same model run from Rust may differ in the last decimals. Proposal: same results in the same order, scores equal within a stated tolerance.
 - **D-store (before M27)**: session memory lives only in chromadb's local store; reading it from Rust needs a SQLite library compiled from C by Cargo. Whether that fits "pure Rust".
-- **D-pdf (before M39)**: `folder-sync` extracts PDF text with pypdf; identical text needs pypdf's extraction algorithm translated too.
+- **D-pdf (decided 2026-10-27)**: PDF text extraction in `folder-sync` uses a pure-Rust library (`pdf-extract`, on `lopdf`) and is the one accepted exception to identity: the text of a PDF page may differ from pypdf's in spacing, line breaks and order. Everything around it (other formats, page markers, sections, chunking, index metadata, output) stays identical; PDF parity cases check the page and section structure instead of the extracted text.
 
 ## 2. Design (`software-design`)
 
@@ -189,5 +189,5 @@ Each milestone after M2 is one pull request that translates one script, proves i
 6. M20-M26 Orchestration: constitution, speckit_setup, inspect_project, pr_sync, gedo_feedback, onboard, verify_gate
 7. M27-M34 Plan index (D-embed, D-store): rebuild_index, search_plans, save_plan, update_plan_status, check_milestone, backlog, detect_drift, plan-memory migrate_legacy
 8. M35-M38 Session memory: save_incremental_turns, finalize_session, read_memory, session-memory migrate_legacy
-9. M39-M42 Folder sync (D-pdf): clean, stats, sync, query
+9. M39-M42 Folder sync (PDF text exception): clean, stats, sync, query
 10. M43 Remove the Python remnants and update the docs
