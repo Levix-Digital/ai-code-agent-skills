@@ -1,0 +1,118 @@
+[
+  {
+    "name": "project-config-defaults",
+    "python": "dev-cycle-protocol/project_config.py",
+    "rust": ["dev-cycle-protocol", "project_config"],
+    "args": []
+  },
+  {
+    "name": "project-config-defaults-json",
+    "python": "dev-cycle-protocol/project_config.py",
+    "rust": ["dev-cycle-protocol", "project_config"],
+    "args": ["--json", "--validate"]
+  },
+  {
+    "name": "project-config-sections",
+    "python": "dev-cycle-protocol/project_config.py",
+    "rust": ["dev-cycle-protocol", "project_config"],
+    "args": ["--dir", "{project}"],
+    "fixture": "config-sections"
+  },
+  {
+    "name": "project-config-sections-json",
+    "python": "dev-cycle-protocol/project_config.py",
+    "rust": ["dev-cycle-protocol", "project_config"],
+    "args": ["--json", "--validate"],
+    "fixture": "config-sections"
+  },
+  {
+    "name": "project-config-from-subfolder",
+    "python": "dev-cycle-protocol/project_config.py",
+    "rust": ["dev-cycle-protocol", "project_config"],
+    "args": ["--dir=sub", "--val"],
+    "fixture": "config-sections"
+  },
+  {
+    "name": "project-config-legacy",
+    "python": "dev-cycle-protocol/project_config.py",
+    "rust": ["dev-cycle-protocol", "project_config"],
+    "args": ["--validate"],
+    "fixture": "config-legacy"
+  },
+  {
+    "name": "project-config-legacy-json",
+    "python": "dev-cycle-protocol/project_config.py",
+    "rust": ["dev-cycle-protocol", "project_config"],
+    "args": ["--json"],
+    "fixture": "config-legacy"
+  },
+  {
+    "name": "project-config-migrate",
+    "python": "dev-cycle-protocol/project_config.py",
+    "rust": ["dev-cycle-protocol", "project_config"],
+    "args": ["--migrate"],
+    "fixture": "config-legacy"
+  },
+  {
+    "name": "project-config-migrate-write",
+    "python": "dev-cycle-protocol/project_config.py",
+    "rust": ["dev-cycle-protocol", "project_config"],
+    "args": ["--migrate", "--write", "--dir", "{project}"],
+    "fixture": "config-legacy"
+  },
+  {
+    "name": "project-config-migrate-without-file",
+    "python": "dev-cycle-protocol/project_config.py",
+    "rust": ["dev-cycle-protocol", "project_config"],
+    "args": ["--migrate"]
+  },
+  {
+    "name": "project-config-problems",
+    "python": "dev-cycle-protocol/project_config.py",
+    "rust": ["dev-cycle-protocol", "project_config"],
+    "args": ["--validate"],
+    "fixture": "config-problems"
+  },
+  {
+    "name": "project-config-broken-json",
+    "python": "dev-cycle-protocol/project_config.py",
+    "rust": ["dev-cycle-protocol", "project_config"],
+    "args": ["--validate"],
+    "fixture": "config-broken"
+  },
+  {
+    "name": "project-config-not-an-object",
+    "python": "dev-cycle-protocol/project_config.py",
+    "rust": ["dev-cycle-protocol", "project_config"],
+    "args": [],
+    "fixture": "config-array"
+  },
+  {
+    "name": "project-config-help",
+    "python": "dev-cycle-protocol/project_config.py",
+    "rust": ["dev-cycle-protocol", "project_config"],
+    "args": ["--help"],
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "project-config-help-narrow",
+    "python": "dev-cycle-protocol/project_config.py",
+    "rust": ["dev-cycle-protocol", "project_config"],
+    "args": ["-h"],
+    "env": {"COLUMNS": "50"}
+  },
+  {
+    "name": "project-config-unknown-argument",
+    "python": "dev-cycle-protocol/project_config.py",
+    "rust": ["dev-cycle-protocol", "project_config"],
+    "args": ["--js", "--nope", "extra"],
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "project-config-missing-value",
+    "python": "dev-cycle-protocol/project_config.py",
+    "rust": ["dev-cycle-protocol", "project_config"],
+    "args": ["--dir"],
+    "env": {"COLUMNS": "80"}
+  }
+]

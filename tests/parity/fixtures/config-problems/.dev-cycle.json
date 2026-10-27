@@ -1,0 +1,10 @@
+{
+  "architecture": {"style": "onion", "surfaces": "cli"},
+  "test_commands": "pytest",
+  "devops": {"branching": "gitflow", "release_branch_prefix": "bad prefix", "release_candidates": "yes", "observability": "web", "version_files": null},
+  "backlog": {"blocking_severities": ["urgent"], "bug_deadline": "never"},
+  "speckit": {"enabled": true, "version": "1.0", "script": "bat"},
+  "review": {"provider": "bitbucket", "auto_review": 1, "allowed_terms": "x"},
+  "gedo": {"enabled": "no", "feedback": null, "feedback_dir": "", "repo": "gedo"},
+  "mystery": true
+}

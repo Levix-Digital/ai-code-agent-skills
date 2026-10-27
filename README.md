@@ -166,13 +166,13 @@ Phase 0 runs once per product, phases 1 to 7 for every change, phases 8 to 10 fo
 Scripts:
 ```bash
 python <skills_root>/dev-cycle-protocol/inspect_project.py [--dir .] [--json]
-python <skills_root>/dev-cycle-protocol/project_config.py [--json] [--validate] [--migrate [--write]]
+<skills_root>/dev-cycle-protocol/bin/dev-cycle dev-cycle-protocol project_config [--json] [--validate] [--migrate [--write]]
 python <skills_root>/dev-cycle-protocol/verify_gate.py --gate 0|3|rc|8 [--run vX.Y.Z-rc.N] [--dir .]
 python <skills_root>/dev-cycle-protocol/speckit_setup.py status|latest|check|init|upgrade
 python <skills_root>/dev-cycle-protocol/constitution.py generate|check
 ```
 - `inspect_project.py` detects languages, manifests, test runners, documentation files and Git state, and shows the configured architecture style, branching model, releases repository, backlog, current release of the roadmap, product baseline and Spec Kit state.
-- `project_config.py` shows, validates or migrates `.dev-cycle.json`.
+- `project_config` shows, validates or migrates `.dev-cycle.json`. It runs on the native engine: `bin/dev-cycle` in sh shells, `bin/dev-cycle.ps1` in PowerShell (the first run downloads it).
 - `verify_gate.py --gate 0` (before the product baseline approval): product documents, architecture style, technical docs, a backlog with epics, a roadmap with a first release, Spec Kit and the constitution when enabled; open questions are listed.
 - `verify_gate.py --gate 3` (before plan approval): working tree, active plan, bugs first (a plan that is not a bug plan is blocked while an open critical, high or medium bug, or a bug not triaged, is outside it, unless you accept the risk: `--accept-open-bugs "<reason>"`), with Spec Kit the spec folder (no open clarification), branch and constitution, no secrets tracked or staged.
 - `verify_gate.py --gate rc --run <tag>` (candidate acceptance): every manual test of the run is Pass.
@@ -366,7 +366,7 @@ Optional file at a project's root: the project configuration shared by every ski
 }
 ```
 
-Check it with `python ~/.ai-code-agent-skills/dev-cycle-protocol/project_config.py --validate`.
+Check it with `~/.ai-code-agent-skills/dev-cycle-protocol/bin/dev-cycle dev-cycle-protocol project_config --validate` (PowerShell: `& ~/.ai-code-agent-skills/dev-cycle-protocol/bin/dev-cycle.ps1 dev-cycle-protocol project_config --validate`).
 
 Full key reference, defaults and drift rules: [docs/configuration.md](docs/configuration.md).
 

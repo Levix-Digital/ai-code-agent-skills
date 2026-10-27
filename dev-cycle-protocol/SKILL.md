@@ -6,6 +6,8 @@ description: Orchestrator of the role-based development cycle - phases from prod
 # 🛡️ Development Cycle Protocol (`dev-cycle-protocol` v4)
 
 > **Paths**: `<skills_root>` is the folder that contains this skill (the parent of this `SKILL.md`'s folder). Use the real absolute path when running the commands. Run them from the project's repository (or pass `--dir`): a session that starts above it, such as a cloud session in `/home/user`, would otherwise read the wrong folder.
+>
+> **Engine**: scripts already translated to Rust (IMP-005) run through the launcher, written here `"<skills_root>/dev-cycle-protocol/bin/dev-cycle" <skill> <script> [args]` (sh shells: Linux, macOS, Git Bash). In PowerShell, run `& "<skills_root>/dev-cycle-protocol/bin/dev-cycle.ps1" <skill> <script> [args]`. The first run downloads the engine for the machine and checks its checksum.
 
 **`dev-cycle-protocol`** orchestrates software work like a team of specialists. It owns the **phases, the gates and which role runs when**; each role skill owns its own artifact, rules and checker. It is language- and project-agnostic.
 
@@ -108,7 +110,7 @@ A project without a baseline that is already under way can adopt it (adoption mo
 - Inspect the project and its configuration:
   ```powershell
   python "<skills_root>/dev-cycle-protocol/inspect_project.py"
-  python "<skills_root>/dev-cycle-protocol/project_config.py" --validate
+  "<skills_root>/dev-cycle-protocol/bin/dev-cycle" dev-cycle-protocol project_config --validate
   ```
 - **Logs first**: for any reported error, read the real logs before forming hypotheses.
 - Read the active plans (`plan-memory/list_plans.py`, `check_milestone.py --list`) and the architecture style and structure (`software-design`).
@@ -269,7 +271,7 @@ Secret hygiene flags committed or staged credential files by file name only: exa
 ```powershell
 python "<skills_root>/dev-cycle-protocol/verify_gate.py" --gate 0|3|rc|8 [--run <rc tag>] [--accept-open-bugs "<reason>"] [--dir <project>]
 python "<skills_root>/dev-cycle-protocol/inspect_project.py" [--json]
-python "<skills_root>/dev-cycle-protocol/project_config.py" [--json] [--validate] [--migrate [--write]]
+"<skills_root>/dev-cycle-protocol/bin/dev-cycle" dev-cycle-protocol project_config [--json] [--validate] [--migrate [--write]]
 python "<skills_root>/dev-cycle-protocol/pr_sync.py" status|open|reply|resolve|comment|review|request-review [...]
 python "<skills_root>/dev-cycle-protocol/onboard.py" diagnose [--request "<text>"] [--json] | propose-config | write-config --file <f> | create-branch
 python "<skills_root>/dev-cycle-protocol/speckit_setup.py" status|latest|check|init|adopt|upgrade [...]
@@ -280,6 +282,6 @@ python "<skills_root>/dev-cycle-protocol/constitution.py" generate [--replace-ha
 
 ## ⚙️ Project Configuration (`.dev-cycle.json`)
 
-Optional file at the repository root: the project configuration shared by every skill (the branching model is `devops.branching`), with one section per skill (`architecture`, `docs`, `tests`, `devops`, `plans`, `backlog`, `roadmap`, `product`, `speckit`, `architecture_docs`, `drift_rules`) and `test_commands`. Read it through the single loader, which fills defaults, accepts the legacy flat keys of older files and validates the result (`project_config.py`). Scripts of other skills import it from the sibling folder (`from project_config import load_project_config`). The full key reference is in the skills repository README ("Project configuration").
+Optional file at the repository root: the project configuration shared by every skill (the branching model is `devops.branching`), with one section per skill (`architecture`, `docs`, `tests`, `devops`, `plans`, `backlog`, `roadmap`, `product`, `speckit`, `architecture_docs`, `drift_rules`) and `test_commands`. Read it through the single loader, which fills defaults, accepts the legacy flat keys of older files and validates the result (`project_config`). The Python scripts of other skills import it from the sibling folder (`from project_config import load_project_config`). The full key reference is in the skills repository README ("Project configuration").
 
 If the file does not exist, `inspect_project.py` and `verify_gate.py` detect the repository's standard stack and use the defaults.

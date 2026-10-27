@@ -1,6 +1,6 @@
 # Project Configuration: `.dev-cycle.json`
 
-Optional file at a project's root: the project configuration shared by every skill. Each skill owns one section, and every key is optional. `dev-cycle-protocol/project_config.py` is the single loader: it fills defaults, accepts the legacy flat keys of older files, and validates the result.
+Optional file at a project's root: the project configuration shared by every skill. Each skill owns one section, and every key is optional. `project_config` (`crates/kernel/src/project_config.rs`, and `dev-cycle-protocol/project_config.py` for the Python scripts until they are translated) is the single loader: it fills defaults, accepts the legacy flat keys of older files, and validates the result.
 
 ```json
 {
@@ -102,10 +102,12 @@ Optional file at a project's root: the project configuration shared by every ski
 Older files with flat keys keep working: `core_path`, `surfaces`, `canonical_datastore`, `releases_repo`, `plans_dir` and `doc_files.{user_doc,tec_doc,manual_tests}` are read into their sections, and the sectioned key wins when both exist.
 
 ```bash
-python ~/.ai-code-agent-skills/dev-cycle-protocol/project_config.py              # effective configuration
-python ~/.ai-code-agent-skills/dev-cycle-protocol/project_config.py --validate   # exit code 1 on problems
-python ~/.ai-code-agent-skills/dev-cycle-protocol/project_config.py --migrate --write   # move flat keys into sections
+~/.ai-code-agent-skills/dev-cycle-protocol/bin/dev-cycle dev-cycle-protocol project_config              # effective configuration
+~/.ai-code-agent-skills/dev-cycle-protocol/bin/dev-cycle dev-cycle-protocol project_config --validate   # exit code 1 on problems
+~/.ai-code-agent-skills/dev-cycle-protocol/bin/dev-cycle dev-cycle-protocol project_config --migrate --write   # move flat keys into sections
 ```
+
+In PowerShell, run `& ~/.ai-code-agent-skills/dev-cycle-protocol/bin/dev-cycle.ps1` instead of `bin/dev-cycle`.
 
 ## How a Drift Rule Works
 

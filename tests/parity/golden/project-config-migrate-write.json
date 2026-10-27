@@ -1,0 +1,8 @@
+{
+  "exit": 0,
+  "stdout": "✅ Migrated {project}/.dev-cycle.json\n",
+  "stderr": "",
+  "files": {
+    "project/.dev-cycle.json": "{\n  \"architecture\": {\n    \"style\": \"layered\",\n    \"core_path\": \"src/domain\",\n    \"surfaces\": [\n      \"web\"\n    ]\n  },\n  \"docs\": {\n    \"user_doc\": \"docs/USER.md\"\n  },\n  \"tests\": {\n    \"manual_tests\": \"qa/MANUAL.md\"\n  },\n  \"devops\": {\n    \"branching\": \"trunk\",\n    \"production_branch\": \"main\",\n    \"releases_repo\": \"acme/rel\"\n  },\n  \"plans\": {\n    \"dir\": \"plans\"\n  }\n}\n"
+  }
+}

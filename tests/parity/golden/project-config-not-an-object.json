@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ {project}/.dev-cycle.json must contain a JSON object\n",
+  "stderr": "",
+  "files": {}
+}
