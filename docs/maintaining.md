@@ -11,7 +11,14 @@
 ```bash
 python -m pytest plan-memory/tests dev-cycle-protocol/tests product-inception/tests software-design/tests user-docs/tests quality-assurance/tests devops-release/tests gedo-feedback/tests
 SPECKIT_ONLINE_TESTS=1 python -m pytest dev-cycle-protocol/tests/test_speckit_setup.py   # real Spec Kit compatibility check (network)
+cargo test                       # the Rust workspace (crates/)
+cargo build && cargo run -p parity -- run   # Python scripts and their Rust translations give the same results
 ```
+
+**Translate a script to Rust** (IMP-005, ADR-0007): the translation changes no behavior.
+1. Add cases for the script in `tests/parity/cases/*.json` (arguments, a fixture from `tests/parity/fixtures`, masks for clocks) and record what the Python script does: `cargo run -p parity -- record <name>`.
+2. Write the command in the `dev-cycle` binary, set the case's `rust` to `["<skill>", "<script>"]` and run `cargo run -p parity -- run`: stdout, stderr, exit code and files written must be identical.
+3. In the same pull request, switch the script's lines in the `SKILL.md` files and its callers to the Rust command, and delete the Python script; the golden files keep proving the behavior.
 
 **Conventions**
 - Write in English.

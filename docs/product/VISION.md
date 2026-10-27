@@ -30,14 +30,14 @@ Today each developer copes with prompts, personal checklists and manual review. 
 
 ## Business Model
 
-Open-core. The Dev Cycle Protocol and Gedo are the two free engines and stay separate repositories. The paid Levix platform (Team Cloud as a service, Enterprise self-hosted) joins them in a visual and cloud layer: managed relay, real-time pull request service, synced memory, the team dashboard Mission Control and compliance reports. The protocol stays internal and unlicensed until the open source launch (FEAT-007), then opens under a permissive license. Price per developer is a hypothesis of the platform, not of this product.
+Open-core. The Dev Cycle Protocol and Gedo are the two free engines and stay separate repositories. The paid Levix platform (Team Cloud as a service, Enterprise self-hosted) joins them in a visual and cloud layer: managed relay, real-time pull request service, synced memory, the team dashboard Mission Control and compliance reports. The repository is public since 2026-10-27 but unlicensed (all rights reserved) until the open source launch (FEAT-007), which adds a permissive license. Price per developer is a hypothesis of the platform, not of this product.
 
 ## Success Metrics
 
 - **Lead time**: median time from an approved plan (gate 3) to the merge goes down release after release; baseline measured in v2.9.0.
 - **Rework after gates**: fewer than 1 in 5 pull requests needs a second review round for a blocking finding.
 - **Escaped bugs**: no critical or high bug found after a release that its release candidate should have caught.
-- **Zero-friction install**: every skill runs on a clean Python 3.10+ without `pip install` (target for v2.9.0).
+- **Zero-friction install**: every skill runs without Python or `pip install` (target for v2.10.0).
 - **Adoption (after the open source launch)**: number of repositories with a `.dev-cycle.json`.
 
 ## Scope
@@ -47,7 +47,7 @@ Open-core. The Dev Cycle Protocol and Gedo are the two free engines and stay sep
 - **Pull requests and review**: the pull request as the channel, the protocol's code review, on GitHub, GitLab, Bitbucket, Azure DevOps and Gitea.
 - **Multi-agent orchestration**: each role in its own context; with Gedo, parallel milestones over streams and deep integration of Gedo's checks into the gates.
 - **Agents and environments**: runners for the main coding agents (Claude Code, Codex, Gemini, Copilot) on a local machine and in cloud sessions.
-- **Zero-friction adoption**: execution without manual installs, a search engine from the standard library, onboarding in three levels and the open source launch.
+- **Zero-friction adoption**: execution without manual installs, onboarding in three levels and the open source launch.
 - **Quality, release and documentation**: test strategy and manual test runs, branching models, CI policy, releases, living technical docs and user READMEs.
 - **Memory**: plans shared by the team and each developer's session memory.
 
@@ -66,7 +66,7 @@ Open-core. The Dev Cycle Protocol and Gedo are the two free engines and stay sep
 - **Gedo timing**: parallel work needs Gedo v0.5.0 (local streams and agent checkouts; v0.4.0 brings only the command line) and Gedo support for the project's language (Python in v0.6.0). Mitigation: role isolation in sequence ships first (v3.0.0); nothing in a release depends on an unreleased Gedo version.
 - **Agent and platform drift**: agent command lines and platform APIs change (GraphQL refused in some environments, for example). Mitigation: REST first, provider adapters behind one model, tests with recorded responses.
 - **Process weight**: the full cycle may feel heavy for small changes. Mitigation: the short path, and onboarding in three levels (FEAT-006).
-- **Python environment friction**: users hit missing modules when the agent's Python is not the one with the dependencies. Mitigation: execution through `uv` and a standard-library search fallback (IMP-003).
+- **Python environment friction**: users hit missing modules when the agent's Python is not the one with the dependencies. Mitigation: the scripts are translated into one Rust binary with identical behavior (IMP-005, ADR-0007).
 - **Assumption**: teams will keep decisions and plans in the repository as files rather than in an external tool.
 
 ## Open Questions

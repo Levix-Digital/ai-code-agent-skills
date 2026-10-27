@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ line 11: FEAT-001: priority must be one of: high, medium, low\n\n❌ backlog: 21 item(s), 1 problem(s).\n",
+  "stderr": "",
+  "files": {}
+}

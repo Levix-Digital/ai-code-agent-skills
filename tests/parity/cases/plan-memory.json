@@ -1,0 +1,30 @@
+[
+  {
+    "name": "backlog-validate",
+    "python": "plan-memory/backlog.py",
+    "args": ["validate", "--dir", "{project}"],
+    "fixture": "backlog-and-roadmap",
+    "git": true
+  },
+  {
+    "name": "backlog-validate-problems",
+    "python": "plan-memory/backlog.py",
+    "args": ["validate", "--dir", "{project}"],
+    "fixture": "backlog-with-problems",
+    "git": true
+  },
+  {
+    "name": "roadmap-validate",
+    "python": "plan-memory/roadmap.py",
+    "args": ["validate", "--dir", "{project}"],
+    "fixture": "backlog-and-roadmap",
+    "git": true
+  },
+  {
+    "name": "roadmap-current",
+    "python": "plan-memory/roadmap.py",
+    "args": ["current", "--dir", "{project}"],
+    "fixture": "backlog-and-roadmap",
+    "git": true
+  }
+]

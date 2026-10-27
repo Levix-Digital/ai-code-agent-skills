@@ -6,10 +6,15 @@ Each release: `## vX.Y.Z: <name>` with the fields `Status` (planned, in_progress
 
 ## v2.9.0: Baseline and zero friction
 - **Status**: planned
-- **Goal**: The protocol runs on itself with an approved baseline, every script runs without manual installs, plans carry milestone dependencies and newcomers pick an onboarding level
-- **Items**: IMP-002, IMP-003, IMP-004, FEAT-006
+- **Goal**: The protocol runs on itself with an approved baseline, plans carry milestone dependencies and newcomers pick an onboarding level
+- **Items**: IMP-002, IMP-004, FEAT-006
 
-## v2.10.0: Agents and platforms
+## v2.10.0: Native engine
+- **Status**: planned
+- **Goal**: Every script runs as a command of one Rust binary with exactly the same behavior, and the protocol needs no Python
+- **Items**: IMP-005
+
+## v2.11.0: Agents and platforms
 - **Status**: planned
 - **Goal**: A role can run in its own context on Claude Code, Codex, Gemini or Copilot, and pull request review works on Bitbucket, Azure DevOps and Gitea
 - **Items**: FEAT-005, FEAT-001

@@ -1,0 +1,11 @@
+[package]
+name = "dev-cycle"
+description = "The Dev Cycle Protocol's commands, translated from the skills' Python scripts"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true

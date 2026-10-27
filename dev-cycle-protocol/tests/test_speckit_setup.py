@@ -174,6 +174,8 @@ def test_new_project_takes_a_compatible_latest(tmp_path, monkeypatch):
     compat = tmp_path / "compat.json"
     compat.write_text(json.dumps({"verified": "v1.2.3"}), encoding="utf-8")
     monkeypatch.setattr(ss, "COMPAT_FILE", str(compat))
+    # The compatibility file lives in the skills folder; keep both on the same drive on Windows.
+    monkeypatch.setattr(ss, "SKILLS_ROOT", str(tmp_path))
     monkeypatch.setattr(ss, "latest_release", lambda runner=None: "v1.3.0")
     monkeypatch.setattr(ss, "compatibility_check", lambda *a, **k: {
         "version": "v1.3.0", "integration": "claude", "script": "sh", "passed": True, "checks": []})

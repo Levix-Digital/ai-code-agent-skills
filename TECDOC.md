@@ -42,6 +42,7 @@ flowchart LR
 <!-- architecture-docs:adrs:start -->
 | ADR | Title | Status | Version | Date |
 |---|---|---|---|---|
+| [ADR-0007](docs/adr/0007-native-rust-engine-translated-from-the-python-scripts.md) | Native Rust engine translated from the Python scripts | accepted | v2.10.0 | 2026-10-27 |
 | [ADR-0006](docs/adr/0006-gedo-contract-discovered-by-capability-with-safe-fallback-pe.md) | Gedo contract discovered by capability with safe fallback per check | accepted | v3.1.0 | 2026-10-25 |
 | [ADR-0005](docs/adr/0005-parallel-agents-only-with-gedo.md) | Parallel agents only with Gedo | accepted |  | 2026-10-25 |
 | [ADR-0004](docs/adr/0004-gedo-integration-only-through-its-command-line.md) | Gedo integration only through its command line | accepted |  | 2026-10-25 |

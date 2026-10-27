@@ -395,4 +395,4 @@ Adding a skill, running the tests, conventions, personal skills and updating oth
 
 ## License
 
-Private repository. All rights reserved; no license is granted.
+Public repository, not yet open source: all rights reserved, no license is granted until the open source launch.
