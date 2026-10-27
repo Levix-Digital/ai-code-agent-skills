@@ -2,6 +2,11 @@
 /*
 !/.gitignore
 !/.gitattributes
+!/.github/
+!/Cargo.toml
+!/Cargo.lock
+!/rust-toolchain.toml
+!/crates/
 !/.claude-plugin/
 !/.claude/
 !/.dev-cycle.json
@@ -36,5 +41,6 @@ __pycache__/
 *.pyc
 .venv/
 node_modules/
+target/
 .env
 *.sqlite3

@@ -4,10 +4,10 @@ project: ai-code-agent-skills
 title: Translate the scripts to Rust with identical behavior
 kind: feature
 version: v2.10.0
-status: active
+status: in_progress
 author: Levi Silveira
 created_at: '2026-10-27T18:17:46'
-updated_at: '2026-10-27T18:17:46'
+updated_at: '2026-10-27T18:31:33'
 session_id: null
 tags:
 - rust
@@ -20,7 +20,9 @@ backlog_items:
 - IMP-005
 milestones:
 - name: M1 Rust workspace parity harness and CI
-  done: false
+  done: true
+  done_at: '2026-10-27'
+  by: Levi Silveira
 - name: M2 Binary distribution and launcher
   done: false
 - name: M3 project_config
@@ -114,6 +116,9 @@ status_log:
   by: Levi Silveira
   status: active
   note: Approved by the user, without Spec Kit for this plan only (a translation needs no specification beyond identical output); Spec Kit stays enabled for the work after it
+- at: '2026-10-27T18:31:33'
+  by: Levi Silveira
+  note: Milestone 'M1 Rust workspace parity harness and CI' completed
 ---
 
 # Translate the scripts to Rust with identical behavior

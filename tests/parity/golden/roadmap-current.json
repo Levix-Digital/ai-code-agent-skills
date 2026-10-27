@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "🎯 Current release v2.9.0: Baseline and zero friction [planned]\n   Goal: The protocol runs on itself with an approved baseline, plans carry milestone dependencies and newcomers pick an onboarding level\n   · FEAT-006  [open] (medium) Onboarding in three levels\n   · IMP-002   [open] (high) Adopt the protocol in this repository (dogfooding)\n   · IMP-004   [open] (high) Milestone dependencies in plans\nℹ️ 1 open backlog item(s) in no release: FEAT-007\n",
+  "stderr": "",
+  "files": {}
+}

@@ -93,9 +93,9 @@ Each item: `### <ID>: <title>` with the fields `Severity` (bugs: critical, high,
 ### IMP-005: Translate the scripts to Rust with identical behavior
 - **Priority**: high
 - **Epic**: EPIC-006
-- **Status**: open
+- **Status**: in_progress
 - **Found**: 2026-10-27, 2026-10-27, Rust migration discussion
-- **Plan**: -
+- **Plan**: ai_code_agent_skills_translate_the_scripts_to_rust_with_identical_behavior
 - **Description**: Translate every Python script of the skills into one Rust binary with no change in behavior: same commands, flags, stdout, stderr, exit codes and files written, proven by comparing the Python and Rust outputs on the same fixtures. One script per pull request: when the outputs are identical, the SKILL.md calls the Rust command and the Python script is deleted. When no script is left, the Python requirements and tests are removed.
 
 ## Adjustments
