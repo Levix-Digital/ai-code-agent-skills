@@ -1,9 +1,9 @@
 ---
 id: 7
 title: Native Rust engine translated from the Python scripts
-status: proposed
+status: accepted
 date: '2026-10-27'
-version: null
+version: v2.10.0
 subsystems: [cycle, configuration, planning, quality-release, documentation, memory]
 supersedes: []
 superseded_by: []
