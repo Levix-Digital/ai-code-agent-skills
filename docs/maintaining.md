@@ -19,6 +19,9 @@ cargo build && cargo run -p parity -- run   # Python scripts and their Rust tran
 1. Add cases for the script in `tests/parity/cases/*.json` (arguments, a fixture from `tests/parity/fixtures`, masks for clocks) and record what the Python script does: `cargo run -p parity -- record <name>`.
 2. Write the command in the `dev-cycle` binary, set the case's `rust` to `["<skill>", "<script>"]` and run `cargo run -p parity -- run`: stdout, stderr, exit code and files written must be identical.
 3. In the same pull request, switch the script's lines in the `SKILL.md` files and its callers to the Rust command, and delete the Python script; the golden files keep proving the behavior.
+4. Bump the engine version (`dev-cycle-protocol/bin/engine-version` and `version` in `Cargo.toml`); CI refuses an engine change without it. On merge, the Engine workflow publishes release `engine-vX.Y.Z` with a binary per target.
+
+**How the skills run the engine**: `"<skills_root>/dev-cycle-protocol/bin/dev-cycle" <skill> <script> [args]` in sh shells (Linux, macOS, Git Bash on Windows) and `& "<skills_root>/dev-cycle-protocol/bin/dev-cycle.ps1" <skill> <script> [args]` in PowerShell. The launcher uses `DEV_CYCLE_BIN` when set, else the binary of its `engine-version` from the cache (`$LOCALAPPDATA`, `$XDG_CACHE_HOME` or `~/.cache`, under `dev-cycle/`), else downloads it from the release and checks it against `SHA256SUMS`, else builds it with `cargo` when it sits in a checkout.
 
 **Conventions**
 - Write in English.

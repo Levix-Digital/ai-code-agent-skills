@@ -24,7 +24,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: Swatinem/rust-cache@v2
+      - name: Engine version bumped with the engine
+        if: github.event_name == 'pull_request'
+        run: |
+          base="origin/${{ github.base_ref }}"
+          if ! git diff --quiet "$base"...HEAD -- crates Cargo.toml Cargo.lock rust-toolchain.toml \
+             && git diff --quiet "$base"...HEAD -- dev-cycle-protocol/bin/engine-version; then
+            echo "::error::The engine changed: bump dev-cycle-protocol/bin/engine-version and the workspace version in Cargo.toml"
+            exit 1
+          fi
       - name: Run linters
         run: |
           cargo fmt --all --check
@@ -53,5 +64,11 @@ jobs:
         run: |
           cargo build -p dev-cycle
           cargo run -p parity -- run
+      - name: Launcher (sh)
+        shell: bash
+        run: dev-cycle-protocol/bin/dev-cycle --version
+      - name: Launcher (PowerShell)
+        shell: pwsh
+        run: ./dev-cycle-protocol/bin/dev-cycle.ps1 --version
       - name: Run the Python tests
         run: python -m pytest

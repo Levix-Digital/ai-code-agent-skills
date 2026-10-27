@@ -1,0 +1,100 @@
+# Publishes the dev-cycle binary (the engine) for every engine version that reaches main:
+# release engine-vX.Y.Z with one binary per target and their SHA256SUMS, never marked latest.
+# The launchers in dev-cycle-protocol/bin download the version named in engine-version.
+# Product releases (vX.Y.Z of the plugin) keep their own candidate and promotion flow.
+name: Engine
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'crates/**'
+      - 'Cargo.toml'
+      - 'Cargo.lock'
+      - 'rust-toolchain.toml'
+      - 'dev-cycle-protocol/bin/engine-version'
+  workflow_dispatch:
+
+concurrency:
+  group: engine-${{ github.sha }}
+
+permissions:
+  contents: write
+
+jobs:
+  version:
+    name: Engine version
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.v.outputs.version }}
+      publish: ${{ steps.v.outputs.publish }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: v
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version=$(tr -d ' \r\n' < dev-cycle-protocol/bin/engine-version)
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          if gh release view "engine-v$version" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+            echo "engine-v$version is already published"
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  build:
+    name: Build (${{ matrix.target }})
+    needs: version
+    if: needs.version.outputs.publish == 'true'
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - { target: x86_64-unknown-linux-musl, os: ubuntu-latest }
+          - { target: aarch64-unknown-linux-musl, os: ubuntu-24.04-arm }
+          - { target: x86_64-apple-darwin, os: macos-latest }
+          - { target: aarch64-apple-darwin, os: macos-latest }
+          - { target: x86_64-pc-windows-msvc, os: windows-latest }
+          - { target: aarch64-pc-windows-msvc, os: windows-latest }
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install musl tools
+        if: contains(matrix.target, 'linux-musl')
+        run: sudo apt-get update && sudo apt-get install -y musl-tools
+      - name: Build
+        shell: bash
+        run: |
+          rustup target add ${{ matrix.target }}
+          cargo build --release --locked -p dev-cycle --target ${{ matrix.target }}
+          ext=""; case "${{ matrix.target }}" in *windows*) ext=".exe" ;; esac
+          mkdir -p dist
+          cp "target/${{ matrix.target }}/release/dev-cycle$ext" "dist/dev-cycle-${{ matrix.target }}$ext"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dev-cycle-${{ matrix.target }}
+          path: dist/*
+
+  publish:
+    name: Publish engine-v${{ needs.version.outputs.version }}
+    needs: [version, build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+      - name: Checksums
+        run: cd dist && sha256sum dev-cycle-* > SHA256SUMS && cat SHA256SUMS
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: engine-v${{ needs.version.outputs.version }}
+          target_commitish: ${{ github.sha }}
+          name: engine-v${{ needs.version.outputs.version }}
+          body: >-
+            Binaries of the dev-cycle engine ${{ needs.version.outputs.version }}, built from ${{ github.sha }}.
+            The skills' launchers (dev-cycle-protocol/bin) download them; this is not a product release.
+          make_latest: false
+          files: dist/*
