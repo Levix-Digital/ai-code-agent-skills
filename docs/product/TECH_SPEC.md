@@ -7,7 +7,7 @@ A set of skills in the open `SKILL.md` format, each a module with its instructio
 - **Agents**: any agent that reads `SKILL.md` (Claude Code, Codex, Gemini, Copilot and others), linked from one checkout by `install.sh` / `install.ps1`; Claude Code cloud sessions get the skills through the plugin in `.claude-plugin/`.
 - **Operating systems**: Windows, macOS and Linux; paths and commands work on all three.
 - **Python 3.10 or later** for every script: available wherever agents run, readable by every agent, testable with `pytest`. Scripts use the standard library first.
-- **Third-party Python packages** (`requirements.txt`): `chromadb` for the plan and session search indexes and folder RAG, `pyyaml` for frontmatter and CI files, `python-docx` and `pypdf` for folder extraction. IMP-003 makes them optional: execution through `uv` and a standard-library SQLite FTS5 fallback for search.
+- **Third-party Python packages** (`requirements.txt`): `chromadb` for the plan and session search indexes and folder RAG, `pyyaml` for frontmatter and CI files, `python-docx` and `pypdf` for folder extraction. IMP-005 (v2.10.0, ADR-0007) translates every script into one Rust binary with identical behavior, script by script, and then removes Python.
 - **Platform command lines**: `gh` (GitHub, REST API) and `glab` (GitLab) for pull requests; they keep the user's authentication.
 - **GitHub Spec Kit**, optional per project, at a pinned and verified version (v1.2.3 today), run through `uvx`.
 - **Gedo**, optional per project (`gedo.enabled`), through its command line with `--json` only, once it has one (v0.4.0); streams for parallel work from v0.5.0.

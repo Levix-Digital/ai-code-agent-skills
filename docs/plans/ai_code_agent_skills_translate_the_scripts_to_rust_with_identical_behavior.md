@@ -3,7 +3,7 @@ plan_id: ai_code_agent_skills_translate_the_scripts_to_rust_with_identical_behav
 project: ai-code-agent-skills
 title: Translate the scripts to Rust with identical behavior
 kind: feature
-version: null
+version: v2.10.0
 status: active
 author: Levi Silveira
 created_at: '2026-10-27T18:17:46'

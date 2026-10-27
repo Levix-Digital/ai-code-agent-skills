@@ -82,14 +82,6 @@ Each item: `### <ID>: <title>` with the fields `Severity` (bugs: critical, high,
 - **Plan**: -
 - **Description**: This repository has no .dev-cycle.json, product baseline (VISION, TECH_SPEC, epics) or ROADMAP, so the protocol's own rules (bugs first, low bugs by the next release, gate 8) do not apply to it. Run the /dev-cycle setup: configuration (trunk detected), the Spec Kit decision, and adoption mode for the baseline.
 
-### IMP-003: Run every script without manual installs
-- **Priority**: high
-- **Epic**: EPIC-006
-- **Status**: open
-- **Found**: 2026-10-25, 2026-10-25, platform strategy discussion
-- **Plan**: -
-- **Description**: Run the skills' scripts through uv (PEP 723 inline metadata or one wrapper) so dependencies install themselves, and add a standard-library SQLite FTS5 (BM25) search backend for plan-memory and session-memory, used when chromadb is missing or memory_backend is sqlite.
-
 ### IMP-004: Milestone dependencies in plans
 - **Priority**: high
 - **Epic**: EPIC-002
@@ -171,3 +163,12 @@ Each item: `### <ID>: <title>` with the fields `Severity` (bugs: critical, high,
 - **Plan**: -
 - **Closed**: 2026-10-25, PR #17
 - **Description**: write-config (and Spec Kit setup) write .dev-cycle.json, .specify/ and specs/ without checking git check-ignore. In a repository whose .gitignore is an allowlist (like this one) the files are never versioned and the decisions are lost in the next clone. Detect it, warn before writing and propose the .gitignore entry.
+
+### IMP-003: Run every script without manual installs
+- **Priority**: high
+- **Epic**: EPIC-006
+- **Status**: superseded
+- **Found**: 2026-10-25, 2026-10-25, platform strategy discussion
+- **Plan**: -
+- **Closed**: 2026-10-27, superseded by IMP-005
+- **Description**: Run the skills' scripts through uv (PEP 723 inline metadata or one wrapper) so dependencies install themselves, and add a standard-library SQLite FTS5 (BM25) search backend for plan-memory and session-memory, used when chromadb is missing or memory_backend is sqlite.
