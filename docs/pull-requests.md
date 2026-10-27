@@ -45,7 +45,7 @@ The platform is detected from the `origin` remote. Set it in `.dev-cycle.json` w
 
    The agent talks to GitHub through its REST API, which works the same on your machine, GitHub Enterprise and cloud agent environments. Only one thing needs GitHub's GraphQL API: knowing whether a review thread is resolved, and resolving it. Some environments refuse GraphQL; there the agent still reads and answers everything, tells you the resolution could not be read, and the gate keeps a **[review]** `blocking` thread holding the merge until you (or another GitHub tool the agent has) resolve it on the pull request page. GitLab needs nothing extra.
 
-Everything the agent posts carries a marker, so its findings and answers are told apart from people's comments, and nothing it posts or commits mentions an AI (protocol principle 9; `pr_sync.py` refuses such text, and gate 8 checks the commit messages of the release). If a project's subject legitimately needs a phrase the guard flags, add it to `review.allowed_terms`.
+Everything the agent posts carries a marker, so its findings and answers are told apart from people's comments, and nothing it posts or commits mentions an AI (protocol principle 9; `pr_sync.py` refuses such text, text posted through other tools is checked with `_no_ai.py` and read back after posting to remove any footer the tool appended, and gate 8 checks the commit messages and the Git identities of the release). If a project's subject legitimately needs a phrase the guard flags, add it to `review.allowed_terms`.
 
 ## When the Agent Reads the Pull Request
 
