@@ -54,6 +54,10 @@ pub struct Case {
     /// Path prefixes (`project/...`, `home/...`) left out of the file comparison.
     #[serde(default)]
     pub ignore: Vec<String>,
+    /// Relative paths (regular expressions) the scripts print with `\\` on Windows; golden
+    /// comparisons fold their separators to `/`, as they do for the run's absolute paths.
+    #[serde(default)]
+    pub seps: Vec<String>,
 }
 
 /// What a run leaves behind, normalized: paths of the run replaced with placeholders.
@@ -250,14 +254,21 @@ impl Normalizer {
 
 /// Python writes `\r\n` and `\\` path separators on Windows; golden files are recorded with `\n`
 /// and `/`. Only golden comparisons fold them: Python and Rust on the same machine must match
-/// byte for byte.
-pub fn fold_newlines(o: &Outcome) -> Outcome {
-    let paths = Regex::new(r#"\{(?:project|home|skills)\}[^\s"'`]*"#).expect("valid");
+/// byte for byte. `seps` are the case's relative paths to fold as well.
+pub fn fold_newlines(o: &Outcome, seps: &[String]) -> Outcome {
+    let mut paths = vec![Regex::new(r#"\{(?:project|home|skills)\}[^\s"'`]*"#).expect("valid")];
+    paths.extend(
+        seps.iter()
+            .map(|s| Regex::new(s).expect("valid seps pattern")),
+    );
     let f = |s: &str| {
-        let s = s.replace("\r\n", "\n");
-        paths
-            .replace_all(&s, |c: &regex::Captures| c[0].replace('\\', "/"))
-            .into_owned()
+        let mut s = s.replace("\r\n", "\n");
+        for p in &paths {
+            s = p
+                .replace_all(&s, |c: &regex::Captures| c[0].replace('\\', "/"))
+                .into_owned();
+        }
+        s
     };
     Outcome {
         exit: o.exit,
@@ -443,8 +454,17 @@ mod tests {
             files: BTreeMap::new(),
         };
         assert_eq!(
-            fold_newlines(&o).stdout,
+            fold_newlines(&o, &[]).stdout,
             "Source: {project}/docs/a.md\nC:\\other\n"
+        );
+    }
+
+    #[test]
+    fn golden_comparisons_fold_the_case_relative_paths() {
+        let seps = [r"docs\\adr".to_string()];
+        assert_eq!(
+            fold_newlines(&outcome("(docs\\adr, a\\b)\r\n"), &seps).stdout,
+            "(docs/adr, a\\b)\n"
         );
     }
 
@@ -488,7 +508,10 @@ mod tests {
 
     #[test]
     fn folds_windows_newlines_only_for_golden_comparisons() {
-        assert_eq!(fold_newlines(&outcome("a\r\nb\r\n")), outcome("a\nb\n"));
+        assert_eq!(
+            fold_newlines(&outcome("a\r\nb\r\n"), &[]),
+            outcome("a\nb\n")
+        );
         assert!(!diff(&outcome("a\r\n"), &outcome("a\n")).is_empty());
     }
 

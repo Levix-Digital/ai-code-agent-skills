@@ -280,7 +280,8 @@
     "rust": ["architecture-docs", "check_docs"],
     "args": [],
     "fixture": "docs-none",
-    "git": true
+    "git": true,
+    "seps": ["docs\\\\(?:adr|architecture)"]
   },
   {
     "name": "check-docs-current",
@@ -328,7 +329,8 @@
     "rust": ["architecture-docs", "check_docs"],
     "args": ["--dir", "sub"],
     "fixture": "subsystems-config",
-    "git": true
+    "git": true,
+    "seps": ["docs\\\\(?:adr|architecture)"]
   },
   {
     "name": "check-docs-outside-git",

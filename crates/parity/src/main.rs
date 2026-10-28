@@ -83,7 +83,7 @@ fn record(h: &Harness, case: &Case) -> Result<String, Vec<String>> {
             case.python
         )]);
     }
-    let out = fold_newlines(&h.run_python(case).map_err(|e| vec![e])?);
+    let out = fold_newlines(&h.run_python(case).map_err(|e| vec![e])?, &case.seps);
     let path = h.golden_path(case);
     let json = serde_json::to_string_pretty(&out).map_err(|e| vec![e.to_string()])? + "\n";
     fs::create_dir_all(path.parent().unwrap_or(Path::new("."))).map_err(|e| vec![e.to_string()])?;
@@ -105,7 +105,7 @@ fn check(h: &Harness, case: &Case) -> Result<String, Vec<String>> {
     };
     if let (Some(py), Some(g)) = (&python, &golden) {
         problems.extend(
-            diff(g, &fold_newlines(py))
+            diff(g, &fold_newlines(py, &case.seps))
                 .into_iter()
                 .map(|d| format!("python vs golden: {d}")),
         );
@@ -124,7 +124,7 @@ fn check(h: &Harness, case: &Case) -> Result<String, Vec<String>> {
             }
             (None, Some(g)) => {
                 problems.extend(
-                    diff(g, &fold_newlines(&rs))
+                    diff(g, &fold_newlines(&rs, &case.seps))
                         .into_iter()
                         .map(|d| format!("rust vs golden: {d}")),
                 );
