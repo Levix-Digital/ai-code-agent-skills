@@ -195,6 +195,14 @@ Each item: `### <ID>: <title>` with the fields `Severity` (bugs: critical, high,
 
 ## Adjustments
 
+### ADJ-001: Engine binary renamed to dcp
+- **Priority**: high
+- **Epic**: EPIC-006
+- **Status**: open
+- **Found**: 2026-10-28, 2026-10-28, Aurora Dev Suite integration discussion
+- **Plan**: -
+- **Description**: The engine's binary and launchers are called dcp (the name Aurora Dev Suite and the Levix products use) instead of dev-cycle: the binary, bin/dcp and bin/dcp.ps1, the release assets, and every SKILL.md and doc that calls the engine. The /dev-cycle command keeps its name. Done right after the migration (IMP-005 stays a pure translation), before the first release of the versioned JSON contract that Aurora reads; projects already using the protocol keep working through the launcher.
+
 ## Epics
 
 ### EPIC-001: Cycle and gates

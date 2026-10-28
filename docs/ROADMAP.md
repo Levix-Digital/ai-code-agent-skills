@@ -17,7 +17,7 @@ Each release: `## vX.Y.Z: <name>` with the fields `Status` (planned, in_progress
 ## v2.11.0: Guardrails for agent-written code
 - **Status**: planned
 - **Goal**: Pull requests are blocked on invented or vulnerable dependencies, weakened tests, changes outside the plan and insecure code
-- **Items**: FEAT-011, IMP-006, IMP-007, FEAT-012
+- **Items**: ADJ-001, FEAT-011, IMP-006, IMP-007, FEAT-012
 
 ## v2.12.0: Cycle feedback
 - **Status**: planned
