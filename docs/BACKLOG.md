@@ -95,6 +95,62 @@ Each item: `### <ID>: <title>` with the fields `Severity` (bugs: critical, high,
 - **Plan**: -
 - **Description**: An optional infrastructure step owned by the DevOps role, set in .dev-cycle.json (infra: off, or a tool from the supported list and its path), with every supported tool from the start: Terraform/OpenTofu, Helm, Pulumi, Kustomize, CloudFormation and Bicep. Onboarding offers it when it finds infrastructure files. Pull request CI only checks, never changes: format and validation, lint, security scan (Checkov or Trivy) and the plan or rendered manifests published for review. Apply is tied to the existing gates: the release candidate applies to staging and the promotion to production, always with the user's approval. Credentials stay in the CI provider's secrets (OIDC preferred) and the protocol never handles them. Plans state the infrastructure impact in their DevOps section. Against the known failure modes of agent-written infrastructure (insecure defaults, outdated provider syntax, every developer and agent designing it differently, drift, cost, secrets): a project infrastructure baseline (modules, naming, tags, environments, remote state) recorded in an ADR or the TECH_SPEC and checked at gate 3 and in code review; pinned provider and tool versions, validated against those versions; secret scanning (gitleaks) and the rule that the agent never receives cloud credentials; a cost estimate on the pull request (Infracost CLI); scheduled drift detection, a periodic plan that opens a bug when the real environment differs from the code; and policy as code (OPA/Conftest) for the organization's own rules. Free tools only. Workflow templates for GitHub Actions, GitLab CI, Azure Pipelines and Bitbucket Pipelines.
 
+### FEAT-011: Dependency and supply chain guard
+- **Priority**: high
+- **Epic**: EPIC-008
+- **Status**: open
+- **Found**: 2026-10-28, 2026-10-28, gaps of the cycle with coding agents discussion
+- **Plan**: -
+- **Description**: Criticality 1 of the agent gaps. Agents invent packages that do not exist (slopsquatting), add dependencies the change does not need and pick vulnerable or outdated versions. A dependency policy in the plan and gate 3 (every new dependency justified, existing alternatives checked), a check that each new package exists in its registry and is not a fresh or near-name lookalike, a vulnerability audit in pull request CI with the stack's free tools (cargo audit, npm audit, pip-audit, govulncheck, Trivy), license checks against the project's allowed list, and an SBOM attached to every release. Free tools only, on the main CI providers.
+
+### FEAT-012: Static security analysis in CI
+- **Priority**: high
+- **Epic**: EPIC-008
+- **Status**: open
+- **Found**: 2026-10-28, 2026-10-28, gaps of the cycle with coding agents discussion
+- **Plan**: -
+- **Description**: Criticality 4 of the agent gaps. The review's security item gets deterministic tools: Semgrep OSS rules and the stack's security linters (bandit, gosec, clippy, eslint security rules) in pull request CI, with findings at blocking level failing the merge gate. Free tools only (CodeQL stays out: paid on private repositories), on the main CI providers.
+
+### FEAT-013: Operations phase: production feedback into the backlog
+- **Priority**: high
+- **Epic**: EPIC-001
+- **Status**: open
+- **Found**: 2026-10-28, 2026-10-28, gaps of the cycle with coding agents discussion
+- **Plan**: -
+- **Description**: Criticality 5 of the agent gaps. The cycle ends at the release today. A phase after the release closes the loop: production errors and incidents become triaged bugs in the backlog (bugs first applies), every incident has a short blameless postmortem whose actions become backlog items, and plans state the signals (logs, metrics, alerts) that tell whether the release works. Provider-neutral: it reads what the project already uses, it does not impose a monitoring tool.
+
+### FEAT-014: Review brief at the user's gates
+- **Priority**: medium
+- **Epic**: EPIC-001
+- **Status**: open
+- **Found**: 2026-10-28, 2026-10-28, gaps of the cycle with coding agents discussion
+- **Plan**: -
+- **Description**: Criticality 6 of the agent gaps. With agents the user approves code they did not write and may not understand (comprehension debt). Each user gate (plan approval, acceptance, release) gets a short generated brief: what changed and why, the risks, the decisions taken, and the files and behaviors that deserve careful review, linked to the plan and the pull request.
+
+### FEAT-015: Metrics of the cycle
+- **Priority**: medium
+- **Epic**: EPIC-001
+- **Status**: open
+- **Found**: 2026-10-28, 2026-10-28, gaps of the cycle with coding agents discussion
+- **Plan**: -
+- **Description**: Criticality 7 of the agent gaps. The cycle records, in the project's repository, gates passed first time or rejected, rework (review rounds, reopened milestones, reverted releases), time per phase and, where the agent reports them, tokens spent. Three sources: (1) what Git, the pull requests, the plans (status_log, milestone done_at) and the backlog already record, computed retroactively by an extractor, so the history before this item counts; (2) what is lost today (gates rejected and why, rework reasons, phase start and end), written automatically by the engine as an event at the end of every phase and gate to an append-only log in the repository (for example .dev-cycle/metrics/events.jsonl), with no manual step and the same on every agent and environment; (3) tokens and cost, through an optional importer per agent for the main 3-4 agents, never required for the cycle to run. Baseline: the Git and pull request history of projects built before or without the protocol. A summary per release shows whether the protocol is improving delivery. Required before FEAT-009, whose acceptance compares the MCP cycle with the current skills on these numbers.
+
+### FEAT-016: Performance budgets and regression benchmarks
+- **Priority**: low
+- **Epic**: EPIC-008
+- **Status**: open
+- **Found**: 2026-10-28, 2026-10-28, gaps of the cycle with coding agents discussion
+- **Plan**: -
+- **Description**: Criticality 8 of the agent gaps. Plans state performance budgets for the paths they touch (latency, memory, binary or bundle size), and pull request CI runs the project's benchmarks and fails when a budget is exceeded or a regression passes a set threshold. Uses the stack's own benchmark tools.
+
+### FEAT-017: Metrics and settings commands for Aurora Dev Suite
+- **Priority**: medium
+- **Epic**: EPIC-001
+- **Status**: open
+- **Found**: 2026-10-28, 2026-10-28, cycle metrics discussion
+- **Plan**: -
+- **Description**: The graphical dashboard and settings live only in Aurora Dev Suite, which reads the engine through its command line with versioned JSON (Aurora ADR-0003); the protocol has no interface of its own and does not duplicate Aurora. The engine offers: metrics --json (the FEAT-015 metrics per project and release, with schema and schema_version), config get --json and config set (the closed set of settings, written to .dev-cycle.json through the same validation as the engine, so the file stays the single source of truth), the capabilities of both in version --json, and a static HTML report (report) for users of the engine alone and for CI artifacts. The agent and the command line keep working without Aurora. Suggestions for Aurora's side are in the project files (aurora-dev-suite/).
+
 ## Improvements
 
 ### IMP-002: Adopt the protocol in this repository (dogfooding)
@@ -121,7 +177,31 @@ Each item: `### <ID>: <title>` with the fields `Severity` (bugs: critical, high,
 - **Plan**: ai_code_agent_skills_translate_the_scripts_to_rust_with_identical_behavior
 - **Description**: Translate every Python script of the skills into one Rust binary with no change in behavior: same commands, flags, stdout, stderr, exit codes and files written, proven by comparing the Python and Rust outputs on the same fixtures. One script per pull request: when the outputs are identical, the SKILL.md calls the Rust command and the Python script is deleted. When no script is left, the Python requirements and tests are removed.
 
+### IMP-006: Test integrity checks
+- **Priority**: high
+- **Epic**: EPIC-008
+- **Status**: open
+- **Found**: 2026-10-28, 2026-10-28, gaps of the cycle with coding agents discussion
+- **Plan**: -
+- **Description**: Criticality 2 of the agent gaps. Never moving on with a failing test does not stop an agent from weakening a test, mocking everything or writing a test that asserts nothing. Pull request CI reports coverage of the changed lines with a minimum the project sets; mutation testing runs on the modules the plan marks as critical (cargo-mutants, Stryker, mutmut, go-mutesting); changing or deleting an existing test or assertion needs a justification in the pull request, checked by the review and the merge gate.
+
+### IMP-007: Change scope checked against the plan
+- **Priority**: high
+- **Epic**: EPIC-008
+- **Status**: open
+- **Found**: 2026-10-28, 2026-10-28, gaps of the cycle with coding agents discussion
+- **Plan**: -
+- **Description**: Criticality 3 of the agent gaps. Agents refactor outside the plan and pull requests grow. The merge gate compares the diff with the files and modules the plan's milestones declare (allowed_scopes of IMP-004): changes outside them need a plan update or become backlog items. A pull request size limit in the configuration warns and asks to split.
+
 ## Adjustments
+
+### ADJ-001: Engine binary renamed to dcp
+- **Priority**: high
+- **Epic**: EPIC-006
+- **Status**: open
+- **Found**: 2026-10-28, 2026-10-28, Aurora Dev Suite integration discussion
+- **Plan**: -
+- **Description**: The engine's binary and launchers are called dcp (the name Aurora Dev Suite and the Levix products use) instead of dev-cycle: the binary, bin/dcp and bin/dcp.ps1, the release assets, and every SKILL.md and doc that calls the engine. The /dev-cycle command keeps its name. Done right after the migration (IMP-005 stays a pure translation), before the first release of the versioned JSON contract that Aurora reads; projects already using the protocol keep working through the launcher.
 
 ## Epics
 
@@ -166,6 +246,12 @@ Each item: `### <ID>: <title>` with the fields `Severity` (bugs: critical, high,
 - **Status**: open
 - **Found**: 2026-10-28, 2026-10-28, protocol improvements discussion
 - **Description**: Infrastructure checked in pull request CI and applied through the release gates, with the project's infrastructure as code tool on the main CI providers.
+
+### EPIC-008: Guardrails for agent-written code
+- **Priority**: high
+- **Status**: open
+- **Found**: 2026-10-28, 2026-10-28, gaps of the cycle with coding agents discussion
+- **Description**: Deterministic checks against the failure modes of code written by agents: invented or vulnerable dependencies, misleading tests, changes outside the plan, insecure code and performance regressions.
 
 ## Closed
 
