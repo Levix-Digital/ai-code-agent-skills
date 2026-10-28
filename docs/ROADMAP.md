@@ -19,6 +19,11 @@ Each release: `## vX.Y.Z: <name>` with the fields `Status` (planned, in_progress
 - **Goal**: A role can run in its own context on Claude Code, Codex, Gemini or Copilot, and pull request review works on Bitbucket, Azure DevOps and Gitea
 - **Items**: FEAT-005, FEAT-001
 
+## v2.12.0: Protocol served by the engine
+- **Status**: planned
+- **Goal**: Agents run the cycle through the engine's local MCP server with minimal skills, the signed engine cannot be altered, projects adjust it only through validated settings, and the commercial license is chosen
+- **Items**: FEAT-009, FEAT-007
+
 ## v3.0.0: Role isolation
 - **Status**: planned
 - **Goal**: Plan sections and review lenses are written by separate specialists in sequence, so the one who reviews is not the one who wrote

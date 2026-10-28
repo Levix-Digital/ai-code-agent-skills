@@ -63,13 +63,13 @@ Each item: `### <ID>: <title>` with the fields `Severity` (bugs: critical, high,
 - **Plan**: -
 - **Description**: Lite (dev-cycle, backlog and pull request review, no Phase 0 or release candidates), Standard (plans, design checks, technical docs) and Full (phases 0 to 10, Spec Kit, release candidates, Gedo when enabled), in the README and as a choice in /dev-cycle.
 
-### FEAT-007: Open source launch
+### FEAT-007: Commercial license and distribution model
 - **Priority**: medium
 - **Epic**: EPIC-006
 - **Status**: open
-- **Found**: 2026-10-25, 2026-10-25, platform strategy discussion
+- **Found**: 2026-10-25, 2026-10-25, platform strategy discussion; redefined 2026-10-28, protocol as a commercial product
 - **Plan**: -
-- **Description**: Choose the license (MIT, Apache-2.0 or both), prepare public docs and a contribution guide, and publish together with Gedo v0.5.0 or v0.6.0. Until then the repository stays unlicensed.
+- **Description**: The protocol becomes a commercial product, so the open source launch (MIT or Apache-2.0) is replaced by a license decision: proprietary with an end-user license agreement, or source-available (for example BSL), reviewed by a lawyer. The license is the actual protection against copying; the instructions the agent reads are not secret. Covers the public docs and how the signed engine is distributed (FEAT-009). Until then the repository stays unlicensed.
 
 ### FEAT-008: Non-overlapping milestone scopes at gate 3 with gedo scope
 - **Priority**: high
@@ -78,6 +78,14 @@ Each item: `### <ID>: <title>` with the fields `Severity` (bugs: critical, high,
 - **Found**: 2026-10-25, Gedo integration contract 2026-10-25
 - **Plan**: -
 - **Description**: When gedo.enabled and Gedo has the scope capability: at gate 3, check with gedo scope --json that the milestones marked to run in parallel do not share entities or their dependency closure; overlapping milestones run in sequence. Needs Gedo v0.5.0 (FEAT-133 there) and Gedo support for the project's language.
+
+### FEAT-009: Engine as an MCP server with minimal skills
+- **Priority**: high
+- **Epic**: EPIC-006
+- **Status**: open
+- **Found**: 2026-10-28, 2026-10-28, protocol as a commercial product discussion
+- **Plan**: -
+- **Description**: The skills shrink to a short bootstrap that tells the agent to drive the cycle through the dev-cycle MCP tools; the protocol itself moves into the Rust engine, served locally over stdio (no network, works offline, in cloud sessions and on Claude Code, Codex, Gemini and Copilot). The engine is a state machine: it keeps the cycle state, enforces phase order and gates deterministically, generates files from embedded templates and returns only the current step's instructions. Instructions stay readable and explain their reasons (hiding them would make the agent worse); the binary is signed so the launcher refuses an altered engine and the protocol cannot be changed by the user. Projects adjust it only through a closed set of settings validated by the engine (onboarding level of FEAT-006, optional phases, providers); no custom templates, phases or extension points, and mandatory gates and principles are not configurable. Each phase becomes an explicit contract kept as data in the engine (inputs, artifacts to produce, done criteria, gate checks), the single source for both validation and the agent's instructions, so the phases are clearer than the prose they replace. Incremental cycle context: when a phase passes its gate, its structured handoff (decisions, constraints, artifacts by path, open questions) is validated and added to the cycle context, which the engine returns with every step: recent phases in full, older ones compacted, artifacts referenced rather than inlined. The context is stored in the project's repository, so it survives new sessions, a change of agent and cloud sessions, and later gives each role (FEAT-002) and Gedo stream (FEAT-003) only the slice it needs. Acceptance: on a set of sample projects the cycle run through the MCP matches or beats the current skills (gates passed first time, complete artifacts, rework, tokens); only then do the skills shrink. After v2.10.0, with Spec Kit.
 
 ## Improvements
 
@@ -143,7 +151,7 @@ Each item: `### <ID>: <title>` with the fields `Severity` (bugs: critical, high,
 - **Priority**: high
 - **Status**: open
 - **Found**: 2026-10-25, 2026-10-25, platform strategy discussion
-- **Description**: Execution without manual installs, standard-library search, onboarding in three levels and the open source launch.
+- **Description**: Execution without manual installs, standard-library search, onboarding in three levels, the protocol served by the signed engine and its commercial license.
 
 ## Closed
 
