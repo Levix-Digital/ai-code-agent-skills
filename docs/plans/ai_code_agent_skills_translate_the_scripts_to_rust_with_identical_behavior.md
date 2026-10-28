@@ -7,7 +7,7 @@ version: v2.10.0
 status: in_progress
 author: Levi Silveira
 created_at: '2026-10-27T18:17:46'
-updated_at: '2026-10-27T23:25:38'
+updated_at: '2026-10-28T10:48:22'
 session_id: null
 tags:
 - rust
@@ -32,7 +32,9 @@ milestones:
   done_at: '2026-10-27'
   by: Levi Silveira
 - name: M4 new_subsystem
-  done: false
+  done: true
+  done_at: '2026-10-28'
+  by: Levi Silveira
 - name: M5 new_adr
   done: false
 - name: M6 build_index
@@ -129,6 +131,9 @@ status_log:
 - at: '2026-10-27T23:25:38'
   by: Levi Silveira
   note: 'Milestone ''M3 project_config'' completed: Engine 0.2.0: project_config in Rust (crates/kernel), with the Python-compatible json, argparse, textwrap and os.path layer; 17 parity cases; project_config.py stays as a module for the Python scripts that import it.'
+- at: '2026-10-28T10:48:22'
+  by: Levi Silveira
+  note: 'Milestone ''M4 new_subsystem'' completed: Engine 0.3.0: new_subsystem in Rust (crates/architecture-docs), with a PyYAML-compatible safe_load and safe_dump in the kernel; 7 parity cases; _docs.py and build_index.py stay for the Python scripts that import them.'
 ---
 
 # Translate the scripts to Rust with identical behavior

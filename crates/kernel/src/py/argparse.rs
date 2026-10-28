@@ -1,7 +1,7 @@
 //! Python's `argparse` for the parsers the scripts build: the same option matching (unique
 //! prefixes, `--opt=value`), the same help layout and the same error messages and exit codes.
 //! Grows with the scripts translated; today it covers optional arguments that store a value or
-//! `True`.
+//! `True`, required or not.
 
 use super::{repr_str, textwrap};
 use std::collections::BTreeMap;
@@ -21,6 +21,7 @@ pub struct Arg {
     pub dest: String,
     pub kind: Kind,
     pub help: String,
+    pub required: bool,
 }
 
 impl Arg {
@@ -39,10 +40,15 @@ impl Arg {
 
     fn usage(&self) -> String {
         let first = &self.flags[0];
-        if self.takes_value() {
-            format!("[{first} {}]", self.metavar())
+        let part = if self.takes_value() {
+            format!("{first} {}", self.metavar())
         } else {
-            format!("[{first}]")
+            first.clone()
+        };
+        if self.required {
+            part
+        } else {
+            format!("[{part}]")
         }
     }
 
@@ -128,27 +134,34 @@ impl Parser {
                 dest: "help".into(),
                 kind: Kind::Help,
                 help: "show this help message and exit".into(),
+                required: false,
             }],
         }
     }
 
-    fn add(mut self, flag: &str, kind: Kind, help: &str) -> Self {
+    fn add(mut self, flag: &str, kind: Kind, help: &str, required: bool) -> Self {
         let dest = flag.trim_start_matches('-').replace('-', "_");
         self.args.push(Arg {
             flags: vec![flag.to_string()],
             dest,
             kind,
             help: help.to_string(),
+            required,
         });
         self
     }
 
     pub fn flag(self, flag: &str, help: &str) -> Self {
-        self.add(flag, Kind::StoreTrue, help)
+        self.add(flag, Kind::StoreTrue, help, false)
     }
 
     pub fn option(self, flag: &str, help: &str) -> Self {
-        self.add(flag, Kind::Store, help)
+        self.add(flag, Kind::Store, help, false)
+    }
+
+    /// `add_argument(flag, required=True)`.
+    pub fn required_option(self, flag: &str, help: &str) -> Self {
+        self.add(flag, Kind::Store, help, true)
     }
 
     fn option_strings(&self) -> Vec<(&str, usize)> {
@@ -365,6 +378,18 @@ impl Parser {
                     i = next;
                 }
             }
+        }
+        let missing: Vec<String> = self
+            .args
+            .iter()
+            .filter(|a| a.required && !parsed.values.contains_key(&a.dest))
+            .map(Arg::name)
+            .collect();
+        if !missing.is_empty() {
+            return Err(self.error(&format!(
+                "the following arguments are required: {}",
+                missing.join(", ")
+            )));
         }
         if !extras.is_empty() {
             return Err(self.error(&format!("unrecognized arguments: {}", extras.join(" "))));

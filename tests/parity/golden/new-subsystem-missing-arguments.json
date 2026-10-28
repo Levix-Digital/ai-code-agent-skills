@@ -1,0 +1,6 @@
+{
+  "exit": 2,
+  "stdout": "",
+  "stderr": "usage: new_subsystem.py [-h] --name NAME --title TITLE --summary SUMMARY\n                        [--code CODE] [--dir DIR]\nnew_subsystem.py: error: the following arguments are required: --title, --summary\n",
+  "files": {}
+}

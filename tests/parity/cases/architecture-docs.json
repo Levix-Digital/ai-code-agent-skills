@@ -1,0 +1,54 @@
+[
+  {
+    "name": "new-subsystem-help",
+    "python": "architecture-docs/new_subsystem.py",
+    "rust": ["architecture-docs", "new_subsystem"],
+    "args": ["--help"],
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "new-subsystem-missing-arguments",
+    "python": "architecture-docs/new_subsystem.py",
+    "rust": ["architecture-docs", "new_subsystem"],
+    "args": ["--name", "rag", "extra"],
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "new-subsystem-first-page",
+    "python": "architecture-docs/new_subsystem.py",
+    "rust": ["architecture-docs", "new_subsystem"],
+    "args": ["--name", "RAG", "--title", "Retrieval-Augmented Generation", "--summary", "Answers questions from the indexed documents.", "--code", "src/rag.rs, ,src/index.rs"],
+    "git": true
+  },
+  {
+    "name": "new-subsystem-existing-index",
+    "python": "architecture-docs/new_subsystem.py",
+    "rust": ["architecture-docs", "new_subsystem"],
+    "args": ["--name", "Ingestão de PDFs", "--title", "PDF ingestion: text | tables", "--summary", "Reads 'PDF' files #1, with \"quotes\"."],
+    "fixture": "subsystems-docs",
+    "git": true
+  },
+  {
+    "name": "new-subsystem-already-exists",
+    "python": "architecture-docs/new_subsystem.py",
+    "rust": ["architecture-docs", "new_subsystem"],
+    "args": ["--name", "RAG", "--title", "Again", "--summary", "Same file."],
+    "fixture": "subsystems-docs",
+    "git": true
+  },
+  {
+    "name": "new-subsystem-custom-config",
+    "python": "architecture-docs/new_subsystem.py",
+    "rust": ["architecture-docs", "new_subsystem"],
+    "args": ["--na=Store", "--ti", "Store", "--su", "Keeps the chunks.", "--dir", "sub"],
+    "fixture": "subsystems-config",
+    "git": true
+  },
+  {
+    "name": "new-subsystem-outside-git",
+    "python": "architecture-docs/new_subsystem.py",
+    "rust": ["architecture-docs", "new_subsystem"],
+    "args": ["--name", "!!!", "--title", "Untitled page", "--summary", "No Git repository: the current folder is the root.", "--dir", "{project}"],
+    "fixture": "subsystems-docs"
+  }
+]

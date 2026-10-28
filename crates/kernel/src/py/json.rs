@@ -406,13 +406,36 @@ fn encode_float(f: f64) -> String {
 }
 
 /// `json.dumps(value, indent=indent, ensure_ascii=False)`.
-pub fn dumps(value: &Value, indent: Option<usize>) -> String {
+pub fn dumps(value: &Value, indent: Option<usize>) -> Result<String, Crash> {
     let mut out = String::new();
-    write_value(value, indent, 0, &mut out);
-    out
+    write_value(value, indent, 0, &mut out)?;
+    Ok(out)
 }
 
-fn write_value(v: &Value, indent: Option<usize>, level: usize, out: &mut String) {
+/// A dict key as `json.dumps` writes it.
+fn encode_key(k: &Value) -> Result<String, Crash> {
+    Ok(match k {
+        Value::Str(s) => s.clone(),
+        Value::Float(f) => encode_float(*f),
+        Value::Bool(true) => "true".into(),
+        Value::Bool(false) => "false".into(),
+        Value::Null => "null".into(),
+        Value::Int(i) => i.clone(),
+        other => {
+            return Err(Crash::new(format!(
+                "TypeError: keys must be str, int, float, bool or None, not {}",
+                other.type_name()
+            )));
+        }
+    })
+}
+
+fn write_value(
+    v: &Value,
+    indent: Option<usize>,
+    level: usize,
+    out: &mut String,
+) -> Result<(), Crash> {
     match v {
         Value::Null => out.push_str("null"),
         Value::Bool(true) => out.push_str("true"),
@@ -420,15 +443,15 @@ fn write_value(v: &Value, indent: Option<usize>, level: usize, out: &mut String)
         Value::Int(i) => out.push_str(i),
         Value::Float(f) => out.push_str(&encode_float(*f)),
         Value::Str(s) => encode_str(s, out),
-        Value::List(items) => {
+        Value::List(items) | Value::Tuple(items) => {
             if items.is_empty() {
                 out.push_str("[]");
-                return;
+                return Ok(());
             }
             out.push('[');
             for (n, item) in items.iter().enumerate() {
                 separator(n, indent, level + 1, out);
-                write_value(item, indent, level + 1, out);
+                write_value(item, indent, level + 1, out)?;
             }
             closing(indent, level, out);
             out.push(']');
@@ -436,19 +459,26 @@ fn write_value(v: &Value, indent: Option<usize>, level: usize, out: &mut String)
         Value::Dict(map) => {
             if map.is_empty() {
                 out.push_str("{}");
-                return;
+                return Ok(());
             }
             out.push('{');
             for (n, (k, item)) in map.iter().enumerate() {
                 separator(n, indent, level + 1, out);
-                encode_str(k, out);
+                encode_str(&encode_key(k)?, out);
                 out.push_str(": ");
-                write_value(item, indent, level + 1, out);
+                write_value(item, indent, level + 1, out)?;
             }
             closing(indent, level, out);
             out.push('}');
         }
+        other => {
+            return Err(Crash::new(format!(
+                "TypeError: Object of type {} is not JSON serializable",
+                other.type_name()
+            )));
+        }
     }
+    Ok(())
 }
 
 fn separator(n: usize, indent: Option<usize>, level: usize, out: &mut String) {
@@ -489,10 +519,10 @@ mod tests {
     #[test]
     fn round_trip_keeps_order_and_text() {
         let v = loads("{\"b\": [1, 2.50, -0, 1e400, \"é\\n\"], \"a\": {}, \"b\": null}").unwrap();
-        assert_eq!(dumps(&v, None), "{\"b\": null, \"a\": {}}");
+        assert_eq!(dumps(&v, None).unwrap(), "{\"b\": null, \"a\": {}}");
         let v = loads("[1, 2.50, -0, 1e400, \"é\\n\", [], {\"x\": true}]").unwrap();
         assert_eq!(
-            dumps(&v, Some(2)),
+            dumps(&v, Some(2)).unwrap(),
             "[\n  1,\n  2.5,\n  0,\n  Infinity,\n  \"é\\n\",\n  [],\n  {\n    \"x\": true\n  }\n]"
         );
     }
