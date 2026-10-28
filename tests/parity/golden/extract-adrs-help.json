@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "usage: extract_adrs.py [-h] [--source SOURCE] [--dir DIR] [--no-git-dates]\n                       [--overwrite] [--dry-run]\n\nExtract ADR sections from a legacy technical document into docs/adr\n\noptions:\n  -h, --help       show this help message and exit\n  --source SOURCE  Legacy document (default: the configured index, TECDOC.md)\n  --dir DIR        Project directory (default: current; the Git root is used)\n  --no-git-dates   Do not look up ADR dates in the Git history\n  --overwrite      Replace ADR files that already exist\n  --dry-run        Only show what would be extracted\n",
+  "stderr": "",
+  "files": {}
+}

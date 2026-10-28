@@ -16,6 +16,11 @@ const COMMANDS: &[(&str, &str, Command)] = &[
     ),
     (
         "architecture-docs",
+        "extract_adrs",
+        architecture_docs::extract_adrs::main,
+    ),
+    (
+        "architecture-docs",
         "new_adr",
         architecture_docs::new_adr::main,
     ),

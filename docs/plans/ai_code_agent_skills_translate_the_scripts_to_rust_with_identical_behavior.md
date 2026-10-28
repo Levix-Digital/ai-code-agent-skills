@@ -7,7 +7,7 @@ version: v2.10.0
 status: in_progress
 author: Levi Silveira
 created_at: '2026-10-27T18:17:46'
-updated_at: '2026-10-28T11:38:46'
+updated_at: '2026-10-28T12:16:31'
 session_id: null
 tags:
 - rust
@@ -44,7 +44,9 @@ milestones:
   done_at: '2026-10-28'
   by: Levi Silveira
 - name: M7 extract_adrs
-  done: false
+  done: true
+  done_at: '2026-10-28'
+  by: Levi Silveira
 - name: M8 check_docs
   done: false
 - name: M9 check_product
@@ -144,6 +146,9 @@ status_log:
 - at: '2026-10-28T11:38:46'
   by: Levi Silveira
   note: 'Milestone ''M6 build_index'' completed: Engine 0.5.0: the build_index command in Rust; 11 parity cases and a 3,000-run differential fuzz with 0 differences; build_index.py stays as a module for check_docs.py and extract_adrs.py.'
+- at: '2026-10-28T12:16:31'
+  by: Levi Silveira
+  note: 'Milestone ''M7 extract_adrs'' completed: Engine 0.6.0: extract_adrs in Rust; kernel gained Python 3.13 tables for \w, lower(), \s and \d (every code point checked); 8 parity cases and a 3,000-run differential fuzz with 0 differences.'
 ---
 
 # Translate the scripts to Rust with identical behavior

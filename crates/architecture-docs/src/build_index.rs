@@ -7,7 +7,8 @@ use kernel::out::println;
 use kernel::py::argparse::Parser;
 use kernel::py::num::{is_space, strip};
 use kernel::py::path::{SEP, basename, dirname, isfile, relpath};
-use kernel::py::{Crash, Value, read_text, write_text};
+use kernel::py::unicode::SPACE;
+use kernel::py::{Crash, Value, lower as lower_text, read_text, write_text};
 use regex::{NoExpand, Regex};
 
 use crate::docs::{Project, adr_label, as_id_list, cmp_int, get, marker, no_attribute};
@@ -54,13 +55,10 @@ pub fn block(name: &str, content: &str) -> String {
     )
 }
 
-/// Python's `\s` (`str.isspace`) as a regex class.
-const PY_SPACE: &str = r"[\t-\r\x1c- \x85\xa0  -     　]";
-
 /// The first prose paragraph of a page, collapsed to one line of at most 160 characters.
 pub fn first_paragraph(body: &str) -> String {
     static PARAGRAPHS: LazyLock<Regex> =
-        LazyLock::new(|| Regex::new(&format!(r"\n{PY_SPACE}*\n")).expect("valid pattern"));
+        LazyLock::new(|| Regex::new(&format!(r"\n[{SPACE}]*\n")).expect("valid pattern"));
     for chunk in PARAGRAPHS.split(body) {
         let text = strip(chunk);
         if !text.is_empty()
@@ -87,7 +85,7 @@ pub fn first_paragraph(body: &str) -> String {
 /// `str.lower()` on a value that must be a string.
 fn lower(value: &Value) -> Result<String, Crash> {
     match value {
-        Value::Str(s) => Ok(s.to_lowercase()),
+        Value::Str(s) => Ok(lower_text(s)),
         other => Err(no_attribute(other, "lower")),
     }
 }
@@ -115,10 +113,7 @@ pub fn render_subsystems(project: &Project) -> Result<String, Crash> {
         let key = if title.truthy() {
             lower(title)?
         } else {
-            d.h1()
-                .filter(|h| !h.is_empty())
-                .unwrap_or_default()
-                .to_lowercase()
+            lower_text(&d.h1().filter(|h| !h.is_empty()).unwrap_or_default())
         };
         keyed.push((key, d));
     }
