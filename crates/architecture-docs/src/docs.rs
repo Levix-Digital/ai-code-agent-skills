@@ -8,6 +8,7 @@ use std::sync::LazyLock;
 use kernel::py::json::{self, LoadError};
 use kernel::py::num::{self, decimal_value, strip};
 use kernel::py::path::{SEP, abspath, basename, isdir, isfile, join, makedirs, relpath};
+use kernel::py::unicode::SPACE;
 use kernel::py::yaml::{self, DumpOptions};
 use kernel::py::{Crash, Dict, NONE, Value, io_crash, matches_to_end, read_text, write_text};
 use regex::Regex;
@@ -449,6 +450,52 @@ fn write_meta(doc: &Doc, meta: &Value) -> Result<(), Crash> {
     makedirs(&kernel::py::path::dirname(&doc.path))?;
     let text = format!("---\n{front}---\n\n{}\n", strip(&doc.body));
     write_text(std::path::Path::new(&doc.path), &text)
+}
+
+/// `github_anchor(heading)`: the anchor GitHub generates for a heading (without the -1, -2
+/// suffix for duplicates).
+pub fn github_anchor(heading: &str) -> String {
+    static TAGS: LazyLock<Regex> = LazyLock::new(|| Regex::new("<[^>]+>").expect("valid pattern"));
+    let text = kernel::py::lower(strip(&TAGS.replace_all(heading, "")));
+    text.chars()
+        .filter(|&c| kernel::py::is_word(c) || c == '-' || c == ' ')
+        .collect::<String>()
+        .replace(' ', "-")
+}
+
+/// `fenced_lines(lines)`: for each line, true when it is part of a fenced code block
+/// (CommonMark rules: a block closes only with the same fence character, at least as long, and
+/// nothing after it).
+pub fn fenced_lines(lines: &[&str]) -> Vec<bool> {
+    static FENCE: LazyLock<Regex> = LazyLock::new(|| {
+        Regex::new(&format!("^[{SPACE}]{{0,3}}(`{{3,}}|~{{3,}})(.*)$")).expect("valid pattern")
+    });
+    let mut flags = Vec::with_capacity(lines.len());
+    let mut fence: Option<String> = None;
+    for line in lines {
+        let m = FENCE.captures(line);
+        let parts = m.as_ref().map(|m| (m[1].to_string(), m[2].to_string()));
+        match &fence {
+            None => {
+                let opens = parts
+                    .as_ref()
+                    .filter(|(f, info)| !(f.starts_with('`') && info.contains('`')));
+                flags.push(opens.is_some());
+                fence = opens.map(|(f, _)| f.clone());
+            }
+            Some(open) => {
+                flags.push(true);
+                if let Some((f, rest)) = &parts
+                    && f.chars().next() == open.chars().next()
+                    && f.len() >= open.len()
+                    && strip(rest).is_empty()
+                {
+                    fence = None;
+                }
+            }
+        }
+    }
+    flags
 }
 
 /// `as_id_list(value)`: the first number in each item, as ADR ids.

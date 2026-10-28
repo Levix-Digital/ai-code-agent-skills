@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "(dry-run) ADR-0001 -> docs/adr/0001-use-a-file-store.md  [v0.45.0, unknown]  amended_by ADR-0002, ADR-0003\n(dry-run) ADR-0002 -> docs/adr/0002-config-in-json.md  [v0.45.0, unknown]  amended_by ADR-0004\n(dry-run) ADR-0003 -> docs/adr/0003-database-indexed-1-2.md  [-, unknown]\n(dry-run) ADR-0004 -> docs/adr/0004-top-level-section.md  [-, unknown]\n(dry-run) ADR-0007 -> docs/adr/0007-unicode-digits.md  [-, unknown]\n(dry-run) ADR-0005 -> docs/adr/0005-unpadded-number-dated-from-git.md  [-, 2026-01-01]\n\n(dry-run) 6 ADR(s) extracted from TECDOC.md (source not modified).\n",
+  "stderr": "⚠️ duplicate ADR-0001 heading (line 42); keeping the first one\n",
+  "files": {}
+}

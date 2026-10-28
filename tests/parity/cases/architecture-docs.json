@@ -197,5 +197,67 @@
     "rust": ["architecture-docs", "build_index"],
     "args": ["--dir", "{project}"],
     "fixture": "subsystems-docs"
+  },
+  {
+    "name": "extract-adrs-help",
+    "python": "architecture-docs/extract_adrs.py",
+    "rust": ["architecture-docs", "extract_adrs"],
+    "args": ["--help"],
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "extract-adrs-dry-run",
+    "python": "architecture-docs/extract_adrs.py",
+    "rust": ["architecture-docs", "extract_adrs"],
+    "args": ["--dry"],
+    "fixture": "legacy-tecdoc",
+    "git": true
+  },
+  {
+    "name": "extract-adrs-write",
+    "python": "architecture-docs/extract_adrs.py",
+    "rust": ["architecture-docs", "extract_adrs"],
+    "args": [],
+    "fixture": "legacy-tecdoc",
+    "git": true
+  },
+  {
+    "name": "extract-adrs-overwrite",
+    "python": "architecture-docs/extract_adrs.py",
+    "rust": ["architecture-docs", "extract_adrs"],
+    "args": ["--overwrite", "--no-git-dates"],
+    "fixture": "legacy-tecdoc",
+    "git": true
+  },
+  {
+    "name": "extract-adrs-other-source",
+    "python": "architecture-docs/extract_adrs.py",
+    "rust": ["architecture-docs", "extract_adrs"],
+    "args": ["--source", "docs/old/OLD.md"],
+    "fixture": "legacy-tecdoc",
+    "git": true
+  },
+  {
+    "name": "extract-adrs-source-not-found",
+    "python": "architecture-docs/extract_adrs.py",
+    "rust": ["architecture-docs", "extract_adrs"],
+    "args": ["--source", "missing.md"],
+    "fixture": "legacy-tecdoc",
+    "git": true
+  },
+  {
+    "name": "extract-adrs-no-headings",
+    "python": "architecture-docs/extract_adrs.py",
+    "rust": ["architecture-docs", "extract_adrs"],
+    "args": [],
+    "fixture": "legacy-empty",
+    "git": true
+  },
+  {
+    "name": "extract-adrs-outside-git",
+    "python": "architecture-docs/extract_adrs.py",
+    "rust": ["architecture-docs", "extract_adrs"],
+    "args": ["--dir", "{project}", "--source="],
+    "fixture": "legacy-tecdoc"
   }
 ]

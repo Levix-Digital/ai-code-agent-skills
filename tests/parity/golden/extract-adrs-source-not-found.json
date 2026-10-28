@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "",
+  "stderr": "❌ Source not found: {project}/missing.md\n",
+  "files": {}
+}

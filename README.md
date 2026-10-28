@@ -257,9 +257,9 @@ Keeps the technical documentation describing how the system works **today**, ins
 | New subsystem page | `<skills_root>/dev-cycle-protocol/bin/dev-cycle architecture-docs new_subsystem --name rag --title "Retrieval Pipeline" --summary "<one sentence>" [--code "src/rag"]` |
 | Regenerate the index | `<skills_root>/dev-cycle-protocol/bin/dev-cycle architecture-docs build_index` (`--check` to only verify) |
 | Validate | `check_docs.py [--include-plans] [--max-warnings 0]` |
-| Migrate a legacy single-file TECDOC | `extract_adrs.py [--source TECDOC.md] [--dry-run]`, then the migration steps in the SKILL.md |
+| Migrate a legacy single-file TECDOC | `<skills_root>/dev-cycle-protocol/bin/dev-cycle architecture-docs extract_adrs [--source TECDOC.md] [--dry-run]`, then the migration steps in the SKILL.md |
 
-The `.py` scripts are in `<skills_root>/architecture-docs/`; `new_adr`, `new_subsystem` and `build_index` run on the native engine (`bin/dev-cycle.ps1` in PowerShell).
+The `.py` scripts are in `<skills_root>/architecture-docs/`; `new_adr`, `new_subsystem`, `build_index` and `extract_adrs` run on the native engine (`bin/dev-cycle.ps1` in PowerShell).
 
 - **`check_docs.py` fails on**: headings with versions or manual numbering, invalid ADR frontmatter, ADR relations not recorded in both directions, broken links and anchors, an outdated index, and headings not in the configured language.
 - **It warns about**: long files, body text that looks like another language, ADRs missing a standard section, and documented source paths that no longer exist.
@@ -387,7 +387,7 @@ Adding a skill, running the tests, conventions, personal skills and updating oth
 | `ModuleNotFoundError: chromadb` / `docx` / `pypdf` | `pip install -r requirements.txt` with the same Python the agent uses. |
 | `plan-memory` lists no plans | Run it inside the project repository (or pass `--dir`); plans are read from `docs/plans` (or `plans.dir`). |
 | A memory script finds nothing for a project | Run `read_memory.py --list-projects` or `list_plans.py`; the project may be stored under another name. Names are normalized (`AnyContext` = `any-context`), but `anycontext` cannot be split. |
-| `check_docs.py` reports many errors after `extract_adrs.py` | Expected: they are the migration work list (translate and restructure ADRs, rewrite the index and subsystem pages). |
+| `check_docs.py` reports many errors after `extract_adrs` | Expected: they are the migration work list (translate and restructure ADRs, rewrite the index and subsystem pages). |
 | `detect_drift.py` reports `Drift Rules: none` | Run it from the project folder (or pass `--dir`) and add `drift_rules` to `.dev-cycle.json`. |
 | Cloud session has no `dev-skills:*` skills | `claude plugin list`. A session that starts outside the repository (Claude Projects, several repositories) never reads the project's `.claude/settings.json`: install with the environment's Setup script ([docs/cloud-sessions.md](docs/cloud-sessions.md)). Otherwise check the branch has `.claude/settings.json`, the GitHub app can access this repository, and `/plugin` for load errors. |
 

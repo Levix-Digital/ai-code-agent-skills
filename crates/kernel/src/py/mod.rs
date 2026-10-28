@@ -6,6 +6,7 @@ pub mod json;
 pub mod num;
 pub mod path;
 pub mod textwrap;
+pub mod unicode;
 pub mod value;
 pub mod yaml;
 
@@ -270,10 +271,7 @@ fn join_items(sep: &str, items: &[Value]) -> Result<String, Crash> {
     Ok(parts.join(sep))
 }
 
-/// `\w` of Python's `re` for `str` patterns.
-pub fn is_word(c: char) -> bool {
-    c == '_' || c.is_alphanumeric()
-}
+pub use unicode::{is_word, lower};
 
 /// `re.match(pattern + "$", s)` for a pattern checked by `full`: Python's `$` also matches
 /// before a newline that ends the string.
