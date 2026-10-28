@@ -21,8 +21,8 @@ Each release: `## vX.Y.Z: <name>` with the fields `Status` (planned, in_progress
 
 ## v2.12.0: Cycle feedback
 - **Status**: planned
-- **Goal**: Production problems come back as triaged bugs, the user's gates come with a review brief, the cycle measures itself and performance budgets are enforced
-- **Items**: FEAT-013, FEAT-014, FEAT-015, FEAT-016
+- **Goal**: Production problems come back as triaged bugs, the user's gates come with a review brief, the cycle measures itself automatically at the end of every phase and shows it in a local dashboard that also edits the settings, and performance budgets are enforced
+- **Items**: FEAT-013, FEAT-014, FEAT-015, FEAT-017, FEAT-016
 
 ## v2.13.0: Agents and platforms
 - **Status**: planned

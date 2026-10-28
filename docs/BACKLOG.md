@@ -133,7 +133,7 @@ Each item: `### <ID>: <title>` with the fields `Severity` (bugs: critical, high,
 - **Status**: open
 - **Found**: 2026-10-28, 2026-10-28, gaps of the cycle with coding agents discussion
 - **Plan**: -
-- **Description**: Criticality 7 of the agent gaps. The cycle records, in the project's repository, gates passed first time or rejected, rework (review rounds, reopened milestones, reverted releases), time per phase and, where the agent reports them, tokens spent. A summary per release shows whether the protocol is improving delivery. Required before FEAT-009, whose acceptance compares the MCP cycle with the current skills on these numbers.
+- **Description**: Criticality 7 of the agent gaps. The cycle records, in the project's repository, gates passed first time or rejected, rework (review rounds, reopened milestones, reverted releases), time per phase and, where the agent reports them, tokens spent. Three sources: (1) what Git, the pull requests, the plans (status_log, milestone done_at) and the backlog already record, computed retroactively by an extractor, so the history before this item counts; (2) what is lost today (gates rejected and why, rework reasons, phase start and end), written automatically by the engine as an event at the end of every phase and gate to an append-only log in the repository (for example .dev-cycle/metrics/events.jsonl), with no manual step and the same on every agent and environment; (3) tokens and cost, through an optional importer per agent for the main 3-4 agents, never required for the cycle to run. Baseline: the Git and pull request history of projects built before or without the protocol. A summary per release shows whether the protocol is improving delivery. Required before FEAT-009, whose acceptance compares the MCP cycle with the current skills on these numbers.
 
 ### FEAT-016: Performance budgets and regression benchmarks
 - **Priority**: low
@@ -142,6 +142,14 @@ Each item: `### <ID>: <title>` with the fields `Severity` (bugs: critical, high,
 - **Found**: 2026-10-28, 2026-10-28, gaps of the cycle with coding agents discussion
 - **Plan**: -
 - **Description**: Criticality 8 of the agent gaps. Plans state performance budgets for the paths they touch (latency, memory, binary or bundle size), and pull request CI runs the project's benchmarks and fails when a budget is exceeded or a regression passes a set threshold. Uses the stack's own benchmark tools.
+
+### FEAT-017: Local dashboard and settings interface
+- **Priority**: medium
+- **Epic**: EPIC-001
+- **Status**: open
+- **Found**: 2026-10-28, 2026-10-28, cycle metrics discussion
+- **Plan**: -
+- **Description**: One graphical interface served locally by the engine (dev-cycle ui, assets embedded in the binary, offline, on every OS and in cloud sessions through port forwarding) with two parts: a dashboard of the FEAT-015 metrics per project and release (and the backlog, roadmap and plans in progress), and the project settings, which write .dev-cycle.json through the same validation as the engine (the closed set of settings), so the file stays the single source of truth and the agent and the command line keep working without the interface. A static HTML report export (dev-cycle report) for sharing and for CI artifacts. Aggregation across projects and teams is out of scope here.
 
 ## Improvements
 
