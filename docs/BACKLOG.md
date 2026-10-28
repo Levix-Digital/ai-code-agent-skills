@@ -143,13 +143,13 @@ Each item: `### <ID>: <title>` with the fields `Severity` (bugs: critical, high,
 - **Plan**: -
 - **Description**: Criticality 8 of the agent gaps. Plans state performance budgets for the paths they touch (latency, memory, binary or bundle size), and pull request CI runs the project's benchmarks and fails when a budget is exceeded or a regression passes a set threshold. Uses the stack's own benchmark tools.
 
-### FEAT-017: Local dashboard and settings interface
+### FEAT-017: Metrics and settings commands for Aurora Dev Suite
 - **Priority**: medium
 - **Epic**: EPIC-001
 - **Status**: open
 - **Found**: 2026-10-28, 2026-10-28, cycle metrics discussion
 - **Plan**: -
-- **Description**: One graphical interface served locally by the engine (dev-cycle ui, assets embedded in the binary, offline, on every OS and in cloud sessions through port forwarding) with two parts: a dashboard of the FEAT-015 metrics per project and release (and the backlog, roadmap and plans in progress), and the project settings, which write .dev-cycle.json through the same validation as the engine (the closed set of settings), so the file stays the single source of truth and the agent and the command line keep working without the interface. A static HTML report export (dev-cycle report) for sharing and for CI artifacts. Aggregation across projects and teams is out of scope here.
+- **Description**: The graphical dashboard and settings live only in Aurora Dev Suite, which reads the engine through its command line with versioned JSON (Aurora ADR-0003); the protocol has no interface of its own and does not duplicate Aurora. The engine offers: metrics --json (the FEAT-015 metrics per project and release, with schema and schema_version), config get --json and config set (the closed set of settings, written to .dev-cycle.json through the same validation as the engine, so the file stays the single source of truth), the capabilities of both in version --json, and a static HTML report (report) for users of the engine alone and for CI artifacts. The agent and the command line keep working without Aurora. Suggestions for Aurora's side are in the project files (aurora-dev-suite/).
 
 ## Improvements
 
