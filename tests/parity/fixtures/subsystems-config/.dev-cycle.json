@@ -1,0 +1,4 @@
+{
+  "project_name": "Demo Project",
+  "architecture_docs": {"index": "docs/INDEX.md", "architecture_dir": "design/pages"}
+}

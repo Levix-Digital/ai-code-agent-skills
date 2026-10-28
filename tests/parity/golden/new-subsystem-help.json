@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "usage: new_subsystem.py [-h] --name NAME --title TITLE --summary SUMMARY\n                        [--code CODE] [--dir DIR]\n\nCreate a subsystem page in docs/architecture\n\noptions:\n  -h, --help         show this help message and exit\n  --name NAME        Short page name (e.g. rag, ingestion, tui)\n  --title TITLE      Page title (e.g. Retrieval-Augmented Generation)\n  --summary SUMMARY  One sentence on what the subsystem does\n  --code CODE        Comma-separated source paths this page documents\n  --dir DIR          Project directory (default: current; the Git root is\n                     used)\n",
+  "stderr": "",
+  "files": {}
+}

@@ -3,9 +3,11 @@
 
 pub mod argparse;
 pub mod json;
+pub mod num;
 pub mod path;
 pub mod textwrap;
 pub mod value;
+pub mod yaml;
 
 use std::fmt;
 use std::path::Path;
@@ -67,14 +69,42 @@ pub fn read_text(path: &Path) -> Result<String, Crash> {
     let text = match String::from_utf8(bytes) {
         Ok(t) => t,
         Err(e) => {
-            let pos = e.utf8_error().valid_up_to();
-            let byte = e.as_bytes()[pos];
             return Err(Crash::new(format!(
-                "UnicodeDecodeError: 'utf-8' codec can't decode byte 0x{byte:02x} in position {pos}: invalid start byte"
+                "UnicodeDecodeError: {}",
+                utf8_error_text(e.as_bytes(), &e.utf8_error())
             )));
         }
     };
     Ok(universal_newlines(&text))
+}
+
+/// `open(path, "w", encoding="utf-8", newline="\n").write(text)`: the file is emptied
+/// before a write that may fail on a lone surrogate.
+pub fn write_text(path: &Path, text: &str) -> Result<(), Crash> {
+    let bytes = if encode_check(text).is_ok() { text } else { "" };
+    std::fs::write(path, bytes).map_err(|e| io_crash(&e, path))?;
+    encode_check(text)
+}
+
+/// `str(UnicodeDecodeError)` for bytes that are not UTF-8.
+pub fn utf8_error_text(bytes: &[u8], e: &std::str::Utf8Error) -> String {
+    let start = e.valid_up_to();
+    let (end, reason) = match e.error_len() {
+        None => (bytes.len(), "unexpected end of data"),
+        Some(1) if !(0xc2..=0xf4).contains(&bytes[start]) => (start + 1, "invalid start byte"),
+        Some(n) => (start + n, "invalid continuation byte"),
+    };
+    if end - start == 1 {
+        format!(
+            "'utf-8' codec can't decode byte 0x{:02x} in position {start}: {reason}",
+            bytes[start]
+        )
+    } else {
+        format!(
+            "'utf-8' codec can't decode bytes in position {start}-{}: {reason}",
+            end - 1
+        )
+    }
 }
 
 pub fn universal_newlines(text: &str) -> String {
@@ -92,6 +122,8 @@ pub fn io_crash(e: &std::io::Error, path: &Path) -> Crash {
         NotFound => ("FileNotFoundError", 2, "No such file or directory"),
         PermissionDenied => ("PermissionError", 13, "Permission denied"),
         IsADirectory => ("IsADirectoryError", 21, "Is a directory"),
+        AlreadyExists => ("FileExistsError", 17, "File exists"),
+        NotADirectory => ("NotADirectoryError", 20, "Not a directory"),
         _ => ("OSError", e.raw_os_error().unwrap_or(0), "I/O error"),
     };
     Crash::new(format!(
@@ -200,20 +232,33 @@ pub fn repr_str(s: &str) -> String {
 pub fn join(sep: &str, value: &Value) -> Result<String, Crash> {
     let parts: Vec<String> = match value {
         Value::Str(s) => s.chars().map(String::from).collect(),
-        Value::Dict(d) => d.keys().cloned().collect(),
-        Value::List(items) => items
-            .iter()
-            .enumerate()
-            .map(|(i, v)| match v {
-                Value::Str(s) => Ok(s.clone()),
-                other => Err(Crash::new(format!(
-                    "TypeError: sequence item {i}: expected str instance, {} found",
-                    other.type_name()
-                ))),
-            })
-            .collect::<Result<_, _>>()?,
+        Value::Dict(d) => return join_items(sep, &d.keys().cloned().collect::<Vec<_>>()),
+        Value::List(items) | Value::Tuple(items) | Value::Set(items) => {
+            return join_items(sep, items);
+        }
+        Value::Bytes(b) if !b.is_empty() => {
+            return Err(Crash::new(
+                "TypeError: sequence item 0: expected str instance, int found",
+            ));
+        }
+        Value::Bytes(_) => Vec::new(),
         _ => return Err(Crash::new("TypeError: can only join an iterable")),
     };
+    Ok(parts.join(sep))
+}
+
+fn join_items(sep: &str, items: &[Value]) -> Result<String, Crash> {
+    let parts: Vec<String> = items
+        .iter()
+        .enumerate()
+        .map(|(i, v)| match v {
+            Value::Str(s) => Ok(s.clone()),
+            other => Err(Crash::new(format!(
+                "TypeError: sequence item {i}: expected str instance, {} found",
+                other.type_name()
+            ))),
+        })
+        .collect::<Result<_, _>>()?;
     Ok(parts.join(sep))
 }
 

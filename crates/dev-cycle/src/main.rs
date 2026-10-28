@@ -8,11 +8,18 @@ const USAGE: &str = "usage: dev-cycle <skill> <script> [arguments]";
 type Command = fn(&[String]) -> u8;
 
 /// Translated scripts: (skill folder, script name without `.py`, entry point).
-const COMMANDS: &[(&str, &str, Command)] = &[(
-    "dev-cycle-protocol",
-    "project_config",
-    kernel::project_config::main,
-)];
+const COMMANDS: &[(&str, &str, Command)] = &[
+    (
+        "architecture-docs",
+        "new_subsystem",
+        architecture_docs::new_subsystem::main,
+    ),
+    (
+        "dev-cycle-protocol",
+        "project_config",
+        kernel::project_config::main,
+    ),
+];
 
 fn main() -> ExitCode {
     let args: Vec<String> = std::env::args().skip(1).collect();

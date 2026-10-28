@@ -40,7 +40,7 @@ Add `"plans"` to `language_scope` to also check `docs/plans`.
 | A decision reverses an earlier one | **New ADR** with `--supersedes N`. The old ADR becomes `superseded`; its text is not edited. |
 | A decision corrects or narrows part of an earlier one | **New ADR** with `--amends N`. The old ADR stays `accepted` with `amended_by`. |
 | A feature or component was removed | **Remove** it from the subsystem page. Its ADRs stay as history. |
-| A new subsystem appeared | **New page** (`new_subsystem.py`). |
+| A new subsystem appeared | **New page** (`new_subsystem`). |
 | A release was published | **Nothing** here. |
 
 **Never:**
@@ -97,12 +97,12 @@ amended_by: []
 
 ## ⚙️ Commands
 
-All scripts are in `<skills_root>/architecture-docs/` and work on the Git repository of the current directory (or `--dir`).
+The `.py` scripts are in `<skills_root>/architecture-docs/`. Commands without `.py` run on the native engine: in sh shells (Linux, macOS, Git Bash) `"<skills_root>/dev-cycle-protocol/bin/dev-cycle" architecture-docs <command> [args]`, in PowerShell `& "<skills_root>/dev-cycle-protocol/bin/dev-cycle.ps1" architecture-docs <command> [args]`. All work on the Git repository of the current directory (or `--dir`).
 
 | Task | Command |
 |---|---|
 | New ADR | `new_adr.py --title "<decision>" [--version v1.2.0] [--subsystem rag,onnx] [--supersedes 129] [--amends 118,123] [--status proposed]` |
-| New subsystem page | `new_subsystem.py --name rag --title "Retrieval Pipeline" --summary "<one sentence>" [--code "path1,path2"]` |
+| New subsystem page | `"<skills_root>/dev-cycle-protocol/bin/dev-cycle" architecture-docs new_subsystem --name rag --title "Retrieval Pipeline" --summary "<one sentence>" [--code "path1,path2"]` |
 | Regenerate the index | `build_index.py` (`--check` to only verify) |
 | Validate everything | `check_docs.py [--include-plans] [--max-warnings 0]` |
 | Migrate a legacy document | `extract_adrs.py [--source TECDOC.md] [--dry-run]` |
@@ -134,7 +134,7 @@ For a project whose technical document is one long file with versioned sections 
 
 1. **Extract the ADRs**: `extract_adrs.py` copies each `ADR-NNN: Title` section to `docs/adr/` (text unchanged, version moved to frontmatter, rectification notes turned into `amends` / `amended_by`, links rewritten). The source is not modified.
 2. **Fix each ADR**: translate into the configured language, restructure into Context / Decision / Alternatives Considered / Consequences without losing technical detail, set `subsystems`, and rename the file to an English slug (`git mv`, keeping the `NNNN-` prefix). Never change what was decided; record later corrections only as new ADRs.
-3. **Define the subsystems from the code** (crates, packages, main modules), not from the old document's headings. Create one page per subsystem with `new_subsystem.py`.
+3. **Define the subsystems from the code** (crates, packages, main modules), not from the old document's headings. Create one page per subsystem with `new_subsystem`.
 4. **Write each subsystem page from the current code**, using the old document only as a source of facts to verify. Drop anything the code no longer does.
 5. **Rewrite `TECDOC.md`** as the short index: hand-written overview and diagram, then `build_index.py` for the generated sections. The old content is removed; Git history keeps it.
 6. **Run `check_docs.py`** until it reports zero errors, and review the remaining warnings.

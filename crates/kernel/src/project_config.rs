@@ -249,7 +249,7 @@ impl ProjectConfig {
             }
         }
 
-        for (key, value) in self.raw.iter() {
+        for (key, value) in self.raw.str_iter() {
             if is_legacy_key(key) || key == "doc_files" {
                 continue;
             }
@@ -257,11 +257,11 @@ impl ProjectConfig {
                 (Some(Value::Dict(base)), Value::Dict(over)) => {
                     let mut merged = base.clone();
                     for (k, v) in over.iter() {
-                        merged.insert(k.clone(), v.clone());
+                        merged.insert_value(k.clone(), v.clone());
                     }
-                    data.insert(key.clone(), Value::Dict(merged));
+                    data.insert(key, Value::Dict(merged));
                 }
-                _ => data.insert(key.clone(), value.clone()),
+                _ => data.insert(key, value.clone()),
             }
         }
         Ok(data)
@@ -446,7 +446,7 @@ impl ProjectConfig {
             ));
         }
         let defaults = defaults();
-        for key in self.raw.keys() {
+        for (key, _) in self.raw.str_iter() {
             if !(defaults.contains_key(key) || is_legacy_key(key) || key == "doc_files") {
                 problems.push(format!("unknown top-level key '{key}' (kept as is)"));
             }
@@ -457,11 +457,11 @@ impl ProjectConfig {
     /// The raw file rewritten with sections instead of legacy flat keys.
     pub fn migrated(&self) -> Result<Dict, Crash> {
         let mut out = Dict::new();
-        for (key, value) in self.raw.iter() {
+        for (key, value) in self.raw.str_iter() {
             if is_legacy_key(key) || key == "doc_files" {
                 continue;
             }
-            out.insert(key.clone(), value.clone());
+            out.insert(key, value.clone());
         }
         let setdefault =
             |out: &mut Dict, sec: &str, sub: &str, value: Value| -> Result<(), Crash> {
@@ -492,10 +492,12 @@ impl ProjectConfig {
                 setdefault(&mut out, sec, sub, v)?;
             }
         }
-        let order: Vec<String> = defaults().keys().cloned().collect();
+        let order: Vec<String> = defaults().str_iter().map(|(k, _)| k.to_string()).collect();
         let rank = |k: &str| order.iter().position(|o| o == k).unwrap_or(order.len());
-        let mut entries: Vec<(String, Value)> =
-            out.iter().map(|(k, v)| (k.clone(), v.clone())).collect();
+        let mut entries: Vec<(String, Value)> = out
+            .str_iter()
+            .map(|(k, v)| (k.to_string(), v.clone()))
+            .collect();
         entries.sort_by_key(|(k, _)| rank(k));
         Ok(entries.into_iter().collect())
     }
@@ -660,16 +662,9 @@ fn run(argv: &[String]) -> Result<u8, Crash> {
             println(&format!("❌ No {MANIFEST_NAME} found."));
             return Ok(1);
         };
-        let text = json::dumps(&Value::Dict(cfg.migrated()?), Some(2)) + "\n";
+        let text = json::dumps(&Value::Dict(cfg.migrated()?), Some(2))? + "\n";
         if args.flag("write") {
-            // open(..., "w") empties the file before a write that may fail.
-            let bytes = if crate::py::encode_check(&text).is_ok() {
-                text.as_str()
-            } else {
-                ""
-            };
-            std::fs::write(manifest, bytes).map_err(|e| crate::py::io_crash(&e, manifest))?;
-            crate::py::encode_check(&text)?;
+            crate::py::write_text(manifest, &text)?;
             println(&format!("✅ Migrated {}", manifest.display()));
         } else {
             crate::out::out(&text);
@@ -678,7 +673,7 @@ fn run(argv: &[String]) -> Result<u8, Crash> {
     }
 
     if args.flag("json") {
-        println(&json::dumps(&Value::Dict(cfg.data.clone()), Some(2)));
+        println(&json::dumps(&Value::Dict(cfg.data.clone()), Some(2))?);
     } else {
         let source = match &cfg.manifest_path {
             Some(p) => p.display().to_string(),
