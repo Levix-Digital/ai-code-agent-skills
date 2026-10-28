@@ -1,0 +1,8 @@
+{
+  "exit": 0,
+  "stdout": "✅ Index updated: TECDOC.md\n",
+  "stderr": "",
+  "files": {
+    "project/TECDOC.md": "# Sample — Technical Documentation\n\nHand-written overview that the index keeps.\n\n## Subsystems\n\n<!-- architecture-docs:subsystems:start -->\n| Subsystem | Summary |\n|---|---|\n| [tui.md](docs/architecture/tui.md) | Terminal UI: menus \\| shortcuts, é |\n| [Ingestion](docs/architecture/ingestion.md) | Reads the source folders into the store. |\n| [Retrieval](docs/architecture/rag.md) | Answers questions from the indexed documents \\| with citations, and this first paragraph is long enough to be cut at one hundred and sixty characters so the i... |\n<!-- architecture-docs:subsystems:end -->\n\n## Notes\n\nMore hand-written text.\n\n## Architecture Decision Records\n\n<!-- architecture-docs:adrs:start -->\n| ADR | Title | Status | Version | Date |\n|---|---|---|---|---|\n| [ADR-0003](docs/adr/0003-database.md) | Database \\| indexed | accepted |  | 2026-03-01 |\n| [ADR-0002](docs/adr/0002-config.md) | Config in JSON | accepted | 2.1 | 2026-02-10 |\n| [ADR-0001](docs/adr/0001-first-store.md) | Use a file store | superseded by ADR-0003 | 1.0 | 2026-01-02 |\n<!-- architecture-docs:adrs:end -->\n"
+  }
+}

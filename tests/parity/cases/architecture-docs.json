@@ -114,5 +114,88 @@
     "fixture": "subsystems-config",
     "git": true,
     "masks": ["\\d{4}-\\d{2}-\\d{2}"]
+  },
+  {
+    "name": "build-index-help",
+    "python": "architecture-docs/build_index.py",
+    "rust": ["architecture-docs", "build_index"],
+    "args": ["-h"],
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "build-index-unrecognized",
+    "python": "architecture-docs/build_index.py",
+    "rust": ["architecture-docs", "build_index"],
+    "args": ["--chec", "--x"],
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "build-index-new",
+    "python": "architecture-docs/build_index.py",
+    "rust": ["architecture-docs", "build_index"],
+    "args": [],
+    "git": true
+  },
+  {
+    "name": "build-index-update",
+    "python": "architecture-docs/build_index.py",
+    "rust": ["architecture-docs", "build_index"],
+    "args": [],
+    "fixture": "subsystems-docs",
+    "git": true
+  },
+  {
+    "name": "build-index-up-to-date",
+    "python": "architecture-docs/build_index.py",
+    "rust": ["architecture-docs", "build_index"],
+    "args": [],
+    "fixture": "index-current",
+    "git": true
+  },
+  {
+    "name": "build-index-no-markers",
+    "python": "architecture-docs/build_index.py",
+    "rust": ["architecture-docs", "build_index"],
+    "args": [],
+    "fixture": "index-no-markers",
+    "git": true
+  },
+  {
+    "name": "build-index-check-outdated",
+    "python": "architecture-docs/build_index.py",
+    "rust": ["architecture-docs", "build_index"],
+    "args": ["--check"],
+    "fixture": "subsystems-docs",
+    "git": true
+  },
+  {
+    "name": "build-index-check-current",
+    "python": "architecture-docs/build_index.py",
+    "rust": ["architecture-docs", "build_index"],
+    "args": ["--check"],
+    "fixture": "index-current",
+    "git": true
+  },
+  {
+    "name": "build-index-check-missing",
+    "python": "architecture-docs/build_index.py",
+    "rust": ["architecture-docs", "build_index"],
+    "args": ["--ch"],
+    "git": true
+  },
+  {
+    "name": "build-index-custom-config",
+    "python": "architecture-docs/build_index.py",
+    "rust": ["architecture-docs", "build_index"],
+    "args": ["--dir=sub"],
+    "fixture": "subsystems-config",
+    "git": true
+  },
+  {
+    "name": "build-index-outside-git",
+    "python": "architecture-docs/build_index.py",
+    "rust": ["architecture-docs", "build_index"],
+    "args": ["--dir", "{project}"],
+    "fixture": "subsystems-docs"
   }
 ]

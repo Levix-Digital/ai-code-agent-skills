@@ -7,7 +7,7 @@ version: v2.10.0
 status: in_progress
 author: Levi Silveira
 created_at: '2026-10-27T18:17:46'
-updated_at: '2026-10-28T11:23:38'
+updated_at: '2026-10-28T11:38:46'
 session_id: null
 tags:
 - rust
@@ -40,7 +40,9 @@ milestones:
   done_at: '2026-10-28'
   by: Levi Silveira
 - name: M6 build_index
-  done: false
+  done: true
+  done_at: '2026-10-28'
+  by: Levi Silveira
 - name: M7 extract_adrs
   done: false
 - name: M8 check_docs
@@ -139,6 +141,9 @@ status_log:
 - at: '2026-10-28T11:23:38'
   by: Levi Silveira
   note: 'Milestone ''M5 new_adr'' completed: Engine 0.4.0: new_adr in Rust, with argparse choices and the local date in the kernel; 8 parity cases and a 3,300-run differential fuzz with 0 differences.'
+- at: '2026-10-28T11:38:46'
+  by: Levi Silveira
+  note: 'Milestone ''M6 build_index'' completed: Engine 0.5.0: the build_index command in Rust; 11 parity cases and a 3,000-run differential fuzz with 0 differences; build_index.py stays as a module for check_docs.py and extract_adrs.py.'
 ---
 
 # Translate the scripts to Rust with identical behavior

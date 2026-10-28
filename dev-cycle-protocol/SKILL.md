@@ -158,7 +158,7 @@ python "<skills_root>/dev-cycle-protocol/verify_gate.py" --gate 3
 - Run `test_commands` (or the stack's runner) and follow `quality-assurance`. Every bug fix has a regression test. **Never move on with a failing test.**
 
 ### 6. 📚 Documentation
-- Technical docs: edit the affected `docs/architecture` pages in place, add ADRs for decisions, run `build_index.py` and `check_docs.py` (zero errors).
+- Technical docs: edit the affected `docs/architecture` pages in place, add ADRs for decisions, run `"<skills_root>/dev-cycle-protocol/bin/dev-cycle" architecture-docs build_index` and `check_docs.py` (zero errors).
 - README: edit the affected sections with `user-docs` and run `check_readme.py` (zero errors).
 - Manual tests: curate the suite for the features touched (`quality-assurance`) and run `manual_tests.py validate`.
 

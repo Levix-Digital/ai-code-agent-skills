@@ -14,12 +14,12 @@ Owns the technical documentation (how the system works today and why) and the en
 
 ## Structure
 
-- `architecture-docs/`: `TECDOC.md` index, `docs/architecture/` living pages, `docs/adr/` immutable ADRs; `new_adr` and `new_subsystem` (engine), `build_index.py`, `check_docs.py`, `extract_adrs.py`.
+- `architecture-docs/`: `TECDOC.md` index, `docs/architecture/` living pages, `docs/adr/` immutable ADRs; `new_adr`, `new_subsystem` and `build_index` (engine), `check_docs.py`, `extract_adrs.py`.
 - `user-docs/`: README template and `check_readme.py` (standard sections, current state only, English, links, length).
 
 ## Behavior
 
-Pages are edited in place; decisions go to new ADRs (superseding or amending older ones); release history stays in Git and release notes. The generated parts of `TECDOC.md` are rebuilt by `build_index.py`.
+Pages are edited in place; decisions go to new ADRs (superseding or amending older ones); release history stays in Git and release notes. The generated parts of `TECDOC.md` are rebuilt by `build_index`.
 
 ## Interfaces
 
