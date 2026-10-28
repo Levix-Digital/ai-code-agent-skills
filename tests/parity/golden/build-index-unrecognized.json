@@ -1,0 +1,6 @@
+{
+  "exit": 2,
+  "stdout": "",
+  "stderr": "usage: build_index.py [-h] [--dir DIR] [--check]\nbuild_index.py: error: unrecognized arguments: --x\n",
+  "files": {}
+}

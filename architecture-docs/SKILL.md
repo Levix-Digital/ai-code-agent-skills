@@ -103,7 +103,7 @@ The `.py` scripts are in `<skills_root>/architecture-docs/`. Commands without `.
 |---|---|
 | New ADR | `"<skills_root>/dev-cycle-protocol/bin/dev-cycle" architecture-docs new_adr --title "<decision>" [--version v1.2.0] [--subsystem rag,onnx] [--supersedes 129] [--amends 118,123] [--status proposed]` |
 | New subsystem page | `"<skills_root>/dev-cycle-protocol/bin/dev-cycle" architecture-docs new_subsystem --name rag --title "Retrieval Pipeline" --summary "<one sentence>" [--code "path1,path2"]` |
-| Regenerate the index | `build_index.py` (`--check` to only verify) |
+| Regenerate the index | `"<skills_root>/dev-cycle-protocol/bin/dev-cycle" architecture-docs build_index` (`--check` to only verify) |
 | Validate everything | `check_docs.py [--include-plans] [--max-warnings 0]` |
 | Migrate a legacy document | `extract_adrs.py [--source TECDOC.md] [--dry-run]` |
 
@@ -121,7 +121,7 @@ It warns about long files, body text that looks like another language, ADRs miss
 ## 🔒 Integration with `dev-cycle-protocol`
 
 - **Phase 2 (Plan)**: list the subsystem pages and ADRs the change will touch.
-- **Phase 6 (Documentation)**: apply "Where Each Change Goes", run `build_index.py` and `check_docs.py`. The README is owned by [`user-docs`](../user-docs/SKILL.md) and the structure itself by [`software-design`](../software-design/SKILL.md).
+- **Phase 6 (Documentation)**: apply "Where Each Change Goes", run `build_index` and `check_docs.py`. The README is owned by [`user-docs`](../user-docs/SKILL.md) and the structure itself by [`software-design`](../software-design/SKILL.md).
 - **Gate 8**: `verify_gate.py --gate 8` runs `check_docs.py`; errors block the release. Projects that have not adopted the layout get a warning only.
 - **Phase 0 (Product inception)**: the index, the first subsystem pages and an ADR per founding decision (`product-inception`).
 - **Spec Kit**: accepted ADRs are listed in the generated constitution; after accepting, superseding or deprecating an ADR in a project that uses Spec Kit, run `dev-cycle-protocol/constitution.py generate` and commit the result with the ADR.
@@ -136,7 +136,7 @@ For a project whose technical document is one long file with versioned sections 
 2. **Fix each ADR**: translate into the configured language, restructure into Context / Decision / Alternatives Considered / Consequences without losing technical detail, set `subsystems`, and rename the file to an English slug (`git mv`, keeping the `NNNN-` prefix). Never change what was decided; record later corrections only as new ADRs.
 3. **Define the subsystems from the code** (crates, packages, main modules), not from the old document's headings. Create one page per subsystem with `new_subsystem`.
 4. **Write each subsystem page from the current code**, using the old document only as a source of facts to verify. Drop anything the code no longer does.
-5. **Rewrite `TECDOC.md`** as the short index: hand-written overview and diagram, then `build_index.py` for the generated sections. The old content is removed; Git history keeps it.
+5. **Rewrite `TECDOC.md`** as the short index: hand-written overview and diagram, then `build_index` for the generated sections. The old content is removed; Git history keeps it.
 6. **Run `check_docs.py`** until it reports zero errors, and review the remaining warnings.
 
 Large migrations work best one subsystem per session, each reading the code it documents.

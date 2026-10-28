@@ -4,6 +4,7 @@
 use std::sync::LazyLock;
 
 use kernel::out::println;
+use kernel::py::argparse::Parser;
 use kernel::py::num::{is_space, strip};
 use kernel::py::path::{SEP, basename, dirname, isfile, relpath};
 use kernel::py::{Crash, Value, read_text, write_text};
@@ -296,4 +297,43 @@ pub fn build_index(project: &Project, check: bool) -> Result<bool, Crash> {
         println(&format!("= Index already up to date: {}", rel(project)?));
     }
     Ok(true)
+}
+
+/// `python build_index.py [args]`.
+pub fn main(argv: &[String]) -> u8 {
+    match run(argv) {
+        Ok(code) => code,
+        Err(c) => c.report(),
+    }
+}
+
+fn run(argv: &[String]) -> Result<u8, Crash> {
+    let parser = Parser::new(
+        "build_index.py",
+        "Regenerate the generated sections of the architecture index (TECDOC.md)",
+    )
+    .option(
+        "--dir",
+        "Project directory (default: current; the Git root is used)",
+    )
+    .flag(
+        "--check",
+        "Only check whether the index is up to date (exit 1 if not)",
+    );
+    let args = match parser.parse(argv) {
+        Ok(a) => a,
+        Err(exit) => return Ok(exit.report()),
+    };
+    let project = Project::new(args.value("dir"))?;
+    if args.flag("check") {
+        let ok = build_index(&project, true)?;
+        println(if ok {
+            "✅ Index is up to date."
+        } else {
+            "❌ Index is outdated: run build_index.py."
+        });
+        return Ok(if ok { 0 } else { 1 });
+    }
+    build_index(&project, false)?;
+    Ok(0)
 }

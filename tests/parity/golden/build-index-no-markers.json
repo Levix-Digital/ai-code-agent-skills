@@ -1,0 +1,8 @@
+{
+  "exit": 0,
+  "stdout": "✅ Index updated: TECDOC.md\n",
+  "stderr": "",
+  "files": {
+    "project/TECDOC.md": "# Old index\n\nHand-written text.\n\n## Subsystems\n\n<!-- architecture-docs:subsystems:start -->\n| Subsystem | Summary |\n|---|---|\n| [Search](docs/architecture/search.md) | Finds \\| things |\n<!-- architecture-docs:subsystems:end -->\n\n## Architecture Decision Records\n\n<!-- architecture-docs:adrs:start -->\n_No ADRs yet. Create one with `new_adr.py`._\n<!-- architecture-docs:adrs:end -->\n"
+  }
+}

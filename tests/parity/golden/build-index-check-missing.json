@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ Index is outdated: run build_index.py.\n",
+  "stderr": "",
+  "files": {}
+}

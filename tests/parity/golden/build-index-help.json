@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "usage: build_index.py [-h] [--dir DIR] [--check]\n\nRegenerate the generated sections of the architecture index (TECDOC.md)\n\noptions:\n  -h, --help  show this help message and exit\n  --dir DIR   Project directory (default: current; the Git root is used)\n  --check     Only check whether the index is up to date (exit 1 if not)\n",
+  "stderr": "",
+  "files": {}
+}
