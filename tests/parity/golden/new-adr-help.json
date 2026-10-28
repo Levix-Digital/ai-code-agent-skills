@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "usage: new_adr.py [-h] --title TITLE [--status {proposed,accepted}]\n                  [--version VERSION] [--subsystem SUBSYSTEM]\n                  [--supersedes SUPERSEDES] [--amends AMENDS] [--dir DIR]\n\nCreate the next Architecture Decision Record\n\noptions:\n  -h, --help            show this help message and exit\n  --title TITLE         Decision title, without version numbers\n  --status {proposed,accepted}\n                        Initial status\n  --version VERSION     Version that ships the decision (e.g. v0.46.0)\n  --subsystem SUBSYSTEM\n                        Comma-separated subsystem page names (e.g. rag,onnx)\n  --supersedes SUPERSEDES\n                        Comma-separated ADR numbers this one replaces entirely\n  --amends AMENDS       Comma-separated ADR numbers this one corrects in part\n  --dir DIR             Project directory (default: current; the Git root is\n                        used)\n",
+  "stderr": "",
+  "files": {}
+}

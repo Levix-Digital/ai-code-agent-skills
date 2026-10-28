@@ -50,5 +50,69 @@
     "rust": ["architecture-docs", "new_subsystem"],
     "args": ["--name", "!!!", "--title", "Untitled page", "--summary", "No Git repository: the current folder is the root.", "--dir", "{project}"],
     "fixture": "subsystems-docs"
+  },
+  {
+    "name": "new-adr-help",
+    "python": "architecture-docs/new_adr.py",
+    "rust": ["architecture-docs", "new_adr"],
+    "args": ["--help"],
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "new-adr-missing-title",
+    "python": "architecture-docs/new_adr.py",
+    "rust": ["architecture-docs", "new_adr"],
+    "args": ["--status", "proposed", "extra"],
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "new-adr-invalid-status",
+    "python": "architecture-docs/new_adr.py",
+    "rust": ["architecture-docs", "new_adr"],
+    "args": ["--title", "X", "--status=final"],
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "new-adr-first",
+    "python": "architecture-docs/new_adr.py",
+    "rust": ["architecture-docs", "new_adr"],
+    "args": ["--title", "Use SQLite for the index"],
+    "git": true,
+    "masks": ["\\d{4}-\\d{2}-\\d{2}"]
+  },
+  {
+    "name": "new-adr-relations",
+    "python": "architecture-docs/new_adr.py",
+    "rust": ["architecture-docs", "new_adr"],
+    "args": ["--title", "Ingestão: one store | v2", "--status", "proposed", "--version", "v1.2.0", "--subsystem", " rag, ,onnx", "--supersedes", "2", "--amends", "ADR-0003,3"],
+    "fixture": "subsystems-docs",
+    "git": true,
+    "masks": ["\\d{4}-\\d{2}-\\d{2}"]
+  },
+  {
+    "name": "new-adr-not-found",
+    "python": "architecture-docs/new_adr.py",
+    "rust": ["architecture-docs", "new_adr"],
+    "args": ["--title", "Missing target", "--amends", "1,99"],
+    "fixture": "subsystems-docs",
+    "git": true
+  },
+  {
+    "name": "new-adr-odd-ids",
+    "python": "architecture-docs/new_adr.py",
+    "rust": ["architecture-docs", "new_adr"],
+    "args": ["--title", "!!!", "--supersedes", "1,x2", "--amends", "2, ADR-0012"],
+    "fixture": "adrs-odd-ids",
+    "git": true,
+    "masks": ["\\d{4}-\\d{2}-\\d{2}"]
+  },
+  {
+    "name": "new-adr-custom-config",
+    "python": "architecture-docs/new_adr.py",
+    "rust": ["architecture-docs", "new_adr"],
+    "args": ["--ti=Config store", "--sub", "store", "--dir", "sub"],
+    "fixture": "subsystems-config",
+    "git": true,
+    "masks": ["\\d{4}-\\d{2}-\\d{2}"]
   }
 ]

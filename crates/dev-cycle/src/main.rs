@@ -11,6 +11,11 @@ type Command = fn(&[String]) -> u8;
 const COMMANDS: &[(&str, &str, Command)] = &[
     (
         "architecture-docs",
+        "new_adr",
+        architecture_docs::new_adr::main,
+    ),
+    (
+        "architecture-docs",
         "new_subsystem",
         architecture_docs::new_subsystem::main,
     ),

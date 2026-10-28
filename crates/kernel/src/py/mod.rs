@@ -107,6 +107,14 @@ pub fn utf8_error_text(bytes: &[u8], e: &std::str::Utf8Error) -> String {
     }
 }
 
+/// `datetime.date.today().isoformat()`: the local date.
+pub fn today() -> String {
+    chrono::Local::now()
+        .date_naive()
+        .format("%Y-%m-%d")
+        .to_string()
+}
+
 pub fn universal_newlines(text: &str) -> String {
     if text.contains('\r') {
         text.replace("\r\n", "\n").replace('\r', "\n")

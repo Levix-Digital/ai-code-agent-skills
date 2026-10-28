@@ -1,6 +1,7 @@
 //! `_docs.py`: the project layout and configuration, frontmatter documents, ADR ids and the
 //! ASCII slugs of file names.
 
+use std::cmp::Ordering;
 use std::process::Command;
 use std::sync::LazyLock;
 
@@ -11,6 +12,29 @@ use kernel::py::yaml::{self, DumpOptions};
 use kernel::py::{Crash, Dict, NONE, Value, io_crash, matches_to_end, read_text, write_text};
 use regex::Regex;
 use unicode_normalization::UnicodeNormalization;
+
+/// `ADR_STATUSES`.
+pub const ADR_STATUSES: [&str; 5] = [
+    "proposed",
+    "accepted",
+    "rejected",
+    "deprecated",
+    "superseded",
+];
+
+/// `ADR_FIELD_ORDER`.
+pub const ADR_FIELD_ORDER: [&str; 10] = [
+    "id",
+    "title",
+    "status",
+    "date",
+    "version",
+    "subsystems",
+    "supersedes",
+    "superseded_by",
+    "amends",
+    "amended_by",
+];
 
 pub const MARKER_PREFIX: &str = "<!-- architecture-docs:";
 
@@ -231,6 +255,82 @@ impl Project {
             .map(|n| read_doc(&join(&self.adr_dir, &n)))
             .collect()
     }
+
+    /// `adr_by_id()`: the ADRs and the dict from id to ADR, as entries of (id, index into the
+    /// ADRs). Equal ids share one entry, which keeps the first id and the last ADR.
+    pub fn adr_by_id(&self) -> Result<(Vec<Doc>, AdrIds), Crash> {
+        let docs = self.adrs()?;
+        let mut entries = AdrIds::new();
+        for (i, d) in docs.iter().enumerate() {
+            let id = get(&d.meta, "id")?;
+            if !id.is_hashable() {
+                return Err(Crash::new(format!(
+                    "TypeError: unhashable type: '{}'",
+                    id.type_name()
+                )));
+            }
+            match entries.iter_mut().find(|(k, _)| same_key(k, id)) {
+                Some(entry) => entry.1 = i,
+                None => entries.push((id.clone(), i)),
+            }
+        }
+        Ok((docs, entries))
+    }
+
+    /// `adr_path(adr_id, title)`.
+    pub fn adr_path(&self, adr_id: &str, title: &str) -> String {
+        join(
+            &self.adr_dir,
+            &format!("{}-{}.md", zero_pad4(adr_id), ascii_slug(title)),
+        )
+    }
+}
+
+/// The entries of the `adr_by_id()` dict: (id, index into the ADRs).
+pub type AdrIds = Vec<(Value, usize)>;
+
+/// Dict key equality: `==`, and `.nan`, which PyYAML loads as one shared object.
+fn same_key(a: &Value, b: &Value) -> bool {
+    a.py_eq(b) || matches!((a, b), (Value::Float(x), Value::Float(y)) if x.is_nan() && y.is_nan())
+}
+
+/// The entry of `adrs[target]`, for an integer id.
+pub fn find_adr(entries: &[(Value, usize)], target: &str) -> Option<usize> {
+    let key = Value::Int(target.to_string());
+    entries.iter().find(|(k, _)| k.py_eq(&key)).map(|(_, i)| *i)
+}
+
+/// `next_adr_id()`: one more than the largest integer id, from 1.
+pub fn next_adr_id(entries: &[(Value, usize)]) -> Result<String, Crash> {
+    let mut max = "0".to_string();
+    let mut any = false;
+    for (k, _) in entries {
+        let text = match k {
+            Value::Int(i) => i.clone(),
+            Value::Bool(b) => if *b { "1" } else { "0" }.to_string(),
+            _ => continue,
+        };
+        if !any || cmp_int(&text, &max) == Ordering::Greater {
+            max = text;
+            any = true;
+        }
+    }
+    Ok(num::int(&max, 10)?
+        .add(&num::BigInt::from_i64(1))
+        .to_string())
+}
+
+/// Compares two integers given as decimal text.
+pub fn cmp_int(a: &str, b: &str) -> Ordering {
+    let (na, da) = a.strip_prefix('-').map_or((false, a), |d| (true, d));
+    let (nb, db) = b.strip_prefix('-').map_or((false, b), |d| (true, d));
+    let mag = da.len().cmp(&db.len()).then_with(|| da.cmp(db));
+    match (na, nb) {
+        (false, false) => mag,
+        (true, true) => mag.reverse(),
+        (true, false) => Ordering::Less,
+        (false, true) => Ordering::Greater,
+    }
 }
 
 /// `re.match(r"\d{4}-.*\.md$", name)`, with Python's Unicode digits.
@@ -317,12 +417,35 @@ pub fn read_doc(path: &str) -> Result<Doc, Crash> {
 
 /// `write_doc(doc)`: the frontmatter as `yaml.safe_dump` writes it, then the body.
 pub fn write_doc(doc: &Doc) -> Result<(), Crash> {
+    write_meta(doc, &doc.meta)
+}
+
+/// `write_doc(doc, order)`: the fields in `order` first, then the others as they are.
+pub fn write_doc_ordered(doc: &Doc, order: &[&str]) -> Result<(), Crash> {
+    let Value::Dict(meta) = &doc.meta else {
+        return write_doc(doc);
+    };
+    let mut ordered = Dict::new();
+    for k in order {
+        if let Some(v) = meta.get(k) {
+            ordered.insert(*k, v.clone());
+        }
+    }
+    for (k, v) in meta.iter() {
+        if !k.as_str().is_some_and(|k| order.contains(&k)) {
+            ordered.push_new(k.clone(), v.clone());
+        }
+    }
+    write_meta(doc, &Value::Dict(ordered))
+}
+
+fn write_meta(doc: &Doc, meta: &Value) -> Result<(), Crash> {
     let options = DumpOptions {
         default_flow_style: None,
         allow_unicode: true,
         width: Some(4096),
     };
-    let front = yaml::safe_dump(&doc.meta, &options)?;
+    let front = yaml::safe_dump(meta, &options)?;
     makedirs(&kernel::py::path::dirname(&doc.path))?;
     let text = format!("---\n{front}---\n\n{}\n", strip(&doc.body));
     write_text(std::path::Path::new(&doc.path), &text)
@@ -394,6 +517,23 @@ mod tests {
         assert_eq!(adr_label("3"), "ADR-0003");
         assert_eq!(adr_label("-5"), "ADR--005");
         assert_eq!(adr_label("12345"), "ADR-12345");
+    }
+
+    #[test]
+    fn adr_ids_follow_python_dict_keys() {
+        let ids: AdrIds = vec![
+            (Value::Float(2.0), 0),
+            (Value::Bool(true), 1),
+            (Value::str("9"), 2),
+            (Value::int(-3), 3),
+        ];
+        // 2.0 matches 2 but is no int, so the next id comes from True (1).
+        assert_eq!(find_adr(&ids, "2"), Some(0));
+        assert_eq!(find_adr(&ids, "1"), Some(1));
+        assert_eq!(find_adr(&ids, "9"), None);
+        assert_eq!(next_adr_id(&ids).unwrap(), "2");
+        assert_eq!(next_adr_id(&[(Value::int(-3), 0)]).unwrap(), "-2");
+        assert_eq!(next_adr_id(&AdrIds::new()).unwrap(), "1");
     }
 
     #[test]

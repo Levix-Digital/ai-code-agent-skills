@@ -100,7 +100,7 @@ The project declares its style in `.dev-cycle.json`:
 | `modular-monolith` | One deployable split into business modules with explicit public interfaces | [styles/modular-monolith.md](styles/modular-monolith.md) |
 | `other` | Anything else; describe it in an ADR | — |
 
-**Choosing or changing the style** is an architecture decision: record it with an ADR (`architecture-docs/new_adr.py`) and set `architecture.style`. When the style is not set, infer it from the code during Discovery, propose it to the user and record it once they agree. Read only the guide of the project's style.
+**Choosing or changing the style** is an architecture decision: record it with an ADR (`"<skills_root>/dev-cycle-protocol/bin/dev-cycle" architecture-docs new_adr`) and set `architecture.style`. When the style is not set, infer it from the code during Discovery, propose it to the user and record it once they agree. Read only the guide of the project's style.
 
 Large systems may combine styles (a hexagonal core whose ingestion is a pipeline); the top-level style goes in `.dev-cycle.json` and the combination in the ADR.
 

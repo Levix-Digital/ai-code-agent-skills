@@ -3,4 +3,5 @@
 
 pub mod build_index;
 pub mod docs;
+pub mod new_adr;
 pub mod new_subsystem;

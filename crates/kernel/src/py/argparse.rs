@@ -22,11 +22,17 @@ pub struct Arg {
     pub kind: Kind,
     pub help: String,
     pub required: bool,
+    /// `choices=[...]`: empty when any value is accepted.
+    pub choices: Vec<String>,
 }
 
 impl Arg {
     fn metavar(&self) -> String {
-        self.dest.to_uppercase()
+        if self.choices.is_empty() {
+            self.dest.to_uppercase()
+        } else {
+            format!("{{{}}}", self.choices.join(","))
+        }
     }
 
     /// `-h/--help`, as error messages name the argument.
@@ -135,6 +141,7 @@ impl Parser {
                 kind: Kind::Help,
                 help: "show this help message and exit".into(),
                 required: false,
+                choices: Vec::new(),
             }],
         }
     }
@@ -147,6 +154,7 @@ impl Parser {
             kind,
             help: help.to_string(),
             required,
+            choices: Vec::new(),
         });
         self
     }
@@ -162,6 +170,15 @@ impl Parser {
     /// `add_argument(flag, required=True)`.
     pub fn required_option(self, flag: &str, help: &str) -> Self {
         self.add(flag, Kind::Store, help, true)
+    }
+
+    /// `add_argument(flag, choices=choices)`.
+    pub fn choice_option(mut self, flag: &str, choices: &[&str], help: &str) -> Self {
+        self = self.add(flag, Kind::Store, help, false);
+        if let Some(arg) = self.args.last_mut() {
+            arg.choices = choices.iter().map(|c| c.to_string()).collect();
+        }
+        self
     }
 
     fn option_strings(&self) -> Vec<(&str, usize)> {
@@ -369,9 +386,18 @@ impl Parser {
                                 parsed.flags.insert(arg.dest.clone(), true);
                             }
                             Kind::Store => {
-                                parsed
-                                    .values
-                                    .insert(arg.dest.clone(), value.unwrap_or_default());
+                                let value = value.unwrap_or_default();
+                                if !arg.choices.is_empty() && !arg.choices.contains(&value) {
+                                    let choices: Vec<String> =
+                                        arg.choices.iter().map(|c| repr_str(c)).collect();
+                                    return Err(self.error(&format!(
+                                        "argument {}: invalid choice: {} (choose from {})",
+                                        arg.name(),
+                                        repr_str(&value),
+                                        choices.join(", ")
+                                    )));
+                                }
+                                parsed.values.insert(arg.dest.clone(), value);
                             }
                         }
                     }
