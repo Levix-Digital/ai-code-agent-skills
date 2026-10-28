@@ -14,12 +14,22 @@ Each release: `## vX.Y.Z: <name>` with the fields `Status` (planned, in_progress
 - **Goal**: Every script runs as a command of one Rust binary with exactly the same behavior, and the protocol needs no Python
 - **Items**: IMP-005
 
-## v2.11.0: Agents and platforms
+## v2.11.0: Guardrails for agent-written code
+- **Status**: planned
+- **Goal**: Pull requests are blocked on invented or vulnerable dependencies, weakened tests, changes outside the plan and insecure code
+- **Items**: FEAT-011, IMP-006, IMP-007, FEAT-012
+
+## v2.12.0: Cycle feedback
+- **Status**: planned
+- **Goal**: Production problems come back as triaged bugs, the user's gates come with a review brief, the cycle measures itself and performance budgets are enforced
+- **Items**: FEAT-013, FEAT-014, FEAT-015, FEAT-016
+
+## v2.13.0: Agents and platforms
 - **Status**: planned
 - **Goal**: A role can run in its own context on Claude Code, Codex, Gemini or Copilot, pull request review works on Bitbucket, Azure DevOps and Gitea, and the project's infrastructure as code is checked in CI and applied through the release gates
 - **Items**: FEAT-005, FEAT-001, FEAT-010
 
-## v2.12.0: Protocol served by the engine
+## v2.14.0: Protocol served by the engine
 - **Status**: planned
 - **Goal**: Agents run the cycle through the engine's local MCP server with minimal skills, the signed engine cannot be altered, projects adjust it only through validated settings, and the commercial license is chosen
 - **Items**: FEAT-009, FEAT-007
