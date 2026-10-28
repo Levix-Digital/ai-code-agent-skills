@@ -259,5 +259,84 @@
     "rust": ["architecture-docs", "extract_adrs"],
     "args": ["--dir", "{project}", "--source="],
     "fixture": "legacy-tecdoc"
+  },
+  {
+    "name": "check-docs-help",
+    "python": "architecture-docs/check_docs.py",
+    "rust": ["architecture-docs", "check_docs"],
+    "args": ["--help"],
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "check-docs-invalid-int",
+    "python": "architecture-docs/check_docs.py",
+    "rust": ["architecture-docs", "check_docs"],
+    "args": ["--max-warnings", "ten"],
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "check-docs-not-adopted",
+    "python": "architecture-docs/check_docs.py",
+    "rust": ["architecture-docs", "check_docs"],
+    "args": [],
+    "fixture": "docs-none",
+    "git": true,
+    "seps": ["docs\\\\(?:adr|architecture)"]
+  },
+  {
+    "name": "check-docs-current",
+    "python": "architecture-docs/check_docs.py",
+    "rust": ["architecture-docs", "check_docs"],
+    "args": [],
+    "fixture": "index-current",
+    "git": true
+  },
+  {
+    "name": "check-docs-problems",
+    "python": "architecture-docs/check_docs.py",
+    "rust": ["architecture-docs", "check_docs"],
+    "args": [],
+    "fixture": "docs-problems",
+    "git": true
+  },
+  {
+    "name": "check-docs-include-plans",
+    "python": "architecture-docs/check_docs.py",
+    "rust": ["architecture-docs", "check_docs"],
+    "args": ["--include-plans", "--max-warnings", "0"],
+    "fixture": "docs-problems",
+    "git": true
+  },
+  {
+    "name": "check-docs-few-warnings",
+    "python": "architecture-docs/check_docs.py",
+    "rust": ["architecture-docs", "check_docs"],
+    "args": ["--max-w=2"],
+    "fixture": "docs-problems",
+    "git": true
+  },
+  {
+    "name": "check-docs-negative-warnings",
+    "python": "architecture-docs/check_docs.py",
+    "rust": ["architecture-docs", "check_docs"],
+    "args": ["--max-warnings", "-1"],
+    "fixture": "docs-problems",
+    "git": true
+  },
+  {
+    "name": "check-docs-custom-config",
+    "python": "architecture-docs/check_docs.py",
+    "rust": ["architecture-docs", "check_docs"],
+    "args": ["--dir", "sub"],
+    "fixture": "subsystems-config",
+    "git": true,
+    "seps": ["docs\\\\(?:adr|architecture)"]
+  },
+  {
+    "name": "check-docs-outside-git",
+    "python": "architecture-docs/check_docs.py",
+    "rust": ["architecture-docs", "check_docs"],
+    "args": ["--dir", "{project}"],
+    "fixture": "subsystems-docs"
   }
 ]

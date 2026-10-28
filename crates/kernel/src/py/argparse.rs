@@ -24,6 +24,8 @@ pub struct Arg {
     pub required: bool,
     /// `choices=[...]`: empty when any value is accepted.
     pub choices: Vec<String>,
+    /// `type=int`: the value must be what `int()` reads.
+    pub int: bool,
 }
 
 impl Arg {
@@ -142,6 +144,7 @@ impl Parser {
                 help: "show this help message and exit".into(),
                 required: false,
                 choices: Vec::new(),
+                int: false,
             }],
         }
     }
@@ -155,6 +158,7 @@ impl Parser {
             help: help.to_string(),
             required,
             choices: Vec::new(),
+            int: false,
         });
         self
     }
@@ -177,6 +181,15 @@ impl Parser {
         self = self.add(flag, Kind::Store, help, false);
         if let Some(arg) = self.args.last_mut() {
             arg.choices = choices.iter().map(|c| c.to_string()).collect();
+        }
+        self
+    }
+
+    /// `add_argument(flag, type=int)`: the value is kept as given; `int()` reads it.
+    pub fn int_option(mut self, flag: &str, help: &str) -> Self {
+        self = self.add(flag, Kind::Store, help, false);
+        if let Some(arg) = self.args.last_mut() {
+            arg.int = true;
         }
         self
     }
@@ -387,6 +400,13 @@ impl Parser {
                             }
                             Kind::Store => {
                                 let value = value.unwrap_or_default();
+                                if arg.int && super::num::int(&value, 10).is_err() {
+                                    return Err(self.error(&format!(
+                                        "argument {}: invalid int value: {}",
+                                        arg.name(),
+                                        repr_str(&value)
+                                    )));
+                                }
                                 if !arg.choices.is_empty() && !arg.choices.contains(&value) {
                                     let choices: Vec<String> =
                                         arg.choices.iter().map(|c| repr_str(c)).collect();

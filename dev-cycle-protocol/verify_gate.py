@@ -77,12 +77,47 @@ def check_secret_hygiene(cwd: str) -> list:
     return violations
 
 
+# Checkers already translated to the native engine (IMP-005): they run as
+# `dev-cycle <skill> <script>` instead of `python <skill>/<script>.py`.
+ENGINE_CHECKERS = {("architecture-docs", "check_docs.py")}
+ENGINE_BIN = os.path.join(SKILLS_ROOT, "dev-cycle-protocol", "bin")
+
+
+def engine_command(skill: str, script: str, args: list) -> list:
+    """Command line of a checker that runs on the engine, through its launcher."""
+    command = [skill, script[:-len(".py")], *args]
+    if os.environ.get("DEV_CYCLE_BIN"):
+        return [os.environ["DEV_CYCLE_BIN"], *command]
+    if os.name != "nt":
+        return ["sh", os.path.join(ENGINE_BIN, "dev-cycle"), *command]
+    # PowerShell would re-encode the engine's UTF-8 output: let the launcher fetch or build the
+    # binary once, then run the binary itself.
+    launcher = ["powershell", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File",
+                os.path.join(ENGINE_BIN, "dev-cycle.ps1")]
+    subprocess.run([*launcher, "--version"], capture_output=True)
+    with open(os.path.join(ENGINE_BIN, "engine-version"), encoding="utf-8") as f:
+        version = f.read().strip()
+    cache_root = (os.environ.get("LOCALAPPDATA") or os.environ.get("XDG_CACHE_HOME")
+                  or os.path.join(os.path.expanduser("~"), ".cache"))
+    for binary in (os.path.join(cache_root, "dev-cycle", f"engine-v{version}", "dev-cycle.exe"),
+                   os.path.join(SKILLS_ROOT, "target", "release", "dev-cycle.exe")):
+        if os.path.isfile(binary):
+            return [binary, *command]
+    return [*launcher, *command]
+
+
 def run_checker(skill: str, script: str, args: list) -> tuple:
     """Runs a sibling skill's checker; returns (exit_code, output), or (None, reason) when missing."""
     path = os.path.join(SKILLS_ROOT, skill, script)
-    if not os.path.isfile(path):
+    if (skill, script) in ENGINE_CHECKERS:
+        if not os.path.isfile(os.path.join(ENGINE_BIN, "dev-cycle")):
+            return None, f"{skill}/{script} not installed"
+        command = engine_command(skill, script, args)
+    elif os.path.isfile(path):
+        command = [sys.executable, path, *args]
+    else:
         return None, f"{skill}/{script} not installed"
-    res = subprocess.run([sys.executable, path, *args], capture_output=True, text=True,
+    res = subprocess.run(command, capture_output=True, text=True,
                          encoding="utf-8", errors="replace")
     return res.returncode, (res.stdout + res.stderr).strip()
 

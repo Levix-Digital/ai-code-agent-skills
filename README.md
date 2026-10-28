@@ -176,7 +176,7 @@ python <skills_root>/dev-cycle-protocol/constitution.py generate|check
 - `verify_gate.py --gate 0` (before the product baseline approval): product documents, architecture style, technical docs, a backlog with epics, a roadmap with a first release, Spec Kit and the constitution when enabled; open questions are listed.
 - `verify_gate.py --gate 3` (before plan approval): working tree, active plan, bugs first (a plan that is not a bug plan is blocked while an open critical, high or medium bug, or a bug not triaged, is outside it, unless you accept the risk: `--accept-open-bugs "<reason>"`), with Spec Kit the spec folder (no open clarification), branch and constitution, no secrets tracked or staged.
 - `verify_gate.py --gate rc --run <tag>` (candidate acceptance): every manual test of the run is Pass.
-- `verify_gate.py --gate 8` (before the release gate: the release pull request, or the promotion of the candidate): documentation and manual test files exist and the checkers of every role pass (`check_docs.py`, `check_readme.py`, `manual_tests.py validate`, `check_design.py`, `check_ci_policy.py`, `release_status.py version`, `backlog.py validate`, `roadmap.py validate`), plus the candidate run with `--run`, no secrets and a clean tree, no open bug untriaged; open blocking bugs are listed for the release notes and open items of the release for you to move or finish.
+- `verify_gate.py --gate 8` (before the release gate: the release pull request, or the promotion of the candidate): documentation and manual test files exist and the checkers of every role pass (`check_docs`, `check_readme.py`, `manual_tests.py validate`, `check_design.py`, `check_ci_policy.py`, `release_status.py version`, `backlog.py validate`, `roadmap.py validate`), plus the candidate run with `--run`, no secrets and a clean tree, no open bug untriaged; open blocking bugs are listed for the release notes and open items of the release for you to move or finish.
 
 **Spec Kit** ([GitHub Spec Kit](https://github.com/github/spec-kit)) can do the detail of feature plans in Discovery, Plan and Implementation, at a version pinned per project after a compatibility check, with a constitution generated from the project's rules: [docs/spec-kit.md](docs/spec-kit.md).
 
@@ -256,12 +256,12 @@ Keeps the technical documentation describing how the system works **today**, ins
 | New ADR | `<skills_root>/dev-cycle-protocol/bin/dev-cycle architecture-docs new_adr --title "<decision>" [--version v1.2.0] [--subsystem rag] [--supersedes 129] [--amends 118]` |
 | New subsystem page | `<skills_root>/dev-cycle-protocol/bin/dev-cycle architecture-docs new_subsystem --name rag --title "Retrieval Pipeline" --summary "<one sentence>" [--code "src/rag"]` |
 | Regenerate the index | `<skills_root>/dev-cycle-protocol/bin/dev-cycle architecture-docs build_index` (`--check` to only verify) |
-| Validate | `check_docs.py [--include-plans] [--max-warnings 0]` |
+| Validate | `<skills_root>/dev-cycle-protocol/bin/dev-cycle architecture-docs check_docs [--include-plans] [--max-warnings 0]` |
 | Migrate a legacy single-file TECDOC | `<skills_root>/dev-cycle-protocol/bin/dev-cycle architecture-docs extract_adrs [--source TECDOC.md] [--dry-run]`, then the migration steps in the SKILL.md |
 
-The `.py` scripts are in `<skills_root>/architecture-docs/`; `new_adr`, `new_subsystem`, `build_index` and `extract_adrs` run on the native engine (`bin/dev-cycle.ps1` in PowerShell).
+The `architecture-docs` commands run on the native engine (`bin/dev-cycle.ps1` in PowerShell).
 
-- **`check_docs.py` fails on**: headings with versions or manual numbering, invalid ADR frontmatter, ADR relations not recorded in both directions, broken links and anchors, an outdated index, and headings not in the configured language.
+- **`check_docs` fails on**: headings with versions or manual numbering, invalid ADR frontmatter, ADR relations not recorded in both directions, broken links and anchors, an outdated index, and headings not in the configured language.
 - **It warns about**: long files, body text that looks like another language, ADRs missing a standard section, and documented source paths that no longer exist.
 - **Gate 8** runs it. Once a project has `docs/adr` or `docs/architecture`, errors block the release, so migrate a legacy TECDOC on its own branch and finish it before the next release.
 - **Language**: English by default (`architecture_docs.language`). Mark a line with `<!-- lang-ok -->` to exempt a proper name or quote.
@@ -387,7 +387,7 @@ Adding a skill, running the tests, conventions, personal skills and updating oth
 | `ModuleNotFoundError: chromadb` / `docx` / `pypdf` | `pip install -r requirements.txt` with the same Python the agent uses. |
 | `plan-memory` lists no plans | Run it inside the project repository (or pass `--dir`); plans are read from `docs/plans` (or `plans.dir`). |
 | A memory script finds nothing for a project | Run `read_memory.py --list-projects` or `list_plans.py`; the project may be stored under another name. Names are normalized (`AnyContext` = `any-context`), but `anycontext` cannot be split. |
-| `check_docs.py` reports many errors after `extract_adrs` | Expected: they are the migration work list (translate and restructure ADRs, rewrite the index and subsystem pages). |
+| `check_docs` reports many errors after `extract_adrs` | Expected: they are the migration work list (translate and restructure ADRs, rewrite the index and subsystem pages). |
 | `detect_drift.py` reports `Drift Rules: none` | Run it from the project folder (or pass `--dir`) and add `drift_rules` to `.dev-cycle.json`. |
 | Cloud session has no `dev-skills:*` skills | `claude plugin list`. A session that starts outside the repository (Claude Projects, several repositories) never reads the project's `.claude/settings.json`: install with the environment's Setup script ([docs/cloud-sessions.md](docs/cloud-sessions.md)). Otherwise check the branch has `.claude/settings.json`, the GitHub app can access this repository, and `/plugin` for load errors. |
 

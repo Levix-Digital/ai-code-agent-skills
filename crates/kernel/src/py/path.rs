@@ -194,6 +194,41 @@ pub fn abspath(p: &str) -> PathBuf {
     }
 }
 
+/// `os.path.normpath(p)`.
+pub fn normpath(p: &str) -> String {
+    if cfg!(windows) {
+        normpath_nt(p)
+    } else {
+        normpath_posix(p)
+    }
+}
+
+/// `ntpath.normpath`.
+pub fn normpath_nt(p: &str) -> String {
+    let p = p.replace('/', "\\");
+    let (drive, rest) = splitdrive(&p);
+    let (root, rest) = match rest.strip_prefix('\\') {
+        Some(r) => ("\\", r),
+        None => ("", rest),
+    };
+    let mut comps: Vec<&str> = Vec::new();
+    for comp in rest.split('\\') {
+        match comp {
+            "" | "." => {}
+            ".." if comps.last().is_some_and(|c| *c != "..") => {
+                comps.pop();
+            }
+            ".." if comps.is_empty() && !root.is_empty() => {}
+            _ => comps.push(comp),
+        }
+    }
+    let prefix = format!("{drive}{root}");
+    if prefix.is_empty() && comps.is_empty() {
+        return ".".into();
+    }
+    format!("{prefix}{}", comps.join("\\"))
+}
+
 /// `posixpath.normpath`.
 pub fn normpath_posix(p: &str) -> String {
     if p.is_empty() {
@@ -235,6 +270,15 @@ pub fn basename(p: &Path) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[cfg(windows)]
+    #[test]
+    fn normpath_nt_like_python() {
+        assert_eq!(normpath_nt("C:/a/./b/../c"), "C:\\a\\c");
+        assert_eq!(normpath_nt("\\..\\a"), "\\a");
+        assert_eq!(normpath_nt("../a/.."), "..");
+        assert_eq!(normpath_nt(""), ".");
+    }
 
     #[test]
     fn normpath_matches_python() {

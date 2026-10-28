@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "usage: check_docs.py [-h] [--dir DIR] [--include-plans]\n                     [--max-warnings MAX_WARNINGS]\n\nValidate the project's architecture documentation\n\noptions:\n  -h, --help            show this help message and exit\n  --dir DIR             Project directory (default: current; the Git root is\n                        used)\n  --include-plans       Also check the language of docs/plans\n  --max-warnings MAX_WARNINGS\n                        Warnings to print (default 40; 0 = all)\n",
+  "stderr": "",
+  "files": {}
+}

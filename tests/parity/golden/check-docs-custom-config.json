@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "ℹ️ Demo Project does not use the architecture-docs layout yet (design/pages, docs/adr). Nothing to check.\n",
+  "stderr": "",
+  "files": {}
+}
