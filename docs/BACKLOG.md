@@ -63,13 +63,13 @@ Each item: `### <ID>: <title>` with the fields `Severity` (bugs: critical, high,
 - **Plan**: -
 - **Description**: Lite (dev-cycle, backlog and pull request review, no Phase 0 or release candidates), Standard (plans, design checks, technical docs) and Full (phases 0 to 10, Spec Kit, release candidates, Gedo when enabled), in the README and as a choice in /dev-cycle.
 
-### FEAT-007: Commercial license and distribution model
+### FEAT-007: Proprietary binary-only distribution with Levix licenses
 - **Priority**: medium
 - **Epic**: EPIC-006
 - **Status**: open
-- **Found**: 2026-10-25, 2026-10-25, platform strategy discussion; redefined 2026-10-28, protocol as a commercial product
+- **Found**: 2026-10-25, 2026-10-25, platform strategy discussion; redefined 2026-10-28, protocol as a commercial product; decided 2026-10-28, same model as Aurora Dev Suite (its ADR-0005)
 - **Plan**: -
-- **Description**: The protocol becomes a commercial product, so the open source launch (MIT or Apache-2.0) is replaced by a license decision: proprietary with an end-user license agreement, or source-available (for example BSL), reviewed by a lawyer. The license is the actual protection against copying; the instructions the agent reads are not secret. Covers the public docs and how the signed engine is distributed (FEAT-009). Until then the repository stays unlicensed.
+- **Description**: The protocol follows the decision every Levix product shares (Aurora Dev Suite ADR-0005): proprietary, freemium, distributed only as binaries. The source repository becomes private; the signed dcp binary and installers are published to a separate public releases repository (the AnyContext pattern). Every crate has publish = false and the proprietary license notice; dependencies stay permissive (MIT, Apache-2.0, BSD, ISC, Zlib, Unicode-3.0), checked with cargo-deny. Licenses (one per plan, signed by Levix, verified offline) and the verified download catalog come from the levix-platform components once they exist; until then the engine has no license check. The free tier and paid plans are open, as for the other products. Replaces the open source launch; the license, not hidden instructions, is the protection (FEAT-009). Record the decision as an ADR in this repository when the item is implemented.
 
 ### FEAT-008: Non-overlapping milestone scopes at gate 3 with gedo scope
 - **Priority**: high
@@ -239,7 +239,7 @@ Each item: `### <ID>: <title>` with the fields `Severity` (bugs: critical, high,
 - **Priority**: high
 - **Status**: open
 - **Found**: 2026-10-25, 2026-10-25, platform strategy discussion
-- **Description**: Execution without manual installs, standard-library search, onboarding in three levels, the protocol served by the signed engine and its commercial license.
+- **Description**: Execution without manual installs, standard-library search, onboarding in three levels, the protocol served by the signed engine and its proprietary, binary-only distribution.
 
 ### EPIC-007: Infrastructure as code
 - **Priority**: medium
