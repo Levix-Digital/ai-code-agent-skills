@@ -1,0 +1,6 @@
+{
+  "exit": 2,
+  "stdout": "",
+  "stderr": "usage: new_adr.py [-h] --title TITLE [--status {proposed,accepted}]\n                  [--version VERSION] [--subsystem SUBSYSTEM]\n                  [--supersedes SUPERSEDES] [--amends AMENDS] [--dir DIR]\nnew_adr.py: error: argument --status: invalid choice: 'final' (choose from 'proposed', 'accepted')\n",
+  "files": {}
+}

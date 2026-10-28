@@ -253,13 +253,13 @@ Keeps the technical documentation describing how the system works **today**, ins
 
 | Task | Command |
 |---|---|
-| New ADR | `new_adr.py --title "<decision>" [--version v1.2.0] [--subsystem rag] [--supersedes 129] [--amends 118]` |
+| New ADR | `<skills_root>/dev-cycle-protocol/bin/dev-cycle architecture-docs new_adr --title "<decision>" [--version v1.2.0] [--subsystem rag] [--supersedes 129] [--amends 118]` |
 | New subsystem page | `<skills_root>/dev-cycle-protocol/bin/dev-cycle architecture-docs new_subsystem --name rag --title "Retrieval Pipeline" --summary "<one sentence>" [--code "src/rag"]` |
 | Regenerate the index | `build_index.py` (`--check` to only verify) |
 | Validate | `check_docs.py [--include-plans] [--max-warnings 0]` |
 | Migrate a legacy single-file TECDOC | `extract_adrs.py [--source TECDOC.md] [--dry-run]`, then the migration steps in the SKILL.md |
 
-The `.py` scripts are in `<skills_root>/architecture-docs/`; `new_subsystem` runs on the native engine (`bin/dev-cycle.ps1` in PowerShell).
+The `.py` scripts are in `<skills_root>/architecture-docs/`; `new_adr` and `new_subsystem` run on the native engine (`bin/dev-cycle.ps1` in PowerShell).
 
 - **`check_docs.py` fails on**: headings with versions or manual numbering, invalid ADR frontmatter, ADR relations not recorded in both directions, broken links and anchors, an outdated index, and headings not in the configured language.
 - **It warns about**: long files, body text that looks like another language, ADRs missing a standard section, and documented source paths that no longer exist.

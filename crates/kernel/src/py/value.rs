@@ -479,12 +479,12 @@ impl Dict {
         }
     }
 
-    /// `del d[key]`.
     /// Appends an entry whose key the caller knows is not in the dict yet.
     pub fn push_new(&mut self, key: Value, value: Value) {
         self.entries.push((key, value));
     }
 
+    /// `del d[key]`.
     pub fn remove(&mut self, key: &str) -> Option<Value> {
         let i = self
             .entries

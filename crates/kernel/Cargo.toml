@@ -10,6 +10,7 @@ publish.workspace = true
 [dependencies]
 regex.workspace = true
 terminal_size.workspace = true
+chrono.workspace = true
 
 [lints]
 workspace = true

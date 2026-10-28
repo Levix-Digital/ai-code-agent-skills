@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "",
+  "stderr": "❌ ADR-0099 not found in docs/adr.\n",
+  "files": {}
+}

@@ -36,7 +36,7 @@ Add `"plans"` to `language_scope` to also check `docs/plans`.
 | What happened | What to do |
 |---|---|
 | A subsystem's behavior, structure, data or configuration changed | **Edit** its page in `docs/architecture/` in place so it describes the new state. |
-| A choice was made between alternatives with trade-offs | **New ADR** (`new_adr.py`), then link it from the affected subsystem pages. |
+| A choice was made between alternatives with trade-offs | **New ADR** (`new_adr`), then link it from the affected subsystem pages. |
 | A decision reverses an earlier one | **New ADR** with `--supersedes N`. The old ADR becomes `superseded`; its text is not edited. |
 | A decision corrects or narrows part of an earlier one | **New ADR** with `--amends N`. The old ADR stays `accepted` with `amended_by`. |
 | A feature or component was removed | **Remove** it from the subsystem page. Its ADRs stay as history. |
@@ -101,7 +101,7 @@ The `.py` scripts are in `<skills_root>/architecture-docs/`. Commands without `.
 
 | Task | Command |
 |---|---|
-| New ADR | `new_adr.py --title "<decision>" [--version v1.2.0] [--subsystem rag,onnx] [--supersedes 129] [--amends 118,123] [--status proposed]` |
+| New ADR | `"<skills_root>/dev-cycle-protocol/bin/dev-cycle" architecture-docs new_adr --title "<decision>" [--version v1.2.0] [--subsystem rag,onnx] [--supersedes 129] [--amends 118,123] [--status proposed]` |
 | New subsystem page | `"<skills_root>/dev-cycle-protocol/bin/dev-cycle" architecture-docs new_subsystem --name rag --title "Retrieval Pipeline" --summary "<one sentence>" [--code "path1,path2"]` |
 | Regenerate the index | `build_index.py` (`--check` to only verify) |
 | Validate everything | `check_docs.py [--include-plans] [--max-warnings 0]` |

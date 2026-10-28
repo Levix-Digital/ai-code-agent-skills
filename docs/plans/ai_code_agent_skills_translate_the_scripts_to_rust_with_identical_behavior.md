@@ -7,7 +7,7 @@ version: v2.10.0
 status: in_progress
 author: Levi Silveira
 created_at: '2026-10-27T18:17:46'
-updated_at: '2026-10-28T10:48:22'
+updated_at: '2026-10-28T11:23:38'
 session_id: null
 tags:
 - rust
@@ -36,7 +36,9 @@ milestones:
   done_at: '2026-10-28'
   by: Levi Silveira
 - name: M5 new_adr
-  done: false
+  done: true
+  done_at: '2026-10-28'
+  by: Levi Silveira
 - name: M6 build_index
   done: false
 - name: M7 extract_adrs
@@ -134,6 +136,9 @@ status_log:
 - at: '2026-10-28T10:48:22'
   by: Levi Silveira
   note: 'Milestone ''M4 new_subsystem'' completed: Engine 0.3.0: new_subsystem in Rust (crates/architecture-docs), with a PyYAML-compatible safe_load and safe_dump in the kernel; 7 parity cases; _docs.py and build_index.py stay for the Python scripts that import them.'
+- at: '2026-10-28T11:23:38'
+  by: Levi Silveira
+  note: 'Milestone ''M5 new_adr'' completed: Engine 0.4.0: new_adr in Rust, with argparse choices and the local date in the kernel; 8 parity cases and a 3,300-run differential fuzz with 0 differences.'
 ---
 
 # Translate the scripts to Rust with identical behavior

@@ -1,7 +1,6 @@
 //! `build_index.py`: the generated sections of the index (TECDOC.md), the subsystem map and
 //! the ADR list, between the architecture-docs markers.
 
-use std::cmp::Ordering;
 use std::sync::LazyLock;
 
 use kernel::out::println;
@@ -10,7 +9,7 @@ use kernel::py::path::{SEP, basename, dirname, isfile, relpath};
 use kernel::py::{Crash, Value, read_text, write_text};
 use regex::{NoExpand, Regex};
 
-use crate::docs::{Project, adr_label, as_id_list, get, marker, no_attribute};
+use crate::docs::{Project, adr_label, as_id_list, cmp_int, get, marker, no_attribute};
 
 /// `INDEX_TEMPLATE.format(...)`.
 fn index_template(name: &str, architecture_dir: &str, subsystems: &str, adrs: &str) -> String {
@@ -155,19 +154,6 @@ fn id_text(value: &Value) -> Option<String> {
         Value::Int(i) => Some(i.clone()),
         Value::Bool(b) => Some(if *b { "1" } else { "0" }.into()),
         _ => None,
-    }
-}
-
-/// Compares two integers given as decimal text.
-fn cmp_int(a: &str, b: &str) -> Ordering {
-    let (na, da) = a.strip_prefix('-').map_or((false, a), |d| (true, d));
-    let (nb, db) = b.strip_prefix('-').map_or((false, b), |d| (true, d));
-    let mag = da.len().cmp(&db.len()).then_with(|| da.cmp(db));
-    match (na, nb) {
-        (false, false) => mag,
-        (true, true) => mag.reverse(),
-        (true, false) => Ordering::Less,
-        (false, true) => Ordering::Greater,
     }
 }
 
