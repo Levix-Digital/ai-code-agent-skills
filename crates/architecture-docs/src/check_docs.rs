@@ -13,13 +13,14 @@ use kernel::out::println;
 use kernel::py::argparse::Parser;
 use kernel::py::num::{self, is_space};
 use kernel::py::path::{basename, dirname, exists, isdir, isfile, join, normpath};
-use kernel::py::{Crash, Value, is_word, read_text};
+use kernel::py::{Crash, Value, read_text};
 use regex::Regex;
 
 use crate::build_index::build_index;
 use crate::docs::{
-    ADR_SECTIONS, ADR_STATUSES, Doc, Project, RELATIONS, adr_label, anchors, as_id_list,
-    fenced_lines, foreign_language_hits, get, headings, py_regex, read_doc, strip_code, zero_pad4,
+    ADR_SECTIONS, ADR_STATUSES, Doc, INLINE_CODE, LINK, Project, RELATIONS, SCHEME, adr_label,
+    anchors, as_id_list, fenced_lines, foreign_language_hits, get, has_version, headings, py_regex,
+    read_doc, strip_code, zero_pad4,
 };
 
 struct Report<'a> {
@@ -42,74 +43,7 @@ impl Report<'_> {
     }
 }
 
-fn digit(c: Option<char>) -> bool {
-    c.is_some_and(|c| num::decimal_value(c).is_some())
-}
-
-/// `\b` at byte `i` of `s`, with Python's word characters.
-fn boundary(s: &str, i: usize) -> bool {
-    let before = s[..i].chars().next_back().is_some_and(is_word);
-    let after = s[i..].chars().next().is_some_and(is_word);
-    before != after
-}
-
-/// The end of the run of digits that starts at `i` (`i` when there is none).
-fn digits_end(s: &str, i: usize) -> usize {
-    s[i..]
-        .char_indices()
-        .find(|(_, c)| num::decimal_value(*c).is_none())
-        .map_or(s.len(), |(j, _)| i + j)
-}
-
-/// `\d+\.\d+` from `i`: the end, when it is there.
-fn dotted_pair(s: &str, i: usize) -> Option<usize> {
-    let a = digits_end(s, i);
-    if a == i || !s[a..].starts_with('.') {
-        return None;
-    }
-    let b = digits_end(s, a + 1);
-    (b > a + 1).then_some(b)
-}
-
-/// `VERSION_RE.search(text)`: `\bv\d+\.\d+(\.\d+)?\b|\b\d+\.\d+\.\d+\b`, with Python's `\b`
-/// and `\d` (a run of digits is always made of word characters).
-fn has_version(s: &str) -> bool {
-    for (i, c) in s.char_indices() {
-        if !boundary(s, i) {
-            continue;
-        }
-        if c == 'v'
-            && let Some(end) = dotted_pair(s, i + 1)
-        {
-            if boundary(s, end) {
-                return true;
-            }
-            if s[end..].starts_with('.') {
-                let third = digits_end(s, end + 1);
-                if third > end + 1 && boundary(s, third) {
-                    return true;
-                }
-            }
-        }
-        if digit(Some(c))
-            && let Some(end) = dotted_pair(s, i)
-            && s[end..].starts_with('.')
-        {
-            let third = digits_end(s, end + 1);
-            if third > end + 1 && boundary(s, third) {
-                return true;
-            }
-        }
-    }
-    false
-}
-
 static NUMBERED: LazyLock<Regex> = LazyLock::new(|| py_regex(r"^\d+(\.\d+)*[.)]?\s"));
-static LINK: LazyLock<Regex> =
-    LazyLock::new(|| py_regex(r#"\[[^\]]*\]\(([^)\s]+)(?:\s+"[^"]*")?\)"#));
-static INLINE_CODE: LazyLock<Regex> = LazyLock::new(|| py_regex("`[^`]*`"));
-static SCHEME: LazyLock<Regex> = LazyLock::new(|| py_regex("^[a-z]+:"));
-
 /// `body_offset(path)`: the line where the body starts (after the frontmatter), so messages
 /// point at real lines.
 fn body_offset(path: &str) -> Result<usize, Crash> {

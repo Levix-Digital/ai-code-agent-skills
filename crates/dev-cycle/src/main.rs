@@ -44,6 +44,7 @@ const COMMANDS: &[(&str, &str, Command)] = &[
         "check_product",
         product_inception::check_product::main,
     ),
+    ("user-docs", "check_readme", user_docs::check_readme::main),
 ];
 
 fn main() -> ExitCode {

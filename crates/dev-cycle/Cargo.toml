@@ -11,6 +11,7 @@ publish.workspace = true
 architecture-docs.workspace = true
 kernel.workspace = true
 product-inception.workspace = true
+user-docs.workspace = true
 
 [lints]
 workspace = true

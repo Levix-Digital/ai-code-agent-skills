@@ -805,6 +805,19 @@ pub fn lower(s: &str) -> String {
     out
 }
 
+/// A character matched case-insensitively (`re.IGNORECASE`) against the lower-case ASCII
+/// letter `p` of a pattern: Python compares simple lower-case mappings, and adds `ı` to `i`
+/// and `ſ` to `s`.
+pub fn ignorecase_eq(c: char, p: char) -> bool {
+    let mut lower = c.to_lowercase();
+    let simple = match (lower.next(), lower.next()) {
+        (Some(l), None) => l,
+        _ if c == '\u{130}' => 'i',
+        _ => c,
+    };
+    simple == p || (p == 'i' && simple == '\u{131}') || (p == 's' && simple == '\u{17f}')
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

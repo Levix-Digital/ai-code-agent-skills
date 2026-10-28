@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ TECH.md:1: missing description: add one sentence on what the project is and for whom right after the title\n❌ TECH.md:1: missing required section: Installation\n❌ TECH.md:1: missing required section: Quick Start or Usage\n❌ TECH.md:1: missing required section: License\n⚠️ TECH.md:1: missing recommended section: Features\n⚠️ TECH.md:1: missing recommended section: Requirements\n⚠️ TECH.md:1: missing recommended section: Configuration\n⚠️ TECH.md:1: missing recommended section: Troubleshooting\n⚠️ TECH.md:1: missing recommended section: Documentation\n\n❌ user-docs: 4 error(s), 5 warning(s).\n",
+  "stderr": "",
+  "files": {}
+}

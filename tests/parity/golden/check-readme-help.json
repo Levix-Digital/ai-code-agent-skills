@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "usage: check_readme.py [-h] [--dir DIR] [--file FILE]\n                       [--max-warnings MAX_WARNINGS]\n\nValidate the project's README as end-user documentation\n\noptions:\n  -h, --help            show this help message and exit\n  --dir DIR             Project directory (default: current directory)\n  --file FILE           README path (default: docs.user_doc or README.md)\n  --max-warnings MAX_WARNINGS\n                        Fail when there are more warnings than this\n",
+  "stderr": "",
+  "files": {}
+}

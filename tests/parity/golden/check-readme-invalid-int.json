@@ -1,0 +1,6 @@
+{
+  "exit": 2,
+  "stdout": "",
+  "stderr": "usage: check_readme.py [-h] [--dir DIR] [--file FILE]\n                       [--max-warnings MAX_WARNINGS]\ncheck_readme.py: error: argument --max-warnings: invalid int value: 'few'\n",
+  "files": {}
+}

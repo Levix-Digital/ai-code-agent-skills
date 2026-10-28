@@ -1,0 +1,15 @@
+[package]
+name = "user-docs"
+description = "The user-docs skill's commands: the README checker"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+architecture-docs.workspace = true
+kernel.workspace = true
+
+[lints]
+workspace = true

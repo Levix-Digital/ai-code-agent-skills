@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ README.md:48: heading not in English: Solução\n❌ README.md:60: changelog-style heading 'What's New': history goes to the release notes, not the README\n❌ README.md:64: version or date in heading 'Hybrid search (`v0.32.4`)': describe the current state; history goes to the release notes\n❌ README.md:68: changelog-style heading 'Changelog': history goes to the release notes, not the README\n❌ README.md:70: version or date in heading 'Release 2024-05-01': describe the current state; history goes to the release notes\n❌ README.md:87: broken link: docs/NOPE.md\n❌ README.md:87: broken anchor: #no-such-section\n⚠️ README.md:89: more than one H1 heading; keep a single title\n⚠️ README.md:1: missing recommended section: Troubleshooting\n⚠️ README.md:72: version reference in body text: describe the current behavior (mark required versions with <!-- readme-ok -->)\n⚠️ README.md:72: ADR reference: link to the technical documentation index instead\n⚠️ README.md:72: link to a source file (src/engine.rs): implementation detail does not belong in the README\n⚠️ README.md:74: diagram in the README: architecture diagrams belong to the technical documentation\n⚠️ README.md:79: text may not be in English: está, inglês, não, parágrafo\n\n❌ user-docs: 7 error(s), 7 warning(s).\n",
+  "stderr": "",
+  "files": {}
+}

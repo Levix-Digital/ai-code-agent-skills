@@ -15,7 +15,7 @@ Owns the technical documentation (how the system works today and why) and the en
 ## Structure
 
 - `architecture-docs/`: `TECDOC.md` index, `docs/architecture/` living pages, `docs/adr/` immutable ADRs; `new_adr`, `new_subsystem`, `build_index`, `extract_adrs` and `check_docs`, all on the engine.
-- `user-docs/`: README template and `check_readme.py` (standard sections, current state only, English, links, length).
+- `user-docs/`: README template and `check_readme` on the engine (standard sections, current state only, English, links, length).
 
 ## Behavior
 

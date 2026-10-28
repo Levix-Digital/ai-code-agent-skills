@@ -7,7 +7,7 @@ version: v2.10.0
 status: in_progress
 author: Levi Silveira
 created_at: '2026-10-27T18:17:46'
-updated_at: '2026-10-28T16:21:43'
+updated_at: '2026-10-28T16:49:58'
 session_id: null
 tags:
 - rust
@@ -56,7 +56,9 @@ milestones:
   done_at: '2026-10-28'
   by: Levi Silveira
 - name: M10 check_readme
-  done: false
+  done: true
+  done_at: '2026-10-28'
+  by: Levi Silveira
 - name: M11 check_design
   done: false
 - name: M12 manual_tests
@@ -159,6 +161,9 @@ status_log:
 - at: '2026-10-28T16:21:43'
   by: Levi Silveira
   note: 'Milestone ''M9 check_product'' completed: Engine 0.8.0: check_product in Rust (crates/product-inception, templates built into the engine); verify_gate runs it on the engine; its pytest cases became 12 parity cases; a 3,000-run differential fuzz with 0 differences.'
+- at: '2026-10-28T16:49:58'
+  by: Levi Silveira
+  note: 'Milestone ''M10 check_readme'' completed: Engine 0.9.0: check_readme in Rust (crates/user-docs); verify_gate runs it on the engine; its pytest cases became 10 parity cases; a 3,000-run differential fuzz with 0 differences; _docs.py stays for constitution.py.'
 ---
 
 # Translate the scripts to Rust with identical behavior

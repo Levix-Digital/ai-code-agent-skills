@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "⚠️ GUIDE.md:1: missing recommended section: Features\n⚠️ GUIDE.md:46: 46 lines (limit 20): move long material to guides under docs/ and link them\n\n❌ user-docs: 0 error(s), 2 warning(s).\n",
+  "stderr": "",
+  "files": {}
+}
