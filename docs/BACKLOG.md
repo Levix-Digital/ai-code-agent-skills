@@ -87,6 +87,14 @@ Each item: `### <ID>: <title>` with the fields `Severity` (bugs: critical, high,
 - **Plan**: -
 - **Description**: The skills shrink to a short bootstrap that tells the agent to drive the cycle through the dev-cycle MCP tools; the protocol itself moves into the Rust engine, served locally over stdio (no network, works offline, in cloud sessions and on Claude Code, Codex, Gemini and Copilot). The engine is a state machine: it keeps the cycle state, enforces phase order and gates deterministically, generates files from embedded templates and returns only the current step's instructions. Instructions stay readable and explain their reasons (hiding them would make the agent worse); the binary is signed so the launcher refuses an altered engine and the protocol cannot be changed by the user. Projects adjust it only through a closed set of settings validated by the engine (onboarding level of FEAT-006, optional phases, providers); no custom templates, phases or extension points, and mandatory gates and principles are not configurable. Each phase becomes an explicit contract kept as data in the engine (inputs, artifacts to produce, done criteria, gate checks), the single source for both validation and the agent's instructions, so the phases are clearer than the prose they replace. Incremental cycle context: when a phase passes its gate, its structured handoff (decisions, constraints, artifacts by path, open questions) is validated and added to the cycle context, which the engine returns with every step: recent phases in full, older ones compacted, artifacts referenced rather than inlined. The context is stored in the project's repository, so it survives new sessions, a change of agent and cloud sessions, and later gives each role (FEAT-002) and Gedo stream (FEAT-003) only the slice it needs. Acceptance: on a set of sample projects the cycle run through the MCP matches or beats the current skills (gates passed first time, complete artifacts, rework, tokens); only then do the skills shrink. After v2.10.0, with Spec Kit.
 
+### FEAT-010: Infrastructure as code step in CI and releases
+- **Priority**: medium
+- **Epic**: EPIC-007
+- **Status**: open
+- **Found**: 2026-10-28, 2026-10-28, protocol improvements discussion
+- **Plan**: -
+- **Description**: An optional infrastructure step owned by the DevOps role, set in .dev-cycle.json (infra: off, or a tool from the supported list and its path), with every supported tool from the start: Terraform/OpenTofu, Helm, Pulumi, Kustomize, CloudFormation and Bicep. Onboarding offers it when it finds infrastructure files. Pull request CI only checks, never changes: format and validation, lint, security scan (Checkov or Trivy) and the plan or rendered manifests published for review. Apply is tied to the existing gates: the release candidate applies to staging and the promotion to production, always with the user's approval. Credentials stay in the CI provider's secrets (OIDC preferred) and the protocol never handles them. Plans state the infrastructure impact in their DevOps section. Against the known failure modes of agent-written infrastructure (insecure defaults, outdated provider syntax, every developer and agent designing it differently, drift, cost, secrets): a project infrastructure baseline (modules, naming, tags, environments, remote state) recorded in an ADR or the TECH_SPEC and checked at gate 3 and in code review; pinned provider and tool versions, validated against those versions; secret scanning (gitleaks) and the rule that the agent never receives cloud credentials; a cost estimate on the pull request (Infracost CLI); scheduled drift detection, a periodic plan that opens a bug when the real environment differs from the code; and policy as code (OPA/Conftest) for the organization's own rules. Free tools only. Workflow templates for GitHub Actions, GitLab CI, Azure Pipelines and Bitbucket Pipelines.
+
 ## Improvements
 
 ### IMP-002: Adopt the protocol in this repository (dogfooding)
@@ -152,6 +160,12 @@ Each item: `### <ID>: <title>` with the fields `Severity` (bugs: critical, high,
 - **Status**: open
 - **Found**: 2026-10-25, 2026-10-25, platform strategy discussion
 - **Description**: Execution without manual installs, standard-library search, onboarding in three levels, the protocol served by the signed engine and its commercial license.
+
+### EPIC-007: Infrastructure as code
+- **Priority**: medium
+- **Status**: open
+- **Found**: 2026-10-28, 2026-10-28, protocol improvements discussion
+- **Description**: Infrastructure checked in pull request CI and applied through the release gates, with the project's infrastructure as code tool on the main CI providers.
 
 ## Closed
 
