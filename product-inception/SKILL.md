@@ -60,7 +60,7 @@ Rules:
 ### 3. 📈 Business Document (`VISION.md`)
 Create the documents from the templates, then write the vision:
 ```powershell
-python "<skills_root>/product-inception/check_product.py" --init
+& "<skills_root>/dev-cycle-protocol/bin/dev-cycle.ps1" product-inception check_product --init
 ```
 Sections: Problem, Target Users, Value Proposition, Business Model, Success Metrics, Scope, Non-Goals, Risks and Assumptions, Open Questions. Show it to the user; on approval, move on.
 
@@ -98,7 +98,7 @@ Fit each item where it belongs: dependencies first, the MVP lean, later releases
 ```powershell
 python "<skills_root>/dev-cycle-protocol/verify_gate.py" --gate 0
 ```
-It checks both product documents (`check_product.py`), the architecture style, the technical docs, a valid backlog with epics, a valid roadmap with a first release, Spec Kit and the constitution when enabled, and secret hygiene. Open questions are listed: answer them, or the user explicitly accepts them as open.
+It checks both product documents (`check_product`), the architecture style, the technical docs, a valid backlog with epics, a valid roadmap with a first release, Spec Kit and the constitution when enabled, and secret hygiene. Open questions are listed: answer them, or the user explicitly accepts them as open.
 
 End with (in the user's language): *"This is the product baseline. Would you like to adjust anything, or do you approve it so we start with the first items of the roadmap?"* After a short, explicit approval, commit the baseline (`docs(product): product baseline`) and continue with `dev-cycle-protocol` Phase 1 for the first items of the current release (`roadmap.py current`).
 
@@ -112,13 +112,15 @@ The same steps, written **from the code base**: read the README, the technical d
 
 ## ⚙️ Commands
 
+`check_product` runs on the native engine: in sh shells (Linux, macOS, Git Bash) as below, in PowerShell `& "<skills_root>/dev-cycle-protocol/bin/dev-cycle.ps1" product-inception check_product [args]`.
+
 | Task | Command |
 |---|---|
-| Create the missing product documents | `python "<skills_root>/product-inception/check_product.py" --init` |
-| Check the product documents | `python "<skills_root>/product-inception/check_product.py" [--json]` |
+| Create the missing product documents | `"<skills_root>/dev-cycle-protocol/bin/dev-cycle" product-inception check_product --init` |
+| Check the product documents | `"<skills_root>/dev-cycle-protocol/bin/dev-cycle" product-inception check_product [--json]` |
 | Gate 0 | `python "<skills_root>/dev-cycle-protocol/verify_gate.py" --gate 0` |
 
-`check_product.py` reports missing or empty sections, template placeholders or instructions left in place, text not in the configured language and documents over the line limit; open questions are warnings. Configuration (`.dev-cycle.json`):
+`check_product` reports missing or empty sections, template placeholders or instructions left in place, text not in the configured language and documents over the line limit; open questions are warnings. Configuration (`.dev-cycle.json`):
 ```json
 "product": { "vision": "docs/product/VISION.md", "tech_spec": "docs/product/TECH_SPEC.md", "max_lines": 400 }
 ```

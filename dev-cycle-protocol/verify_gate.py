@@ -79,7 +79,10 @@ def check_secret_hygiene(cwd: str) -> list:
 
 # Checkers already translated to the native engine (IMP-005): they run as
 # `dev-cycle <skill> <script>` instead of `python <skill>/<script>.py`.
-ENGINE_CHECKERS = {("architecture-docs", "check_docs.py")}
+ENGINE_CHECKERS = {
+    ("architecture-docs", "check_docs.py"),
+    ("product-inception", "check_product.py"),
+}
 ENGINE_BIN = os.path.join(SKILLS_ROOT, "dev-cycle-protocol", "bin")
 
 

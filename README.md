@@ -186,7 +186,7 @@ Full protocol: [dev-cycle-protocol/SKILL.md](dev-cycle-protocol/SKILL.md).
 
 Phase 0: turns an idea into an approved **product baseline** before the first change. The agent interviews you in rounds of up to five questions, each with a suggested answer, then writes, one at a time and each for your approval: the business document (`docs/product/VISION.md`), the architecture (style, technical docs, founding ADRs), the technical specification (`docs/product/TECH_SPEC.md`), the Spec Kit constitution when used, the backlog of the complete product as epics and items, and the roadmap from the MVP. It ends at gate 0. An existing project can adopt the same baseline: the agent drafts it from the code and asks only what the code cannot answer.
 
-`check_product.py --init` creates the two documents from the templates; `check_product.py` checks sections, placeholders, language and length, with open questions as warnings. Details: [product-inception/SKILL.md](product-inception/SKILL.md).
+`check_product --init` (native engine: `<skills_root>/dev-cycle-protocol/bin/dev-cycle product-inception check_product`, `bin/dev-cycle.ps1` in PowerShell) creates the two documents from the templates; `check_product` checks sections, placeholders, language and length, with open questions as warnings. Details: [product-inception/SKILL.md](product-inception/SKILL.md).
 
 ### plan-memory
 

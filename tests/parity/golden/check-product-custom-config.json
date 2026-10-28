@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ product/vision.md:1: business document not found (create it with check_product.py --init)\n⚠️ docs/product/TECH_SPEC.md:34: 34 lines (limit 20): keep the essentials; details go to the technical docs\n\n❌ product-inception: 1 error(s), 1 warning(s).\n",
+  "stderr": "",
+  "files": {}
+}

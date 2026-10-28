@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ docs/product/VISION.md:1: missing section: ## Problem\n❌ docs/product/VISION.md:1: missing section: ## Business Model\n❌ docs/product/VISION.md:5: text may not be in English: família\n❌ docs/product/VISION.md:15: template instruction left in place\n❌ docs/product/VISION.md:15: template placeholder left in place: [Describe the value]\n⚠️ docs/product/VISION.md:35: 6 open question(s): answer them or let the user accept them at gate 0\n⚠️ docs/product/VISION.md:43: text may not be in English: descrição, está, não\n   ❓ None.\n   ❓ ```\n   ❓ [Inside code]\n   ❓ família\n   ❓ ```\n   ❓ Uma descrição de uma parte que não está pronta.\n⚠️ docs/product/TECH_SPEC.md:31: 3 open question(s): answer them or let the user accept them at gate 0\n   ❓ Which push service?\n   ❓ iPad support?\n   ❓ Offline mode?\n\n❌ product-inception: 5 error(s), 3 warning(s).\n",
+  "stderr": "",
+  "files": {}
+}

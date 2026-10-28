@@ -12,6 +12,7 @@ on:
       - 'Cargo.toml'
       - 'Cargo.lock'
       - 'rust-toolchain.toml'
+      - 'product-inception/templates/**'
       - 'dev-cycle-protocol/bin/engine-version'
   workflow_dispatch:
 

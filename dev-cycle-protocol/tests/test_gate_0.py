@@ -5,9 +5,84 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SCRIPT = os.path.join(os.path.dirname(HERE), "verify_gate.py")
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(HERE)), "product-inception", "tests"))
 
-from test_check_product import TECH_SPEC, VISION  # noqa: E402
+VISION = """# PhotoShare
+
+PhotoShare helps families keep their photos in one private place.
+
+## Problem
+
+Photos are spread over phones and chats; families lose them.
+
+## Target Users
+
+Parents who take most of the family photos (primary) and relatives who view them.
+
+## Value Proposition
+
+One private album the whole family can add to, without social media.
+
+## Business Model
+
+Free up to 10 GB; a family plan for larger storage.
+
+## Success Metrics
+
+- 60% of invited relatives open the album in the first week.
+
+## Scope
+
+- Upload and organize photos.
+- Share albums with the family.
+
+## Non-Goals
+
+- Public profiles.
+
+## Risks and Assumptions
+
+- Storage costs stay below the plan price.
+
+## Open Questions
+
+None.
+"""
+
+TECH_SPEC = """# PhotoShare: Technical Specification
+
+A mobile app with a REST backend, layered architecture.
+
+## Platforms and Stack
+
+Android and iOS (Flutter), Python backend, PostgreSQL.
+
+## Architecture Overview
+
+See TECDOC.md.
+
+## Non-Functional Requirements
+
+### Performance
+
+Uploads of 10 MB finish in under 5 s on 4G.
+
+## Integrations
+
+Object storage for the photos.
+
+## Data
+
+Users, families, albums, photos.
+
+## Constraints
+
+Hosting budget under 200 USD per month.
+
+## Open Questions
+
+None.
+"""
+
 
 BACKLOG = """# Backlog
 
