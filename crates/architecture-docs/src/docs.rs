@@ -344,7 +344,7 @@ fn is_adr_file(name: &str) -> bool {
 }
 
 /// `sorted(os.listdir(path))`.
-fn listdir(path: &str) -> Result<Vec<String>, Crash> {
+pub fn listdir(path: &str) -> Result<Vec<String>, Crash> {
     let entries = std::fs::read_dir(path).map_err(|e| io_crash(&e, std::path::Path::new(path)))?;
     let mut names: Vec<String> = entries
         .filter_map(Result::ok)
@@ -496,6 +496,231 @@ pub fn fenced_lines(lines: &[&str]) -> Vec<bool> {
         }
     }
     flags
+}
+
+/// `ADR_SECTIONS`.
+pub const ADR_SECTIONS: [&str; 4] = [
+    "Context",
+    "Decision",
+    "Alternatives Considered",
+    "Consequences",
+];
+
+/// `RELATIONS`.
+pub const RELATIONS: [(&str, &str); 2] =
+    [("supersedes", "superseded_by"), ("amends", "amended_by")];
+
+/// A pattern with Python's `\s` and `\d` (`str` patterns) in place of the regex crate's.
+pub fn py_regex(pattern: &str) -> Regex {
+    let pattern = pattern
+        .replace(r"\S", &format!("[^{SPACE}]"))
+        .replace(r"\s", &format!("[{SPACE}]"))
+        .replace(r"\d", &format!("[{}]", kernel::py::unicode::digits()));
+    Regex::new(&pattern).expect("valid pattern")
+}
+
+/// `strip_code(text)`: removes fenced code blocks, inline code and URLs (kept as blank lines to
+/// preserve numbering).
+pub fn strip_code(text: &str) -> String {
+    static INLINE: LazyLock<Regex> = LazyLock::new(|| py_regex("`[^`]*`"));
+    static TARGET: LazyLock<Regex> = LazyLock::new(|| py_regex(r"\]\([^)]*\)"));
+    static URL: LazyLock<Regex> = LazyLock::new(|| py_regex(r"https?://\S+"));
+    let lines: Vec<&str> = text.split('\n').collect();
+    let out: Vec<String> = lines
+        .iter()
+        .zip(fenced_lines(&lines))
+        .map(|(line, fenced)| {
+            if fenced {
+                return String::new();
+            }
+            let line = INLINE.replace_all(line, " ");
+            let line = TARGET.replace_all(&line, "]");
+            URL.replace_all(&line, " ").into_owned()
+        })
+        .collect();
+    out.join("\n")
+}
+
+/// `headings(text)`: (line number, level, title) of every Markdown heading outside code blocks.
+pub fn headings(text: &str) -> Vec<(usize, usize, String)> {
+    static HEADING: LazyLock<Regex> = LazyLock::new(|| py_regex(r"^(#{1,6})\s+(.+?)\s*#*\s*$"));
+    let lines: Vec<&str> = text.split('\n').collect();
+    let mut result = Vec::new();
+    for (n, (line, fenced)) in lines.iter().zip(fenced_lines(&lines)).enumerate() {
+        if fenced {
+            continue;
+        }
+        if let Some(m) = HEADING.captures(line) {
+            result.push((n + 1, m[1].len(), m[2].to_string()));
+        }
+    }
+    result
+}
+
+/// `anchors(text)`: the anchors of the headings, with the -1, -2 suffix of duplicates.
+pub fn anchors(text: &str) -> std::collections::HashSet<String> {
+    let mut seen: std::collections::HashMap<String, usize> = std::collections::HashMap::new();
+    let mut result = std::collections::HashSet::new();
+    for (_, _, title) in headings(text) {
+        let base = github_anchor(&title);
+        let count = seen.get(&base).copied().unwrap_or(0);
+        result.insert(if count == 0 {
+            base.clone()
+        } else {
+            format!("{base}-{count}")
+        });
+        seen.insert(base, count + 1);
+    }
+    result
+}
+
+const PT_ACCENTED: &str = "ãõçâêôáéíóúàÃÕÇÂÊÔÁÉÍÓÚÀ";
+const PT_WORDS: [&str; 85] = [
+    "não",
+    "nao",
+    "para",
+    "com",
+    "uma",
+    "umas",
+    "dos",
+    "das",
+    "que",
+    "pelo",
+    "pela",
+    "pelos",
+    "pelas",
+    "são",
+    "sao",
+    "também",
+    "tambem",
+    "está",
+    "esta",
+    "estão",
+    "quando",
+    "então",
+    "entao",
+    "sobre",
+    "entre",
+    "após",
+    "apos",
+    "pois",
+    "como",
+    "mais",
+    "muito",
+    "isso",
+    "este",
+    "esse",
+    "essa",
+    "nosso",
+    "nossa",
+    "deve",
+    "devem",
+    "foi",
+    "foram",
+    "será",
+    "sera",
+    "seja",
+    "sem",
+    "porque",
+    "onde",
+    "ainda",
+    "cada",
+    "todo",
+    "toda",
+    "todos",
+    "todas",
+    "mesmo",
+    "agora",
+    "antes",
+    "depois",
+    "desta",
+    "deste",
+    "nesta",
+    "neste",
+    "numa",
+    "num",
+    "aos",
+    "às",
+    "ao",
+    "nos",
+    "nas",
+    "usuário",
+    "usuario",
+    "arquivo",
+    "arquivos",
+    "pasta",
+    "versão",
+    "versao",
+    "decisão",
+    "decisao",
+    "contexto",
+    "consequências",
+    "correção",
+    "correcao",
+    "implementação",
+    "implementacao",
+    "atualização",
+    "atualizacao",
+];
+/// Too ambiguous on their own.
+const ENGLISH_OK: [&str; 6] = ["com", "as", "a", "e", "o", "nos"];
+
+/// The runs of characters that `pred` accepts.
+fn runs(text: &str, pred: impl Fn(char) -> bool) -> Vec<&str> {
+    let mut out = Vec::new();
+    let mut start = None;
+    for (i, c) in text.char_indices() {
+        match (pred(c), start) {
+            (true, None) => start = Some(i),
+            (false, Some(s)) => {
+                out.push(&text[s..i]);
+                start = None;
+            }
+            _ => {}
+        }
+    }
+    if let Some(s) = start {
+        out.push(&text[s..]);
+    }
+    out
+}
+
+/// `foreign_language_hits(line, language)`: words suggesting the line is not in English. Only
+/// Portuguese is detected for now.
+pub fn foreign_language_hits(line: &str, language: &Value) -> Vec<String> {
+    if language.as_str() != Some("en") {
+        return Vec::new();
+    }
+    let lowered = kernel::py::lower(line);
+    // `[^\W\d_]+`
+    let words = runs(&lowered, |c| {
+        kernel::py::is_word(c) && decimal_value(c).is_none() && c != '_'
+    });
+    // `\b\w*[accented]\w*\b`: the whole words that hold an accented letter.
+    let mut accented: Vec<String> = runs(line, kernel::py::is_word)
+        .into_iter()
+        .filter(|w| w.chars().any(|c| PT_ACCENTED.contains(c)))
+        .map(str::to_string)
+        .collect();
+    let mut marked: Vec<String> = words
+        .into_iter()
+        .filter(|w| PT_WORDS.contains(w) && !ENGLISH_OK.contains(w))
+        .map(str::to_string)
+        .collect();
+    let sorted_set = |v: &mut Vec<String>| {
+        v.sort();
+        v.dedup();
+        v.truncate(5);
+    };
+    if !accented.is_empty() {
+        sorted_set(&mut accented);
+        return accented;
+    }
+    sorted_set(&mut marked);
+    if marked.len() >= 2 {
+        return marked;
+    }
+    Vec::new()
 }
 
 /// `as_id_list(value)`: the first number in each item, as ADR ids.

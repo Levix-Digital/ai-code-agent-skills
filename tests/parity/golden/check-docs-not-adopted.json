@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "ℹ️ project does not use the architecture-docs layout yet (docs/architecture, docs/adr). Nothing to check.\n",
+  "stderr": "",
+  "files": {}
+}

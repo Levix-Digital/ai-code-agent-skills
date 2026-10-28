@@ -1,0 +1,6 @@
+{
+  "exit": 2,
+  "stdout": "",
+  "stderr": "usage: check_docs.py [-h] [--dir DIR] [--include-plans]\n                     [--max-warnings MAX_WARNINGS]\ncheck_docs.py: error: argument --max-warnings: invalid int value: 'ten'\n",
+  "files": {}
+}

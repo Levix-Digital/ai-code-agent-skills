@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ docs/adr/0001-first-store.md:10: H1 must be '# ADR-0001: Use a file store'\n❌ docs/adr/0002-config.md:8: H1 must be '# ADR-0002: Config in JSON'\n❌ docs/adr/0003-database.md:8: H1 must be '# ADR-0003: Database | indexed'\n❌ docs/adr/0004-draft.md:1: ADR frontmatter missing 'id'\n❌ docs/adr/0004-draft.md:1: ADR frontmatter missing 'status'\n❌ docs/adr/0004-draft.md:1: ADR frontmatter missing 'date'\n❌ docs/adr/0004-draft.md:1: ADR 'id' must be an integer\n⚠️ TECDOC.md:10: text may not be in 'en': é\n⚠️ docs/architecture/ingestion.md:1: documented source path no longer exists: src/ingest.rs\n⚠️ docs/architecture/ingestion.md:1: documented source path no longer exists: src/watch.rs\n⚠️ docs/adr/0001-first-store.md:10: missing standard sections: Context, Decision, Alternatives Considered, Consequences\n⚠️ docs/adr/0002-config.md:8: missing standard sections: Context, Decision, Alternatives Considered, Consequences\n⚠️ docs/adr/0003-database.md:8: missing standard sections: Context, Decision, Alternatives Considered, Consequences\n\n❌ architecture-docs: 7 error(s), 6 warning(s).\n",
+  "stderr": "",
+  "files": {}
+}

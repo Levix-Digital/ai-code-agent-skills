@@ -7,7 +7,7 @@ version: v2.10.0
 status: in_progress
 author: Levi Silveira
 created_at: '2026-10-27T18:17:46'
-updated_at: '2026-10-28T12:16:31'
+updated_at: '2026-10-28T14:01:08'
 session_id: null
 tags:
 - rust
@@ -48,7 +48,9 @@ milestones:
   done_at: '2026-10-28'
   by: Levi Silveira
 - name: M8 check_docs
-  done: false
+  done: true
+  done_at: '2026-10-28'
+  by: Levi Silveira
 - name: M9 check_product
   done: false
 - name: M10 check_readme
@@ -149,6 +151,9 @@ status_log:
 - at: '2026-10-28T12:16:31'
   by: Levi Silveira
   note: 'Milestone ''M7 extract_adrs'' completed: Engine 0.6.0: extract_adrs in Rust; kernel gained Python 3.13 tables for \w, lower(), \s and \d (every code point checked); 8 parity cases and a 3,000-run differential fuzz with 0 differences.'
+- at: '2026-10-28T14:01:08'
+  by: Levi Silveira
+  note: 'Milestone ''M8 check_docs'' completed: Engine 0.7.0: check_docs in Rust; verify_gate runs it on the engine; build_index.py removed; _docs.py stays for check_product.py, check_readme.py and constitution.py; 10 parity cases and a 3,600-run differential fuzz with 0 differences.'
 ---
 
 # Translate the scripts to Rust with identical behavior
