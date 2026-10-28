@@ -538,7 +538,9 @@ impl Parser {
         for a in &self.args {
             let inv = a.invocation();
             let lines = textwrap::wrap(&collapse_ws(&a.help), help_width);
-            if clen(&inv) <= action_width {
+            if a.help.is_empty() {
+                help.push_str(&format!("{}{inv}\n", " ".repeat(indent)));
+            } else if clen(&inv) <= action_width {
                 let pad = action_width - clen(&inv);
                 help.push_str(&format!("{}{inv}{}  ", " ".repeat(indent), " ".repeat(pad)));
                 if let Some(first) = lines.first() {

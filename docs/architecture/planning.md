@@ -14,7 +14,7 @@ Owns what gets built and in which order: product inception (Phase 0), the backlo
 
 ## Structure
 
-- `product-inception/`: the Phase 0 process and `check_product.py` for `docs/product/VISION.md` and `TECH_SPEC.md`.
+- `product-inception/`: the Phase 0 process and `check_product` (engine) for `docs/product/VISION.md` and `TECH_SPEC.md`.
 - `plan-memory/backlog.py` and `backlog/`: capture, triage, close and promote items in `docs/BACKLOG.md`; bugs carry a severity, others a priority.
 - `plan-memory/roadmap.py`: releases and item assignment in `docs/ROADMAP.md`.
 - `plan-memory/save_plan.py`, `get_plan.py`, `check_milestone.py`, `update_plan_status.py`, `search_plans.py`, `detect_drift.py`: plans as Markdown with YAML frontmatter in `docs/plans/`, lineage, milestones, search and drift checks.

@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "usage: check_product.py [-h] [--dir DIR] [--init] [--json]\n\nValidate the product documents of Phase 0 (product inception)\n\noptions:\n  -h, --help  show this help message and exit\n  --dir DIR   Project directory (default: current directory)\n  --init      Create the missing documents from the templates\n  --json\n",
+  "stderr": "",
+  "files": {}
+}

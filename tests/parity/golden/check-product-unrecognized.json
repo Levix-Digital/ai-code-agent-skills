@@ -1,0 +1,6 @@
+{
+  "exit": 2,
+  "stdout": "",
+  "stderr": "usage: check_product.py [-h] [--dir DIR] [--init] [--json]\ncheck_product.py: error: unrecognized arguments: --strict\n",
+  "files": {}
+}

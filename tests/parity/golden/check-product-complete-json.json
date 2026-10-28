@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "[\n  {\n    \"kind\": \"vision\",\n    \"file\": \"docs/product/VISION.md\",\n    \"errors\": [],\n    \"warnings\": [],\n    \"open_questions\": []\n  },\n  {\n    \"kind\": \"tech_spec\",\n    \"file\": \"docs/product/TECH_SPEC.md\",\n    \"errors\": [],\n    \"warnings\": [],\n    \"open_questions\": []\n  }\n]\n",
+  "stderr": "",
+  "files": {}
+}

@@ -1,0 +1,94 @@
+[
+  {
+    "name": "check-product-help",
+    "python": "product-inception/check_product.py",
+    "rust": ["product-inception", "check_product"],
+    "args": ["--help"],
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "check-product-unrecognized",
+    "python": "product-inception/check_product.py",
+    "rust": ["product-inception", "check_product"],
+    "args": ["--json", "--strict"],
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "check-product-complete",
+    "python": "product-inception/check_product.py",
+    "rust": ["product-inception", "check_product"],
+    "args": [],
+    "fixture": "product-complete",
+    "git": true
+  },
+  {
+    "name": "check-product-complete-json",
+    "python": "product-inception/check_product.py",
+    "rust": ["product-inception", "check_product"],
+    "args": ["--json"],
+    "fixture": "product-complete",
+    "git": true
+  },
+  {
+    "name": "check-product-missing",
+    "python": "product-inception/check_product.py",
+    "rust": ["product-inception", "check_product"],
+    "args": [],
+    "git": true
+  },
+  {
+    "name": "check-product-init",
+    "python": "product-inception/check_product.py",
+    "rust": ["product-inception", "check_product"],
+    "args": ["--init"],
+    "git": true
+  },
+  {
+    "name": "check-product-init-existing",
+    "python": "product-inception/check_product.py",
+    "rust": ["product-inception", "check_product"],
+    "args": ["--init"],
+    "fixture": "product-complete",
+    "git": true
+  },
+  {
+    "name": "check-product-templates",
+    "python": "product-inception/check_product.py",
+    "rust": ["product-inception", "check_product"],
+    "args": [],
+    "fixture": "product-templates",
+    "git": true
+  },
+  {
+    "name": "check-product-problems",
+    "python": "product-inception/check_product.py",
+    "rust": ["product-inception", "check_product"],
+    "args": [],
+    "fixture": "product-problems",
+    "git": true
+  },
+  {
+    "name": "check-product-problems-json",
+    "python": "product-inception/check_product.py",
+    "rust": ["product-inception", "check_product"],
+    "args": ["--json"],
+    "fixture": "product-problems",
+    "git": true
+  },
+  {
+    "name": "check-product-custom-config",
+    "python": "product-inception/check_product.py",
+    "rust": ["product-inception", "check_product"],
+    "args": ["--dir", "docs/product"],
+    "fixture": "product-config",
+    "git": true
+  },
+  {
+    "name": "check-product-custom-config-init",
+    "python": "product-inception/check_product.py",
+    "rust": ["product-inception", "check_product"],
+    "args": ["--init", "--dir", "{project}"],
+    "fixture": "product-config",
+    "git": true
+  }
+]

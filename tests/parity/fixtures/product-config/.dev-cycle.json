@@ -1,0 +1,7 @@
+{
+  "project_name": "Demo",
+  "product": {
+    "vision": "product/vision.md",
+    "max_lines": 20
+  }
+}

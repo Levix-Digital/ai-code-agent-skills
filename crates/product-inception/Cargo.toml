@@ -1,0 +1,16 @@
+[package]
+name = "product-inception"
+description = "The product-inception skill's commands: the Phase 0 product documents"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+architecture-docs.workspace = true
+kernel.workspace = true
+regex.workspace = true
+
+[lints]
+workspace = true

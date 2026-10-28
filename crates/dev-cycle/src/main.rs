@@ -39,6 +39,11 @@ const COMMANDS: &[(&str, &str, Command)] = &[
         "project_config",
         kernel::project_config::main,
     ),
+    (
+        "product-inception",
+        "check_product",
+        product_inception::check_product::main,
+    ),
 ];
 
 fn main() -> ExitCode {
