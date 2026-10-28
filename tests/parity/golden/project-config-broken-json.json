@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ Expecting ',' delimiter: line 5 column 3 (char 53)\n",
+  "stderr": "",
+  "files": {}
+}

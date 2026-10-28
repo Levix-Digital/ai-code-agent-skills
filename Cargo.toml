@@ -3,7 +3,7 @@ resolver = "3"
 members = ["crates/*"]
 
 [workspace.package]
-version = "0.1.0"
+version = "0.2.0"
 edition = "2024"
 rust-version = "1.97"
 license = "UNLICENSED"
@@ -13,6 +13,8 @@ publish = false
 regex = "1.13"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
+terminal_size = "0.4"
+kernel = { path = "crates/kernel" }
 
 [workspace.lints.rust]
 unsafe_code = "forbid"

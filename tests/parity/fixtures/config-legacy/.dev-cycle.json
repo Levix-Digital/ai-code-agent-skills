@@ -1,0 +1,18 @@
+{
+  "core_path": "lib",
+  "surfaces": ["web"],
+  "plans_dir": "plans",
+  "releases_repo": "acme/rel",
+  "doc_files": {
+    "user_doc": "docs/USER.md",
+    "manual_tests": "qa/MANUAL.md"
+  },
+  "architecture": {
+    "style": "layered",
+    "core_path": "src/domain"
+  },
+  "devops": {
+    "branching": "trunk",
+    "production_branch": "main"
+  }
+}

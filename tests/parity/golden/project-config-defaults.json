@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "⚙️  Project configuration: project\n   Source: defaults (no .dev-cycle.json)\n   Architecture style : not set\n   Core path          : not set\n   Test commands      : auto-detect\n   Branching          : integration: dev -> main (release candidates: on)\n   Releases repo      : not set\n   Backlog            : docs/BACKLOG.md (bugs first: critical, high, medium; other bugs by: next_release)\n   Spec Kit           : off\n   Gedo               : off\n",
+  "stderr": "",
+  "files": {}
+}

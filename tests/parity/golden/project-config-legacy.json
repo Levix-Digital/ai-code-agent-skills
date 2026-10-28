@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "⚙️  Project configuration: project\n   Source: {project}/.dev-cycle.json\n   Architecture style : layered\n   Core path          : src/domain\n   Test commands      : auto-detect\n   Branching          : trunk: main (release candidates: on)\n   Releases repo      : acme/rel\n   Backlog            : docs/BACKLOG.md (bugs first: critical, high, medium; other bugs by: next_release)\n   Spec Kit           : off\n   Gedo               : off\n   ℹ️  Legacy keys in use: core_path, surfaces, releases_repo, plans_dir, doc_files.user_doc, doc_files.manual_tests (run with --migrate --write)\n",
+  "stderr": "",
+  "files": {}
+}

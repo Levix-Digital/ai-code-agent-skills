@@ -248,10 +248,17 @@ impl Normalizer {
     }
 }
 
-/// Python writes `\r\n` on Windows; golden files are recorded with `\n`. Only golden comparisons
-/// fold line endings: Python and Rust on the same machine must match byte for byte.
+/// Python writes `\r\n` and `\\` path separators on Windows; golden files are recorded with `\n`
+/// and `/`. Only golden comparisons fold them: Python and Rust on the same machine must match
+/// byte for byte.
 pub fn fold_newlines(o: &Outcome) -> Outcome {
-    let f = |s: &str| s.replace("\r\n", "\n");
+    let paths = Regex::new(r#"\{(?:project|home|skills)\}[^\s"'`]*"#).expect("valid");
+    let f = |s: &str| {
+        let s = s.replace("\r\n", "\n");
+        paths
+            .replace_all(&s, |c: &regex::Captures| c[0].replace('\\', "/"))
+            .into_owned()
+    };
     Outcome {
         exit: o.exit,
         stdout: f(&o.stdout),
@@ -425,6 +432,20 @@ mod tests {
             stderr: String::new(),
             files: BTreeMap::new(),
         }
+    }
+
+    #[test]
+    fn golden_comparisons_fold_windows_paths() {
+        let o = Outcome {
+            exit: 0,
+            stdout: "Source: {project}\\docs\\a.md\r\nC:\\other\r\n".into(),
+            stderr: String::new(),
+            files: BTreeMap::new(),
+        };
+        assert_eq!(
+            fold_newlines(&o).stdout,
+            "Source: {project}/docs/a.md\nC:\\other\n"
+        );
     }
 
     #[test]

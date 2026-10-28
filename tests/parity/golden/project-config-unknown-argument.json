@@ -1,0 +1,6 @@
+{
+  "exit": 2,
+  "stdout": "",
+  "stderr": "usage: project_config.py [-h] [--dir DIR] [--json] [--validate] [--migrate]\n                         [--write]\nproject_config.py: error: unrecognized arguments: --nope extra\n",
+  "files": {}
+}

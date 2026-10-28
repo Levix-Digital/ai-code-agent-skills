@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "usage: project_config.py [-h] [--dir DIR] [--json] [--validate] [--migrate]\n                         [--write]\n\nShow, validate or migrate the project's .dev-cycle.json\n\noptions:\n  -h, --help  show this help message and exit\n  --dir DIR   Project directory (default: current directory)\n  --json      Print the effective configuration as JSON\n  --validate  Exit with code 1 when the configuration has problems\n  --migrate   Print the file with legacy flat keys moved into sections\n  --write     With --migrate: write the migrated file in place\n",
+  "stderr": "",
+  "files": {}
+}

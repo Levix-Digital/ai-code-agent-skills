@@ -1,0 +1,15 @@
+[package]
+name = "kernel"
+description = "What every command shares: Python-compatible JSON, argument parsing, paths and output, and the project configuration"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+regex.workspace = true
+terminal_size.workspace = true
+
+[lints]
+workspace = true

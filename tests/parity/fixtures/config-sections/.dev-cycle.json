@@ -1,0 +1,30 @@
+{
+  "project_name": "Sample Project",
+  "architecture": {
+    "style": "hexagonal",
+    "core_path": "src/core",
+    "surfaces": ["cli", "api"]
+  },
+  "test_commands": ["cargo test", "pytest -q"],
+  "devops": {
+    "branching": "release-branches",
+    "release_branch_prefix": "rel",
+    "release_candidates": false,
+    "releases_repo": "acme/releases"
+  },
+  "backlog": {
+    "blocking_severities": ["critical"],
+    "bug_deadline": "off"
+  },
+  "speckit": {
+    "enabled": true,
+    "version": "v0.4.1",
+    "script": "sh"
+  },
+  "gedo": {
+    "enabled": true,
+    "feedback": false
+  },
+  "drift_rules": [{"pattern": "TODO", "message": "Ação pendente"}],
+  "custom_tool": {"x": 1.5}
+}

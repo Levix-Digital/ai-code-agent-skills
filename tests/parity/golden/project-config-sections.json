@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "⚙️  Project configuration: Sample Project\n   Source: {project}/.dev-cycle.json\n   Architecture style : hexagonal\n   Core path          : src/core\n   Test commands      : cargo test, pytest -q\n   Branching          : release-branches: main -> rel/X.Y (release candidates: off)\n   Releases repo      : acme/releases\n   Backlog            : docs/BACKLOG.md (bugs first: critical; other bugs by: off)\n   Spec Kit           : v0.4.1 (claude, branches feat/NNN-slug)\n   Gedo               : on (feedback off: docs/gedo-feedback)\n⚠️  unknown top-level key 'custom_tool' (kept as is)\n",
+  "stderr": "",
+  "files": {}
+}
