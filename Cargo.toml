@@ -3,7 +3,7 @@ resolver = "3"
 members = ["crates/*"]
 
 [workspace.package]
-version = "0.10.0"
+version = "0.11.0"
 edition = "2024"
 rust-version = "1.97"
 license = "UNLICENSED"
@@ -21,6 +21,7 @@ architecture-docs = { path = "crates/architecture-docs" }
 product-inception = { path = "crates/product-inception" }
 user-docs = { path = "crates/user-docs" }
 software-design = { path = "crates/software-design" }
+quality-assurance = { path = "crates/quality-assurance" }
 
 [workspace.lints.rust]
 unsafe_code = "forbid"

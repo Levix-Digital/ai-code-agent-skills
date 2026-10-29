@@ -379,7 +379,10 @@ fn snapshot(root: &Path) -> Result<BTreeMap<String, Vec<u8>>, String> {
         for entry in fs::read_dir(&dir).map_err(|e| format!("{}: {e}", dir.display()))? {
             let path = entry.map_err(|e| e.to_string())?.path();
             if path.is_dir() {
-                stack.push(path);
+                // Never compared, and Git may still be changing it in the background.
+                if path.file_name() != Some(".git".as_ref()) {
+                    stack.push(path);
+                }
             } else {
                 let rel = path.strip_prefix(root).map_err(|e| e.to_string())?;
                 let key = rel

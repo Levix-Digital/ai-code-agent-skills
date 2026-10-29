@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ Run v3 has no tests. Start it with: manual_tests.py start-run --run v3 ...\n",
+  "stderr": "",
+  "files": {}
+}

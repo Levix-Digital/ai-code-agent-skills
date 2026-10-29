@@ -1,0 +1,6 @@
+{
+  "project_name": "Demo",
+  "tests": {
+    "manual_tests": "qa/SUITE.md"
+  }
+}

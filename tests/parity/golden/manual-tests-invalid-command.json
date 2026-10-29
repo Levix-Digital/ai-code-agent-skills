@@ -1,0 +1,6 @@
+{
+  "exit": 2,
+  "stdout": "",
+  "stderr": "usage: manual_tests.py [-h] [--dir DIR] [--file FILE] [--run RUN]\n                       [--feature FEATURE] [--id ID] [--all]\n                       {validate,summary,failed,list,start-run,gate}\nmanual_tests.py: error: argument command: invalid choice: 'bogus' (choose from 'validate', 'summary', 'failed', 'list', 'start-run', 'gate')\n",
+  "files": {}
+}
