@@ -1,0 +1,11 @@
+{
+  "devops": {
+    "version_files": [
+      "Cargo.toml",
+      "version.txt",
+      "missing.txt",
+      "notes.md",
+      "package.json"
+    ]
+  }
+}

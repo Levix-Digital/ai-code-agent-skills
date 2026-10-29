@@ -2,3 +2,4 @@
 
 pub mod branching;
 pub mod check_ci_policy;
+pub mod release_status;

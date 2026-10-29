@@ -181,7 +181,7 @@ python "<skills_root>/dev-cycle-protocol/verify_gate.py" --gate 3
 - People approve; the user merges the pull request (or authorizes the agent to merge into the work base). Without a supported platform CLI (`gh`, `glab`), review and answers happen in the chat as before.
 
 ### 8. 🧪 Release Candidate (per release)
-- `devops-release`: bump the version in `devops.version_files` (on a branch, through a pull request), then tag `vX.Y.Z-rc.N` on the candidate branch (`branching.py rc-branch`; with `release-branches`, cut `release/X.Y` from `main` first), follow the pipeline and verify the pre-release (`release_status.py verify`).
+- `devops-release`: bump the version in `devops.version_files` (on a branch, through a pull request), then tag `vX.Y.Z-rc.N` on the candidate branch (`branching.py rc-branch`; with `release-branches`, cut `release/X.Y` from `main` first), follow the pipeline and verify the pre-release (`release_status verify` on the engine).
 - `quality-assurance`: start the candidate's manual test run (`manual_tests start-run --run vX.Y.Z-rc.N ...`) and commit it.
 - Tell the user how to install the candidate and which tests to run.
 
@@ -201,7 +201,7 @@ python "<skills_root>/dev-cycle-protocol/verify_gate.py" --gate 3
   - `integration`: open the pull request from the integration branch into the production branch with the highlights; **the user merges**, and the merge creates the final tag and release (`devops-release` tag-on-merge).
   - `trunk`, `release-branches`: give the user the highlights and the command for the accepted candidate (`gh workflow run promote.yml -f candidate=vX.Y.Z-rc.N`, or Actions > Promote); **the user promotes**, and the promote workflow tags that candidate's commit and creates the release.
 - The agent never merges into the production branch, never runs the promote workflow, never pushes a final tag by hand and never publishes a final release.
-- When the release workflow starts, follow it to the end and verify the published release (`release_status.py verify --tag vX.Y.Z`). If the releases repository is unknown, ask the user.
+- When the release workflow starts, follow it to the end and verify the published release (`"<skills_root>/dev-cycle-protocol/bin/dev-cycle" devops-release release_status verify --tag vX.Y.Z`). If the releases repository is unknown, ask the user.
 - Close the plan milestones and update the plan status (`plan-memory`), mark the release released in the roadmap (`roadmap.py set-release vX.Y.Z --status released`), and record the session (`session-memory`).
 - Report: what was released, the verified release link, and anything left open.
 

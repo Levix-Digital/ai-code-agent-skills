@@ -83,5 +83,82 @@
     "args": ["--dir", "{project}"],
     "fixture": "ci-trunk",
     "git": true
+  },
+  {
+    "name": "release-status-help",
+    "python": "devops-release/release_status.py",
+    "rust": ["devops-release", "release_status"],
+    "args": ["--help"],
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "release-status-invalid-command",
+    "python": "devops-release/release_status.py",
+    "rust": ["devops-release", "release_status"],
+    "args": ["publish"],
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "release-status-version",
+    "python": "devops-release/release_status.py",
+    "rust": ["devops-release", "release_status"],
+    "args": ["version"],
+    "fixture": "release-versions",
+    "git": true
+  },
+  {
+    "name": "release-status-version-dir",
+    "python": "devops-release/release_status.py",
+    "rust": ["devops-release", "release_status"],
+    "args": ["version", "--dir", "{project}/crates"],
+    "fixture": "release-versions",
+    "git": true
+  },
+  {
+    "name": "release-status-version-empty",
+    "python": "devops-release/release_status.py",
+    "rust": ["devops-release", "release_status"],
+    "args": ["version"],
+    "git": true
+  },
+  {
+    "name": "release-status-version-problems",
+    "python": "devops-release/release_status.py",
+    "rust": ["devops-release", "release_status"],
+    "args": ["version"],
+    "fixture": "release-problems",
+    "git": true
+  },
+  {
+    "name": "release-status-version-disagree",
+    "python": "devops-release/release_status.py",
+    "rust": ["devops-release", "release_status"],
+    "args": ["version"],
+    "fixture": "release-disagree",
+    "git": true
+  },
+  {
+    "name": "release-status-next-rc",
+    "python": "devops-release/release_status.py",
+    "rust": ["devops-release", "release_status"],
+    "args": ["next-rc"],
+    "fixture": "release-versions",
+    "git": true
+  },
+  {
+    "name": "release-status-next-rc-problems",
+    "python": "devops-release/release_status.py",
+    "rust": ["devops-release", "release_status"],
+    "args": ["next-rc"],
+    "fixture": "release-problems",
+    "git": true
+  },
+  {
+    "name": "release-status-verify-no-tag",
+    "python": "devops-release/release_status.py",
+    "rust": ["devops-release", "release_status"],
+    "args": ["verify"],
+    "fixture": "release-versions",
+    "git": true
   }
 ]

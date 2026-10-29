@@ -1,0 +1,6 @@
+{
+  "exit": 2,
+  "stdout": "",
+  "stderr": "usage: release_status.py [-h] [--dir DIR] [--tag TAG] [--repo REPO]\n                         [--asset ASSET]\n                         {version,next-rc,verify}\nrelease_status.py: error: argument command: invalid choice: 'publish' (choose from 'version', 'next-rc', 'verify')\n",
+  "files": {}
+}

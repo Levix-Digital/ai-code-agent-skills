@@ -1,0 +1,8 @@
+{
+  "devops": {
+    "version_files": [
+      "Cargo.toml",
+      "version.txt"
+    ]
+  }
+}

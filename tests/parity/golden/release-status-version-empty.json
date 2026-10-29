@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ devops.version_files is empty in .dev-cycle.json\n",
+  "stderr": "",
+  "files": {}
+}

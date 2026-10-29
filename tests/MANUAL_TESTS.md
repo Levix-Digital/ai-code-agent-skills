@@ -306,8 +306,8 @@ How to record a run: in each test of the current run, mark exactly one box of th
 - **Steps**:
   1. Ask the agent to prepare a release.
 - **Expected**:
-  - The version is bumped in `dev` through a pull request and `release_status.py next-rc` gives the tag used.
-  - The `-rc` tag publishes a pre-release (not marked latest) and `release_status.py verify` reports it verified.
+  - The version is bumped in `dev` through a pull request and `release_status next-rc` gives the tag used.
+  - The `-rc` tag publishes a pre-release (not marked latest) and `release_status verify` reports it verified.
   - `manual_tests.py start-run` labels the affected tests with the candidate and the agent explains how to install it and which tests to run.
 - **Result**: [ ] Pass [ ] Fail [ ] Blocked
 - **Notes**:
@@ -335,7 +335,7 @@ How to record a run: in each test of the current run, mark exactly one box of th
 - **Expected**:
   - `verify_gate.py --gate 8 --run <rc>` passes before the pull request is opened.
   - The merge creates the final tag and release without manual steps.
-  - The agent follows the workflow and reports the release verified with `release_status.py verify --tag vX.Y.Z`.
+  - The agent follows the workflow and reports the release verified with `release_status verify --tag vX.Y.Z`.
 - **Result**: [ ] Pass [ ] Fail [ ] Blocked
 - **Notes**:
 
@@ -350,7 +350,7 @@ How to record a run: in each test of the current run, mark exactly one box of th
 - **Expected**:
   - `check_ci_policy` reports no errors; with `tag-on-merge.yml` added it reports that every merge would release.
   - The agent runs gate 8, which ends with "READY FOR THE PROMOTION", gives the release notes highlights and the promote command, and does not run it.
-  - The final tag `vX.Y.Z` points at the candidate's commit, not at the newer head of `main`; the release is published and the agent verifies it with `release_status.py verify --tag vX.Y.Z`.
+  - The final tag `vX.Y.Z` points at the candidate's commit, not at the newer head of `main`; the release is published and the agent verifies it with `release_status verify --tag vX.Y.Z`.
 - **Result**: [ ] Pass [ ] Fail [ ] Blocked
 - **Notes**:
 
