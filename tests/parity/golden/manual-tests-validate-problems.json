@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ line 3: test MT-TOP-001 is not under a '## <Feature>' section\n❌ line 25: test heading must be '### MT-<AREA>-NNN: <title>'\n❌ line 12: MT-sync-1: id must look like MT-<AREA>-NNN (for example MT-SYNC-001)\n❌ line 12: MT-sync-1: missing field 'Expected'\n❌ line 12: MT-sync-1: unknown field 'Bogus'\n❌ line 12: MT-sync-1: more than one result box is marked\n❌ line 19: MT-TOP-001: duplicate id (also at line 3)\n❌ line 19: MT-TOP-001: missing field 'Covers'\n❌ line 19: MT-TOP-001: Result line must be '- **Result** (<run>): [ ] Pass [ ] Fail [ ] Blocked'\n\n❌ manual tests: 3 test(s), 9 problem(s).\n",
+  "stderr": "",
+  "files": {}
+}

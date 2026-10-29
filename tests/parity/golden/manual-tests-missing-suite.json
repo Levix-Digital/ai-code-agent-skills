@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ manual test suite not found at tests/MANUAL_TESTS.md\n",
+  "stderr": "",
+  "files": {}
+}

@@ -50,6 +50,11 @@ const COMMANDS: &[(&str, &str, Command)] = &[
         software_design::check_design::main,
     ),
     ("user-docs", "check_readme", user_docs::check_readme::main),
+    (
+        "quality-assurance",
+        "manual_tests",
+        quality_assurance::manual_tests::main,
+    ),
 ];
 
 fn main() -> ExitCode {

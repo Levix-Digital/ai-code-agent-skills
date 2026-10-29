@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ start-run needs --run and at least one --feature, --id or --all\n",
+  "stderr": "",
+  "files": {}
+}

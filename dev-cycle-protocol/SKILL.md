@@ -160,7 +160,7 @@ python "<skills_root>/dev-cycle-protocol/verify_gate.py" --gate 3
 ### 6. 📚 Documentation
 - Technical docs: edit the affected `docs/architecture` pages in place, add ADRs for decisions, run `"<skills_root>/dev-cycle-protocol/bin/dev-cycle" architecture-docs build_index` and `"<skills_root>/dev-cycle-protocol/bin/dev-cycle" architecture-docs check_docs` (zero errors).
 - README: edit the affected sections with `user-docs` and run `"<skills_root>/dev-cycle-protocol/bin/dev-cycle" user-docs check_readme` (zero errors).
-- Manual tests: curate the suite for the features touched (`quality-assurance`) and run `manual_tests.py validate`.
+- Manual tests: curate the suite for the features touched (`quality-assurance`) and run `"<skills_root>/dev-cycle-protocol/bin/dev-cycle" quality-assurance manual_tests validate`.
 
 ### 7. 🔍 Pull Request and Review (on the platform)
 - Run the `software-design` checklist and `"<skills_root>/dev-cycle-protocol/bin/dev-cycle" software-design check_design`, commit with Conventional Commits, push, and open the pull request **into the work base** (a merge request on GitLab). Its title and description follow principle 9: checked with `_no_ai.py` before posting and read back after.
@@ -182,12 +182,12 @@ python "<skills_root>/dev-cycle-protocol/verify_gate.py" --gate 3
 
 ### 8. 🧪 Release Candidate (per release)
 - `devops-release`: bump the version in `devops.version_files` (on a branch, through a pull request), then tag `vX.Y.Z-rc.N` on the candidate branch (`branching.py rc-branch`; with `release-branches`, cut `release/X.Y` from `main` first), follow the pipeline and verify the pre-release (`release_status.py verify`).
-- `quality-assurance`: start the candidate's manual test run (`manual_tests.py start-run --run vX.Y.Z-rc.N ...`) and commit it.
+- `quality-assurance`: start the candidate's manual test run (`manual_tests start-run --run vX.Y.Z-rc.N ...`) and commit it.
 - Tell the user how to install the candidate and which tests to run.
 
 ### 9. ✅ Acceptance Gate (user)
 - The user installs the candidate and marks each test Pass, Fail or Blocked.
-- Read the results (`manual_tests.py failed --run <rc>`): each failure goes back to Phase 4 as a fix into the candidate branch, followed by a new candidate and run. A failure the user decides to leave for later is captured in the backlog (`backlog.py add --from-failed --run <rc>`).
+- Read the results (`manual_tests failed --run <rc>`): each failure goes back to Phase 4 as a fix into the candidate branch, followed by a new candidate and run. A failure the user decides to leave for later is captured in the backlog (`backlog.py add --from-failed --run <rc>`).
 - The candidate is accepted when the acceptance gate passes:
   ```powershell
   python "<skills_root>/dev-cycle-protocol/verify_gate.py" --gate rc --run vX.Y.Z-rc.N
@@ -263,8 +263,8 @@ The backlog (`backlog.file` in `.dev-cycle.json`, default `docs/BACKLOG.md`) is 
 |---|---|---|
 | `--gate 0` | Before asking for the product baseline approval (Phase 0) | Product documents (`check_product`), architecture style, technical docs, a valid backlog with epics, a valid roadmap with a first release, Spec Kit setup and constitution when enabled, secret hygiene; open questions are listed |
 | `--gate 3 [--accept-open-bugs R]` | Before asking for plan approval | Working tree state, active plan saved (and committed after approval), bugs first (no open blocking bug and no bug not triaged outside a non-bug plan, unless the user accepts with reason `R`), with Spec Kit the spec folder, branch, setup and constitution, secret hygiene |
-| `--gate rc --run R` | Before declaring a candidate accepted | Every manual test of run `R` is Pass (`quality-assurance/manual_tests.py gate`) |
-| `--gate 8 [--run R]` | Before the release gate (the release pull request, or the promotion) | Documentation and manual test files exist; `check_docs`, `check_readme`, `manual_tests.py validate`, `check_design`, `check_ci_policy.py`, `backlog.py validate` and `roadmap.py validate` have no errors (no open bug may be untriaged; open blocking bugs are listed for the release notes, open items of the release are listed for the user); version files agree; the candidate run passed (required with `--run` when release candidates are on); secret hygiene; clean working tree |
+| `--gate rc --run R` | Before declaring a candidate accepted | Every manual test of run `R` is Pass (`quality-assurance manual_tests gate`) |
+| `--gate 8 [--run R]` | Before the release gate (the release pull request, or the promotion) | Documentation and manual test files exist; `check_docs`, `check_readme`, `manual_tests validate`, `check_design`, `check_ci_policy.py`, `backlog.py validate` and `roadmap.py validate` have no errors (no open bug may be untriaged; open blocking bugs are listed for the release notes, open items of the release are listed for the user); version files agree; the candidate run passed (required with `--run` when release candidates are on); secret hygiene; clean working tree |
 
 Secret hygiene flags committed or staged credential files by file name only: exact names (`.env`, `.env.*`, `id_rsa`, `credentials.json`, `.netrc`...), key and certificate stores (`*.pem`, `*.key`, `*.p12`, `*.pfx`, `*.jks`, `*.keystore`, `*.ppk`, `*.env`) and secret-named data files (`*secret*` or `*private_key*` as `.json`, `.yaml`, `.yml`, `.toml`, `.ini`, `.properties`). Source code and docs about secrets are never flagged, nor are templates (`.example`, `.sample`, `.template`, `.dist`).
 

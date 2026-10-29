@@ -1,7 +1,7 @@
 //! Python's `argparse` for the parsers the scripts build: the same option matching (unique
 //! prefixes, `--opt=value`), the same help layout and the same error messages and exit codes.
-//! Grows with the scripts translated; today it covers optional arguments that store a value or
-//! `True`, required or not.
+//! Grows with the scripts translated; today it covers optional arguments that store a value,
+//! append values or store `True`, required or not, and one positional argument with choices.
 
 use super::{repr_str, textwrap};
 use std::collections::BTreeMap;
@@ -13,6 +13,10 @@ pub enum Kind {
     StoreTrue,
     /// `action="store"` with one value.
     Store,
+    /// `action="append"`: every occurrence adds its value.
+    Append,
+    /// A positional argument that takes one value.
+    Positional,
 }
 
 #[derive(Debug, Clone)]
@@ -39,14 +43,20 @@ impl Arg {
 
     /// `-h/--help`, as error messages name the argument.
     fn name(&self) -> String {
+        if self.flags.is_empty() {
+            return self.dest.clone();
+        }
         self.flags.join("/")
     }
 
     fn takes_value(&self) -> bool {
-        self.kind == Kind::Store
+        matches!(self.kind, Kind::Store | Kind::Append)
     }
 
     fn usage(&self) -> String {
+        if self.kind == Kind::Positional {
+            return self.metavar();
+        }
         let first = &self.flags[0];
         let part = if self.takes_value() {
             format!("{first} {}", self.metavar())
@@ -61,6 +71,9 @@ impl Arg {
     }
 
     fn invocation(&self) -> String {
+        if self.kind == Kind::Positional {
+            return self.metavar();
+        }
         if self.takes_value() {
             let mv = self.metavar();
             self.flags
@@ -77,10 +90,16 @@ impl Arg {
 #[derive(Debug, Default)]
 pub struct Parsed {
     values: BTreeMap<String, String>,
+    lists: BTreeMap<String, Vec<String>>,
     flags: BTreeMap<String, bool>,
 }
 
 impl Parsed {
+    /// An `append` argument: its values in order, empty when not given.
+    pub fn list(&self, dest: &str) -> Vec<String> {
+        self.lists.get(dest).cloned().unwrap_or_default()
+    }
+
     /// A `store` argument: `None` when not given.
     pub fn value(&self, dest: &str) -> Option<&str> {
         self.values.get(dest).map(String::as_str)
@@ -182,6 +201,25 @@ impl Parser {
         if let Some(arg) = self.args.last_mut() {
             arg.choices = choices.iter().map(|c| c.to_string()).collect();
         }
+        self
+    }
+
+    /// `add_argument(flag, action="append", default=[])`.
+    pub fn append_option(self, flag: &str, help: &str) -> Self {
+        self.add(flag, Kind::Append, help, false)
+    }
+
+    /// `add_argument(name, choices=choices)`: a positional argument (help text optional).
+    pub fn positional_choice(mut self, name: &str, choices: &[&str], help: &str) -> Self {
+        self.args.push(Arg {
+            flags: Vec::new(),
+            dest: name.to_string(),
+            kind: Kind::Positional,
+            help: help.to_string(),
+            required: true,
+            choices: choices.iter().map(|c| c.to_string()).collect(),
+            int: false,
+        });
         self
     }
 
@@ -318,6 +356,19 @@ impl Parser {
         })
     }
 
+    fn check_choice(&self, arg: &Arg, value: &str) -> Result<(), Exit> {
+        if arg.choices.is_empty() || arg.choices.iter().any(|c| c == value) {
+            return Ok(());
+        }
+        let choices: Vec<String> = arg.choices.iter().map(|c| repr_str(c)).collect();
+        Err(self.error(&format!(
+            "argument {}: invalid choice: {} (choose from {})",
+            arg.name(),
+            repr_str(value),
+            choices.join(", ")
+        )))
+    }
+
     /// `parser.parse_args(argv)`.
     pub fn parse(&self, argv: &[String]) -> Result<Parsed, Exit> {
         // Classify every string first: '--' makes everything after it positional.
@@ -333,14 +384,30 @@ impl Parser {
                 tokens.push(self.classify(s)?);
             }
         }
+        let dashes = argv.iter().position(|s| s == "--");
         let mut parsed = Parsed::default();
         let mut extras: Vec<String> = Vec::new();
         let mut i = 0;
         while i < argv.len() {
             match &tokens[i] {
                 Token::Positional => {
-                    extras.push(argv[i].clone());
-                    i += 1;
+                    let open = self.args.iter().find(|a| {
+                        a.kind == Kind::Positional && !parsed.values.contains_key(&a.dest)
+                    });
+                    // A positional matches `-*A-*`: the `--` next to its value is dropped.
+                    let mut j = i + usize::from(dashes == Some(i));
+                    match open {
+                        Some(arg) if j < argv.len() => {
+                            self.check_choice(arg, &argv[j])?;
+                            parsed.values.insert(arg.dest.clone(), argv[j].clone());
+                            j += 1;
+                            i = j + usize::from(dashes == Some(j));
+                        }
+                        _ => {
+                            extras.push(argv[i].clone());
+                            i += 1;
+                        }
+                    }
                 }
                 Token::Optional { arg: None, .. } => {
                     extras.push(argv[i].clone());
@@ -407,18 +474,17 @@ impl Parser {
                                         repr_str(&value)
                                     )));
                                 }
-                                if !arg.choices.is_empty() && !arg.choices.contains(&value) {
-                                    let choices: Vec<String> =
-                                        arg.choices.iter().map(|c| repr_str(c)).collect();
-                                    return Err(self.error(&format!(
-                                        "argument {}: invalid choice: {} (choose from {})",
-                                        arg.name(),
-                                        repr_str(&value),
-                                        choices.join(", ")
-                                    )));
-                                }
+                                self.check_choice(arg, &value)?;
                                 parsed.values.insert(arg.dest.clone(), value);
                             }
+                            Kind::Append => {
+                                parsed
+                                    .lists
+                                    .entry(arg.dest.clone())
+                                    .or_default()
+                                    .push(value.unwrap_or_default());
+                            }
+                            Kind::Positional => {}
                         }
                     }
                     i = next;
@@ -461,7 +527,15 @@ impl Parser {
 
     fn usage_body(&self, width: usize) -> String {
         let prefix = "usage: ";
-        let parts: Vec<String> = self.args.iter().map(Arg::usage).collect();
+        let is_pos = |a: &&Arg| a.kind == Kind::Positional;
+        let opt_parts: Vec<String> = self
+            .args
+            .iter()
+            .filter(|a| !is_pos(a))
+            .map(Arg::usage)
+            .collect();
+        let pos_parts: Vec<String> = self.args.iter().filter(is_pos).map(Arg::usage).collect();
+        let parts: Vec<String> = opt_parts.iter().chain(&pos_parts).cloned().collect();
         let usage = format!("{} {}", self.prog, parts.join(" "));
         let text_width = width;
         if prefix.len() + clen(&usage) <= text_width {
@@ -495,12 +569,23 @@ impl Parser {
         let prog_len = clen(&self.prog);
         let lines = if (prefix.len() + prog_len) as f64 <= 0.75 * text_width as f64 {
             let indent = " ".repeat(prefix.len() + prog_len + 1);
-            let mut all = vec![self.prog.clone()];
-            all.extend(parts);
-            get_lines(&all, &indent, Some(prefix))
+            let mut first = vec![self.prog.clone()];
+            if opt_parts.is_empty() {
+                first.extend(pos_parts.iter().cloned());
+                get_lines(&first, &indent, Some(prefix))
+            } else {
+                first.extend(opt_parts.iter().cloned());
+                let mut lines = get_lines(&first, &indent, Some(prefix));
+                lines.extend(get_lines(&pos_parts, &indent, None));
+                lines
+            }
         } else {
             let indent = " ".repeat(prefix.len());
-            let lines = get_lines(&parts, &indent, None);
+            let mut lines = get_lines(&parts, &indent, None);
+            if lines.len() > 1 {
+                lines = get_lines(&opt_parts, &indent, None);
+                lines.extend(get_lines(&pos_parts, &indent, None));
+            }
             let mut out = vec![self.prog.clone()];
             out.extend(lines);
             out
@@ -534,27 +619,48 @@ impl Parser {
         let help_position = (action_max + 2).min(max_help_position);
         let help_width = width.saturating_sub(help_position).max(11);
         let action_width = help_position.saturating_sub(indent + 2);
-        help.push_str("options:\n");
-        for a in &self.args {
-            let inv = a.invocation();
-            let lines = textwrap::wrap(&collapse_ws(&a.help), help_width);
-            if a.help.is_empty() {
-                help.push_str(&format!("{}{inv}\n", " ".repeat(indent)));
-            } else if clen(&inv) <= action_width {
-                let pad = action_width - clen(&inv);
-                help.push_str(&format!("{}{inv}{}  ", " ".repeat(indent), " ".repeat(pad)));
-                if let Some(first) = lines.first() {
-                    help.push_str(first);
-                }
+        let positionals: Vec<&Arg> = self
+            .args
+            .iter()
+            .filter(|a| a.kind == Kind::Positional)
+            .collect();
+        let optionals: Vec<&Arg> = self
+            .args
+            .iter()
+            .filter(|a| a.kind != Kind::Positional)
+            .collect();
+        let mut sections = Vec::new();
+        if !positionals.is_empty() {
+            sections.push(("positional arguments:", positionals));
+        }
+        sections.push(("options:", optionals));
+        for (k, (title, args)) in sections.into_iter().enumerate() {
+            if k > 0 {
                 help.push('\n');
-            } else {
-                help.push_str(&format!("{}{inv}\n", " ".repeat(indent)));
-                if let Some(first) = lines.first() {
-                    help.push_str(&format!("{}{first}\n", " ".repeat(help_position)));
-                }
             }
-            for line in lines.iter().skip(1) {
-                help.push_str(&format!("{}{line}\n", " ".repeat(help_position)));
+            help.push_str(title);
+            help.push('\n');
+            for a in args {
+                let inv = a.invocation();
+                let lines = textwrap::wrap(&collapse_ws(&a.help), help_width);
+                if a.help.is_empty() {
+                    help.push_str(&format!("{}{inv}\n", " ".repeat(indent)));
+                } else if clen(&inv) <= action_width {
+                    let pad = action_width - clen(&inv);
+                    help.push_str(&format!("{}{inv}{}  ", " ".repeat(indent), " ".repeat(pad)));
+                    if let Some(first) = lines.first() {
+                        help.push_str(first);
+                    }
+                    help.push('\n');
+                } else {
+                    help.push_str(&format!("{}{inv}\n", " ".repeat(indent)));
+                    if let Some(first) = lines.first() {
+                        help.push_str(&format!("{}{first}\n", " ".repeat(help_position)));
+                    }
+                }
+                for line in lines.iter().skip(1) {
+                    help.push_str(&format!("{}{line}\n", " ".repeat(help_position)));
+                }
             }
         }
         let help = help.trim_matches('\n');

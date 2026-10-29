@@ -1,0 +1,174 @@
+[
+  {
+    "name": "manual-tests-help",
+    "python": "quality-assurance/manual_tests.py",
+    "rust": ["quality-assurance", "manual_tests"],
+    "args": ["--help"],
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "manual-tests-invalid-command",
+    "python": "quality-assurance/manual_tests.py",
+    "rust": ["quality-assurance", "manual_tests"],
+    "args": ["bogus"],
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "manual-tests-no-command",
+    "python": "quality-assurance/manual_tests.py",
+    "rust": ["quality-assurance", "manual_tests"],
+    "args": [],
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "manual-tests-missing-suite",
+    "python": "quality-assurance/manual_tests.py",
+    "rust": ["quality-assurance", "manual_tests"],
+    "args": ["validate"],
+    "git": true
+  },
+  {
+    "name": "manual-tests-validate",
+    "python": "quality-assurance/manual_tests.py",
+    "rust": ["quality-assurance", "manual_tests"],
+    "args": ["validate"],
+    "fixture": "manual-good",
+    "git": true
+  },
+  {
+    "name": "manual-tests-validate-problems",
+    "python": "quality-assurance/manual_tests.py",
+    "rust": ["quality-assurance", "manual_tests"],
+    "args": ["validate"],
+    "fixture": "manual-problems",
+    "git": true
+  },
+  {
+    "name": "manual-tests-summary",
+    "python": "quality-assurance/manual_tests.py",
+    "rust": ["quality-assurance", "manual_tests"],
+    "args": ["summary"],
+    "fixture": "manual-good",
+    "git": true
+  },
+  {
+    "name": "manual-tests-summary-run",
+    "python": "quality-assurance/manual_tests.py",
+    "rust": ["quality-assurance", "manual_tests"],
+    "args": ["summary", "--run", "v1.0.0-rc.1"],
+    "fixture": "manual-good",
+    "git": true
+  },
+  {
+    "name": "manual-tests-failed",
+    "python": "quality-assurance/manual_tests.py",
+    "rust": ["quality-assurance", "manual_tests"],
+    "args": ["failed", "--run", "v1.0.0-rc.1"],
+    "fixture": "manual-good",
+    "git": true
+  },
+  {
+    "name": "manual-tests-failed-none",
+    "python": "quality-assurance/manual_tests.py",
+    "rust": ["quality-assurance", "manual_tests"],
+    "args": ["failed", "--run", "v0.9.0-rc.2"],
+    "fixture": "manual-good",
+    "git": true
+  },
+  {
+    "name": "manual-tests-list-feature",
+    "python": "quality-assurance/manual_tests.py",
+    "rust": ["quality-assurance", "manual_tests"],
+    "args": ["list", "--feature", "sync", "--feature", "Export"],
+    "fixture": "manual-good",
+    "git": true
+  },
+  {
+    "name": "manual-tests-gate-blocked",
+    "python": "quality-assurance/manual_tests.py",
+    "rust": ["quality-assurance", "manual_tests"],
+    "args": ["gate", "--run", "v1.0.0-rc.1"],
+    "fixture": "manual-good",
+    "git": true
+  },
+  {
+    "name": "manual-tests-gate-pass",
+    "python": "quality-assurance/manual_tests.py",
+    "rust": ["quality-assurance", "manual_tests"],
+    "args": ["gate", "--run", "v0.9.0-rc.2"],
+    "fixture": "manual-good",
+    "git": true
+  },
+  {
+    "name": "manual-tests-gate-no-run",
+    "python": "quality-assurance/manual_tests.py",
+    "rust": ["quality-assurance", "manual_tests"],
+    "args": ["gate"],
+    "fixture": "manual-good",
+    "git": true
+  },
+  {
+    "name": "manual-tests-gate-empty-run",
+    "python": "quality-assurance/manual_tests.py",
+    "rust": ["quality-assurance", "manual_tests"],
+    "args": ["gate", "--run", "v3"],
+    "fixture": "manual-good",
+    "git": true
+  },
+  {
+    "name": "manual-tests-start-run",
+    "python": "quality-assurance/manual_tests.py",
+    "rust": ["quality-assurance", "manual_tests"],
+    "args": ["start-run", "--run", "v1.1.0-rc.1", "--feature", "sync", "--id", "MT-EXP-002"],
+    "fixture": "manual-good",
+    "git": true
+  },
+  {
+    "name": "manual-tests-start-run-all",
+    "python": "quality-assurance/manual_tests.py",
+    "rust": ["quality-assurance", "manual_tests"],
+    "args": ["start-run", "--run", "v1.1.0-rc.1", "--all"],
+    "fixture": "manual-good",
+    "git": true
+  },
+  {
+    "name": "manual-tests-start-run-not-found",
+    "python": "quality-assurance/manual_tests.py",
+    "rust": ["quality-assurance", "manual_tests"],
+    "args": ["start-run", "--run", "v1.1.0-rc.1", "--id", "MT-NOPE-001", "--feature", "Nope"],
+    "fixture": "manual-good",
+    "git": true
+  },
+  {
+    "name": "manual-tests-start-run-needs",
+    "python": "quality-assurance/manual_tests.py",
+    "rust": ["quality-assurance", "manual_tests"],
+    "args": ["start-run", "--run", "v1.1.0-rc.1"],
+    "fixture": "manual-good",
+    "git": true
+  },
+  {
+    "name": "manual-tests-start-run-problems",
+    "python": "quality-assurance/manual_tests.py",
+    "rust": ["quality-assurance", "manual_tests"],
+    "args": ["start-run", "--run", "r2", "--all"],
+    "fixture": "manual-problems",
+    "git": true
+  },
+  {
+    "name": "manual-tests-config",
+    "python": "quality-assurance/manual_tests.py",
+    "rust": ["quality-assurance", "manual_tests"],
+    "args": ["summary"],
+    "fixture": "manual-config",
+    "git": true
+  },
+  {
+    "name": "manual-tests-file",
+    "python": "quality-assurance/manual_tests.py",
+    "rust": ["quality-assurance", "manual_tests"],
+    "args": ["list", "--file", "qa/SUITE.md", "--dir", "qa"],
+    "fixture": "manual-config",
+    "git": true
+  }
+]

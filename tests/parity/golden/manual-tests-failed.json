@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ MT-SYNC-002 [Fail] Resolve a conflict  (Sync)\n   Notes: crashed on save the log shows a null path\n❌ MT-EXP-001 [Blocked] Export CSV  (Export)\n   Notes: (no notes)\n",
+  "stderr": "",
+  "files": {}
+}

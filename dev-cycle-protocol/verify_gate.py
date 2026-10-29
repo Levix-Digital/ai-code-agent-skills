@@ -84,6 +84,7 @@ ENGINE_CHECKERS = {
     ("product-inception", "check_product.py"),
     ("software-design", "check_design.py"),
     ("user-docs", "check_readme.py"),
+    ("quality-assurance", "manual_tests.py"),
 }
 ENGINE_BIN = os.path.join(SKILLS_ROOT, "dev-cycle-protocol", "bin")
 

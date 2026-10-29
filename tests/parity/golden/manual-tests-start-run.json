@@ -1,0 +1,8 @@
+{
+  "exit": 0,
+  "stdout": "✅ Run v1.1.0-rc.1 started with 3 test(s): MT-SYNC-001, MT-SYNC-002, MT-EXP-002\n",
+  "stderr": "",
+  "files": {
+    "project/tests/MANUAL_TESTS.md": "# Manual tests\n\n## Sync\n\n### MT-SYNC-001: Sync a folder\n- **Covers**: FR-1\n- **Prerequisites**: an account\n- **Steps**: open the app and sync a folder\n- **Expected**: the folder is synced\n- **Result** (v1.1.0-rc.1): [ ] Pass [ ] Fail [ ] Blocked\n- **Notes**:\n\n### MT-SYNC-002: Resolve a conflict\n- **Covers**: FR-2\n- **Steps**: edit the same file on two machines\n- **Expected**: the conflict is shown\n- **Result** (v1.1.0-rc.1): [ ] Pass [ ] Fail [ ] Blocked\n- **Notes**:\n\n```md\n### not a test: inside a fence\n```\n\n## Export\n\n### MT-EXP-001: Export CSV\n- **Covers**: FR-3\n- **Steps**: export the report\n- **Expected**: a CSV file\n- **Result** (v1.0.0-rc.1): [ ] Pass [ ] Fail [X] Blocked\n- **Notes**:\n\n### MT-EXP-002: Export PDF\n- **Covers**: FR-4\n- **Steps**: export as PDF\n- **Expected**: a PDF file\n- **Result** (v1.1.0-rc.1): [ ] Pass [ ] Fail [ ] Blocked\n- **Notes**:\n"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "📋 Manual tests (all tests): 4 test(s)\n   • Sync: Pass 1, Fail 1\n   • Export: Pass 1, Blocked 1\n   Total: Pass 2, Fail 1, Blocked 1, Not run 0\n",
+  "stderr": "",
+  "files": {}
+}

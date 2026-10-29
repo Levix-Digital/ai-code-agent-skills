@@ -14,8 +14,8 @@ The QA role of the development cycle. It owns **evidence that the software works
 | Plan | Writes the acceptance criteria and the test plan: automated tests to add, manual tests to add, change or remove. |
 | Automated tests | Runs `test_commands` on the native runner; every bug fix gets a regression test; nothing moves on with a failing test. |
 | Documentation | Curates the manual suite for the features the change touched. |
-| Release candidate | Starts a run for the candidate (`manual_tests.py start-run`) with the affected tests. |
-| User acceptance | Reads the user's results (`manual_tests.py failed`), routes failures back to fixes, and gates the candidate (`manual_tests.py gate`). |
+| Release candidate | Starts a run for the candidate (`manual_tests start-run`) with the affected tests. |
+| User acceptance | Reads the user's results (`manual_tests failed`), routes failures back to fixes, and gates the candidate (`manual_tests gate`). |
 | Bugs | Defines what a bug report holds and what proves a bug fixed (see "Bugs"). |
 
 ---
@@ -63,21 +63,21 @@ For a cumulative file that grew by appending scenarios:
 2. Check each one against the current code and CLI help: drop what no longer exists, update what changed.
 3. Merge scenarios that test the same behavior; move to automated tests what can be automated.
 4. Rewrite the rest in the format above with fresh ids and empty results.
-5. Run `manual_tests.py validate` until it reports zero errors.
+5. Run `manual_tests validate` until it reports zero errors.
 
 ---
 
 ## 🚦 Release Candidate Runs
 
 1. When `devops-release` publishes a candidate, start a run with the tests the release must pass: the tests of the features changed since the last release, plus the core smoke tests of the project.
-   ```powershell
-   python "<skills_root>/quality-assurance/manual_tests.py" start-run --run v1.4.0-rc.1 --feature "Installation" --feature "Web Sources"
+   ```sh
+   "<skills_root>/dev-cycle-protocol/bin/dev-cycle" quality-assurance manual_tests start-run --run v1.4.0-rc.1 --feature "Installation" --feature "Web Sources"
    ```
    This labels those tests with the run and clears their boxes. Commit the file so the user tests from it.
 2. The user installs the candidate, runs the tests and marks the results.
 3. The agent reads the results:
-   ```powershell
-   python "<skills_root>/quality-assurance/manual_tests.py" failed --run v1.4.0-rc.1
+   ```sh
+   "<skills_root>/dev-cycle-protocol/bin/dev-cycle" quality-assurance manual_tests failed --run v1.4.0-rc.1
    ```
    Each `Fail` or `Blocked` test, with its notes, becomes a fix in the candidate's branch (`devops-release`: `dev`, `main` or `release/X.Y`, by branching model; with a regression test when it can be automated), followed by a new candidate and a new run (`rc.2`) containing at least the failed tests.
    When the user decides to release without fixing a failure now, capture it in the backlog instead, so it is not lost:
@@ -85,8 +85,8 @@ For a cumulative file that grew by appending scenarios:
    python "<skills_root>/plan-memory/backlog.py" add --from-failed --run v1.4.0-rc.1 [--severity medium]
    ```
 4. The candidate passes the acceptance gate when every test of the run is `Pass`:
-   ```powershell
-   python "<skills_root>/quality-assurance/manual_tests.py" gate --run v1.4.0-rc.1
+   ```sh
+   "<skills_root>/dev-cycle-protocol/bin/dev-cycle" quality-assurance manual_tests gate --run v1.4.0-rc.1
    ```
 
 ---
@@ -106,8 +106,13 @@ Bugs live in the project backlog (`plan-memory/backlog.py`, default `docs/BACKLO
 
 ## ⚙️ Commands
 
+It runs on the native engine. In sh shells (Linux, macOS, Git Bash):
+```sh
+"<skills_root>/dev-cycle-protocol/bin/dev-cycle" quality-assurance manual_tests <command> [--dir <project>] [--file <path>]
+```
+In PowerShell:
 ```powershell
-python "<skills_root>/quality-assurance/manual_tests.py" <command> [--dir <project>] [--file <path>]
+& "<skills_root>/dev-cycle-protocol/bin/dev-cycle.ps1" quality-assurance manual_tests <command> [--dir <project>] [--file <path>]
 ```
 
 | Command | What it does |

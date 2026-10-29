@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "usage: manual_tests.py [-h] [--dir DIR] [--file FILE] [--run RUN]\n                       [--feature FEATURE] [--id ID] [--all]\n                       {validate,summary,failed,list,start-run,gate}\n\nCurated manual test suite: validate, report, start and gate runs\n\npositional arguments:\n  {validate,summary,failed,list,start-run,gate}\n\noptions:\n  -h, --help            show this help message and exit\n  --dir DIR             Project directory (default: current directory)\n  --file FILE           Suite path (default: tests.manual_tests or\n                        tests/MANUAL_TESTS.md)\n  --run RUN             Run label, for example v1.4.0-rc.1\n  --feature FEATURE     Feature (H2 title); repeatable\n  --id ID               Test id; repeatable\n  --all                 With start-run: every test\n",
+  "stderr": "",
+  "files": {}
+}
