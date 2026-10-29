@@ -207,7 +207,7 @@ Keeps the project's planning in its repository: the **backlog**, where work is c
 | Milestones | `check_milestone.py --list` / `--milestone "A" [--notes "..."]` / `--milestone "A" --uncheck` |
 | Change status | `update_plan_status.py --id <plan_id> --status completed [--notes "..."]` |
 | Check a proposal for drift | `detect_drift.py --proposal "<text>"` or `--file proposal.md [--strict]` |
-| Export (JSON or copy) | `export_plan.py --id <plan_id> --format json --output-dir out/` |
+| Export (JSON or copy) | `<skills_root>/dev-cycle-protocol/bin/dev-cycle plan-memory export_plan --id <plan_id> --format json --output-dir out/` (`bin/dev-cycle.ps1` in PowerShell) |
 | Migrate from the old database | `migrate_legacy.py [--source <old_db>] [--dry-run]` |
 
 All scripts are in `<skills_root>/plan-memory/`. They work on the Git repository of the current directory; use `--dir` for another one and `--project` to override the project name.

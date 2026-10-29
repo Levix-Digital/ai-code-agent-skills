@@ -7,7 +7,7 @@ version: v2.10.0
 status: in_progress
 author: Levi Silveira
 created_at: '2026-10-27T18:17:46'
-updated_at: '2026-10-29T22:19:34'
+updated_at: '2026-10-29T22:45:29'
 session_id: null
 tags:
 - rust
@@ -89,7 +89,9 @@ milestones:
   done_at: '2026-10-29'
   by: Levi Silveira
 - name: M18 export_plan
-  done: false
+  done: true
+  done_at: '2026-10-29'
+  by: Levi Silveira
 - name: M19 roadmap
   done: false
 - name: M20 constitution
@@ -206,6 +208,9 @@ status_log:
 - at: '2026-10-29T22:19:34'
   by: Levi Silveira
   note: 'Spec Kit envelope for the rest of the migration (M17 to M43): specs/001-rust-migration (spec, plan, tasks), decided by the user on 2026-10-29.'
+- at: '2026-10-29T22:45:29'
+  by: Levi Silveira
+  note: 'Milestone ''M18 export_plan'' completed: Kernel json::dump keeps Python''s partial output when a value cannot be encoded; 18 parity cases; fuzz 4500 runs 0 differences; gates 0/3/8/rc match main on 51 fixtures; export_plan.py removed (no importers); T018 checked'
 ---
 
 # Translate the scripts to Rust with identical behavior

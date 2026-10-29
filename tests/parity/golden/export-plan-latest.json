@@ -1,0 +1,8 @@
+{
+  "exit": 0,
+  "stdout": "================================================================================\n📦 PLAN EXPORTED\n   • Plan ID : alpha\n   • Format  : MARKDOWN\n   • File    : {project}/alpha.md\n   • Size    : 281 bytes\n================================================================================\n\n",
+  "stderr": "",
+  "files": {
+    "project/alpha.md": "---\nplan_id: alpha\nproject: demo\ntitle: Alpha feature\nversion: 1.2.0\nstatus: in_progress\nauthor: Ana\ncreated_at: 2026-01-05T10:00:00\nbacklog_items: [FEAT-001, 7]\nmilestones:\n- name: M1 Design\n  done: true\n- name: M2 Build\n  done: false\n- M3 Ship\n---\n\n# Alpha\n\nBody with ünïcode.\n"
+  }
+}

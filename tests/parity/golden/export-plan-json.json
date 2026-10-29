@@ -1,0 +1,8 @@
+{
+  "exit": 0,
+  "stdout": "================================================================================\n📦 PLAN EXPORTED\n   • Plan ID : alpha\n   • Format  : JSON\n   • File    : {project}/alpha.json\n   • Size    : 476 bytes\n================================================================================\n\n",
+  "stderr": "",
+  "files": {
+    "project/alpha.json": "{\n  \"plan_id\": \"alpha\",\n  \"project\": \"demo\",\n  \"title\": \"Alpha feature\",\n  \"version\": \"1.2.0\",\n  \"status\": \"in_progress\",\n  \"author\": \"Ana\",\n  \"created_at\": \"2026-01-05T10:00:00\",\n  \"backlog_items\": [\n    \"FEAT-001\",\n    7\n  ],\n  \"milestones\": [\n    {\n      \"name\": \"M1 Design\",\n      \"done\": true\n    },\n    {\n      \"name\": \"M2 Build\",\n      \"done\": false\n    },\n    {\n      \"name\": \"M3 Ship\",\n      \"done\": false\n    }\n  ],\n  \"content\": \"# Alpha\\n\\nBody with ünïcode.\\n\"\n}"
+  }
+}

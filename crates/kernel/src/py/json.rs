@@ -412,6 +412,15 @@ pub fn dumps(value: &Value, indent: Option<usize>) -> Result<String, Crash> {
     Ok(out)
 }
 
+/// `json.dump(value, f, indent=indent, ensure_ascii=False)`: the text written, and the error
+/// that stopped it. Python writes as it encodes, so a value that cannot be encoded leaves
+/// the text before it in the file.
+pub fn dump(value: &Value, indent: Option<usize>) -> (String, Option<Crash>) {
+    let mut out = String::new();
+    let error = write_value(value, indent, 0, &mut out).err();
+    (out, error)
+}
+
 /// A dict key as `json.dumps` writes it.
 fn encode_key(k: &Value) -> Result<String, Crash> {
     Ok(match k {
@@ -463,8 +472,10 @@ fn write_value(
             }
             out.push('{');
             for (n, (k, item)) in map.iter().enumerate() {
+                // A bad key fails before its separator is written, as in Python.
+                let key = encode_key(k)?;
                 separator(n, indent, level + 1, out);
-                encode_str(&encode_key(k)?, out);
+                encode_str(&key, out);
                 out.push_str(": ");
                 write_value(item, indent, level + 1, out)?;
             }

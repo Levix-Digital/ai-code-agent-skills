@@ -323,5 +323,132 @@
     "args": ["--dir", "specs"],
     "fixture": "plans-speckit",
     "git": true
+  },
+  {
+    "name": "export-plan-help",
+    "python": "plan-memory/export_plan.py",
+    "rust": ["plan-memory", "export_plan"],
+    "args": ["--help"],
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "export-plan-bad-format",
+    "python": "plan-memory/export_plan.py",
+    "rust": ["plan-memory", "export_plan"],
+    "args": ["--format", "yaml"],
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "export-plan-missing-value",
+    "python": "plan-memory/export_plan.py",
+    "rust": ["plan-memory", "export_plan"],
+    "args": ["--output"],
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "export-plan-latest",
+    "python": "plan-memory/export_plan.py",
+    "rust": ["plan-memory", "export_plan"],
+    "args": [],
+    "fixture": "plans-list"
+  },
+  {
+    "name": "export-plan-markdown",
+    "python": "plan-memory/export_plan.py",
+    "rust": ["plan-memory", "export_plan"],
+    "args": ["--id", "alpha"],
+    "fixture": "plans-list"
+  },
+  {
+    "name": "export-plan-no-frontmatter",
+    "python": "plan-memory/export_plan.py",
+    "rust": ["plan-memory", "export_plan"],
+    "args": ["--id", "alpha", "--no-frontmatter", "--output", "copy/alpha.md"],
+    "fixture": "plans-list"
+  },
+  {
+    "name": "export-plan-json",
+    "python": "plan-memory/export_plan.py",
+    "rust": ["plan-memory", "export_plan"],
+    "args": ["--id", "alpha", "--format", "json"],
+    "fixture": "plans-list"
+  },
+  {
+    "name": "export-plan-json-output-dir",
+    "python": "plan-memory/export_plan.py",
+    "rust": ["plan-memory", "export_plan"],
+    "args": ["--id", "beta", "--format", "json", "--output-dir", "out/json"],
+    "fixture": "plans-list"
+  },
+  {
+    "name": "export-plan-json-no-frontmatter",
+    "python": "plan-memory/export_plan.py",
+    "rust": ["plan-memory", "export_plan"],
+    "args": ["--id", "gamma", "--format", "json"],
+    "fixture": "plans-list"
+  },
+  {
+    "name": "export-plan-json-milestones",
+    "python": "plan-memory/export_plan.py",
+    "rust": ["plan-memory", "export_plan"],
+    "args": ["--id", "delta", "--format", "json", "--output", "d.json"],
+    "fixture": "plans-list"
+  },
+  {
+    "name": "export-plan-json-dot",
+    "python": "plan-memory/export_plan.py",
+    "rust": ["plan-memory", "export_plan"],
+    "args": ["--id", ".md", "--format", "json"],
+    "fixture": "plans-list"
+  },
+  {
+    "name": "export-plan-speckit",
+    "python": "plan-memory/export_plan.py",
+    "rust": ["plan-memory", "export_plan"],
+    "args": ["--id", "export", "--format", "json"],
+    "fixture": "plans-speckit"
+  },
+  {
+    "name": "export-plan-self",
+    "python": "plan-memory/export_plan.py",
+    "rust": ["plan-memory", "export_plan"],
+    "args": ["--id", "alpha", "--output", "docs/plans/alpha.md"],
+    "fixture": "plans-list"
+  },
+  {
+    "name": "export-plan-not-found",
+    "python": "plan-memory/export_plan.py",
+    "rust": ["plan-memory", "export_plan"],
+    "args": ["--id", "nope"],
+    "fixture": "plans-list"
+  },
+  {
+    "name": "export-plan-no-plans",
+    "python": "plan-memory/export_plan.py",
+    "rust": ["plan-memory", "export_plan"],
+    "args": [],
+    "fixture": "ci-trunk"
+  },
+  {
+    "name": "export-plan-config",
+    "python": "plan-memory/export_plan.py",
+    "rust": ["plan-memory", "export_plan"],
+    "args": ["--format", "json"],
+    "fixture": "plans-config"
+  },
+  {
+    "name": "export-plan-bad-config",
+    "python": "plan-memory/export_plan.py",
+    "rust": ["plan-memory", "export_plan"],
+    "args": ["--output-dir", "exports"],
+    "fixture": "plans-bad-config"
+  },
+  {
+    "name": "export-plan-git",
+    "python": "plan-memory/export_plan.py",
+    "rust": ["plan-memory", "export_plan"],
+    "args": ["--dir", "docs", "--format", "json", "--output", "out/x.json"],
+    "fixture": "plans-speckit",
+    "git": true
   }
 ]

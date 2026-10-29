@@ -1,0 +1,8 @@
+{
+  "exit": 0,
+  "stdout": "================================================================================\n📦 PLAN EXPORTED\n   • Plan ID : one\n   • Format  : JSON\n   • File    : {project}/one.json\n   • Size    : 135 bytes\n================================================================================\n\n",
+  "stderr": "",
+  "files": {
+    "project/one.json": "{\n  \"title\": \"One\",\n  \"status\": \"planned\",\n  \"created_at\": \"2026-03-01\",\n  \"plan_id\": \"one\",\n  \"milestones\": [],\n  \"content\": \"one\\n\"\n}"
+  }
+}

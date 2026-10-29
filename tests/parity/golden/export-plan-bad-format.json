@@ -1,0 +1,6 @@
+{
+  "exit": 2,
+  "stdout": "",
+  "stderr": "usage: export_plan.py [-h] [--id ID] [--project PROJECT] [--dir DIR]\n                      [--output OUTPUT] [--output-dir OUTPUT_DIR]\n                      [--format {markdown,json}] [--no-frontmatter]\nexport_plan.py: error: argument --format: invalid choice: 'yaml' (choose from 'markdown', 'json')\n",
+  "files": {}
+}
