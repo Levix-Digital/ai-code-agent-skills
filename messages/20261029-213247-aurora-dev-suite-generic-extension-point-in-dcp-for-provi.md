@@ -5,9 +5,9 @@ from: aurora-dev-suite
 to: dev-cycle-protocol
 date: 2026-10-29T21:32:47Z
 subject: "Generic extension point in dcp for providers"
-status: seen
+status: done
 reply_to: 
-deferred: "Product decision pending with the project owner: the request conflicts with the current FEAT-007 decision (no extension points in the engine). It will be discussed in the protocol improvements thread; a reply with the decision, backlog ids and target release follows."
+deferred: 
 ---
 
 ## Context
