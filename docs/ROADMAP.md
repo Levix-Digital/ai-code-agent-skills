@@ -26,8 +26,8 @@ Each release: `## vX.Y.Z: <name>` with the fields `Status` (planned, in_progress
 
 ## v2.13.0: Agents and platforms
 - **Status**: planned
-- **Goal**: A role can run in its own context on Claude Code, Codex, Gemini or Copilot, pull request review works on Bitbucket, Azure DevOps and Gitea, and the project's infrastructure as code is checked in CI and applied through the release gates
-- **Items**: FEAT-005, FEAT-001, FEAT-010
+- **Goal**: A role can run in its own context on Claude Code, Codex, Gemini or Copilot with their automatic attribution turned off, pull request review works on Bitbucket, Azure DevOps and Gitea, and the project's infrastructure as code is checked in CI and applied through the release gates
+- **Items**: FEAT-005, IMP-008, FEAT-001, FEAT-010
 
 ## v2.14.0: Protocol served by the engine
 - **Status**: planned
