@@ -7,7 +7,7 @@ date: 2026-10-29T21:32:47Z
 subject: "Generic extension point in dcp for providers"
 status: seen
 reply_to: 
-deferred: 
+deferred: "Product decision pending with the project owner: the request conflicts with the current FEAT-007 decision (no extension points in the engine). It will be discussed in the protocol improvements thread; a reply with the decision, backlog ids and target release follows."
 ---
 
 ## Context
@@ -32,3 +32,5 @@ Not asked: anything about Aurora inside the protocol, platform automation (workf
 ## What closes it
 
 A reply with the decision (adopt, adopt with changes, or not), the backlog ids and the target release in the Dev Cycle Protocol roadmap. Verification we expect: with no provider registered dcp behaves exactly as today; a test provider returning a blocking item makes gate 8 fail with the item's message and pass with the risk accepted; a provider that fails or times out becomes a warning and never blocks the cycle.
+
+> seen (2026-10-29 22:46 UTC): deferred: Product decision pending with the project owner: the request conflicts with the current FEAT-007 decision (no extension points in the engine). It will be discussed in the protocol improvements thread; a reply with the decision, backlog ids and target release follows.
