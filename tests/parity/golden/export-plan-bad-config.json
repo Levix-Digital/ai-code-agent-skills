@@ -1,0 +1,8 @@
+{
+  "exit": 0,
+  "stdout": "================================================================================\n📦 PLAN EXPORTED\n   • Plan ID : zeta\n   • Format  : MARKDOWN\n   • File    : {project}/exports/zeta.md\n   • Size    : 99 bytes\n================================================================================\n\n",
+  "stderr": "⚠️ Could not read '{project}/.dev-cycle.json': Expecting property name enclosed in double quotes: line 1 column 2 (char 1)\n",
+  "files": {
+    "project/exports/zeta.md": "---\ntitle: Zeta\nstatus: unknown\nkind: feature\ncreated_at: 2025-12-31\nbacklog_items: BUG-9\n---\nzeta\n"
+  }
+}

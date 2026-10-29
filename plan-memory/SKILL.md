@@ -143,11 +143,12 @@ python "<skills_root>/plan-memory/search_plans.py" --query "how to implement the
 python "<skills_root>/plan-memory/update_plan_status.py" --id "<plan_id>" --status "completed" --notes "Priority 1 and 2 delivered."
 ```
 
-### 8. Export (`export_plan.py`)
-Copies a plan elsewhere, as JSON or Markdown with or without frontmatter:
-```powershell
-python "<skills_root>/plan-memory/export_plan.py" --id "<plan_id>" --format json --output-dir "out/"
+### 8. Export (`export_plan`)
+Copies a plan elsewhere, as JSON or Markdown with or without frontmatter. `export_plan` runs on the native engine. In sh shells (Linux, macOS, Git Bash):
+```sh
+"<skills_root>/dev-cycle-protocol/bin/dev-cycle" plan-memory export_plan --id "<plan_id>" --format json --output-dir "out/"
 ```
+In PowerShell, run `& "<skills_root>/dev-cycle-protocol/bin/dev-cycle.ps1" plan-memory export_plan [arguments]` instead.
 
 ### 9. Rebuild the Index (`rebuild_index.py`)
 ```powershell

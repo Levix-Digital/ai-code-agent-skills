@@ -1,0 +1,8 @@
+{
+  "exit": 0,
+  "stdout": "================================================================================\n📦 PLAN EXPORTED\n   • Plan ID : gamma\n   • Format  : JSON\n   • File    : {project}/gamma.json\n   • <MASK>\n================================================================================\n\n",
+  "stderr": "",
+  "files": {
+    "project/gamma.json": "{\n  \"plan_id\": \"gamma\",\n  \"status\": \"active\",\n  \"milestones\": [],\n  \"content\": \"# No frontmatter\\n\\nJust text.\\n\"\n}"
+  }
+}

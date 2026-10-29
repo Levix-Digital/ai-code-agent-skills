@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "",
+  "stderr": "❌ Error: target is the plan file itself.\n",
+  "files": {}
+}
