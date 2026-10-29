@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "⚠️ architecture.forbidden_core_imports is empty; list the UI, transport and adapter modules the core must not import\n\n❌ software-design: 0 error(s), 1 warning(s).\n",
+  "stderr": "",
+  "files": {}
+}

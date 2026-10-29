@@ -12,6 +12,7 @@ architecture-docs.workspace = true
 kernel.workspace = true
 product-inception.workspace = true
 user-docs.workspace = true
+software-design.workspace = true
 
 [lints]
 workspace = true

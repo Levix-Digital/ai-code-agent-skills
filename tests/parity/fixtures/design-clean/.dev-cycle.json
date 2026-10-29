@@ -1,0 +1,10 @@
+{
+  "architecture": {
+    "style": "hexagonal",
+    "core_path": "core",
+    "forbidden_core_imports": [
+      "ratatui",
+      "app_cli"
+    ]
+  }
+}

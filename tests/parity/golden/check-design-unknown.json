@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ architecture.style 'spaghetti' is unknown (use one of: hexagonal, layered, mvc, pipeline, modular-monolith, other)\n❌ architecture.core_path 'nope' does not exist\n\n❌ software-design: 2 error(s), 0 warning(s).\n",
+  "stderr": "",
+  "files": {}
+}

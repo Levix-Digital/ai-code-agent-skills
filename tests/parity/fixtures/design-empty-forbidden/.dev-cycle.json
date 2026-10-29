@@ -1,0 +1,6 @@
+{
+  "architecture": {
+    "style": "mvc",
+    "core_path": "core"
+  }
+}

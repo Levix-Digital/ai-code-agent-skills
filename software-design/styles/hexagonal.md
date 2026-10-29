@@ -12,7 +12,7 @@
 - **Composition root**: one place per executable that builds the adapters and wires them into the core.
 
 ## Dependency rule
-Adapters depend on the core; the core depends on nothing outside itself except plain libraries (serialization, math, date handling). List the adapter and framework modules in `architecture.forbidden_core_imports` so `check_design.py` enforces the rule.
+Adapters depend on the core; the core depends on nothing outside itself except plain libraries (serialization, math, date handling). List the adapter and framework modules in `architecture.forbidden_core_imports` so `check_design` enforces the rule.
 
 ## Surface parity and single source of truth
 - Every user action is one core operation (a command or use case). All interfaces dispatch to it; no interface keeps its own rules, filters or shortcuts.

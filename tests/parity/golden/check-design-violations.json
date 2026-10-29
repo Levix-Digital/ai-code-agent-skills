@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ core/view.rs:2: core imports 'ratatui::Frame' (forbidden: 'ratatui')\n❌ core/view.rs:3: core imports 'app_installer::paths::bin_dir' (forbidden: 'app-installer')\n❌ core/lib/app.py:2: core imports 'flask' (forbidden: 'flask')\n❌ core/lib/ui/window.H:1: core imports 'QtWidgets/QWidget' (forbidden: 'QtWidgets')\n\n❌ software-design: 4 error(s), 0 warning(s).\n",
+  "stderr": "",
+  "files": {}
+}

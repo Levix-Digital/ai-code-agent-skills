@@ -14,7 +14,7 @@ The architect role of the development cycle. It owns **how code is structured**:
 | Discovery | Reads `.dev-cycle.json` (`architecture.style`) and the existing structure before proposing anything. |
 | Plan | Writes the design section: module boundaries, interfaces, data flow, error strategy, where each new piece lives. |
 | Implementation | The principles below apply to every line. |
-| Review (before the pull request) | Runs the review checklist and `check_design.py`. |
+| Review (before the pull request) | Runs the review checklist and `check_design`. |
 
 ---
 
@@ -124,7 +124,7 @@ Every plan with code changes includes:
 
 - [ ] Each changed module still has a single responsibility; nothing was added to a file just because it was open.
 - [ ] Business rules are in the core/domain, not in UI, transport or persistence code.
-- [ ] Dependencies point toward the core; `check_design.py` passes.
+- [ ] Dependencies point toward the core; `check_design` passes.
 - [ ] Every new abstraction meets one of the three conditions in "Simplicity First"; no pattern without its problem.
 - [ ] No swallowed errors, no silent fallbacks, no blind unwraps on fallible input.
 - [ ] Names, layout and error types follow the existing conventions.
@@ -136,8 +136,13 @@ Every plan with code changes includes:
 
 ## ⚙️ Commands
 
+It runs on the native engine. In sh shells (Linux, macOS, Git Bash):
+```sh
+"<skills_root>/dev-cycle-protocol/bin/dev-cycle" software-design check_design [--dir <project>] [--strict]
+```
+In PowerShell:
 ```powershell
-python "<skills_root>/software-design/check_design.py" [--dir <project>] [--strict]
+& "<skills_root>/dev-cycle-protocol/bin/dev-cycle.ps1" software-design check_design [--dir <project>] [--strict]
 ```
 
 Checks, from `.dev-cycle.json`:

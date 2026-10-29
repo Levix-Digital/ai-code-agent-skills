@@ -510,12 +510,13 @@ pub const ADR_SECTIONS: [&str; 4] = [
 pub const RELATIONS: [(&str, &str); 2] =
     [("supersedes", "superseded_by"), ("amends", "amended_by")];
 
-/// A pattern with Python's `\s` and `\d` (`str` patterns) in place of the regex crate's.
+/// A pattern with Python's `\s`, `\d` and `\w` (`str` patterns) in place of the regex crate's.
 pub fn py_regex(pattern: &str) -> Regex {
     let pattern = pattern
         .replace(r"\S", &format!("[^{SPACE}]"))
         .replace(r"\s", &format!("[{SPACE}]"))
-        .replace(r"\d", &format!("[{}]", kernel::py::unicode::digits()));
+        .replace(r"\d", &format!("[{}]", kernel::py::unicode::digits()))
+        .replace(r"\w", &format!("[{}]", kernel::py::unicode::word()));
     Regex::new(&pattern).expect("valid pattern")
 }
 

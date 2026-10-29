@@ -1,0 +1,8 @@
+{
+  "architecture": {
+    "style": "layered",
+    "forbidden_core_imports": [
+      "django"
+    ]
+  }
+}

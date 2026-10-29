@@ -13,7 +13,7 @@ use kernel::out::println;
 use kernel::py::argparse::Parser;
 use kernel::py::num::{self, is_space};
 use kernel::py::path::{basename, dirname, exists, isdir, isfile, join, normpath};
-use kernel::py::{Crash, Value, read_text};
+use kernel::py::{Crash, Value, iterate, read_text};
 use regex::Regex;
 
 use crate::build_index::build_index;
@@ -202,20 +202,6 @@ fn check_size(report: &mut Report, path: &str, max_lines: &Value) -> Result<(), 
         )?;
     }
     Ok(())
-}
-
-/// The items of `for x in value`.
-fn iterate(value: &Value) -> Result<Vec<Value>, Crash> {
-    match value {
-        Value::List(items) | Value::Tuple(items) | Value::Set(items) => Ok(items.clone()),
-        Value::Dict(d) => Ok(d.keys().cloned().collect()),
-        Value::Str(s) => Ok(s.chars().map(|c| Value::Str(c.to_string())).collect()),
-        Value::Bytes(b) => Ok(b.iter().map(|x| Value::int(i64::from(*x))).collect()),
-        other => Err(Crash::new(format!(
-            "TypeError: '{}' object is not iterable",
-            other.type_name()
-        ))),
-    }
 }
 
 /// `os.path.join(root, code)` for a value from a page's frontmatter.

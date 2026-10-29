@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "usage: check_design.py [-h] [--dir DIR] [--strict]\n\nCheck the project's architecture style and core dependencies\n\noptions:\n  -h, --help  show this help message and exit\n  --dir DIR   Project directory (default: current directory)\n  --strict    Fail on warnings too\n",
+  "stderr": "",
+  "files": {}
+}
