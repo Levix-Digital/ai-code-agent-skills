@@ -1,0 +1,9 @@
+{
+  "devops": {
+    "branching": "release-branches",
+    "version_files": [
+      "version.txt",
+      "missing.txt"
+    ]
+  }
+}

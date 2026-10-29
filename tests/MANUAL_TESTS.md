@@ -363,7 +363,7 @@ How to record a run: in each test of the current run, mark exactly one box of th
   2. Mark one test of the run as Fail and tell the agent.
   3. After the fix, accept the next candidate and promote it.
 - **Expected**:
-  - The version is bumped in `main`, `release/1.4` is cut from it (`branching.py rc-branch` gives the name) and `v1.4.0-rc.1` is tagged on `release/1.4`.
+  - The version is bumped in `main`, `release/1.4` is cut from it (`branching rc-branch` gives the name) and `v1.4.0-rc.1` is tagged on `release/1.4`.
   - The fix goes by pull request into `release/1.4`, `v1.4.0-rc.2` is tagged there, and the fix is brought forward into `main` by another pull request.
   - The promotion releases `v1.4.0` from `release/1.4`; a later patch of an older line is not marked as the latest release.
 - **Result**: [ ] Pass [ ] Fail [ ] Blocked

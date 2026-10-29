@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "usage: branching.py [-h] [--dir DIR] [--version VERSION] [--json]\n                    {show,rc-branch}\n\nThe project's branching model (devops.branching)\n\npositional arguments:\n  {show,rc-branch}\n\noptions:\n  -h, --help         show this help message and exit\n  --dir DIR          Project directory (default: current directory)\n  --version VERSION  With rc-branch: the version (default:\n                     devops.version_files)\n  --json             With show: print JSON\n",
+  "stderr": "",
+  "files": {}
+}

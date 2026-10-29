@@ -9,7 +9,7 @@ use std::path::Path;
 use std::sync::LazyLock;
 
 use kernel::out::println;
-use kernel::project_config::{ConfigError, load_project_config};
+use kernel::project_config::load_project_config;
 use kernel::py::argparse::Parser;
 use kernel::py::fnmatch::{fnmatch, glob_in};
 use kernel::py::path::{basename, isfile, join};
@@ -317,8 +317,7 @@ pub fn run_checks(project_dir: Option<&str>) -> Result<(Vec<String>, Vec<String>
     let mut warnings = Vec::new();
     let cfg = match load_project_config(project_dir) {
         Ok(c) => c,
-        Err(ConfigError::Invalid(e)) => return Err(Crash::new(format!("ValueError: {e}"))),
-        Err(ConfigError::Crash(c)) => return Err(c),
+        Err(e) => return Err(e.into_crash()),
     };
     let devops = cfg.section("devops");
     let model = match BranchingModel::from_devops(devops) {

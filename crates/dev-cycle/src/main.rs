@@ -65,6 +65,11 @@ const COMMANDS: &[(&str, &str, Command)] = &[
         "release_status",
         devops_release::release_status::main,
     ),
+    (
+        "devops-release",
+        "branching",
+        devops_release::branching::main,
+    ),
 ];
 
 fn main() -> ExitCode {

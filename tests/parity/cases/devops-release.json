@@ -160,5 +160,190 @@
     "args": ["verify"],
     "fixture": "release-versions",
     "git": true
+  },
+  {
+    "name": "branching-help",
+    "python": "devops-release/branching.py",
+    "rust": ["devops-release", "branching"],
+    "args": ["--help"],
+    "fixture": "ci-trunk",
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "branching-invalid-command",
+    "python": "devops-release/branching.py",
+    "rust": ["devops-release", "branching"],
+    "args": ["deploy"],
+    "fixture": "ci-trunk",
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "branching-no-command",
+    "python": "devops-release/branching.py",
+    "rust": ["devops-release", "branching"],
+    "args": [],
+    "fixture": "ci-trunk",
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "branching-show-trunk",
+    "python": "devops-release/branching.py",
+    "rust": ["devops-release", "branching"],
+    "args": ["show"],
+    "fixture": "ci-trunk"
+  },
+  {
+    "name": "branching-show-trunk-json",
+    "python": "devops-release/branching.py",
+    "rust": ["devops-release", "branching"],
+    "args": ["show", "--json"],
+    "fixture": "ci-trunk"
+  },
+  {
+    "name": "branching-show-default",
+    "python": "devops-release/branching.py",
+    "rust": ["devops-release", "branching"],
+    "args": ["show"],
+    "fixture": "ci-custom-token"
+  },
+  {
+    "name": "branching-show-release",
+    "python": "devops-release/branching.py",
+    "rust": ["devops-release", "branching"],
+    "args": ["show"],
+    "fixture": "ci-release-branches"
+  },
+  {
+    "name": "branching-show-release-json",
+    "python": "devops-release/branching.py",
+    "rust": ["devops-release", "branching"],
+    "args": ["show", "--json"],
+    "fixture": "ci-release-branches"
+  },
+  {
+    "name": "branching-show-unknown",
+    "python": "devops-release/branching.py",
+    "rust": ["devops-release", "branching"],
+    "args": ["show"],
+    "fixture": "ci-unknown-model"
+  },
+  {
+    "name": "branching-rc-trunk",
+    "python": "devops-release/branching.py",
+    "rust": ["devops-release", "branching"],
+    "args": ["rc-branch"],
+    "fixture": "ci-trunk"
+  },
+  {
+    "name": "branching-rc-default",
+    "python": "devops-release/branching.py",
+    "rust": ["devops-release", "branching"],
+    "args": ["rc-branch"],
+    "fixture": "ci-custom-token"
+  },
+  {
+    "name": "branching-rc-release-no-files",
+    "python": "devops-release/branching.py",
+    "rust": ["devops-release", "branching"],
+    "args": ["rc-branch"],
+    "fixture": "ci-release-branches"
+  },
+  {
+    "name": "branching-rc-release-version",
+    "python": "devops-release/branching.py",
+    "rust": ["devops-release", "branching"],
+    "args": ["rc-branch", "--version", "1.4.0"],
+    "fixture": "ci-release-branches"
+  },
+  {
+    "name": "branching-rc-release-bad-version",
+    "python": "devops-release/branching.py",
+    "rust": ["devops-release", "branching"],
+    "args": ["rc-branch", "--version", "bad"],
+    "fixture": "ci-release-branches"
+  },
+  {
+    "name": "branching-rc-release-empty-version",
+    "python": "devops-release/branching.py",
+    "rust": ["devops-release", "branching"],
+    "args": ["rc-branch", "--version", ""],
+    "fixture": "branching-release"
+  },
+  {
+    "name": "branching-rc-release-unicode",
+    "python": "devops-release/branching.py",
+    "rust": ["devops-release", "branching"],
+    "args": ["rc-branch", "--version", "v٣.٤.٥-rc.1"],
+    "fixture": "ci-release-branches"
+  },
+  {
+    "name": "branching-show-custom",
+    "python": "devops-release/branching.py",
+    "rust": ["devops-release", "branching"],
+    "args": ["show"],
+    "fixture": "branching-release"
+  },
+  {
+    "name": "branching-show-custom-json",
+    "python": "devops-release/branching.py",
+    "rust": ["devops-release", "branching"],
+    "args": ["show", "--json"],
+    "fixture": "branching-release"
+  },
+  {
+    "name": "branching-rc-custom",
+    "python": "devops-release/branching.py",
+    "rust": ["devops-release", "branching"],
+    "args": ["rc-branch"],
+    "fixture": "branching-release"
+  },
+  {
+    "name": "branching-show-odd-json",
+    "python": "devops-release/branching.py",
+    "rust": ["devops-release", "branching"],
+    "args": ["show", "--json"],
+    "fixture": "branching-odd"
+  },
+  {
+    "name": "branching-rc-odd",
+    "python": "devops-release/branching.py",
+    "rust": ["devops-release", "branching"],
+    "args": ["rc-branch"],
+    "fixture": "branching-odd"
+  },
+  {
+    "name": "branching-rc-bad-version-file",
+    "python": "devops-release/branching.py",
+    "rust": ["devops-release", "branching"],
+    "args": ["rc-branch"],
+    "fixture": "branching-badver"
+  },
+  {
+    "name": "branching-show-numeric-json",
+    "python": "devops-release/branching.py",
+    "rust": ["devops-release", "branching"],
+    "args": ["show", "--json"],
+    "fixture": "branching-numeric"
+  },
+  {
+    "name": "branching-rc-numeric",
+    "python": "devops-release/branching.py",
+    "rust": ["devops-release", "branching"],
+    "args": ["rc-branch", "--version", "10.20.3"],
+    "fixture": "branching-numeric"
+  },
+  {
+    "name": "branching-ignored-options",
+    "python": "devops-release/branching.py",
+    "rust": ["devops-release", "branching"],
+    "args": ["rc-branch", "--json", "--dir", "."],
+    "fixture": "ci-trunk"
+  },
+  {
+    "name": "branching-dir-option",
+    "python": "devops-release/branching.py",
+    "rust": ["devops-release", "branching"],
+    "args": ["show", "--dir", "sub"],
+    "fixture": "ci-trunk"
   }
 ]

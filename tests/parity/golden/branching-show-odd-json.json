@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "{\n  \"model\": \"integration\",\n  \"long_lived\": [\n    5,\n    true\n  ],\n  \"work\": \"feat/, fix/, docs/, ... from 'True', pull requests into 'True'\",\n  \"pull_requests_into\": [\n    true,\n    5\n  ],\n  \"release_candidate\": \"vX.Y.Z-rc.N tagged on 'True' after the version bump\",\n  \"gate\": \"merge\",\n  \"release_gate\": \"the user merges the pull request 'True' -> '5'; tag-on-merge creates vX.Y.Z and the release\",\n  \"hotfix\": \"hotfix/<slug> from '5', pull request into '5', then '5' merged back into 'True'\"\n}\n",
+  "stderr": "",
+  "files": {}
+}

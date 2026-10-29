@@ -313,7 +313,7 @@ The DevOps role. Each project chooses its branching model (`devops.branching`), 
 
 | Task | Command |
 |---|---|
-| The project's branching model | `branching.py show` / `rc-branch` |
+| The project's branching model | `<skills_root>/dev-cycle-protocol/bin/dev-cycle devops-release branching show` / `rc-branch` (`bin/dev-cycle.ps1` in PowerShell) |
 | Check the workflows against the policy | `<skills_root>/dev-cycle-protocol/bin/dev-cycle devops-release check_ci_policy [--dir .]` (`bin/dev-cycle.ps1` in PowerShell) |
 | Version in the version files | `<skills_root>/dev-cycle-protocol/bin/dev-cycle devops-release release_status version` (`bin/dev-cycle.ps1` in PowerShell) |
 | Next release candidate tag | `release_status next-rc` |

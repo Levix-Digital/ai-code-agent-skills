@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ devops.branching 'gitflow' is not one of: integration, trunk, release-branches\n",
+  "stderr": "",
+  "files": {}
+}

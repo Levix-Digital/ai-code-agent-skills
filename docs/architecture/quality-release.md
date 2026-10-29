@@ -16,7 +16,7 @@ Owns how code is structured and checked, how it is tested and how it is released
 
 - `software-design/`: universal principles, style guides and `check_design` on the engine (style, core path, forbidden core imports).
 - `quality-assurance/`: `manual_tests` on the engine validates `tests/MANUAL_TESTS.md`, starts release candidate runs and gates them.
-- `devops-release/branching.py`: the `integration`, `trunk` and `release-branches` models; `check_ci_policy` on the engine: workflow policy; `release_status` on the engine: versions, next candidate tag and release verification; `templates/`: CI, tag-on-merge, promote and release workflows.
+- `branching` on the engine: the `integration`, `trunk` and `release-branches` models; `check_ci_policy` on the engine: workflow policy; `release_status` on the engine: versions, next candidate tag and release verification; `templates/`: CI, tag-on-merge, promote and release workflows.
 
 ## Behavior
 

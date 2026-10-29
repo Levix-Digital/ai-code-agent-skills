@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ version.txt: 'next' is not a semantic version\n❌ missing.txt: file not found\n",
+  "stderr": "",
+  "files": {}
+}

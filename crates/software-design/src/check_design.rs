@@ -7,7 +7,7 @@ use std::sync::LazyLock;
 
 use architecture_docs::docs::py_regex;
 use kernel::out::println;
-use kernel::project_config::{ARCHITECTURE_STYLES, ConfigError, load_project_config};
+use kernel::project_config::{ARCHITECTURE_STYLES, load_project_config};
 use kernel::py::argparse::Parser;
 use kernel::py::num::strip;
 use kernel::py::path::{isdir, join};
@@ -238,8 +238,7 @@ fn run_checks(project_dir: Option<&str>) -> Result<(Vec<String>, Vec<String>), C
     let (mut errors, mut warnings) = (Vec::new(), Vec::new());
     let cfg = match load_project_config(project_dir) {
         Ok(c) => c,
-        Err(ConfigError::Invalid(e)) => return Err(Crash::new(format!("ValueError: {e}"))),
-        Err(ConfigError::Crash(c)) => return Err(c),
+        Err(e) => return Err(e.into_crash()),
     };
     let arch = cfg.section("architecture");
 

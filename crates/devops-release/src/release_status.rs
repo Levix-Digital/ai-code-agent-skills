@@ -7,7 +7,7 @@ use std::process::Command;
 use std::sync::LazyLock;
 
 use kernel::out::println;
-use kernel::project_config::{ConfigError, ProjectConfig, load_project_config};
+use kernel::project_config::{ProjectConfig, load_project_config};
 use kernel::py::argparse::Parser;
 use kernel::py::fnmatch::fnmatch_name;
 use kernel::py::json::{self, LoadError};
@@ -407,8 +407,7 @@ fn run(argv: &[String]) -> Result<u8, Crash> {
     };
     let cfg = match load_project_config(args.value("dir")) {
         Ok(c) => c,
-        Err(ConfigError::Invalid(e)) => return Err(Crash::new(format!("ValueError: {e}"))),
-        Err(ConfigError::Crash(c)) => return Err(c),
+        Err(e) => return Err(e.into_crash()),
     };
     let command = args.value("command").unwrap_or_default();
 

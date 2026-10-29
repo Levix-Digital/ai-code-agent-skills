@@ -1,7 +1,7 @@
 # Test workflow: every pull request into a branch that receives them, and every push to the
 # branch work is merged into. Replace the lint step with the stack's linters and static analysis
 # and the test step with the project's test_commands.
-# Branches by devops.branching (`branching.py show`):
+# Branches by devops.branching (`branching show` on the engine):
 #   integration       pull_request [dev, main]            push [dev]
 #   trunk             pull_request [main]                 push [main]
 #   release-branches  pull_request [main, 'release/**']   push [main, 'release/**']

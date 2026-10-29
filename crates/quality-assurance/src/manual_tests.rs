@@ -440,13 +440,6 @@ fn test_id(id: &str) -> bool {
             .all(|c| kernel::py::num::decimal_value(c).is_some())
 }
 
-fn config_crash(e: ConfigError) -> Crash {
-    match e {
-        ConfigError::Invalid(e) => Crash::new(format!("ValueError: {e}")),
-        ConfigError::Crash(c) => c,
-    }
-}
-
 /// `open(path, encoding="utf-8", newline="").read()`: no newline translation.
 fn read_raw(path: &Path) -> Result<String, Crash> {
     let bytes = std::fs::read(path).map_err(|e| kernel::py::io_crash(&e, path))?;
@@ -463,7 +456,7 @@ pub fn load_suite(
     project_dir: Option<&str>,
     file: Option<&str>,
 ) -> Result<Result<Suite, String>, Crash> {
-    let cfg = load_project_config(project_dir).map_err(config_crash)?;
+    let cfg = load_project_config(project_dir).map_err(ConfigError::into_crash)?;
     let configured = cfg.section("tests").get_or_none("manual_tests");
     let rel = match file.filter(|f| !f.is_empty()) {
         Some(f) => Value::str(f),
