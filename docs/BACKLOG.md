@@ -201,6 +201,14 @@ Each item: `### <ID>: <title>` with the fields `Severity` (bugs: critical, high,
 - **Plan**: -
 - **Description**: Criticality 3 of the agent gaps. Agents refactor outside the plan and pull requests grow. The merge gate compares the diff with the files and modules the plan's milestones declare (allowed_scopes of IMP-004): changes outside them need a plan update or become backlog items. A pull request size limit in the configuration warns and asks to split.
 
+### IMP-008: Attribution settings for every supported coding agent
+- **Priority**: medium
+- **Epic**: EPIC-005
+- **Status**: open
+- **Found**: 2026-10-29, 2026-10-29, Aurora Dev Suite question on the agent settings folder in the diagnosis
+- **Plan**: -
+- **Description**: The diagnosis checks automatic attribution only for Claude Code: set-attribution writes .claude/settings.json and the protocol keeps that file in the repository, so every clone, including cloud sessions, starts with attribution off. Committing it serves one agent and ties the project to none: other agents ignore the folder. Do the same for the other supported agents (Codex, Gemini, Copilot): find which of them add attribution on their own (commit trailers, author or committer, pull request footers, session links) and have a project-level setting that turns it off; for each one that does, the diagnosis checks it, set-attribution writes it and protocol_files keeps it in the repository, like Claude Code. Agents without such a setting rely on the principle 9 guard and the gate 8 check of commits. A shared project settings file is committed; personal ones (such as .claude/settings.local.json) stay out. Settings folders are kept in the repository on purpose, so a project that excludes them locally gets the diagnosis item until they are committed.
+
 ## Adjustments
 
 ### ADJ-001: Engine binary renamed to dcp
