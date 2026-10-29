@@ -1,6 +1,6 @@
 {
   "exit": 0,
-  "stdout": "================================================================================\n📦 PLAN EXPORTED\n   • Plan ID : beta\n   • Format  : JSON\n   • File    : {project}/out/json/beta.json\n   • Size    : 330 bytes\n================================================================================\n\n",
+  "stdout": "================================================================================\n📦 PLAN EXPORTED\n   • Plan ID : beta\n   • Format  : JSON\n   • File    : {project}/out/json/beta.json\n   • <MASK>\n================================================================================\n\n",
   "stderr": "",
   "files": {
     "project/out/json/beta.json": "{\n  \"title\": \"Beta fix\",\n  \"kind\": \"bug\",\n  \"status\": \"completed\",\n  \"created_at\": \"2026-02-01\",\n  \"supersedes\": \"alpha\",\n  \"superseded_by\": \"gamma\",\n  \"milestones\": [\n    {\n      \"name\": \"one\",\n      \"done\": false\n    },\n    {\n      \"name\": \"two\",\n      \"done\": false\n    }\n  ],\n  \"plan_id\": \"beta\",\n  \"content\": \"Beta body.\\n\"\n}"

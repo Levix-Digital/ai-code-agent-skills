@@ -1,6 +1,6 @@
 {
   "exit": 0,
-  "stdout": "================================================================================\n📦 PLAN EXPORTED\n   • Plan ID : alpha\n   • Format  : MARKDOWN\n   • File    : {project}/copy/alpha.md\n   • Size    : 30 bytes\n================================================================================\n\n",
+  "stdout": "================================================================================\n📦 PLAN EXPORTED\n   • Plan ID : alpha\n   • Format  : MARKDOWN\n   • File    : {project}/copy/alpha.md\n   • <MASK>\n================================================================================\n\n",
   "stderr": "",
   "files": {
     "project/copy/alpha.md": "# Alpha\n\nBody with ünïcode.\n"

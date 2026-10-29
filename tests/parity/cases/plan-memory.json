@@ -364,49 +364,56 @@
     "python": "plan-memory/export_plan.py",
     "rust": ["plan-memory", "export_plan"],
     "args": ["--id", "alpha", "--no-frontmatter", "--output", "copy/alpha.md"],
-    "fixture": "plans-list"
+    "fixture": "plans-list",
+    "masks": ["Size    : [0-9]+ bytes"]
   },
   {
     "name": "export-plan-json",
     "python": "plan-memory/export_plan.py",
     "rust": ["plan-memory", "export_plan"],
     "args": ["--id", "alpha", "--format", "json"],
-    "fixture": "plans-list"
+    "fixture": "plans-list",
+    "masks": ["Size    : [0-9]+ bytes"]
   },
   {
     "name": "export-plan-json-output-dir",
     "python": "plan-memory/export_plan.py",
     "rust": ["plan-memory", "export_plan"],
     "args": ["--id", "beta", "--format", "json", "--output-dir", "out/json"],
-    "fixture": "plans-list"
+    "fixture": "plans-list",
+    "masks": ["Size    : [0-9]+ bytes"]
   },
   {
     "name": "export-plan-json-no-frontmatter",
     "python": "plan-memory/export_plan.py",
     "rust": ["plan-memory", "export_plan"],
     "args": ["--id", "gamma", "--format", "json"],
-    "fixture": "plans-list"
+    "fixture": "plans-list",
+    "masks": ["Size    : [0-9]+ bytes"]
   },
   {
     "name": "export-plan-json-milestones",
     "python": "plan-memory/export_plan.py",
     "rust": ["plan-memory", "export_plan"],
     "args": ["--id", "delta", "--format", "json", "--output", "d.json"],
-    "fixture": "plans-list"
+    "fixture": "plans-list",
+    "masks": ["Size    : [0-9]+ bytes"]
   },
   {
     "name": "export-plan-json-dot",
     "python": "plan-memory/export_plan.py",
     "rust": ["plan-memory", "export_plan"],
     "args": ["--id", ".md", "--format", "json"],
-    "fixture": "plans-list"
+    "fixture": "plans-list",
+    "masks": ["Size    : [0-9]+ bytes"]
   },
   {
     "name": "export-plan-speckit",
     "python": "plan-memory/export_plan.py",
     "rust": ["plan-memory", "export_plan"],
     "args": ["--id", "export", "--format", "json"],
-    "fixture": "plans-speckit"
+    "fixture": "plans-speckit",
+    "masks": ["Size    : [0-9]+ bytes"]
   },
   {
     "name": "export-plan-self",
@@ -434,7 +441,8 @@
     "python": "plan-memory/export_plan.py",
     "rust": ["plan-memory", "export_plan"],
     "args": ["--format", "json"],
-    "fixture": "plans-config"
+    "fixture": "plans-config",
+    "masks": ["Size    : [0-9]+ bytes"]
   },
   {
     "name": "export-plan-bad-config",
@@ -449,6 +457,7 @@
     "rust": ["plan-memory", "export_plan"],
     "args": ["--dir", "docs", "--format", "json", "--output", "out/x.json"],
     "fixture": "plans-speckit",
-    "git": true
+    "git": true,
+    "masks": ["Size    : [0-9]+ bytes"]
   }
 ]

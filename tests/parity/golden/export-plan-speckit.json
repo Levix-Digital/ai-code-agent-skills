@@ -1,6 +1,6 @@
 {
   "exit": 0,
-  "stdout": "================================================================================\n📦 PLAN EXPORTED\n   • Plan ID : export\n   • Format  : JSON\n   • File    : {project}/export.json\n   • Size    : 491 bytes\n================================================================================\n\n",
+  "stdout": "================================================================================\n📦 PLAN EXPORTED\n   • Plan ID : export\n   • Format  : JSON\n   • File    : {project}/export.json\n   • <MASK>\n================================================================================\n\n",
   "stderr": "",
   "files": {
     "project/export.json": "{\n  \"plan_id\": \"export\",\n  \"project\": \"Demo App\",\n  \"title\": \"Export answers\",\n  \"version\": \"v1.3.0\",\n  \"status\": \"active\",\n  \"author\": \"Ana\",\n  \"created_at\": \"2026-03-02\",\n  \"updated_at\": \"2026-03-04T09:00:00\",\n  \"spec_dir\": \"specs/001-export/\",\n  \"backlog_items\": [\n    \"FEAT-004\"\n  ],\n  \"milestones\": [\n    {\n      \"name\": \"Spec\",\n      \"done\": true\n    },\n    {\n      \"name\": \"Build\",\n      \"done\": false\n    }\n  ],\n  \"content\": \"# Export answers\\n\\nEnvelope of the Spec Kit folder.\\n\"\n}"
