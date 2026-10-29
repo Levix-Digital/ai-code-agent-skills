@@ -7,7 +7,7 @@ version: v2.10.0
 status: in_progress
 author: Levi Silveira
 created_at: '2026-10-27T18:17:46'
-updated_at: '2026-10-29T17:43:13'
+updated_at: '2026-10-29T22:19:34'
 session_id: null
 tags:
 - rust
@@ -18,6 +18,7 @@ superseded_by: null
 parent_plan_id: null
 backlog_items:
 - IMP-005
+spec_dir: specs/001-rust-migration
 milestones:
 - name: M1 Rust workspace parity harness and CI
   done: true
@@ -197,6 +198,9 @@ status_log:
 - at: '2026-10-29T17:43:13'
   by: Levi Silveira
   note: 'Milestone ''M16 list_plans'' completed: New plan-memory crate with the plan store (PlanStore, read_plan, normalize_project, progress_bar); kernel upper(); 19 parity cases; fuzz 4500 runs 0 differences; gates 0/3/8/rc match main on 50 fixtures; list_plans.py removed (no importers left)'
+- at: '2026-10-29T22:19:34'
+  by: Levi Silveira
+  note: 'Spec Kit envelope for the rest of the migration (M17 to M43): specs/001-rust-migration (spec, plan, tasks), decided by the user on 2026-10-29.'
 ---
 
 # Translate the scripts to Rust with identical behavior
