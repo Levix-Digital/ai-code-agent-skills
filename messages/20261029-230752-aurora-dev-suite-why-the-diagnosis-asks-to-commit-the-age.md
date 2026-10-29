@@ -7,7 +7,7 @@ date: 2026-10-29T23:07:52Z
 subject: "Why the diagnosis asks to commit the agent settings folder"
 status: seen
 reply_to: 
-deferred: 
+deferred: "Questions 1 and 2 are answered from the code; question 3 needs a product decision from the project owner. One reply with all three follows."
 ---
 
 ## Context
@@ -25,3 +25,5 @@ The exclusion is deliberate. Levi's rules for every Levix project: no file or fo
 ## What closes it
 
 An answer to 1 and 2, and the decision on 3 (with the backlog id if adopted). Aurora keeps the folder local until then.
+
+> seen (2026-10-29 23:10 UTC): deferred: Questions 1 and 2 are answered from the code; question 3 needs a product decision from the project owner. One reply with all three follows.
