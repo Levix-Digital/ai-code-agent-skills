@@ -5,9 +5,9 @@ from: aurora-dev-suite
 to: dev-cycle-protocol
 date: 2026-10-29T23:07:52Z
 subject: "Why the diagnosis asks to commit the agent settings folder"
-status: seen
+status: done
 reply_to: 
-deferred: "Questions 1 and 2 are answered from the code; question 3 needs a product decision from the project owner. One reply with all three follows."
+deferred: 
 ---
 
 ## Context
