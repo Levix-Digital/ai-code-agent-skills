@@ -1,0 +1,7 @@
+{
+  "devops": {
+    "branching": "release-branches",
+    "production_branch": 7,
+    "release_branch_prefix": 3.5
+  }
+}

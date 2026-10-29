@@ -11,7 +11,7 @@ use architecture_docs::docs::{
     headings, strip_code,
 };
 use kernel::out::println;
-use kernel::project_config::{ConfigError, load_project_config};
+use kernel::project_config::load_project_config;
 use kernel::py::argparse::Parser;
 use kernel::py::num::{self, decimal_value, is_space, strip};
 use kernel::py::path::{basename, dirname, exists, isabs, isfile, join, normpath};
@@ -406,8 +406,7 @@ fn check_text(path: &str, text: &str, max_lines: &str) -> CheckResult {
 fn run_check(project_dir: Option<&str>, file: Option<&str>) -> Result<CheckResult, Crash> {
     let cfg = match load_project_config(project_dir) {
         Ok(c) => c,
-        Err(ConfigError::Invalid(e)) => return Err(Crash::new(format!("ValueError: {e}"))),
-        Err(ConfigError::Crash(c)) => return Err(c),
+        Err(e) => return Err(e.into_crash()),
     };
     let docs = cfg.section("docs");
     let user_doc = docs.get_or_none("user_doc");

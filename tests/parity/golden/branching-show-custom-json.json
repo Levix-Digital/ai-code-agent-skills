@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "{\n  \"model\": \"release-branches\",\n  \"long_lived\": [\n    \"stable\",\n    \"maint/X.Y\"\n  ],\n  \"work\": \"feat/, fix/, docs/, ... from 'stable', pull requests into 'stable'; fixes of a release in acceptance or maintenance from 'maint/X.Y', pull requests into it\",\n  \"pull_requests_into\": [\n    \"stable\",\n    \"maint/*\"\n  ],\n  \"release_candidate\": \"cut 'maint/X.Y' from 'stable' after the version bump; vX.Y.Z-rc.N tagged on 'maint/X.Y'; fixes go into 'maint/X.Y' and forward into 'stable' by pull request\",\n  \"gate\": \"promote\",\n  \"release_gate\": \"the user runs the promote workflow for the accepted candidate; it tags that commit vX.Y.Z and releases it\",\n  \"hotfix\": \"fix/<slug> from 'maint/X.Y', pull request into it, patch bump, candidate, promote, then forward into 'stable' by pull request\"\n}\n",
+  "stderr": "",
+  "files": {}
+}

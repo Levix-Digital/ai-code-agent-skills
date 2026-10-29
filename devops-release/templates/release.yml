@@ -1,5 +1,5 @@
 # Release workflow: builds and publishes a release for a version tag.
-# - vX.Y.Z-rc.N tags (pushed by the agent on the candidate's branch: `branching.py rc-branch`)
+# - vX.Y.Z-rc.N tags (pushed by the agent on the candidate's branch: `branching rc-branch`)
 #   publish a PRE-RELEASE.
 # - vX.Y.Z final tags are created by the release gate, which calls this workflow directly (a tag
 #   pushed with GITHUB_TOKEN would not trigger it): tag-on-merge.yml under the integration model,

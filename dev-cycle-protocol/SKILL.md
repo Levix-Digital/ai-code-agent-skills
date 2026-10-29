@@ -90,7 +90,7 @@ graph TD
 
 Phase 0 runs once per product. Phases 1 to 7 run for every change. Phases 8 to 10 run when the user wants to release what has accumulated in the work base.
 
-**Branching model** (`devops.branching`, `devops-release`): every phase below says *work base*, *candidate branch* and *release gate*; the model gives them (`devops-release/branching.py show`):
+**Branching model** (`devops.branching`, `devops-release`): every phase below says *work base*, *candidate branch* and *release gate*; the model gives them (`branching show` on the engine: `"<skills_root>/dev-cycle-protocol/bin/dev-cycle" devops-release branching show`):
 
 | Model | Work base (branches from, pull requests into) | Candidate branch | Release gate (the user) |
 |---|---|---|---|
@@ -181,7 +181,7 @@ python "<skills_root>/dev-cycle-protocol/verify_gate.py" --gate 3
 - People approve; the user merges the pull request (or authorizes the agent to merge into the work base). Without a supported platform CLI (`gh`, `glab`), review and answers happen in the chat as before.
 
 ### 8. 🧪 Release Candidate (per release)
-- `devops-release`: bump the version in `devops.version_files` (on a branch, through a pull request), then tag `vX.Y.Z-rc.N` on the candidate branch (`branching.py rc-branch`; with `release-branches`, cut `release/X.Y` from `main` first), follow the pipeline and verify the pre-release (`release_status verify` on the engine).
+- `devops-release`: bump the version in `devops.version_files` (on a branch, through a pull request), then tag `vX.Y.Z-rc.N` on the candidate branch (`branching rc-branch` on the engine; with `release-branches`, cut `release/X.Y` from `main` first), follow the pipeline and verify the pre-release (`release_status verify` on the engine).
 - `quality-assurance`: start the candidate's manual test run (`manual_tests start-run --run vX.Y.Z-rc.N ...`) and commit it.
 - Tell the user how to install the candidate and which tests to run.
 

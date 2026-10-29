@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "{\n  \"model\": \"trunk\",\n  \"long_lived\": [\n    \"main\"\n  ],\n  \"work\": \"feat/, fix/, docs/, ... from 'main', pull requests into 'main'\",\n  \"pull_requests_into\": [\n    \"main\"\n  ],\n  \"release_candidate\": \"vX.Y.Z-rc.N tagged on 'main' after the version bump; fixes found in acceptance go into 'main' and a new candidate\",\n  \"gate\": \"promote\",\n  \"release_gate\": \"the user runs the promote workflow for the accepted candidate; it tags that commit vX.Y.Z and releases it\",\n  \"hotfix\": \"fix/<slug> into 'main', patch bump, candidate, promote; when 'main' holds unreleased work, hotfix/X.Y.Z from the release tag, the fix by pull request into it, candidate tagged there, then the fix into 'main' by pull request\"\n}\n",
+  "stderr": "",
+  "files": {}
+}

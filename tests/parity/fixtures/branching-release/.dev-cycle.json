@@ -1,0 +1,11 @@
+{
+  "devops": {
+    "branching": "release-branches",
+    "production_branch": "stable",
+    "integration_branch": "dev",
+    "release_branch_prefix": "maint",
+    "version_files": [
+      "version.txt"
+    ]
+  }
+}

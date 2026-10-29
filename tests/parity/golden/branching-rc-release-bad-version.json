@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ 'bad' is not a version like 1.4.0\n",
+  "stderr": "",
+  "files": {}
+}

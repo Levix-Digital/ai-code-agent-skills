@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "🌿 Branching model: integration (default; not set in .dev-cycle.json)\n   Long-lived branches : main, dev\n   Work branches       : feat/, fix/, docs/, ... from 'dev', pull requests into 'dev'\n   Release candidate   : vX.Y.Z-rc.N tagged on 'dev' after the version bump\n   Release gate (user) : the user merges the pull request 'dev' -> 'main'; tag-on-merge creates vX.Y.Z and the release\n   Hotfix              : hotfix/<slug> from 'main', pull request into 'main', then 'main' merged back into 'dev'\n",
+  "stderr": "",
+  "files": {}
+}

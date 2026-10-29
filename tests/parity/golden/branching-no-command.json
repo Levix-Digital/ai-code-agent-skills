@@ -1,0 +1,6 @@
+{
+  "exit": 2,
+  "stdout": "",
+  "stderr": "usage: branching.py [-h] [--dir DIR] [--version VERSION] [--json]\n                    {show,rc-branch}\nbranching.py: error: the following arguments are required: command\n",
+  "files": {}
+}

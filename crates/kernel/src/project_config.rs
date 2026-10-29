@@ -569,9 +569,22 @@ pub fn branch_summary(devops: &Dict) -> String {
 
 #[derive(Debug)]
 pub enum ConfigError {
-    /// `ValueError` or `json.JSONDecodeError`: the scripts print it and stop.
+    /// `ValueError`: the scripts that catch it print it and stop.
     Invalid(String),
+    /// `json.JSONDecodeError`, a `ValueError` too, for a manifest that is not JSON.
+    Decode(String),
     Crash(Crash),
+}
+
+impl ConfigError {
+    /// The error as the traceback of a script that does not catch it.
+    pub fn into_crash(self) -> Crash {
+        match self {
+            ConfigError::Invalid(e) => Crash::new(format!("ValueError: {e}")),
+            ConfigError::Decode(e) => Crash::new(format!("json.decoder.JSONDecodeError: {e}")),
+            ConfigError::Crash(c) => c,
+        }
+    }
 }
 
 impl From<Crash> for ConfigError {
@@ -591,7 +604,7 @@ pub fn load_project_config(start_dir: Option<&str>) -> Result<ProjectConfig, Con
     };
     let raw = match json::load_file(&manifest) {
         Ok(v) => v,
-        Err(LoadError::Decode(e)) => return Err(ConfigError::Invalid(e.to_string())),
+        Err(LoadError::Decode(e)) => return Err(ConfigError::Decode(e.to_string())),
         Err(LoadError::Crash(c)) => return Err(ConfigError::Crash(c)),
     };
     let Value::Dict(raw) = raw else {
@@ -650,7 +663,7 @@ fn run(argv: &[String]) -> Result<u8, Crash> {
 
     let cfg = match load_project_config(args.value("dir")) {
         Ok(c) => c,
-        Err(ConfigError::Invalid(e)) => {
+        Err(ConfigError::Invalid(e) | ConfigError::Decode(e)) => {
             println(&format!("❌ {e}"));
             return Ok(1);
         }

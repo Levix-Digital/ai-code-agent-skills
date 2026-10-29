@@ -1,6 +1,5 @@
 import json
 import os
-import subprocess
 import sys
 
 import pytest
@@ -8,10 +7,10 @@ import pytest
 HERE = os.path.dirname(os.path.abspath(__file__))
 SKILL = os.path.dirname(HERE)
 sys.path.insert(0, SKILL)
+sys.path.insert(0, os.path.join(SKILL, "..", "dev-cycle-protocol"))
 
 from branching import BranchingModel, detect  # noqa: E402
-
-SCRIPT = os.path.join(SKILL, "branching.py")
+from verify_gate import run_checker  # noqa: E402
 
 
 def model(**devops):
@@ -61,9 +60,7 @@ def test_detect_from_branch_names():
 
 
 def run(tmp_path, *args):
-    res = subprocess.run([sys.executable, SCRIPT, *args, "--dir", str(tmp_path)], capture_output=True, text=True,
-                         encoding="utf-8")
-    return res.returncode, res.stdout
+    return run_checker("devops-release", "branching.py", [*args, "--dir", str(tmp_path)])
 
 
 def test_cli_show_and_rc_branch(tmp_path):

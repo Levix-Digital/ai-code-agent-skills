@@ -1,0 +1,6 @@
+{
+  "devops": {
+    "production_branch": 5,
+    "integration_branch": true
+  }
+}

@@ -14,7 +14,7 @@ use architecture_docs::docs::{
     cmp_int, fenced_lines, foreign_language_hits, headings, py_regex, strip_code,
 };
 use kernel::out::println;
-use kernel::project_config::{ConfigError, ProjectConfig, load_project_config};
+use kernel::project_config::{ProjectConfig, load_project_config};
 use kernel::py::argparse::Parser;
 use kernel::py::num::{self, is_space, strip};
 use kernel::py::path::{dirname, exists, isfile, join, makedirs};
@@ -294,8 +294,7 @@ fn join_root(cfg: &ProjectConfig, rel: &Value) -> Result<(String, String), Crash
 fn load(dir: Option<&str>) -> Result<ProjectConfig, Crash> {
     match load_project_config(dir) {
         Ok(c) => Ok(c),
-        Err(ConfigError::Invalid(e)) => Err(Crash::new(format!("ValueError: {e}"))),
-        Err(ConfigError::Crash(c)) => Err(c),
+        Err(e) => Err(e.into_crash()),
     }
 }
 

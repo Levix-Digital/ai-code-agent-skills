@@ -39,10 +39,12 @@ Each project chooses one of three presets in `devops.branching`, asked once by `
 | Hotfix | `hotfix/<slug>` from `main` into `main`, then `main` merged back into `dev` | `fix/<slug>` into `main`; when `main` holds unreleased work, through `hotfix/X.Y.Z` cut from the release tag | `fix/<slug>` into `release/X.Y`, then forward into `main` |
 | Fits | Products with manual acceptance that want `main` to hold only released code | Small teams and continuous delivery; work merged during acceptance goes into the next candidate (hide unfinished work behind flags) | Products that maintain several versions at once |
 
-```powershell
-python "<skills_root>/devops-release/branching.py" show        # the project's model: branches, candidate, release gate, hotfix
-python "<skills_root>/devops-release/branching.py" rc-branch   # the branch the next candidate is tagged on (release/X.Y from the version)
+`branching` runs on the native engine. In sh shells (Linux, macOS, Git Bash):
+```sh
+"<skills_root>/dev-cycle-protocol/bin/dev-cycle" devops-release branching show        # the project's model: branches, candidate, release gate, hotfix
+"<skills_root>/dev-cycle-protocol/bin/dev-cycle" devops-release branching rc-branch   # the branch the next candidate is tagged on (release/X.Y from the version)
 ```
+In PowerShell, run `& "<skills_root>/dev-cycle-protocol/bin/dev-cycle.ps1" devops-release branching <command>` instead.
 
 Short-lived branches, whatever the model:
 
@@ -105,7 +107,7 @@ In PowerShell, run `& "<skills_root>/dev-cycle-protocol/bin/dev-cycle.ps1" devop
 
 When `devops.release_candidates` is `true` (default):
 
-1. The candidate branch (`branching.py rc-branch`) is green and its version bumped. With `release-branches`, cut `release/X.Y` from `main` first (`git branch release/1.4 main && git push -u origin release/1.4`) and protect it.
+1. The candidate branch (`branching rc-branch`) is green and its version bumped. With `release-branches`, cut `release/X.Y` from `main` first (`git branch release/1.4 main && git push -u origin release/1.4`) and protect it.
 2. Tag the candidate on that branch and push it:
    ```bash
    git tag -a v1.4.0-rc.1 -m "Release candidate v1.4.0-rc.1" <candidate branch> && git push origin v1.4.0-rc.1
@@ -168,8 +170,8 @@ For every change, the plan answers: what new failure modes exist, how an operato
 
 | Command | What it does |
 |---|---|
-| `branching.py show [--json]` | The project's branching model: long-lived branches, where work branches start and pull requests go, where candidates are tagged, the release gate and the hotfix path. |
-| `branching.py rc-branch [--version V]` | The branch the next candidate is tagged on (`release/X.Y` from the version under `release-branches`). |
+| `branching show [--json]` (engine: `bin/dev-cycle devops-release branching`) | The project's branching model: long-lived branches, where work branches start and pull requests go, where candidates are tagged, the release gate and the hotfix path. |
+| `branching rc-branch [--version V]` | The branch the next candidate is tagged on (`release/X.Y` from the version under `release-branches`). |
 | `check_ci_policy [--dir D]` (engine: `bin/dev-cycle devops-release check_ci_policy`) | Checks the workflows for the branching model: tests on pull requests into every branch that receives them; pre-releases for `-rc` tags; the release gate (tag-on-merge under `integration`, a promote workflow with an environment otherwise, and no tag-on-merge there) and the `GITHUB_TOKEN` trigger limitation; `contents: write` for releasing; version files exist. Exit code 1 on errors. |
 | `release_status version` (engine: `bin/dev-cycle devops-release release_status`) | Reads the version from `devops.version_files` (`Cargo.toml`, `package.json`, `pyproject.toml`, `version.txt`, ...) and fails when they disagree. |
 | `release_status next-rc` | Next `vX.Y.Z-rc.N` for the current version; fails when the final `vX.Y.Z` tag already exists (bump first). |
