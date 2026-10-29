@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "usage: get_plan.py [-h] [--id ID] [--project PROJECT] [--dir DIR]\n                   [--output OUTPUT]\n\nGet a full, uncompressed plan from docs/plans\n\noptions:\n  -h, --help         show this help message and exit\n  --id ID            Specific Plan ID (default: the project's latest active\n                     plan)\n  --project PROJECT  Project name (default: from the repository)\n  --dir DIR          Project directory (default: current)\n  --output OUTPUT    Write the plan body to a local markdown file\n",
+  "stderr": "",
+  "files": {}
+}

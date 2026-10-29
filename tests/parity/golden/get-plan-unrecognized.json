@@ -1,0 +1,6 @@
+{
+  "exit": 2,
+  "stdout": "",
+  "stderr": "usage: get_plan.py [-h] [--id ID] [--project PROJECT] [--dir DIR]\n                   [--output OUTPUT]\nget_plan.py: error: unrecognized arguments: --bogus\n",
+  "files": {}
+}

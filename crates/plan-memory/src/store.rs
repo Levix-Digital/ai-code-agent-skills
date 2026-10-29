@@ -8,11 +8,20 @@ use architecture_docs::docs::{
 };
 use kernel::out::err;
 use kernel::py::json::{self, LoadError};
-use kernel::py::path::{basename, isdir, isfile, join};
+use kernel::py::path::{basename, isdir, isfile, join, relpath};
 use kernel::py::unicode::{is_word, lower};
 use kernel::py::{Crash, Dict, Value, iterate, read_text};
 
 pub const KINDS: [&str; 2] = ["feature", "bug"];
+/// Spec Kit artifacts of a plan's spec folder (`spec_dir`), in reading order.
+pub const SPEC_FILES: [&str; 6] = [
+    "spec.md",
+    "plan.md",
+    "research.md",
+    "data-model.md",
+    "quickstart.md",
+    "tasks.md",
+];
 
 /// `normalize_project(name)`: kebab-case, `AnyContext` -> `any-context`.
 pub fn normalize_project(name: &Value) -> Result<String, Crash> {
@@ -111,6 +120,86 @@ impl PlanStore {
         })
     }
 
+    pub fn path_for(&self, plan_id: &str) -> String {
+        join(&self.plans_dir, &format!("{plan_id}.md"))
+    }
+
+    /// `get(plan_id)`: the plan, or `None` when it has no file.
+    pub fn get(&self, plan_id: &str) -> Result<Option<Plan>, Crash> {
+        let path = self.path_for(plan_id);
+        if !isfile(&path) {
+            return Ok(None);
+        }
+        let name = basename(std::path::Path::new(&path));
+        read_plan(&path, &name).map(Some)
+    }
+
+    /// `latest()`: active and in-progress plans first, then the most recently created.
+    pub fn latest(&self) -> Result<Option<Plan>, Crash> {
+        let active = [Value::str("active"), Value::str("in_progress")];
+        let key = |p: &Plan| {
+            let status = p.meta.get_or_none("status");
+            let created = p.meta.get_or_none("created_at");
+            (
+                active.iter().any(|a| status.py_eq(a)),
+                if created.truthy() {
+                    created.py_str()
+                } else {
+                    String::new()
+                },
+            )
+        };
+        // `sorted(..., reverse=True)[0]`: the first plan with the greatest key.
+        let mut best: Option<(Plan, (bool, String))> = None;
+        for p in self.load_all()? {
+            let k = key(&p);
+            if best.as_ref().is_none_or(|(_, b)| k > *b) {
+                best = Some((p, k));
+            }
+        }
+        Ok(best.map(|(p, _)| p))
+    }
+
+    /// `spec_files(plan)`: (relative path, text) of the Spec Kit artifacts in the plan's
+    /// `spec_dir`, in reading order.
+    pub fn spec_files(&self, plan: &Plan) -> Result<Vec<(String, String)>, Crash> {
+        let Some(spec_dir) = plan.spec_dir().filter(|d| !d.is_empty()) else {
+            return Ok(Vec::new());
+        };
+        let folder = join(&self.root, &spec_dir);
+        if !isdir(&folder) {
+            return Ok(Vec::new());
+        }
+        let mut paths: Vec<String> = SPEC_FILES.iter().map(|n| join(&folder, n)).collect();
+        let contracts = join(&folder, "contracts");
+        if isdir(&contracts) {
+            for name in listdir(&contracts)? {
+                if name.ends_with(".md") {
+                    paths.push(join(&contracts, &name));
+                }
+            }
+        }
+        let mut out = Vec::new();
+        for path in paths {
+            if isfile(&path) {
+                let text = read_text(std::path::Path::new(&path))?;
+                out.push((relpath(&path, &self.root)?.replace('\\', "/"), text));
+            }
+        }
+        Ok(out)
+    }
+
+    /// `full_text(plan)`: the plan body followed by its Spec Kit artifacts.
+    pub fn full_text(&self, plan: &Plan) -> Result<String, Crash> {
+        let mut text = plan.body.clone();
+        for (rel, artifact) in self.spec_files(plan)? {
+            text.push_str(&format!(
+                "\n\n<!-- Spec Kit artifact: {rel} -->\n\n{artifact}"
+            ));
+        }
+        Ok(text)
+    }
+
     /// `load_all()`: the `.md` files of the plans folder, by name.
     pub fn load_all(&self) -> Result<Vec<Plan>, Crash> {
         if !isdir(&self.plans_dir) {
@@ -151,6 +240,16 @@ impl Plan {
             return Ok(Vec::new());
         }
         Ok(iterate(items)?.iter().map(Value::py_str).collect())
+    }
+
+    /// `spec_dir`: `str(value).strip().rstrip("/")`, or `None` when unset.
+    pub fn spec_dir(&self) -> Option<String> {
+        let value = self.meta.get_or_none("spec_dir");
+        value.truthy().then(|| {
+            kernel::py::num::strip(&value.py_str())
+                .trim_end_matches('/')
+                .to_string()
+        })
     }
 
     /// `done_milestones`: the names of the milestones marked done.

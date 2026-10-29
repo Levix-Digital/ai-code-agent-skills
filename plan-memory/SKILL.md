@@ -13,7 +13,7 @@ The **`plan-memory`** skill keeps **100% complete, uncompressed architectural pl
 - **Search index**: a local ChromaDB at `~/.ai-code-agent-memory/plan-memory/db` (override with `PLAN_MEMORY_DB`), collection `plan_index`. It is **disposable**: every command syncs it from the files (by SHA-256), and `rebuild_index.py` recreates it.
 - **Project**: resolved from the Git repository of the current directory (or `--dir`): `project_name` in `.dev-cycle.json`, else the repository folder name, normalized to kebab-case. `--project` overrides it.
 - **Levels**: the **backlog** (`docs/BACKLOG.md`) captures work in seconds, without discovery, grouped under epics; the **roadmap** (`docs/ROADMAP.md`) orders the releases and assigns items to them; a **plan** is created when the user promotes backlog items and holds the discovery and the planning (see "Backlog" and "Roadmap").
-- **Spec Kit envelopes**: when the project uses Spec Kit, a feature plan is an envelope (`spec_dir`) of a Spec Kit folder (`specs/NNN-slug/`) that holds the detail; search, drift detection and `get_plan.py` read the folder's artifacts with the plan (see "Plans with Spec Kit").
+- **Spec Kit envelopes**: when the project uses Spec Kit, a feature plan is an envelope (`spec_dir`) of a Spec Kit folder (`specs/NNN-slug/`) that holds the detail; search, drift detection and `get_plan` read the folder's artifacts with the plan (see "Plans with Spec Kit").
 - **Guiding Principle**: **Zero Compaction / Zero Loss**. Plans are preserved in their entirety (Mermaid diagrams, tables, steps, formulas, rationale) as persistent knowledge for every developer and session.
 
 ---
@@ -125,11 +125,13 @@ A rule raises a conflict when a plan in force (`active` / `in_progress`) mention
 ```
 In PowerShell, run `& "<skills_root>/dev-cycle-protocol/bin/dev-cycle.ps1" plan-memory list_plans [arguments]` instead.
 
-### 5. Read a Complete Plan (`get_plan.py`)
-```powershell
-python "<skills_root>/plan-memory/get_plan.py" --id "<plan_id>"
-python "<skills_root>/plan-memory/get_plan.py"                      # latest active plan
+### 5. Read a Complete Plan (`get_plan`)
+`get_plan` runs on the native engine. In sh shells (Linux, macOS, Git Bash):
+```sh
+"<skills_root>/dev-cycle-protocol/bin/dev-cycle" plan-memory get_plan --id "<plan_id>"
+"<skills_root>/dev-cycle-protocol/bin/dev-cycle" plan-memory get_plan                  # latest active plan
 ```
+In PowerShell, run `& "<skills_root>/dev-cycle-protocol/bin/dev-cycle.ps1" plan-memory get_plan [arguments]` instead.
 
 ### 6. Semantic Search (`search_plans.py`)
 ```powershell
@@ -220,7 +222,7 @@ The releases of the product in delivery order (`roadmap.file` in `.dev-cycle.jso
 
 ## 🧩 Plans with Spec Kit
 
-When the project uses Spec Kit (`speckit.enabled`, see `dev-cycle-protocol`), the detail of a feature lives in Spec Kit's folder (`specs/NNN-slug/`: `spec.md`, `plan.md`, `research.md`, `data-model.md`, `quickstart.md`, `contracts/`, `tasks.md`). The plan file is its **envelope**: frontmatter (status, milestones, lineage, backlog items, `spec_dir`) and a short body (goal and decisions, link to the folder). Nothing is copied or summarized: `get_plan.py` prints the artifacts after the body (and `--output` writes both), and the search index and `detect_drift.py` read the plan and its artifacts as one document, re-indexed when any of them changes.
+When the project uses Spec Kit (`speckit.enabled`, see `dev-cycle-protocol`), the detail of a feature lives in Spec Kit's folder (`specs/NNN-slug/`: `spec.md`, `plan.md`, `research.md`, `data-model.md`, `quickstart.md`, `contracts/`, `tasks.md`). The plan file is its **envelope**: frontmatter (status, milestones, lineage, backlog items, `spec_dir`) and a short body (goal and decisions, link to the folder). Nothing is copied or summarized: `get_plan` prints the artifacts after the body (and `--output` writes both), and the search index and `detect_drift.py` read the plan and its artifacts as one document, re-indexed when any of them changes.
 
 ---
 

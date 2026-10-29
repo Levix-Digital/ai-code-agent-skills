@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "==========================================================================================\n📜 FULL ARCHITECTURAL PLAN: alpha\n   • Project    : demo | Version: 1.2.0 | Status: IN_PROGRESS | Kind: feature\n   • Author     : Ana | Created: 2026-01-05T10:00:00 | Updated: -\n   • File       : {project}/docs/plans/alpha.md\n   • Backlog    : FEAT-001, 7\n   • Milestones : [█████░░░░░░░░░░░] 33.3% (1/3 Milestones)\n==========================================================================================\n\n# Alpha\n\nBody with ünïcode.\n\n\n==========================================================================================\n",
+  "stderr": "",
+  "files": {}
+}

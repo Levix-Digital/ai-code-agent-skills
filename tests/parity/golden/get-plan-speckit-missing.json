@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "==========================================================================================\n📜 FULL ARCHITECTURAL PLAN: missing\n   • Project    : project | Version: - | Status: COMPLETED | Kind: bug\n   • Author     : - | Created: - | Updated: -\n   • File       : {project}/docs/plans/missing.md\n   • Supersedes : old\n   • Superseded by: newer\n   • Spec Kit   : specs/404\n==========================================================================================\n\nGone.\n\n\n⚠️ Spec folder 'specs/404' has no Spec Kit artifacts.\n\n==========================================================================================\n",
+  "stderr": "",
+  "files": {}
+}

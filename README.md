@@ -202,7 +202,7 @@ Keeps the project's planning in its repository: the **backlog**, where work is c
 | Save or update a plan | `save_plan.py --title "<t>" --file plan.md [--version v1.2.0] [--milestones "A,B,C"] [--supersedes <old_id>] [--kind bug] [--backlog-items "BUG-001"] [--spec-dir specs/001-x]` |
 | Plan releases | `roadmap.py add-release v0.1.0 --name MVP --goal "<g>"`, `assign <ID...> --release v0.1.0`, `current`, `show`, `validate` |
 | List plans | `<skills_root>/dev-cycle-protocol/bin/dev-cycle plan-memory list_plans [--status active] [--kind bug]` (`bin/dev-cycle.ps1` in PowerShell) |
-| Read a plan in full | `get_plan.py --id <plan_id>` or `get_plan.py` (latest active) |
+| Read a plan in full | `<skills_root>/dev-cycle-protocol/bin/dev-cycle plan-memory get_plan --id <plan_id>` or without `--id` (latest active; `bin/dev-cycle.ps1` in PowerShell) |
 | Semantic search | `search_plans.py --query "<text>" [--limit 5] [--all-projects]` |
 | Milestones | `check_milestone.py --list` / `--milestone "A" [--notes "..."]` / `--milestone "A" --uncheck` |
 | Change status | `update_plan_status.py --id <plan_id> --status completed [--notes "..."]` |

@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "==========================================================================================\n📜 FULL ARCHITECTURAL PLAN: empty\n   • Project    : project | Version: - | Status: PLANNED | Kind: feature\n   • Author     : - | Created: 2026-01-01 | Updated: -\n   • File       : {project}/docs/plans/empty.md\n   • Spec Kit   : specs/002-empty\n==========================================================================================\n\nNo artifacts yet.\n\n\n⚠️ Spec folder 'specs/002-empty' has no Spec Kit artifacts.\n\n==========================================================================================\n",
+  "stderr": "",
+  "files": {}
+}
