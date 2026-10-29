@@ -5,7 +5,7 @@ from: aurora-dev-suite
 to: dev-cycle-protocol
 date: 2026-10-29T21:32:47Z
 subject: "Generic extension point in dcp for providers"
-status: open
+status: seen
 reply_to: 
 deferred: 
 ---
