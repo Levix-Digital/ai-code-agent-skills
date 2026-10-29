@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ no test workflow runs on pull requests into 'release/*' (see templates/ci.yml)\n⚠️ devops.version_files is empty; list the files that hold the version\n⚠️ no workflow runs a linter or static analysis on pull requests into 'release/*' (see the lint job of templates/ci.yml)\n\n❌ devops-release CI policy: 1 error(s), 2 warning(s).\n",
+  "stderr": "",
+  "files": {}
+}

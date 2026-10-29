@@ -7,7 +7,7 @@ version: v2.10.0
 status: in_progress
 author: Levi Silveira
 created_at: '2026-10-27T18:17:46'
-updated_at: '2026-10-29T09:33:22'
+updated_at: '2026-10-29T13:20:07'
 session_id: null
 tags:
 - rust
@@ -68,7 +68,9 @@ milestones:
   done_at: '2026-10-29'
   by: Levi Silveira
 - name: M13 check_ci_policy
-  done: false
+  done: true
+  done_at: '2026-10-29'
+  by: Levi Silveira
 - name: M14 release_status
   done: false
 - name: M15 branching
@@ -177,6 +179,9 @@ status_log:
 - at: '2026-10-29T09:33:22'
   by: Levi Silveira
   note: 'Milestone ''M12 manual_tests'' completed: Engine 0.11.0: quality-assurance manual_tests on the engine (kernel argparse gains a positional choice and append options); 22 parity cases, 4,500-run differential fuzz on 3.13 and 3.10 with 0 differences; gates rc and 8 match main. manual_tests.py stays as a module while onboard.py and backlog.py import load_suite.'
+- at: '2026-10-29T13:20:07'
+  by: Levi Silveira
+  note: 'Milestone ''M13 check_ci_policy'' completed: Engine 0.12.0: check_ci_policy in Rust (crates/devops-release, with the BranchingModel it reads; the kernel gains fnmatch and one-directory glob); verify_gate runs it on the engine and its pytest cases now call the engine; 11 parity cases; 4,500 differential fuzz runs on 3.13 and 3.10 with 0 differences; gate 8 matches main.'
 ---
 
 # Translate the scripts to Rust with identical behavior

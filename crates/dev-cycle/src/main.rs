@@ -55,6 +55,11 @@ const COMMANDS: &[(&str, &str, Command)] = &[
         "manual_tests",
         quality_assurance::manual_tests::main,
     ),
+    (
+        "devops-release",
+        "check_ci_policy",
+        devops_release::check_ci_policy::main,
+    ),
 ];
 
 fn main() -> ExitCode {

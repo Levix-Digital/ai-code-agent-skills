@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ tag-on-merge.yml: creates a tag on every merge, but under 'trunk' the release gate is the user's promotion of an accepted candidate (see templates/promote.yml)\n⚠️ promote.yml: no 'environment:' with required reviewers holds the promotion for the user's approval\n\n❌ devops-release CI policy: 1 error(s), 1 warning(s).\n",
+  "stderr": "",
+  "files": {}
+}

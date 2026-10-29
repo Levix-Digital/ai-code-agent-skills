@@ -69,15 +69,18 @@ Rules:
 ## ✅ Pull Request CI Policy
 
 - The test workflow runs on **pull requests into every branch that receives them** (`integration`: `dev` and `main`; `trunk`: `main`; `release-branches`: `main` and `release/**`), and on pushes to the branches work is merged into. A pull request without checks cannot be merged.
-- The checks run the project's `test_commands` on every supported platform, and the stack's linters and static analysis once (the `lint` job of `templates/ci.yml`: for example `cargo fmt --check` and `cargo clippy -- -D warnings`, `ruff check`, `eslint`, `golangci-lint`). `check_ci_policy.py` warns when no workflow lints the pull requests.
+- The checks run the project's `test_commands` on every supported platform, and the stack's linters and static analysis once (the `lint` job of `templates/ci.yml`: for example `cargo fmt --check` and `cargo clippy -- -D warnings`, `ruff check`, `eslint`, `golangci-lint`). `check_ci_policy` warns when no workflow lints the pull requests.
 - Optional external components that tests need (runtimes, models) are provisioned in CI so those tests are mandatory there.
 - Concurrency: cancel superseded runs of the same pull request; a cancelled run on a push to a long-lived branch is fine when a newer push contains it.
 - **CI failures are fixed, never ignored**: read the failed logs (`gh run view <id> --log-failed`), reproduce locally, fix on the branch, push, and follow the new run to green. Re-running without a change is only for a demonstrated infrastructure flake, and the flake is reported.
 
-Check a repository against this policy:
-
+Check a repository against this policy. It runs on the native engine. In sh shells (Linux, macOS, Git Bash):
+```sh
+"<skills_root>/dev-cycle-protocol/bin/dev-cycle" devops-release check_ci_policy [--dir <project>]
+```
+In PowerShell:
 ```powershell
-python "<skills_root>/devops-release/check_ci_policy.py" [--dir <project>]
+& "<skills_root>/dev-cycle-protocol/bin/dev-cycle.ps1" devops-release check_ci_policy [--dir <project>]
 ```
 
 ---
@@ -129,7 +132,7 @@ When `devops.release_candidates` is `true` (default):
 - The cycle is complete only when the release is verified in the releases repository (`devops.releases_repo`). If it is not configured and cannot be found in the workflows, ask the user.
 - Under `release-branches`, a patch of an older line never becomes the "latest" release (`make_latest: legacy` in `templates/release.yml`).
 
-**GitHub Actions limitation**: a tag pushed with the default `GITHUB_TOKEN` does not start other workflows. The workflow that creates the final tag (tag-on-merge or promote) must either run the release in the same workflow (a reusable workflow call) or push the tag with a dedicated token (`secrets.RELEASE_TOKEN`). `check_ci_policy.py` flags the broken combination, and flags a tag-on-merge job under `trunk` or `release-branches`, where it would release every merge.
+**GitHub Actions limitation**: a tag pushed with the default `GITHUB_TOKEN` does not start other workflows. The workflow that creates the final tag (tag-on-merge or promote) must either run the release in the same workflow (a reusable workflow call) or push the tag with a dedicated token (`secrets.RELEASE_TOKEN`). `check_ci_policy` flags the broken combination, and flags a tag-on-merge job under `trunk` or `release-branches`, where it would release every merge.
 
 **Promote environment**: create the `release` environment with the user as required reviewer (Settings > Environments), so even a started promotion waits for the user's approval.
 
@@ -165,7 +168,7 @@ For every change, the plan answers: what new failure modes exist, how an operato
 |---|---|
 | `branching.py show [--json]` | The project's branching model: long-lived branches, where work branches start and pull requests go, where candidates are tagged, the release gate and the hotfix path. |
 | `branching.py rc-branch [--version V]` | The branch the next candidate is tagged on (`release/X.Y` from the version under `release-branches`). |
-| `check_ci_policy.py [--dir D]` | Checks the workflows for the branching model: tests on pull requests into every branch that receives them; pre-releases for `-rc` tags; the release gate (tag-on-merge under `integration`, a promote workflow with an environment otherwise, and no tag-on-merge there) and the `GITHUB_TOKEN` trigger limitation; `contents: write` for releasing; version files exist. Exit code 1 on errors. |
+| `check_ci_policy [--dir D]` (engine: `bin/dev-cycle devops-release check_ci_policy`) | Checks the workflows for the branching model: tests on pull requests into every branch that receives them; pre-releases for `-rc` tags; the release gate (tag-on-merge under `integration`, a promote workflow with an environment otherwise, and no tag-on-merge there) and the `GITHUB_TOKEN` trigger limitation; `contents: write` for releasing; version files exist. Exit code 1 on errors. |
 | `release_status.py version` | Reads the version from `devops.version_files` (`Cargo.toml`, `package.json`, `pyproject.toml`, `version.txt`, ...) and fails when they disagree. |
 | `release_status.py next-rc` | Next `vX.Y.Z-rc.N` for the current version; fails when the final `vX.Y.Z` tag already exists (bump first). |
 | `release_status.py verify --tag T [--asset PATTERN ...]` | Checks with `gh` that the release exists in `devops.releases_repo`, is a pre-release exactly when the tag has `-rc`, has assets, and has every asset pattern given. |

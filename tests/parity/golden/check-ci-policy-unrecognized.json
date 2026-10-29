@@ -1,0 +1,6 @@
+{
+  "exit": 2,
+  "stdout": "",
+  "stderr": "usage: check_ci_policy.py [-h] [--dir DIR]\ncheck_ci_policy.py: error: unrecognized arguments: --bogus\n",
+  "files": {}
+}

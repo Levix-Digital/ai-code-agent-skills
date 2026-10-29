@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ release.yml: publishing a release needs 'permissions: contents: write'\n⚠️ devops.version_files is empty; list the files that hold the version\n\n❌ devops-release CI policy: 1 error(s), 1 warning(s).\n",
+  "stderr": "",
+  "files": {}
+}

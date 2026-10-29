@@ -348,7 +348,7 @@ How to record a run: in each test of the current run, mark exactly one box of th
   2. Tell the agent the candidate is accepted.
   3. Run the promote workflow with the candidate tag and approve it in the environment.
 - **Expected**:
-  - `check_ci_policy.py` reports no errors; with `tag-on-merge.yml` added it reports that every merge would release.
+  - `check_ci_policy` reports no errors; with `tag-on-merge.yml` added it reports that every merge would release.
   - The agent runs gate 8, which ends with "READY FOR THE PROMOTION", gives the release notes highlights and the promote command, and does not run it.
   - The final tag `vX.Y.Z` points at the candidate's commit, not at the newer head of `main`; the release is published and the agent verifies it with `release_status.py verify --tag vX.Y.Z`.
 - **Result**: [ ] Pass [ ] Fail [ ] Blocked

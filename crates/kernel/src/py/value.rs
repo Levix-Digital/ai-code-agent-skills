@@ -269,6 +269,15 @@ impl Value {
         }
     }
 
+    /// The type's `tp_name`, as most built-in error messages print it (`datetime.date`).
+    pub fn tp_name(&self) -> &'static str {
+        match self {
+            Value::Date(_) => "datetime.date",
+            Value::DateTime(_) => "datetime.datetime",
+            other => other.type_name(),
+        }
+    }
+
     /// `str(value)`, as an f-string prints it.
     pub fn py_str(&self) -> String {
         match self {
