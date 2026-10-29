@@ -1,0 +1,8 @@
+{
+  "exit": 0,
+  "stdout": "✅ Plan 'export' body written to: out/export.md\n",
+  "stderr": "",
+  "files": {
+    "project/out/export.md": "# Export answers\n\nEnvelope of the Spec Kit folder.\n\n\n<!-- Spec Kit artifact: specs/001-export/spec.md -->\n\n# Spec\n\nThe user exports answers.  \n\n\n\n\n<!-- Spec Kit artifact: specs/001-export/plan.md -->\n\n# Plan\nWindows lines\n\n\n<!-- Spec Kit artifact: specs/001-export/tasks.md -->\n\n# Tasks\n- [ ] T1\n\n\n<!-- Spec Kit artifact: specs/001-export/contracts/a-events.md -->\n\n# Events\n\n\n<!-- Spec Kit artifact: specs/001-export/contracts/b-api.md -->\n\n# API\n"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "exit": 0,
+  "stdout": "✅ Plan 'alpha' body written to: alpha.md\n",
+  "stderr": "",
+  "files": {
+    "project/alpha.md": "# Alpha\n\nBody with ünïcode.\n"
+  }
+}

@@ -89,6 +89,16 @@ pub fn write_text(path: &Path, text: &str) -> Result<(), Crash> {
     encode_check(text)
 }
 
+/// `open(path, "w", encoding="utf-8").write(text)`: text mode writes `\n` as `\r\n` on
+/// Windows.
+pub fn write_text_native(path: &Path, text: &str) -> Result<(), Crash> {
+    if cfg!(windows) {
+        write_text(path, &text.replace('\n', "\r\n"))
+    } else {
+        write_text(path, text)
+    }
+}
+
 /// `str(UnicodeDecodeError)` for bytes that are not UTF-8.
 pub fn utf8_error_text(bytes: &[u8], e: &std::str::Utf8Error) -> String {
     let start = e.valid_up_to();

@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "==========================================================================================\n📜 FULL ARCHITECTURAL PLAN: beta\n   • Project    : project | Version: - | Status: COMPLETED | Kind: bug\n   • Author     : - | Created: 2026-02-01 | Updated: -\n   • File       : {project}/docs/plans/beta.md\n   • Supersedes : alpha\n   • Superseded by: gamma\n   • Milestones : [░░░░░░░░░░░░░░░░] 0.0% (0/2 Milestones)\n==========================================================================================\n\nBeta body.\n\n\n==========================================================================================\n",
+  "stderr": "",
+  "files": {}
+}

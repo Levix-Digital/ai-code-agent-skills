@@ -31,7 +31,7 @@ The one command the user needs: the protocol guides the user, not the other way 
 
 | Option (`key`) | What to do |
 |---|---|
-| `plan:<id>` | Resume the plan: `plan-memory/get_plan.py --id <id>`, `check_milestone.py --list`, continue from the next milestone (Phase 4 onwards). |
+| `plan:<id>` | Resume the plan: `get_plan --id <id>` on the engine (`"<skills_root>/dev-cycle-protocol/bin/dev-cycle" plan-memory get_plan --id <id>`), `check_milestone.py --list`, continue from the next milestone (Phase 4 onwards). |
 | `pr:<number>` | The pull request on its platform: `pr_sync.py status --pr <number>`; then `dev-cycle-protocol` Phase 7: fix and resolve the small threads, bring the large ones to the user, answer questions, fix CI and conflicts. |
 | `rc:<run>` | Release candidate: `"<skills_root>/dev-cycle-protocol/bin/dev-cycle" quality-assurance manual_tests summary --run <run>` and `failed --run <run>`; failures go back to Phase 4; when all pass, gate rc and then gate 8 (Phases 9 and 10). |
 | `bugs` | Phase 1 with the blocking bugs: show them, the user decides which to promote (`backlog.py promote`). |

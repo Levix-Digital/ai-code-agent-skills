@@ -161,5 +161,167 @@
     "args": [],
     "fixture": "plans-config",
     "git": true
+  },
+  {
+    "name": "get-plan-help",
+    "python": "plan-memory/get_plan.py",
+    "rust": ["plan-memory", "get_plan"],
+    "args": ["--help"],
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "get-plan-unrecognized",
+    "python": "plan-memory/get_plan.py",
+    "rust": ["plan-memory", "get_plan"],
+    "args": ["--bogus"],
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "get-plan-missing-value",
+    "python": "plan-memory/get_plan.py",
+    "rust": ["plan-memory", "get_plan"],
+    "args": ["--id"],
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "get-plan-latest",
+    "python": "plan-memory/get_plan.py",
+    "rust": ["plan-memory", "get_plan"],
+    "args": [],
+    "fixture": "plans-list"
+  },
+  {
+    "name": "get-plan-latest-speckit",
+    "python": "plan-memory/get_plan.py",
+    "rust": ["plan-memory", "get_plan"],
+    "args": [],
+    "fixture": "plans-speckit"
+  },
+  {
+    "name": "get-plan-by-id",
+    "python": "plan-memory/get_plan.py",
+    "rust": ["plan-memory", "get_plan"],
+    "args": ["--id", "alpha"],
+    "fixture": "plans-list"
+  },
+  {
+    "name": "get-plan-milestones",
+    "python": "plan-memory/get_plan.py",
+    "rust": ["plan-memory", "get_plan"],
+    "args": ["--id", "delta"],
+    "fixture": "plans-list"
+  },
+  {
+    "name": "get-plan-lineage",
+    "python": "plan-memory/get_plan.py",
+    "rust": ["plan-memory", "get_plan"],
+    "args": ["--id", "beta"],
+    "fixture": "plans-list"
+  },
+  {
+    "name": "get-plan-no-frontmatter",
+    "python": "plan-memory/get_plan.py",
+    "rust": ["plan-memory", "get_plan"],
+    "args": ["--id", "gamma"],
+    "fixture": "plans-list"
+  },
+  {
+    "name": "get-plan-dot-name",
+    "python": "plan-memory/get_plan.py",
+    "rust": ["plan-memory", "get_plan"],
+    "args": ["--id", ".md"],
+    "fixture": "plans-list"
+  },
+  {
+    "name": "get-plan-backlog-string",
+    "python": "plan-memory/get_plan.py",
+    "rust": ["plan-memory", "get_plan"],
+    "args": ["--id", "zeta"],
+    "fixture": "plans-list"
+  },
+  {
+    "name": "get-plan-not-found",
+    "python": "plan-memory/get_plan.py",
+    "rust": ["plan-memory", "get_plan"],
+    "args": ["--id", "nope"],
+    "fixture": "plans-list"
+  },
+  {
+    "name": "get-plan-empty-id",
+    "python": "plan-memory/get_plan.py",
+    "rust": ["plan-memory", "get_plan"],
+    "args": ["--id", ""],
+    "fixture": "plans-list"
+  },
+  {
+    "name": "get-plan-no-plans",
+    "python": "plan-memory/get_plan.py",
+    "rust": ["plan-memory", "get_plan"],
+    "args": [],
+    "fixture": "ci-trunk"
+  },
+  {
+    "name": "get-plan-speckit",
+    "python": "plan-memory/get_plan.py",
+    "rust": ["plan-memory", "get_plan"],
+    "args": ["--id", "export"],
+    "fixture": "plans-speckit"
+  },
+  {
+    "name": "get-plan-speckit-empty",
+    "python": "plan-memory/get_plan.py",
+    "rust": ["plan-memory", "get_plan"],
+    "args": ["--id", "empty"],
+    "fixture": "plans-speckit"
+  },
+  {
+    "name": "get-plan-speckit-missing",
+    "python": "plan-memory/get_plan.py",
+    "rust": ["plan-memory", "get_plan"],
+    "args": ["--id", "missing"],
+    "fixture": "plans-speckit"
+  },
+  {
+    "name": "get-plan-relative-id",
+    "python": "plan-memory/get_plan.py",
+    "rust": ["plan-memory", "get_plan"],
+    "args": ["--id", "../plans/export"],
+    "fixture": "plans-speckit"
+  },
+  {
+    "name": "get-plan-output",
+    "python": "plan-memory/get_plan.py",
+    "rust": ["plan-memory", "get_plan"],
+    "args": ["--id", "export", "--output", "out/export.md"],
+    "fixture": "plans-speckit"
+  },
+  {
+    "name": "get-plan-output-plain",
+    "python": "plan-memory/get_plan.py",
+    "rust": ["plan-memory", "get_plan"],
+    "args": ["--id", "alpha", "--output", "alpha.md"],
+    "fixture": "plans-list"
+  },
+  {
+    "name": "get-plan-project",
+    "python": "plan-memory/get_plan.py",
+    "rust": ["plan-memory", "get_plan"],
+    "args": ["--project", "Other App"],
+    "fixture": "plans-config"
+  },
+  {
+    "name": "get-plan-bad-config",
+    "python": "plan-memory/get_plan.py",
+    "rust": ["plan-memory", "get_plan"],
+    "args": [],
+    "fixture": "plans-bad-config"
+  },
+  {
+    "name": "get-plan-git",
+    "python": "plan-memory/get_plan.py",
+    "rust": ["plan-memory", "get_plan"],
+    "args": ["--dir", "specs"],
+    "fixture": "plans-speckit",
+    "git": true
   }
 ]
