@@ -201,7 +201,7 @@ Keeps the project's planning in its repository: the **backlog**, where work is c
 |---|---|
 | Save or update a plan | `save_plan.py --title "<t>" --file plan.md [--version v1.2.0] [--milestones "A,B,C"] [--supersedes <old_id>] [--kind bug] [--backlog-items "BUG-001"] [--spec-dir specs/001-x]` |
 | Plan releases | `roadmap.py add-release v0.1.0 --name MVP --goal "<g>"`, `assign <ID...> --release v0.1.0`, `current`, `show`, `validate` |
-| List plans | `list_plans.py [--status active] [--kind bug]` |
+| List plans | `<skills_root>/dev-cycle-protocol/bin/dev-cycle plan-memory list_plans [--status active] [--kind bug]` (`bin/dev-cycle.ps1` in PowerShell) |
 | Read a plan in full | `get_plan.py --id <plan_id>` or `get_plan.py` (latest active) |
 | Semantic search | `search_plans.py --query "<text>" [--limit 5] [--all-projects]` |
 | Milestones | `check_milestone.py --list` / `--milestone "A" [--notes "..."]` / `--milestone "A" --uncheck` |
@@ -386,7 +386,7 @@ Adding a skill, running the tests, conventions, personal skills and updating oth
 | `! <skill>: ... already exists` | Something else has that name in the agent's folder. Remove or rename it, then rerun. |
 | `ModuleNotFoundError: chromadb` / `docx` / `pypdf` | `pip install -r requirements.txt` with the same Python the agent uses. |
 | `plan-memory` lists no plans | Run it inside the project repository (or pass `--dir`); plans are read from `docs/plans` (or `plans.dir`). |
-| A memory script finds nothing for a project | Run `read_memory.py --list-projects` or `list_plans.py`; the project may be stored under another name. Names are normalized (`AnyContext` = `any-context`), but `anycontext` cannot be split. |
+| A memory script finds nothing for a project | Run `read_memory.py --list-projects` or `list_plans` (engine); the project may be stored under another name. Names are normalized (`AnyContext` = `any-context`), but `anycontext` cannot be split. |
 | `check_docs` reports many errors after `extract_adrs` | Expected: they are the migration work list (translate and restructure ADRs, rewrite the index and subsystem pages). |
 | `detect_drift.py` reports `Drift Rules: none` | Run it from the project folder (or pass `--dir`) and add `drift_rules` to `.dev-cycle.json`. |
 | Cloud session has no `dev-skills:*` skills | `claude plugin list`. A session that starts outside the repository (Claude Projects, several repositories) never reads the project's `.claude/settings.json`: install with the environment's Setup script ([docs/cloud-sessions.md](docs/cloud-sessions.md)). Otherwise check the branch has `.claude/settings.json`, the GitHub app can access this repository, and `/plugin` for load errors. |

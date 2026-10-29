@@ -113,7 +113,7 @@ A project without a baseline that is already under way can adopt it (adoption mo
   "<skills_root>/dev-cycle-protocol/bin/dev-cycle" dev-cycle-protocol project_config --validate
   ```
 - **Logs first**: for any reported error, read the real logs before forming hypotheses.
-- Read the active plans (`plan-memory/list_plans.py`, `check_milestone.py --list`) and the architecture style and structure (`software-design`).
+- Read the active plans (`list_plans` on the engine: `"<skills_root>/dev-cycle-protocol/bin/dev-cycle" plan-memory list_plans`; `check_milestone.py --list`) and the architecture style and structure (`software-design`).
 - Read the backlog and the roadmap (`plan-memory/backlog.py summary`, `plan-memory/roadmap.py current`; `inspect_project.py` shows both). Show the user the open bugs that come before new work, then the open items of the current release and the items related to the request; the user decides what to promote, re-prioritize, move or drop (see "Backlog and Roadmap").
 - To plan backlog items, promote them (`backlog.py promote <ID> ...`): the draft plan (a bug plan for bugs) is where the discovery is written.
 - **Spec Kit**: check out the work base, then run `/speckit-specify` with the items' description: it creates the work branch `feat/NNN-slug` and `specs/NNN-slug/spec.md`. Run `/speckit-clarify` until no `[NEEDS CLARIFICATION]` marker is left; the user answers its questions. The promoted plan is the envelope; the discovery lives in the spec.

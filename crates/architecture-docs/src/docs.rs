@@ -78,7 +78,7 @@ pub fn no_attribute(value: &Value, attr: &str) -> Crash {
 }
 
 /// `os.path.join(base, value)` for a value from the configuration.
-fn join_value(base: &str, value: &Value) -> Result<String, Crash> {
+pub fn join_value(base: &str, value: &Value) -> Result<String, Crash> {
     match value {
         Value::Str(s) => Ok(join(base, s)),
         other => Err(Crash::new(format!(

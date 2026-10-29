@@ -1,0 +1,6 @@
+{
+  "exit": 2,
+  "stdout": "",
+  "stderr": "usage: list_plans.py [-h] [--status STATUS] [--kind {feature,bug}]\n                     [--project PROJECT] [--dir DIR]\nlist_plans.py: error: argument --kind: invalid choice: 'epic' (choose from 'feature', 'bug')\n",
+  "files": {}
+}

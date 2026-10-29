@@ -70,6 +70,7 @@ const COMMANDS: &[(&str, &str, Command)] = &[
         "branching",
         devops_release::branching::main,
     ),
+    ("plan-memory", "list_plans", plan_memory::list_plans::main),
 ];
 
 fn main() -> ExitCode {

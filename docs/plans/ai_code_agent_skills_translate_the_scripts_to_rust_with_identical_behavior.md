@@ -7,7 +7,7 @@ version: v2.10.0
 status: in_progress
 author: Levi Silveira
 created_at: '2026-10-27T18:17:46'
-updated_at: '2026-10-29T17:07:19'
+updated_at: '2026-10-29T17:43:13'
 session_id: null
 tags:
 - rust
@@ -80,7 +80,9 @@ milestones:
   done_at: '2026-10-29'
   by: Levi Silveira
 - name: M16 list_plans
-  done: false
+  done: true
+  done_at: '2026-10-29'
+  by: Levi Silveira
 - name: M17 get_plan
   done: false
 - name: M18 export_plan
@@ -192,6 +194,9 @@ status_log:
 - at: '2026-10-29T17:07:19'
   by: Levi Silveira
   note: 'Milestone ''M15 branching'' completed: 26 parity cases; fuzz 4500 runs 0 differences; gates 0/3/8/rc match main on 46 fixtures; malformed .dev-cycle.json now raises json.decoder.JSONDecodeError on every engine command, as in Python; script kept as module (onboard and verify_gate import it)'
+- at: '2026-10-29T17:43:13'
+  by: Levi Silveira
+  note: 'Milestone ''M16 list_plans'' completed: New plan-memory crate with the plan store (PlanStore, read_plan, normalize_project, progress_bar); kernel upper(); 19 parity cases; fuzz 4500 runs 0 differences; gates 0/3/8/rc match main on 50 fixtures; list_plans.py removed (no importers left)'
 ---
 
 # Translate the scripts to Rust with identical behavior

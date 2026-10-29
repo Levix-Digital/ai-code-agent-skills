@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "usage: list_plans.py [-h] [--status STATUS] [--kind {feature,bug}]\n                     [--project PROJECT] [--dir DIR]\n\nList the project's plans (docs/plans)\n\noptions:\n  -h, --help            show this help message and exit\n  --status STATUS       Filter by status (draft, planned, active, in_progress,\n                        completed, superseded)\n  --kind {feature,bug}  Filter by kind (feature, bug)\n  --project PROJECT     Project name (default: from the repository)\n  --dir DIR             Project directory (default: current)\n",
+  "stderr": "",
+  "files": {}
+}
