@@ -12,7 +12,7 @@ The technical writer role of the development cycle. It owns the **README** (`doc
 | Phase of the cycle | What this skill does |
 |---|---|
 | Plan | States whether the change affects installation, commands, configuration or troubleshooting, and which README sections change. |
-| Documentation | Edits those sections in place and runs `check_readme.py`. |
+| Documentation | Edits those sections in place and runs `check_readme`. |
 | Review | Checks that every command and example in the README still works. |
 
 ---
@@ -65,15 +65,20 @@ For a README that grew into a changelog or a technical manual:
 2. **Verify against the software**: compare each claim with the current `--help` output, menus and default paths; drop what no longer exists.
 3. **Separate**: history goes to the release notes (already on the releases page; nothing to keep in the README); architecture and implementation detail go to the technical documentation (check that `architecture-docs` already covers it).
 4. **Rewrite** from the template, section by section, using only verified facts.
-5. **Run `check_readme.py`** until it reports zero errors, and fix or justify each warning.
+5. **Run `check_readme`** until it reports zero errors, and fix or justify each warning.
 6. **Review the commands** by running the installation and quick start on a clean environment when possible.
 
 ---
 
 ## ⚙️ Commands
 
+It runs on the native engine. In sh shells (Linux, macOS, Git Bash):
+```sh
+"<skills_root>/dev-cycle-protocol/bin/dev-cycle" user-docs check_readme [--dir <project>] [--file README.md] [--max-warnings N]
+```
+In PowerShell:
 ```powershell
-python "<skills_root>/user-docs/check_readme.py" [--dir <project>] [--file README.md] [--max-warnings N]
+& "<skills_root>/dev-cycle-protocol/bin/dev-cycle.ps1" user-docs check_readme [--dir <project>] [--file README.md] [--max-warnings N]
 ```
 
 Errors (exit code 1):

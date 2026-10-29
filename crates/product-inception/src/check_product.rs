@@ -18,6 +18,7 @@ use kernel::project_config::{ConfigError, ProjectConfig, load_project_config};
 use kernel::py::argparse::Parser;
 use kernel::py::num::{self, is_space, strip};
 use kernel::py::path::{dirname, exists, isfile, join, makedirs};
+use kernel::py::unicode::ignorecase_eq;
 use kernel::py::{Crash, Dict, Value, io_crash, json, read_text};
 use regex::Regex;
 
@@ -142,22 +143,14 @@ fn meaningful<'a>(lines: &[&'a str]) -> Vec<&'a str> {
 /// with Python's case-insensitive matching (`İ` and `ı` match `i`, `ſ` matches `s`).
 fn no_questions(text: &str) -> bool {
     let text = text.strip_suffix('.').unwrap_or(text);
-    let same = |c: char, p: char| {
-        let lower: Vec<char> = c.to_lowercase().collect();
-        let simple = if lower.len() == 1 {
-            lower[0]
-        } else if c == '\u{130}' {
-            'i'
-        } else {
-            c
-        };
-        simple == p || (p == 'i' && simple == '\u{131}') || (p == 's' && simple == '\u{17f}')
-    };
     ["none", "na", "n/a", "no open questions"]
         .iter()
         .any(|word| {
             text.chars().count() == word.chars().count()
-                && text.chars().zip(word.chars()).all(|(c, p)| same(c, p))
+                && text
+                    .chars()
+                    .zip(word.chars())
+                    .all(|(c, p)| ignorecase_eq(c, p))
         })
 }
 
@@ -270,33 +263,6 @@ fn check_text(
     res
 }
 
-/// `int(value)` for a value of the configuration, as decimal text.
-fn py_int(value: &Value) -> Result<String, Crash> {
-    match value {
-        Value::Int(i) => Ok(num::int(i, 10)?.to_string()),
-        Value::Bool(b) => Ok(u8::from(*b).to_string()),
-        Value::Str(s) => Ok(num::int(s, 10)?.to_string()),
-        Value::Float(f) if f.is_nan() => Err(Crash::new(
-            "ValueError: cannot convert float NaN to integer",
-        )),
-        Value::Float(f) if f.is_infinite() => Err(Crash::new(
-            "OverflowError: cannot convert float infinity to integer",
-        )),
-        Value::Float(f) => {
-            let t = f.trunc();
-            Ok(if t == 0.0 {
-                "0".to_string()
-            } else {
-                format!("{t:.0}")
-            })
-        }
-        other => Err(Crash::new(format!(
-            "TypeError: int() argument must be a string, a bytes-like object or a real number, not '{}'",
-            other.type_name()
-        ))),
-    }
-}
-
 /// `product_paths(cfg)`: kind -> configured path (relative to the root).
 fn product_paths(cfg: &ProjectConfig) -> Vec<(&'static str, Value)> {
     let section = cfg.section("product");
@@ -337,7 +303,7 @@ fn run_checks(dir: Option<&str>) -> Result<Vec<CheckResult>, Crash> {
     let cfg = load(dir)?;
     let configured = cfg.section("product").get_or_none("max_lines");
     let max_lines = if configured.truthy() {
-        py_int(configured)?
+        num::int_value(configured)?
     } else {
         DEFAULT_MAX_LINES.to_string()
     };
@@ -473,13 +439,5 @@ mod tests {
         for t in ["None yet", "n//a", "-", "None.."] {
             assert!(!no_questions(t), "{t}");
         }
-    }
-
-    #[test]
-    fn int_of_config_values() {
-        assert_eq!(py_int(&Value::Float(-0.5)).unwrap(), "0");
-        assert_eq!(py_int(&Value::Float(12.9)).unwrap(), "12");
-        assert_eq!(py_int(&Value::str(" 7 ")).unwrap(), "7");
-        assert!(py_int(&Value::List(vec![Value::Null])).is_err());
     }
 }

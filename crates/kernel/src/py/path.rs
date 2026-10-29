@@ -81,6 +81,15 @@ pub fn join(a: &str, b: &str) -> String {
     format!("{drive}{path}")
 }
 
+/// `os.path.isabs(p)` (Python 3.13: on Windows a path needs a drive and a root, or is UNC).
+pub fn isabs(p: &str) -> bool {
+    if !cfg!(windows) {
+        return p.starts_with('/');
+    }
+    let head: String = p.chars().take(3).collect::<String>().replace('/', "\\");
+    head.chars().skip(1).collect::<String>().starts_with(":\\") || head.starts_with("\\\\")
+}
+
 /// `os.path.dirname(p)`.
 pub fn dirname(p: &str) -> String {
     let (drive, rest) = splitdrive(p);

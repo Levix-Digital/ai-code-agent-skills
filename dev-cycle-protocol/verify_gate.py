@@ -82,6 +82,7 @@ def check_secret_hygiene(cwd: str) -> list:
 ENGINE_CHECKERS = {
     ("architecture-docs", "check_docs.py"),
     ("product-inception", "check_product.py"),
+    ("user-docs", "check_readme.py"),
 }
 ENGINE_BIN = os.path.join(SKILLS_ROOT, "dev-cycle-protocol", "bin")
 

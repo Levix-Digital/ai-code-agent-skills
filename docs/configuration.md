@@ -67,7 +67,7 @@ Optional file at a project's root: the project configuration shared by every ski
 | `architecture.forbidden_core_imports` | Libraries or modules the core must never import (checked by `software-design/check_design.py`) | `[]` |
 | `test_commands` | Commands that run the automated tests | auto-detected |
 | `docs.user_doc`, `docs.tec_doc` | User documentation and technical documentation index | `README.md`, `TECDOC.md` |
-| `docs.readme_max_lines` | Line limit checked by `user-docs/check_readme.py` | `400` |
+| `docs.readme_max_lines` | Line limit checked by `user-docs check_readme` | `400` |
 | `tests.manual_tests` | Curated manual test suite | `tests/MANUAL_TESTS.md` |
 | `devops.branching` | Branching model: `integration` (`main` + `dev`, the user merges `dev` into `main`), `trunk` (`main` alone, the user promotes the accepted candidate) or `release-branches` (`main` + `release/X.Y`, the user promotes the accepted candidate). Written by `/dev-cycle` with the user's answer; see `devops-release` | `integration` |
 | `devops.integration_branch`, `devops.production_branch` | Branch that receives feature work (`integration` model only), branch that holds released code | `dev`, `main` |

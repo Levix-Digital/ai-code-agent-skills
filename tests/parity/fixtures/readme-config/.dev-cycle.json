@@ -1,0 +1,7 @@
+{
+  "project_name": "Demo",
+  "docs": {
+    "user_doc": "docs/GUIDE.md",
+    "readme_max_lines": 20
+  }
+}

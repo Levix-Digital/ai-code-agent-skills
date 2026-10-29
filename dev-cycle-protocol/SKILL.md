@@ -159,7 +159,7 @@ python "<skills_root>/dev-cycle-protocol/verify_gate.py" --gate 3
 
 ### 6. 📚 Documentation
 - Technical docs: edit the affected `docs/architecture` pages in place, add ADRs for decisions, run `"<skills_root>/dev-cycle-protocol/bin/dev-cycle" architecture-docs build_index` and `"<skills_root>/dev-cycle-protocol/bin/dev-cycle" architecture-docs check_docs` (zero errors).
-- README: edit the affected sections with `user-docs` and run `check_readme.py` (zero errors).
+- README: edit the affected sections with `user-docs` and run `"<skills_root>/dev-cycle-protocol/bin/dev-cycle" user-docs check_readme` (zero errors).
 - Manual tests: curate the suite for the features touched (`quality-assurance`) and run `manual_tests.py validate`.
 
 ### 7. 🔍 Pull Request and Review (on the platform)
@@ -264,7 +264,7 @@ The backlog (`backlog.file` in `.dev-cycle.json`, default `docs/BACKLOG.md`) is 
 | `--gate 0` | Before asking for the product baseline approval (Phase 0) | Product documents (`check_product`), architecture style, technical docs, a valid backlog with epics, a valid roadmap with a first release, Spec Kit setup and constitution when enabled, secret hygiene; open questions are listed |
 | `--gate 3 [--accept-open-bugs R]` | Before asking for plan approval | Working tree state, active plan saved (and committed after approval), bugs first (no open blocking bug and no bug not triaged outside a non-bug plan, unless the user accepts with reason `R`), with Spec Kit the spec folder, branch, setup and constitution, secret hygiene |
 | `--gate rc --run R` | Before declaring a candidate accepted | Every manual test of run `R` is Pass (`quality-assurance/manual_tests.py gate`) |
-| `--gate 8 [--run R]` | Before the release gate (the release pull request, or the promotion) | Documentation and manual test files exist; `check_docs`, `check_readme.py`, `manual_tests.py validate`, `check_design.py`, `check_ci_policy.py`, `backlog.py validate` and `roadmap.py validate` have no errors (no open bug may be untriaged; open blocking bugs are listed for the release notes, open items of the release are listed for the user); version files agree; the candidate run passed (required with `--run` when release candidates are on); secret hygiene; clean working tree |
+| `--gate 8 [--run R]` | Before the release gate (the release pull request, or the promotion) | Documentation and manual test files exist; `check_docs`, `check_readme`, `manual_tests.py validate`, `check_design.py`, `check_ci_policy.py`, `backlog.py validate` and `roadmap.py validate` have no errors (no open bug may be untriaged; open blocking bugs are listed for the release notes, open items of the release are listed for the user); version files agree; the candidate run passed (required with `--run` when release candidates are on); secret hygiene; clean working tree |
 
 Secret hygiene flags committed or staged credential files by file name only: exact names (`.env`, `.env.*`, `id_rsa`, `credentials.json`, `.netrc`...), key and certificate stores (`*.pem`, `*.key`, `*.p12`, `*.pfx`, `*.jks`, `*.keystore`, `*.ppk`, `*.env`) and secret-named data files (`*secret*` or `*private_key*` as `.json`, `.yaml`, `.yml`, `.toml`, `.ini`, `.properties`). Source code and docs about secrets are never flagged, nor are templates (`.example`, `.sample`, `.template`, `.dist`).
 

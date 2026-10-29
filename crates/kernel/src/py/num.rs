@@ -1,6 +1,6 @@
 //! Python's `int(text, base)` and `float(text)`, and the unlimited integers they return.
 
-use super::{Crash, repr_str};
+use super::{Crash, Value, repr_str};
 
 /// `str.isspace()`.
 pub fn is_space(c: char) -> bool {
@@ -311,9 +311,44 @@ pub fn float(text: &str) -> Result<f64, Crash> {
     s.parse::<f64>().map_err(|_| invalid())
 }
 
+/// `int(value)` for a value read from JSON or YAML, as decimal text.
+pub fn int_value(value: &Value) -> Result<String, Crash> {
+    match value {
+        Value::Int(i) => Ok(int(i, 10)?.to_string()),
+        Value::Bool(b) => Ok(u8::from(*b).to_string()),
+        Value::Str(s) => Ok(int(s, 10)?.to_string()),
+        Value::Float(f) if f.is_nan() => Err(Crash::new(
+            "ValueError: cannot convert float NaN to integer",
+        )),
+        Value::Float(f) if f.is_infinite() => Err(Crash::new(
+            "OverflowError: cannot convert float infinity to integer",
+        )),
+        Value::Float(f) => {
+            let t = f.trunc();
+            Ok(if t == 0.0 {
+                "0".to_string()
+            } else {
+                format!("{t:.0}")
+            })
+        }
+        other => Err(Crash::new(format!(
+            "TypeError: int() argument must be a string, a bytes-like object or a real number, not '{}'",
+            other.type_name()
+        ))),
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn int_of_values() {
+        assert_eq!(int_value(&Value::Float(-0.5)).unwrap(), "0");
+        assert_eq!(int_value(&Value::Float(12.9)).unwrap(), "12");
+        assert_eq!(int_value(&Value::str(" 7 ")).unwrap(), "7");
+        assert!(int_value(&Value::List(vec![Value::Null])).is_err());
+    }
 
     #[test]
     fn ints_read_like_python() {

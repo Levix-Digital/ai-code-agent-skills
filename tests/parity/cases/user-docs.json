@@ -1,0 +1,79 @@
+[
+  {
+    "name": "check-readme-help",
+    "python": "user-docs/check_readme.py",
+    "rust": ["user-docs", "check_readme"],
+    "args": ["--help"],
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "check-readme-invalid-int",
+    "python": "user-docs/check_readme.py",
+    "rust": ["user-docs", "check_readme"],
+    "args": ["--max-warnings", "few"],
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "check-readme-good",
+    "python": "user-docs/check_readme.py",
+    "rust": ["user-docs", "check_readme"],
+    "args": [],
+    "fixture": "readme-good",
+    "git": true
+  },
+  {
+    "name": "check-readme-missing",
+    "python": "user-docs/check_readme.py",
+    "rust": ["user-docs", "check_readme"],
+    "args": [],
+    "git": true
+  },
+  {
+    "name": "check-readme-problems",
+    "python": "user-docs/check_readme.py",
+    "rust": ["user-docs", "check_readme"],
+    "args": [],
+    "fixture": "readme-problems",
+    "git": true
+  },
+  {
+    "name": "check-readme-sections",
+    "python": "user-docs/check_readme.py",
+    "rust": ["user-docs", "check_readme"],
+    "args": [],
+    "fixture": "readme-sections",
+    "git": true
+  },
+  {
+    "name": "check-readme-max-warnings",
+    "python": "user-docs/check_readme.py",
+    "rust": ["user-docs", "check_readme"],
+    "args": ["--max-warnings", "0"],
+    "fixture": "readme-config",
+    "git": true
+  },
+  {
+    "name": "check-readme-few-warnings",
+    "python": "user-docs/check_readme.py",
+    "rust": ["user-docs", "check_readme"],
+    "args": ["--max-warnings", "5"],
+    "fixture": "readme-config",
+    "git": true
+  },
+  {
+    "name": "check-readme-custom-config",
+    "python": "user-docs/check_readme.py",
+    "rust": ["user-docs", "check_readme"],
+    "args": ["--dir", "docs"],
+    "fixture": "readme-config",
+    "git": true
+  },
+  {
+    "name": "check-readme-file",
+    "python": "user-docs/check_readme.py",
+    "rust": ["user-docs", "check_readme"],
+    "args": ["--file", "docs/TECH.md", "--dir", "{project}"],
+    "fixture": "readme-good",
+    "git": true
+  }
+]

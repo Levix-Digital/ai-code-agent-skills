@@ -519,6 +519,74 @@ pub fn py_regex(pattern: &str) -> Regex {
     Regex::new(&pattern).expect("valid pattern")
 }
 
+fn digit(c: Option<char>) -> bool {
+    c.is_some_and(|c| num::decimal_value(c).is_some())
+}
+
+/// `\b` at byte `i` of `s`, with Python's word characters.
+pub fn boundary(s: &str, i: usize) -> bool {
+    let before = s[..i].chars().next_back().is_some_and(kernel::py::is_word);
+    let after = s[i..].chars().next().is_some_and(kernel::py::is_word);
+    before != after
+}
+
+/// The end of the run of digits that starts at `i` (`i` when there is none).
+pub fn digits_end(s: &str, i: usize) -> usize {
+    s[i..]
+        .char_indices()
+        .find(|(_, c)| num::decimal_value(*c).is_none())
+        .map_or(s.len(), |(j, _)| i + j)
+}
+
+/// `\d+\.\d+` from `i`: the end, when it is there.
+fn dotted_pair(s: &str, i: usize) -> Option<usize> {
+    let a = digits_end(s, i);
+    if a == i || !s[a..].starts_with('.') {
+        return None;
+    }
+    let b = digits_end(s, a + 1);
+    (b > a + 1).then_some(b)
+}
+
+/// `VERSION_RE.search(text)`: `\bv\d+\.\d+(\.\d+)?\b|\b\d+\.\d+\.\d+\b`, with Python's `\b`
+/// and `\d` (a run of digits is always made of word characters).
+pub fn has_version(s: &str) -> bool {
+    for (i, c) in s.char_indices() {
+        if !boundary(s, i) {
+            continue;
+        }
+        if c == 'v'
+            && let Some(end) = dotted_pair(s, i + 1)
+        {
+            if boundary(s, end) {
+                return true;
+            }
+            if s[end..].starts_with('.') {
+                let third = digits_end(s, end + 1);
+                if third > end + 1 && boundary(s, third) {
+                    return true;
+                }
+            }
+        }
+        if digit(Some(c))
+            && let Some(end) = dotted_pair(s, i)
+            && s[end..].starts_with('.')
+        {
+            let third = digits_end(s, end + 1);
+            if third > end + 1 && boundary(s, third) {
+                return true;
+            }
+        }
+    }
+    false
+}
+
+/// `LINK_RE`, inline code and a URL scheme, as `_docs.py` and the checkers match them.
+pub static LINK: LazyLock<Regex> =
+    LazyLock::new(|| py_regex(r#"\[[^\]]*\]\(([^)\s]+)(?:\s+"[^"]*")?\)"#));
+pub static INLINE_CODE: LazyLock<Regex> = LazyLock::new(|| py_regex("`[^`]*`"));
+pub static SCHEME: LazyLock<Regex> = LazyLock::new(|| py_regex("^[a-z]+:"));
+
 /// `strip_code(text)`: removes fenced code blocks, inline code and URLs (kept as blank lines to
 /// preserve numbering).
 pub fn strip_code(text: &str) -> String {
