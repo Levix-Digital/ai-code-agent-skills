@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "usage: roadmap.py add-release [-h] [--dir DIR] --name NAME --goal GOAL\n                              [--target TARGET] [--before BEFORE]\n                              [--after AFTER]\n                              version\n\npositional arguments:\n  version\n\noptions:\n  -h, --help       show this help message and exit\n  --dir DIR        Project directory (default: current; the Git root is used)\n  --name NAME      Short name, for example MVP\n  --goal GOAL      What the release achieves for its users\n  --target TARGET  Target date or period (free text)\n  --before BEFORE\n  --after AFTER\n",
+  "stderr": "",
+  "files": {}
+}

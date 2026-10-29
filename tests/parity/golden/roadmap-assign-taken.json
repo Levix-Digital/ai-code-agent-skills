@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ FEAT-002 is already in v0.2.0; use --move to move it\n",
+  "stderr": "",
+  "files": {}
+}

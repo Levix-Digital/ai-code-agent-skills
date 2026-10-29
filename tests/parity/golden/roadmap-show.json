@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "🗺️ Roadmap: docs/ROADMAP.md\n\nv0.1.0: First cut [released, released 2026-01-08] (1/1 items closed)\n   Goal: The first usable version\n   ✓ IMP-002   [done] (medium) Cache the index\n\nv0.2.0: Reports [in_progress, target 2026-03] (2/4 items closed)\n   Goal: Reports people can share, continued on a second line\n   · FEAT-002  [planned] (high) Dark theme\n   · BUG-002   [open] (low) Typo in the help\n   ✓ FEAT-003  [superseded] (low) Old export\n   ✓ ADJ-001   [dropped] (low) Rename the menu\n\nv0.3.0: Speed [planned] (0/2 items closed)\n   Goal: A fast start\n   · IMP-001   [in_progress] (high) Faster start\n   · FEAT-009  [missing] (?) (not in the backlog)\n",
+  "stderr": "",
+  "files": {}
+}

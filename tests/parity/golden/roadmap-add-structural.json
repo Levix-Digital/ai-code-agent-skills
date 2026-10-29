@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ docs/ROADMAP.md has structural problems; fix them by hand first:\n  - line 18: release heading must be '## vX.Y.Z: <name>'\n  - line 19: text outside a release\n",
+  "stderr": "",
+  "files": {}
+}

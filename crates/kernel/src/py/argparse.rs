@@ -1,7 +1,9 @@
 //! Python's `argparse` for the parsers the scripts build: the same option matching (unique
 //! prefixes, `--opt=value`), the same help layout and the same error messages and exit codes.
 //! Grows with the scripts translated; today it covers optional arguments that store a value,
-//! append values or store `True`, required or not, and one positional argument with choices.
+//! append values or store `True`, required or not, positional arguments (one value, with or
+//! without choices, or `nargs="+"`) and subcommands (`add_subparsers`), as Python 3.13 parses
+//! and prints them.
 
 use super::{repr_str, textwrap};
 use std::collections::BTreeMap;
@@ -17,6 +19,10 @@ pub enum Kind {
     Append,
     /// A positional argument that takes one value.
     Positional,
+    /// A positional argument with `nargs="+"`.
+    Plus,
+    /// `add_subparsers(dest=..., required=True)`: the command and every string after it.
+    Commands,
 }
 
 #[derive(Debug, Clone)]
@@ -30,11 +36,19 @@ pub struct Arg {
     pub choices: Vec<String>,
     /// `type=int`: the value must be what `int()` reads.
     pub int: bool,
+    /// The subcommands of a `Commands` argument: name and help.
+    pub commands: Vec<(String, String)>,
 }
 
 impl Arg {
+    fn is_positional(&self) -> bool {
+        matches!(self.kind, Kind::Positional | Kind::Plus | Kind::Commands)
+    }
+
     fn metavar(&self) -> String {
-        if self.choices.is_empty() {
+        if self.choices.is_empty() && self.is_positional() {
+            self.dest.clone()
+        } else if self.choices.is_empty() {
             self.dest.to_uppercase()
         } else {
             format!("{{{}}}", self.choices.join(","))
@@ -54,8 +68,11 @@ impl Arg {
     }
 
     fn usage(&self) -> String {
-        if self.kind == Kind::Positional {
-            return self.metavar();
+        match self.kind {
+            Kind::Positional => return self.metavar(),
+            Kind::Plus => return format!("{0} [{0} ...]", self.metavar()),
+            Kind::Commands => return format!("{} ...", self.metavar()),
+            _ => {}
         }
         let first = &self.flags[0];
         let part = if self.takes_value() {
@@ -71,7 +88,7 @@ impl Arg {
     }
 
     fn invocation(&self) -> String {
-        if self.kind == Kind::Positional {
+        if self.is_positional() {
             return self.metavar();
         }
         if self.takes_value() {
@@ -107,6 +124,10 @@ impl Parsed {
 
     pub fn flag(&self, dest: &str) -> bool {
         self.flags.get(dest).copied().unwrap_or(false)
+    }
+
+    fn has(&self, dest: &str) -> bool {
+        self.values.contains_key(dest) || self.lists.contains_key(dest)
     }
 }
 
@@ -164,6 +185,7 @@ impl Parser {
                 required: false,
                 choices: Vec::new(),
                 int: false,
+                commands: Vec::new(),
             }],
         }
     }
@@ -178,6 +200,7 @@ impl Parser {
             required,
             choices: Vec::new(),
             int: false,
+            commands: Vec::new(),
         });
         self
     }
@@ -219,7 +242,40 @@ impl Parser {
             required: true,
             choices: choices.iter().map(|c| c.to_string()).collect(),
             int: false,
+            commands: Vec::new(),
         });
+        self
+    }
+
+    /// `add_argument(name)`: a positional argument without help.
+    pub fn positional(self, name: &str) -> Self {
+        self.positional_choice(name, &[], "")
+    }
+
+    /// `add_argument(name, nargs="+")`: one or more values, without help.
+    pub fn positional_plus(mut self, name: &str) -> Self {
+        self = self.positional(name);
+        if let Some(arg) = self.args.last_mut() {
+            arg.kind = Kind::Plus;
+        }
+        self
+    }
+
+    /// `add_subparsers(dest=dest, required=True)` and one `add_parser(name, help=help)` per
+    /// command. `Parser::parse_command` parses the command's own arguments.
+    pub fn commands(mut self, dest: &str, commands: &[(&str, &str)]) -> Self {
+        self = self.positional_choice(
+            dest,
+            &commands.iter().map(|(n, _)| *n).collect::<Vec<_>>(),
+            "",
+        );
+        if let Some(arg) = self.args.last_mut() {
+            arg.kind = Kind::Commands;
+            arg.commands = commands
+                .iter()
+                .map(|(n, h)| (n.to_string(), h.to_string()))
+                .collect();
+        }
         self
     }
 
@@ -371,6 +427,30 @@ impl Parser {
 
     /// `parser.parse_args(argv)`.
     pub fn parse(&self, argv: &[String]) -> Result<Parsed, Exit> {
+        self.parse_command(argv, |_| unreachable!("a parser without commands"))
+    }
+
+    /// `parser.parse_args(argv)` for a parser with `commands`: `sub(name)` builds the parser of
+    /// the command given (its `prog` is `"<prog> <name>"`). The result holds the command's name
+    /// under the commands' `dest` and the command's own arguments.
+    pub fn parse_command(
+        &self,
+        argv: &[String],
+        sub: impl Fn(&str) -> Parser,
+    ) -> Result<Parsed, Exit> {
+        let (parsed, extras) = self.parse_known(argv, &sub)?;
+        if !extras.is_empty() {
+            return Err(self.error(&format!("unrecognized arguments: {}", extras.join(" "))));
+        }
+        Ok(parsed)
+    }
+
+    /// `parser.parse_known_args(argv)`: the arguments and the strings no argument took.
+    fn parse_known(
+        &self,
+        argv: &[String],
+        sub: &dyn Fn(&str) -> Parser,
+    ) -> Result<(Parsed, Vec<String>), Exit> {
         // Classify every string first: '--' makes everything after it positional.
         let mut tokens = Vec::new();
         let mut after_dashes = false;
@@ -391,12 +471,44 @@ impl Parser {
         while i < argv.len() {
             match &tokens[i] {
                 Token::Positional => {
-                    let open = self.args.iter().find(|a| {
-                        a.kind == Kind::Positional && !parsed.values.contains_key(&a.dest)
-                    });
+                    let open = self
+                        .args
+                        .iter()
+                        .find(|a| a.is_positional() && !parsed.has(&a.dest));
                     // A positional matches `-*A-*`: the `--` next to its value is dropped.
                     let mut j = i + usize::from(dashes == Some(i));
                     match open {
+                        // `nargs=PARSER` (`-*A[-AO]*`): the command takes every string left.
+                        Some(arg) if arg.kind == Kind::Commands && j < argv.len() => {
+                            let name = &argv[j];
+                            self.check_choice(arg, name)?;
+                            let (sub_parsed, more) = sub(name).parse_known(&argv[j + 1..], sub)?;
+                            let dest = arg.dest.clone();
+                            parsed.values.extend(sub_parsed.values);
+                            parsed.lists.extend(sub_parsed.lists);
+                            parsed.flags.extend(sub_parsed.flags);
+                            parsed.values.insert(dest, name.clone());
+                            extras.extend(more);
+                            i = argv.len();
+                        }
+                        // `nargs="+"` (`-*A[A-]*`): every positional string in a row.
+                        Some(arg) if arg.kind == Kind::Plus => {
+                            let mut values = Vec::new();
+                            j = i;
+                            while j < argv.len() && matches!(tokens[j], Token::Positional) {
+                                if dashes != Some(j) {
+                                    values.push(argv[j].clone());
+                                }
+                                j += 1;
+                            }
+                            if values.is_empty() {
+                                extras.push(argv[i].clone());
+                                i += 1;
+                            } else {
+                                parsed.lists.insert(arg.dest.clone(), values);
+                                i = j;
+                            }
+                        }
                         Some(arg) if j < argv.len() => {
                             self.check_choice(arg, &argv[j])?;
                             parsed.values.insert(arg.dest.clone(), argv[j].clone());
@@ -484,7 +596,7 @@ impl Parser {
                                     .or_default()
                                     .push(value.unwrap_or_default());
                             }
-                            Kind::Positional => {}
+                            Kind::Positional | Kind::Plus | Kind::Commands => {}
                         }
                     }
                     i = next;
@@ -494,7 +606,7 @@ impl Parser {
         let missing: Vec<String> = self
             .args
             .iter()
-            .filter(|a| a.required && !parsed.values.contains_key(&a.dest))
+            .filter(|a| a.required && !parsed.has(&a.dest))
             .map(Arg::name)
             .collect();
         if !missing.is_empty() {
@@ -503,10 +615,7 @@ impl Parser {
                 missing.join(", ")
             )));
         }
-        if !extras.is_empty() {
-            return Err(self.error(&format!("unrecognized arguments: {}", extras.join(" "))));
-        }
-        Ok(parsed)
+        Ok((parsed, extras))
     }
 
     /// `HelpFormatter` width: the terminal's columns (or `$COLUMNS`, or 80) minus 2.
@@ -527,7 +636,7 @@ impl Parser {
 
     fn usage_body(&self, width: usize) -> String {
         let prefix = "usage: ";
-        let is_pos = |a: &&Arg| a.kind == Kind::Positional;
+        let is_pos = |a: &&Arg| a.is_positional();
         let opt_parts: Vec<String> = self
             .args
             .iter()
@@ -602,7 +711,7 @@ impl Parser {
     pub fn format_help(&self) -> String {
         let width = Self::width();
         let mut help = format!("usage: {}\n\n", self.usage_body(width));
-        if let Some(desc) = &self.description {
+        if let Some(desc) = self.description.as_ref().filter(|d| !d.is_empty()) {
             let text = collapse_ws(desc);
             let text_width = width.max(11);
             help.push_str(&textwrap::fill(&text, text_width, ""));
@@ -610,25 +719,42 @@ impl Parser {
         }
         let indent = 2usize;
         let max_help_position = 24usize.min(width.saturating_sub(20).max(4));
+        // A command is listed under its `Commands` argument, two columns further in.
         let action_max = self
             .args
             .iter()
-            .map(|a| clen(&a.invocation()) + indent)
+            .flat_map(|a| {
+                let commands = a.commands.iter().map(|(n, _)| clen(n) + indent + 2);
+                std::iter::once(clen(&a.invocation()) + indent).chain(commands)
+            })
             .max()
             .unwrap_or(0);
         let help_position = (action_max + 2).min(max_help_position);
         let help_width = width.saturating_sub(help_position).max(11);
-        let action_width = help_position.saturating_sub(indent + 2);
-        let positionals: Vec<&Arg> = self
-            .args
-            .iter()
-            .filter(|a| a.kind == Kind::Positional)
-            .collect();
-        let optionals: Vec<&Arg> = self
-            .args
-            .iter()
-            .filter(|a| a.kind != Kind::Positional)
-            .collect();
+        let format_action = |help: &mut String, inv: &str, text: &str, indent: usize| {
+            let action_width = help_position.saturating_sub(indent + 2);
+            let lines = textwrap::wrap(&collapse_ws(text), help_width);
+            if text.is_empty() {
+                help.push_str(&format!("{}{inv}\n", " ".repeat(indent)));
+            } else if clen(inv) <= action_width {
+                let pad = action_width - clen(inv);
+                help.push_str(&format!("{}{inv}{}  ", " ".repeat(indent), " ".repeat(pad)));
+                if let Some(first) = lines.first() {
+                    help.push_str(first);
+                }
+                help.push('\n');
+            } else {
+                help.push_str(&format!("{}{inv}\n", " ".repeat(indent)));
+                if let Some(first) = lines.first() {
+                    help.push_str(&format!("{}{first}\n", " ".repeat(help_position)));
+                }
+            }
+            for line in lines.iter().skip(1) {
+                help.push_str(&format!("{}{line}\n", " ".repeat(help_position)));
+            }
+        };
+        let positionals: Vec<&Arg> = self.args.iter().filter(|a| a.is_positional()).collect();
+        let optionals: Vec<&Arg> = self.args.iter().filter(|a| !a.is_positional()).collect();
         let mut sections = Vec::new();
         if !positionals.is_empty() {
             sections.push(("positional arguments:", positionals));
@@ -641,25 +767,9 @@ impl Parser {
             help.push_str(title);
             help.push('\n');
             for a in args {
-                let inv = a.invocation();
-                let lines = textwrap::wrap(&collapse_ws(&a.help), help_width);
-                if a.help.is_empty() {
-                    help.push_str(&format!("{}{inv}\n", " ".repeat(indent)));
-                } else if clen(&inv) <= action_width {
-                    let pad = action_width - clen(&inv);
-                    help.push_str(&format!("{}{inv}{}  ", " ".repeat(indent), " ".repeat(pad)));
-                    if let Some(first) = lines.first() {
-                        help.push_str(first);
-                    }
-                    help.push('\n');
-                } else {
-                    help.push_str(&format!("{}{inv}\n", " ".repeat(indent)));
-                    if let Some(first) = lines.first() {
-                        help.push_str(&format!("{}{first}\n", " ".repeat(help_position)));
-                    }
-                }
-                for line in lines.iter().skip(1) {
-                    help.push_str(&format!("{}{line}\n", " ".repeat(help_position)));
+                format_action(&mut help, &a.invocation(), &a.help, indent);
+                for (name, text) in &a.commands {
+                    format_action(&mut help, name, text, indent + 2);
                 }
             }
         }
@@ -740,5 +850,31 @@ mod tests {
             panic!()
         };
         assert!(e.ends_with("error: argument --json: ignored explicit argument '1'\n"));
+    }
+
+    #[test]
+    fn commands_take_the_rest() {
+        let top = Parser::new("prog.py", "Does things").commands("command", &[("add", "Add")]);
+        let sub = |name: &str| {
+            Parser::new(&format!("prog.py {name}"), "")
+                .positional_plus("ids")
+                .flag("--move", "")
+        };
+        let r = top
+            .parse_command(&args(&["add", "--", "A", "--move"]), sub)
+            .unwrap();
+        assert_eq!(r.value("command"), Some("add"));
+        assert_eq!(r.list("ids"), vec!["A", "--move"]);
+        assert!(!r.flag("move"));
+        let Err(Exit::Error(e)) = top.parse_command(&args(&["add", "A", "--move", "x"]), sub)
+        else {
+            panic!()
+        };
+        assert!(e.starts_with("usage: prog.py [-h] {add} ...\n"));
+        assert!(e.ends_with("prog.py: error: unrecognized arguments: x\n"));
+        let Err(Exit::Error(e)) = top.parse_command(&args(&["add"]), sub) else {
+            panic!()
+        };
+        assert!(e.ends_with("prog.py add: error: the following arguments are required: ids\n"));
     }
 }

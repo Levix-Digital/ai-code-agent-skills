@@ -35,7 +35,7 @@ The one command the user needs: the protocol guides the user, not the other way 
 | `pr:<number>` | The pull request on its platform: `pr_sync.py status --pr <number>`; then `dev-cycle-protocol` Phase 7: fix and resolve the small threads, bring the large ones to the user, answer questions, fix CI and conflicts. |
 | `rc:<run>` | Release candidate: `"<skills_root>/dev-cycle-protocol/bin/dev-cycle" quality-assurance manual_tests summary --run <run>` and `failed --run <run>`; failures go back to Phase 4; when all pass, gate rc and then gate 8 (Phases 9 and 10). |
 | `bugs` | Phase 1 with the blocking bugs: show them, the user decides which to promote (`backlog.py promote`). |
-| `triage` | Show the open bugs not triaged and why; with the user, give each a severity (`backlog.py set <ID> --severity <s>`) and schedule the ones that do not block in the next release at the latest (`roadmap.py assign <ID> --release <vX.Y.Z> [--move]`), or promote them. |
+| `triage` | Show the open bugs not triaged and why; with the user, give each a severity (`backlog.py set <ID> --severity <s>`) and schedule the ones that do not block in the next release at the latest (`roadmap assign <ID> --release <vX.Y.Z> [--move]` on the engine), or promote them. |
 | `git` | Ask, then `git init` with the production branch (`main`). |
 | `config` | `onboard.py propose-config`, show the proposal, let the user change it, write only what they confirm: save it to a file and `onboard.py write-config --file <it>`. The proposal carries the detected branching model (`devops.branching`): present the choice as in `branching` below before writing. The architecture style is chosen later with `software-design` (or in Phase 0). |
 | `gitignore` | The project's `.gitignore` keeps files of the protocol out of Git (an allowlist `.gitignore`, a `docs/` entry), so the decisions in them would be lost in the next clone. Show the ignored paths and the proposed entries; after the user confirms, add the entries to `.gitignore` and commit it with the configuration. If the user prefers another layout, change the paths in `.dev-cycle.json` instead. |
@@ -47,7 +47,7 @@ The one command the user needs: the protocol guides the user, not the other way 
 | `speckit-fix` | Fix each reported problem: version drift (`speckit_setup.py upgrade --to <version>` after the user agrees), preset or branch prefix (`adopt` again or `upgrade`), stale constitution (`constitution.py generate`). |
 | `inception` | `product-inception` Phase 0 with the idea (ask for it when there is none). |
 | `adoption` | `product-inception` in adoption mode. |
-| `release` | Phase 1 from the open items of the current release (`roadmap.py current`). |
+| `release` | Phase 1 from the open items of the current release (`roadmap current` on the engine). |
 | `request` | Phase 1 with the request. |
 
 ## Rules

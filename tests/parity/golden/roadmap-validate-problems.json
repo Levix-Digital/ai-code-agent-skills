@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ line 18: release heading must be '## vX.Y.Z: <name>'\n❌ line 19: text outside a release\n❌ line 3: v0.2.0: a released release needs '- **Released**: <date>'\n❌ line 3: v0.2.0: EPIC-001 is an epic; assign its items instead\n❌ line 3: v0.2.0: 'X-1' is not a backlog id\n❌ line 8: v0.1.0: missing '- **Goal**:'\n❌ line 8: v0.1.0: status must be one of: planned, in_progress, released\n❌ line 8: v0.1.0: '- **Released**:' only belongs to a released release\n❌ line 8: v0.1.0: FEAT-001 is also in v0.2.0\n❌ line 8: v0.1.0: FEAT-009 is not in the backlog\n❌ line 13: v0.1.0: duplicate release\n❌ line 13: v0.1.0: a released release needs '- **Released**: <date>'\n❌ a released release comes after one that is not released; order the roadmap by delivery\n❌ releases are not in version order: v0.2.0, v0.1.0, v0.1.0\n⚠️ v0.2.0 is released but FEAT-001 is still open\n⚠️ v0.2.0 is released but EPIC-001 is still open\n\n❌ roadmap: 3 release(s), 14 problem(s).\n",
+  "stderr": "",
+  "files": {}
+}
