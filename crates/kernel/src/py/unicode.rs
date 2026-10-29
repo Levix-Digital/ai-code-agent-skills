@@ -786,6 +786,13 @@ pub fn digits() -> String {
         .collect()
 }
 
+/// Python's `\w` (`str` patterns), as the inside of a regex class.
+pub fn word() -> String {
+    WORD.iter()
+        .map(|(a, b)| format!("\\x{{{a:x}}}-\\x{{{b:x}}}"))
+        .collect()
+}
+
 /// `\w` of Python's `re` for `str` patterns.
 pub fn is_word(c: char) -> bool {
     in_table(&WORD, c)

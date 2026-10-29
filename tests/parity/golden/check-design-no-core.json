@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ architecture.forbidden_core_imports is set but architecture.core_path is not\n\n❌ software-design: 1 error(s), 0 warning(s).\n",
+  "stderr": "",
+  "files": {}
+}

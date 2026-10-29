@@ -1,0 +1,13 @@
+{
+  "architecture": {
+    "style": "hexagonal",
+    "core_path": "core",
+    "forbidden_core_imports": [
+      "ratatui",
+      "app-installer",
+      "flask",
+      "django",
+      "QtWidgets"
+    ]
+  }
+}

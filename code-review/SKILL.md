@@ -23,7 +23,7 @@ Review with fresh eyes: read the plan and the diff as a reviewer who did not wri
 |---|---|
 | The plan | Every acceptance criterion and milestone of the plan (or its Spec Kit `tasks.md`) is done; nothing outside the plan slipped in |
 | Correctness | Edge cases, empty and large inputs, error paths, concurrency, off-by-one, time zones; the change does what the request asked |
-| Design | The `software-design` review checklist and `check_design.py`; the project's architecture style; no abstraction without its reason |
+| Design | The `software-design` review checklist and `check_design`; the project's architecture style; no abstraction without its reason |
 | Tests | New logic has automated tests; a regression test per bug that fails without the fix; tests assert behavior, not implementation; manual tests curated (`quality-assurance`) |
 | Documentation | `docs/architecture` pages and ADRs for structural changes, README for user-visible ones, written for today (`architecture-docs`, `user-docs`) |
 | Security and data | No secrets, input validated at the boundary, permissions checked, migrations additive or backward compatible, a rollback path |

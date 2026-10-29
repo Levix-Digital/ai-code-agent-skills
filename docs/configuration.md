@@ -64,7 +64,7 @@ Optional file at a project's root: the project configuration shared by every ski
 | `architecture.core_path` | Where the domain core lives | not set |
 | `architecture.surfaces` | Interfaces that must stay in parity | `[]` |
 | `architecture.canonical_datastore` | The single source of truth database | not set |
-| `architecture.forbidden_core_imports` | Libraries or modules the core must never import (checked by `software-design/check_design.py`) | `[]` |
+| `architecture.forbidden_core_imports` | Libraries or modules the core must never import (checked by `software-design check_design`) | `[]` |
 | `test_commands` | Commands that run the automated tests | auto-detected |
 | `docs.user_doc`, `docs.tec_doc` | User documentation and technical documentation index | `README.md`, `TECDOC.md` |
 | `docs.readme_max_lines` | Line limit checked by `user-docs check_readme` | `400` |

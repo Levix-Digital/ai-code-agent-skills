@@ -1,0 +1,6 @@
+{
+  "exit": 2,
+  "stdout": "",
+  "stderr": "usage: check_design.py [-h] [--dir DIR] [--strict]\ncheck_design.py: error: unrecognized arguments: --json\n",
+  "files": {}
+}

@@ -44,6 +44,11 @@ const COMMANDS: &[(&str, &str, Command)] = &[
         "check_product",
         product_inception::check_product::main,
     ),
+    (
+        "software-design",
+        "check_design",
+        software_design::check_design::main,
+    ),
     ("user-docs", "check_readme", user_docs::check_readme::main),
 ];
 

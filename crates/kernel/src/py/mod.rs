@@ -279,6 +279,20 @@ pub fn matches_to_end(s: &str, full: impl Fn(&str) -> bool) -> bool {
     full(s) || s.strip_suffix('\n').is_some_and(full)
 }
 
+/// The items of `for x in value`.
+pub fn iterate(value: &Value) -> Result<Vec<Value>, Crash> {
+    match value {
+        Value::List(items) | Value::Tuple(items) | Value::Set(items) => Ok(items.clone()),
+        Value::Dict(d) => Ok(d.keys().cloned().collect()),
+        Value::Str(s) => Ok(s.chars().map(|c| Value::Str(c.to_string())).collect()),
+        Value::Bytes(b) => Ok(b.iter().map(|x| Value::int(i64::from(*x))).collect()),
+        other => Err(Crash::new(format!(
+            "TypeError: '{}' object is not iterable",
+            other.type_name()
+        ))),
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

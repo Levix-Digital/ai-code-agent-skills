@@ -1,0 +1,9 @@
+{
+  "architecture": {
+    "style": "spaghetti",
+    "core_path": "nope",
+    "forbidden_core_imports": [
+      "x"
+    ]
+  }
+}

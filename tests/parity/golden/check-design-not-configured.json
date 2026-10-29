@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "⚠️ architecture.style is not set in .dev-cycle.json; infer it, agree it with the user and record it in an ADR\n⚠️ architecture.core_path is not set; the core dependency check is skipped\n\n✅ software-design: 0 error(s), 2 warning(s).\n",
+  "stderr": "",
+  "files": {}
+}

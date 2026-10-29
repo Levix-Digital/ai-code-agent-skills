@@ -1,0 +1,78 @@
+[
+  {
+    "name": "check-design-help",
+    "python": "software-design/check_design.py",
+    "rust": ["software-design", "check_design"],
+    "args": ["--help"],
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "check-design-unrecognized",
+    "python": "software-design/check_design.py",
+    "rust": ["software-design", "check_design"],
+    "args": ["--strict", "--json"],
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "check-design-clean",
+    "python": "software-design/check_design.py",
+    "rust": ["software-design", "check_design"],
+    "args": [],
+    "fixture": "design-clean",
+    "git": true
+  },
+  {
+    "name": "check-design-violations",
+    "python": "software-design/check_design.py",
+    "rust": ["software-design", "check_design"],
+    "args": [],
+    "fixture": "design-violations",
+    "git": true
+  },
+  {
+    "name": "check-design-violations-from-core",
+    "python": "software-design/check_design.py",
+    "rust": ["software-design", "check_design"],
+    "args": ["--dir", "core/lib"],
+    "fixture": "design-violations",
+    "git": true
+  },
+  {
+    "name": "check-design-not-configured",
+    "python": "software-design/check_design.py",
+    "rust": ["software-design", "check_design"],
+    "args": [],
+    "git": true
+  },
+  {
+    "name": "check-design-not-configured-strict",
+    "python": "software-design/check_design.py",
+    "rust": ["software-design", "check_design"],
+    "args": ["--strict"],
+    "git": true
+  },
+  {
+    "name": "check-design-unknown",
+    "python": "software-design/check_design.py",
+    "rust": ["software-design", "check_design"],
+    "args": [],
+    "fixture": "design-unknown",
+    "git": true
+  },
+  {
+    "name": "check-design-no-core",
+    "python": "software-design/check_design.py",
+    "rust": ["software-design", "check_design"],
+    "args": [],
+    "fixture": "design-no-core",
+    "git": true
+  },
+  {
+    "name": "check-design-empty-forbidden",
+    "python": "software-design/check_design.py",
+    "rust": ["software-design", "check_design"],
+    "args": ["--strict", "--dir", "{project}"],
+    "fixture": "design-empty-forbidden",
+    "git": true
+  }
+]
