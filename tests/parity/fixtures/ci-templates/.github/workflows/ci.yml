@@ -1,0 +1,52 @@
+# Test workflow: every pull request into a branch that receives them, and every push to the
+# branch work is merged into. Replace the lint step with the stack's linters and static analysis
+# and the test step with the project's test_commands.
+# Branches by devops.branching (`branching.py show`):
+#   integration       pull_request [dev, main]            push [dev]
+#   trunk             pull_request [main]                 push [main]
+#   release-branches  pull_request [main, 'release/**']   push [main, 'release/**']
+name: Tests
+
+on:
+  pull_request:
+    branches: [dev, main]
+  push:
+    branches: [dev]
+  workflow_dispatch:
+
+concurrency:
+  # One run per pull request (superseded runs are cancelled); one per commit otherwise.
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Set up the toolchain of the stack here.
+
+      # For example: cargo fmt --check && cargo clippy --all-targets -- -D warnings; ruff check .;
+      # npx eslint .; golangci-lint run.
+      - name: Run linters
+        run: cargo clippy --all-targets -- -D warnings
+
+  test:
+    name: Test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+
+      # Set up the toolchain and caches of the stack here.
+
+      - name: Run tests
+        run: cargo test --workspace

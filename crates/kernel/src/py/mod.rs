@@ -2,6 +2,7 @@
 //! read their input must not change when a script is translated (IMP-005).
 
 pub mod argparse;
+pub mod fnmatch;
 pub mod json;
 pub mod num;
 pub mod path;
@@ -288,7 +289,7 @@ pub fn iterate(value: &Value) -> Result<Vec<Value>, Crash> {
         Value::Bytes(b) => Ok(b.iter().map(|x| Value::int(i64::from(*x))).collect()),
         other => Err(Crash::new(format!(
             "TypeError: '{}' object is not iterable",
-            other.type_name()
+            other.tp_name()
         ))),
     }
 }

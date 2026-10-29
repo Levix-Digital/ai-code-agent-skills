@@ -1,0 +1,8 @@
+{
+  "devops": {
+    "branching": "trunk",
+    "version_files": [
+      "version.txt"
+    ]
+  }
+}

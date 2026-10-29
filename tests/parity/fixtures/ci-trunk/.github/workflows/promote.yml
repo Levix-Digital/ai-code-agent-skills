@@ -1,0 +1,70 @@
+# Promote: the user's release gate under the trunk and release-branches models.
+# The user runs it with the accepted candidate (Actions > Promote > Run workflow, or
+# `gh workflow run promote.yml -f candidate=vX.Y.Z-rc.N`); the agent never does. It tags the
+# candidate's own commit vX.Y.Z, so what was accepted is what is released, and calls the release
+# workflow in the same run (a tag pushed with GITHUB_TOKEN would not trigger it).
+# Hold it for the user's approval: Settings > Environments > release > Required reviewers.
+# Without release candidates (devops.release_candidates false), leave `candidate` empty and run it
+# on the branch to release: the commit at its head is tagged with the version of its version file.
+name: Promote
+
+on:
+  workflow_dispatch:
+    inputs:
+      candidate:
+        description: Accepted release candidate tag (vX.Y.Z-rc.N); empty releases the head of the chosen branch
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.target.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Resolve the release
+        id: target
+        env:
+          CANDIDATE: ${{ inputs.candidate }}
+        run: |
+          if [ -n "$CANDIDATE" ]; then
+            if ! echo "$CANDIDATE" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+$'; then
+              echo "::error::'$CANDIDATE' is not a candidate tag like v1.4.0-rc.2"; exit 1
+            fi
+            git rev-parse -q --verify "refs/tags/$CANDIDATE" >/dev/null || { echo "::error::$CANDIDATE does not exist"; exit 1; }
+            TAG="${CANDIDATE%-rc.*}"
+            COMMIT="$(git rev-list -n 1 "$CANDIDATE")"
+          else
+            # Adapt to the project's version file (Cargo.toml, package.json, pyproject.toml, ...).
+            TAG="v$(tr -d '[:space:]' < version.txt | sed 's/^v//')"
+            COMMIT="$GITHUB_SHA"
+          fi
+          if git rev-parse -q --verify "refs/tags/$TAG" >/dev/null; then
+            echo "::error::$TAG already exists; bump the version and cut a new candidate"; exit 1
+          fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "commit=$COMMIT" >> "$GITHUB_OUTPUT"
+
+      - name: Create the final tag
+        env:
+          TAG: ${{ steps.target.outputs.tag }}
+          COMMIT: ${{ steps.target.outputs.commit }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -a "$TAG" "$COMMIT" -m "Release $TAG"
+          git push origin "$TAG"
+
+  release:
+    needs: tag
+    uses: ./.github/workflows/release.yml
+    with:
+      tag: ${{ needs.tag.outputs.tag }}
+    secrets: inherit

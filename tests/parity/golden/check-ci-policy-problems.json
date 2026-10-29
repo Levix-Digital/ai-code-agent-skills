@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ devops.version_files: 'Cargo.toml' does not exist\n❌ workflow YAML could not be parsed: while parsing a flow sequence\n  in \"<unicode string>\", line 3, column 12:\n        steps: [unclosed\n               ^\nexpected ',' or ']', but got '<stream end>'\n  in \"<unicode string>\", line 4, column 1:\n    \n    ^\n❌ no test workflow runs on pull requests into 'dev' (see templates/ci.yml)\n❌ release.yml: publishing a release needs 'permissions: contents: write'\n❌ release.yml: '-rc' tags must publish pre-releases (prerelease: ${{ contains(<tag>, '-rc') }})\n❌ tag.yml: pushes a tag with GITHUB_TOKEN, which does not trigger the release workflow; call the release as a reusable workflow or push with a dedicated token\n⚠️ no workflow runs a linter or static analysis on pull requests into 'dev' (see the lint job of templates/ci.yml)\n⚠️ no workflow runs a linter or static analysis on pull requests into 'main' (see the lint job of templates/ci.yml)\n\n❌ devops-release CI policy: 6 error(s), 2 warning(s).\n",
+  "stderr": "",
+  "files": {}
+}

@@ -1,0 +1,87 @@
+[
+  {
+    "name": "check-ci-policy-help",
+    "python": "devops-release/check_ci_policy.py",
+    "rust": ["devops-release", "check_ci_policy"],
+    "args": ["--help"],
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "check-ci-policy-unrecognized",
+    "python": "devops-release/check_ci_policy.py",
+    "rust": ["devops-release", "check_ci_policy"],
+    "args": ["--bogus"],
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "check-ci-policy-no-config",
+    "python": "devops-release/check_ci_policy.py",
+    "rust": ["devops-release", "check_ci_policy"],
+    "args": [],
+    "git": true
+  },
+  {
+    "name": "check-ci-policy-templates",
+    "python": "devops-release/check_ci_policy.py",
+    "rust": ["devops-release", "check_ci_policy"],
+    "args": [],
+    "fixture": "ci-templates",
+    "git": true
+  },
+  {
+    "name": "check-ci-policy-trunk",
+    "python": "devops-release/check_ci_policy.py",
+    "rust": ["devops-release", "check_ci_policy"],
+    "args": [],
+    "fixture": "ci-trunk",
+    "git": true
+  },
+  {
+    "name": "check-ci-policy-release-branches",
+    "python": "devops-release/check_ci_policy.py",
+    "rust": ["devops-release", "check_ci_policy"],
+    "args": [],
+    "fixture": "ci-release-branches",
+    "git": true
+  },
+  {
+    "name": "check-ci-policy-problems",
+    "python": "devops-release/check_ci_policy.py",
+    "rust": ["devops-release", "check_ci_policy"],
+    "args": [],
+    "fixture": "ci-problems",
+    "git": true
+  },
+  {
+    "name": "check-ci-policy-no-workflows",
+    "python": "devops-release/check_ci_policy.py",
+    "rust": ["devops-release", "check_ci_policy"],
+    "args": [],
+    "fixture": "ci-no-workflows",
+    "git": true
+  },
+  {
+    "name": "check-ci-policy-unknown-model",
+    "python": "devops-release/check_ci_policy.py",
+    "rust": ["devops-release", "check_ci_policy"],
+    "args": [],
+    "fixture": "ci-unknown-model",
+    "git": true
+  },
+  {
+    "name": "check-ci-policy-custom-token",
+    "python": "devops-release/check_ci_policy.py",
+    "rust": ["devops-release", "check_ci_policy"],
+    "args": [],
+    "fixture": "ci-custom-token",
+    "git": true
+  },
+  {
+    "name": "check-ci-policy-dir",
+    "python": "devops-release/check_ci_policy.py",
+    "rust": ["devops-release", "check_ci_policy"],
+    "args": ["--dir", "{project}"],
+    "fixture": "ci-trunk",
+    "git": true
+  }
+]

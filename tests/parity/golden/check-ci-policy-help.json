@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "usage: check_ci_policy.py [-h] [--dir DIR]\n\nCheck GitHub Actions workflows against the devops-release policy\n\noptions:\n  -h, --help  show this help message and exit\n  --dir DIR   Project directory (default: current directory)\n",
+  "stderr": "",
+  "files": {}
+}

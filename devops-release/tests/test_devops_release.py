@@ -8,11 +8,11 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 SKILL = os.path.dirname(HERE)
 sys.path.insert(0, SKILL)
 
-from check_ci_policy import run as check_ci  # noqa: E402
 from release_status import evaluate_release, next_rc_tag, project_version, read_version_file  # noqa: E402
 
 sys.path.insert(0, os.path.join(SKILL, "..", "dev-cycle-protocol"))
 from project_config import load_project_config  # noqa: E402
+from verify_gate import run_checker  # noqa: E402
 
 TEMPLATES = os.path.join(SKILL, "templates")
 
@@ -35,6 +35,16 @@ def template(name):
 
 
 # --- check_ci_policy ---------------------------------------------------------------
+
+def check_ci(project_dir):
+    """The engine's check_ci_policy: (errors, warnings) from its report."""
+    code, output = run_checker("devops-release", "check_ci_policy.py", ["--dir", project_dir])
+    lines = [line for line in output.splitlines() if "devops-release CI policy:" not in line]
+    errors = [line[len("❌ "):] for line in lines if line.startswith("❌ ")]
+    warnings = [line[len("⚠️ "):] for line in lines if line.startswith("⚠️ ")]
+    assert code == (1 if errors else 0), output
+    return errors, warnings
+
 
 LINT_PLACEHOLDER = 'echo "replace with the stack\'s linters" && exit 1'
 TEST_PLACEHOLDER = 'echo "replace with the project\'s test_commands" && exit 1'

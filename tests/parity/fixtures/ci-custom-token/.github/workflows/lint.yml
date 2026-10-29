@@ -1,0 +1,7 @@
+on: [pull_request]
+jobs:
+  l:
+    runs-on: ubuntu-latest
+    steps:
+      - run: npm run lint
+      - run: pytest

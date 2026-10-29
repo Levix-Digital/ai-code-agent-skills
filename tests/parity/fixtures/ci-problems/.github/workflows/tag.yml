@@ -1,0 +1,12 @@
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  t:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          git tag -a v1 -m v1
+          git push origin v1
