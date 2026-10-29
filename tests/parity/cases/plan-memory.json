@@ -26,5 +26,140 @@
     "args": ["current", "--dir", "{project}"],
     "fixture": "backlog-and-roadmap",
     "git": true
+  },
+  {
+    "name": "list-plans-help",
+    "python": "plan-memory/list_plans.py",
+    "rust": ["plan-memory", "list_plans"],
+    "args": ["--help"],
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "list-plans-bad-kind",
+    "python": "plan-memory/list_plans.py",
+    "rust": ["plan-memory", "list_plans"],
+    "args": ["--kind", "epic"],
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "list-plans-missing-value",
+    "python": "plan-memory/list_plans.py",
+    "rust": ["plan-memory", "list_plans"],
+    "args": ["--status"],
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "list-plans-all",
+    "python": "plan-memory/list_plans.py",
+    "rust": ["plan-memory", "list_plans"],
+    "args": [],
+    "fixture": "plans-list"
+  },
+  {
+    "name": "list-plans-status",
+    "python": "plan-memory/list_plans.py",
+    "rust": ["plan-memory", "list_plans"],
+    "args": ["--status", "completed"],
+    "fixture": "plans-list"
+  },
+  {
+    "name": "list-plans-kind-bug",
+    "python": "plan-memory/list_plans.py",
+    "rust": ["plan-memory", "list_plans"],
+    "args": ["--kind", "bug"],
+    "fixture": "plans-list"
+  },
+  {
+    "name": "list-plans-kind-feature",
+    "python": "plan-memory/list_plans.py",
+    "rust": ["plan-memory", "list_plans"],
+    "args": ["--kind", "feature"],
+    "fixture": "plans-list"
+  },
+  {
+    "name": "list-plans-status-and-kind",
+    "python": "plan-memory/list_plans.py",
+    "rust": ["plan-memory", "list_plans"],
+    "args": ["--status", "active", "--kind", "feature"],
+    "fixture": "plans-list"
+  },
+  {
+    "name": "list-plans-status-unicode",
+    "python": "plan-memory/list_plans.py",
+    "rust": ["plan-memory", "list_plans"],
+    "args": ["--status", "Straße"],
+    "fixture": "plans-list"
+  },
+  {
+    "name": "list-plans-no-match",
+    "python": "plan-memory/list_plans.py",
+    "rust": ["plan-memory", "list_plans"],
+    "args": ["--status", "nothing"],
+    "fixture": "plans-list"
+  },
+  {
+    "name": "list-plans-project",
+    "python": "plan-memory/list_plans.py",
+    "rust": ["plan-memory", "list_plans"],
+    "args": ["--project", "Other_Name"],
+    "fixture": "plans-list"
+  },
+  {
+    "name": "list-plans-empty-project",
+    "python": "plan-memory/list_plans.py",
+    "rust": ["plan-memory", "list_plans"],
+    "args": ["--project", ""],
+    "fixture": "plans-list"
+  },
+  {
+    "name": "list-plans-config",
+    "python": "plan-memory/list_plans.py",
+    "rust": ["plan-memory", "list_plans"],
+    "args": [],
+    "fixture": "plans-config"
+  },
+  {
+    "name": "list-plans-legacy-dir",
+    "python": "plan-memory/list_plans.py",
+    "rust": ["plan-memory", "list_plans"],
+    "args": [],
+    "fixture": "plans-legacy-dir"
+  },
+  {
+    "name": "list-plans-bad-config",
+    "python": "plan-memory/list_plans.py",
+    "rust": ["plan-memory", "list_plans"],
+    "args": [],
+    "fixture": "plans-bad-config"
+  },
+  {
+    "name": "list-plans-no-plans",
+    "python": "plan-memory/list_plans.py",
+    "rust": ["plan-memory", "list_plans"],
+    "args": [],
+    "fixture": "ci-trunk"
+  },
+  {
+    "name": "list-plans-dir",
+    "python": "plan-memory/list_plans.py",
+    "rust": ["plan-memory", "list_plans"],
+    "args": ["--dir", "docs"],
+    "fixture": "plans-list"
+  },
+  {
+    "name": "list-plans-dir-in-git",
+    "python": "plan-memory/list_plans.py",
+    "rust": ["plan-memory", "list_plans"],
+    "args": ["--dir", "docs/plans"],
+    "fixture": "plans-list",
+    "git": true
+  },
+  {
+    "name": "list-plans-git",
+    "python": "plan-memory/list_plans.py",
+    "rust": ["plan-memory", "list_plans"],
+    "args": [],
+    "fixture": "plans-config",
+    "git": true
   }
 ]

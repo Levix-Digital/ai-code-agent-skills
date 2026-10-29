@@ -1,7 +1,7 @@
 ---
 title: Product and Planning
 summary: Product inception, the backlog with epics, the roadmap of releases and the versioned plans with milestones.
-code: [product-inception, plan-memory, backlog]
+code: [product-inception, plan-memory, backlog, crates/plan-memory]
 ---
 
 # Product and Planning
@@ -17,6 +17,7 @@ Owns what gets built and in which order: product inception (Phase 0), the backlo
 - `product-inception/`: the Phase 0 process and `check_product` (engine) for `docs/product/VISION.md` and `TECH_SPEC.md`.
 - `plan-memory/backlog.py` and `backlog/`: capture, triage, close and promote items in `docs/BACKLOG.md`; bugs carry a severity, others a priority.
 - `plan-memory/roadmap.py`: releases and item assignment in `docs/ROADMAP.md`.
+- `crates/plan-memory` (engine): `list_plans` and the plan store it reads (`PlanStore` and `read_plan` of `plan-memory/_store.py`, which stays for the Python scripts that import it).
 - `plan-memory/save_plan.py`, `get_plan.py`, `check_milestone.py`, `update_plan_status.py`, `search_plans.py`, `detect_drift.py`: plans as Markdown with YAML frontmatter in `docs/plans/`, lineage, milestones, search and drift checks.
 
 ## Behavior

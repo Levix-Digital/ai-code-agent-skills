@@ -812,6 +812,33 @@ pub fn lower(s: &str) -> String {
     out
 }
 
+/// Letters that Rust uppercases but Python 3.13 does not know yet: `upper()` keeps them.
+const NOT_UPPERED: [(u32, u32); 10] = [
+    (0x19b, 0x19b),
+    (0x264, 0x264),
+    (0x1c8a, 0x1c8a),
+    (0xa7cd, 0xa7cd),
+    (0xa7cf, 0xa7cf),
+    (0xa7d3, 0xa7d3),
+    (0xa7d5, 0xa7d5),
+    (0xa7db, 0xa7db),
+    (0x10d70, 0x10d85),
+    (0x16ebb, 0x16ed3),
+];
+
+/// `str.upper()`.
+pub fn upper(s: &str) -> String {
+    s.chars()
+        .map(|c| {
+            if in_table(&NOT_UPPERED, c) {
+                c.to_string()
+            } else {
+                c.to_uppercase().collect()
+            }
+        })
+        .collect()
+}
+
 /// A character matched case-insensitively (`re.IGNORECASE`) against the lower-case ASCII
 /// letter `p` of a pattern: Python compares simple lower-case mappings, and adds `ı` to `i`
 /// and `ſ` to `s`.
@@ -835,6 +862,7 @@ mod tests {
         assert!(!is_word('-') && !is_word('\u{345}') && !is_word('‿'));
         assert_eq!(lower("ΟΔΟΣ Ⅻ İ"), "οδος ⅻ i\u{307}");
         assert_eq!(lower("A\u{1c89}B"), "a\u{1c89}b");
+        assert_eq!(upper("straße ﬁ ŉ \u{1c8a} ǅ"), "STRASSE FI ʼN \u{1c8a} Ǆ");
         let d = regex::Regex::new(&format!("^[{}]+$", digits())).unwrap();
         assert!(d.is_match("0١9") && !d.is_match("½"));
         let sp = regex::Regex::new(&format!("^[{SPACE}]+$")).unwrap();

@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "==========================================================================================\n📋 PLANS OF 'legacy-name' (Showing: 1 of 1) — {project}/old\n==========================================================================================\n✅ Beta fix\n   • Plan ID    : beta\n   • Version    : - | Status: COMPLETED | Kind: bug | Size: 11 chars\n   • Author     : - | Created: 2026-02-01\n   • Supersedes : alpha\n   • Superseded by: gamma\n   • Progress   : [░░░░░░░░░░░░░░░░] 0.0% (0/2 Milestones)\n   • Milestones : one, two\n------------------------------------------------------------------------------------------\n",
+  "stderr": "",
+  "files": {}
+}

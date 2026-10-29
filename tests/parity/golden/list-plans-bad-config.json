@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "==========================================================================================\n📋 PLANS OF 'project' (Showing: 1 of 1) — {project}/docs/plans\n==========================================================================================\n📌 Zeta\n   • Plan ID    : zeta\n   • Version    : - | Status: UNKNOWN | Kind: feature | Size: 5 chars\n   • Author     : - | Created: 2025-12-31\n   • Backlog    : B, U, G, -, 9\n------------------------------------------------------------------------------------------\n",
+  "stderr": "⚠️ Could not read '{project}/.dev-cycle.json': Expecting property name enclosed in double quotes: line 1 column 2 (char 1)\n",
+  "files": {}
+}

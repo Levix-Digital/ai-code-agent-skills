@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "==========================================================================================\n📋 PLANS OF 'project' (Showing: 2 of 7) — {project}/docs/plans\n==========================================================================================\n🟢 Untitled\n   • Plan ID    : epsilon\n   • Version    : - | Status: ACTIVE | Kind: feature | Size: 26 chars\n   • Author     : - | Created: -\n------------------------------------------------------------------------------------------\n🟢 Untitled\n   • Plan ID    : gamma\n   • Version    : - | Status: ACTIVE | Kind: feature | Size: 29 chars\n   • Author     : - | Created: -\n------------------------------------------------------------------------------------------\n",
+  "stderr": "",
+  "files": {}
+}

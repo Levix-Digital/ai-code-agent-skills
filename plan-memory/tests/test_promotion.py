@@ -6,15 +6,16 @@ import pytest
 HERE = os.path.dirname(os.path.abspath(__file__))
 SKILL = os.path.dirname(HERE)
 sys.path.insert(0, SKILL)
+sys.path.append(os.path.join(SKILL, "..", "dev-cycle-protocol"))
 
 import backlog as cli  # noqa: E402
 from _backlog import Backlog, BacklogError  # noqa: E402
 from _backlog_store import BacklogFile  # noqa: E402
 from _store import PlanStore, slugify_id  # noqa: E402
 from check_milestone import check_milestone  # noqa: E402
-from list_plans import list_plans  # noqa: E402
 from save_plan import save_plan  # noqa: E402
 from update_plan_status import update_plan_status  # noqa: E402
+from verify_gate import run_checker  # noqa: E402
 
 
 @pytest.fixture(autouse=True)
@@ -119,11 +120,10 @@ def test_save_plan_with_backlog_items_links_them(project, capsys):
         save_plan(store, "Bad", "x", plan_id="bad", kind="epic")
 
 
-def test_list_plans_filters_by_kind(project, capsys):
+def test_list_plans_filters_by_kind(project):
     store = PlanStore(str(project))
     cli.promote(BacklogFile(str(project)), ["BUG-001"], plan_id="crash")
     save_plan(store, "Roadmap", "# Roadmap\n", plan_id="roadmap")
-    capsys.readouterr()
-    list_plans(store, kind="bug")
-    out = capsys.readouterr().out
+    code, out = run_checker("plan-memory", "list_plans.py", ["--kind", "bug", "--dir", str(project)])
+    assert code == 0
     assert "crash" in out and "roadmap" not in out and "Kind: bug" in out and "Backlog    : BUG-001" in out
