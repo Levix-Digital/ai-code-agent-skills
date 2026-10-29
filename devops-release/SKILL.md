@@ -92,10 +92,12 @@ Semantic versioning, bumped **in the work base before the release candidate** (`
 - **Minor**: new features, schema migrations that stay compatible, notable behavior changes.
 - **Patch**: bug fixes and small compatible improvements.
 
-```powershell
-python "<skills_root>/devops-release/release_status.py" version     # the version in the files, checked for consistency
-python "<skills_root>/devops-release/release_status.py" next-rc     # the next rc tag for that version
+`release_status` runs on the native engine. In sh shells (Linux, macOS, Git Bash):
+```sh
+"<skills_root>/dev-cycle-protocol/bin/dev-cycle" devops-release release_status version     # the version in the files, checked for consistency
+"<skills_root>/dev-cycle-protocol/bin/dev-cycle" devops-release release_status next-rc     # the next rc tag for that version
 ```
+In PowerShell, run `& "<skills_root>/dev-cycle-protocol/bin/dev-cycle.ps1" devops-release release_status <command>` instead.
 
 ---
 
@@ -109,8 +111,8 @@ When `devops.release_candidates` is `true` (default):
    git tag -a v1.4.0-rc.1 -m "Release candidate v1.4.0-rc.1" <candidate branch> && git push origin v1.4.0-rc.1
    ```
 3. The release workflow builds the packages and publishes a **pre-release** (never the "latest" release, so normal users never receive a candidate). Follow the run to the end, then verify:
-   ```powershell
-   python "<skills_root>/devops-release/release_status.py" verify --tag v1.4.0-rc.1
+   ```sh
+   "<skills_root>/dev-cycle-protocol/bin/dev-cycle" devops-release release_status verify --tag v1.4.0-rc.1
    ```
 4. `quality-assurance` starts the manual test run for the candidate; the user installs the candidate and marks the results.
 5. Failures are fixed through pull requests into the candidate branch and produce `rc.2`, `rc.3`, ... until the acceptance gate passes (`release-branches`: each fix also goes forward into `main`).
@@ -126,8 +128,8 @@ When `devops.release_candidates` is `true` (default):
   | `trunk`, `release-branches` | Runs the promote workflow with the accepted candidate (`gh workflow run promote.yml -f candidate=vX.Y.Z-rc.N`, or Actions > Promote), approved in the `release` environment | `templates/promote.yml` tags the candidate's own commit `vX.Y.Z` and calls the release, so what was accepted is what is released |
 
 - Follow the workflow to the end and verify the published release:
-  ```powershell
-  python "<skills_root>/devops-release/release_status.py" verify --tag v1.4.0
+  ```sh
+  "<skills_root>/dev-cycle-protocol/bin/dev-cycle" devops-release release_status verify --tag v1.4.0
   ```
 - The cycle is complete only when the release is verified in the releases repository (`devops.releases_repo`). If it is not configured and cannot be found in the workflows, ask the user.
 - Under `release-branches`, a patch of an older line never becomes the "latest" release (`make_latest: legacy` in `templates/release.yml`).
@@ -169,8 +171,8 @@ For every change, the plan answers: what new failure modes exist, how an operato
 | `branching.py show [--json]` | The project's branching model: long-lived branches, where work branches start and pull requests go, where candidates are tagged, the release gate and the hotfix path. |
 | `branching.py rc-branch [--version V]` | The branch the next candidate is tagged on (`release/X.Y` from the version under `release-branches`). |
 | `check_ci_policy [--dir D]` (engine: `bin/dev-cycle devops-release check_ci_policy`) | Checks the workflows for the branching model: tests on pull requests into every branch that receives them; pre-releases for `-rc` tags; the release gate (tag-on-merge under `integration`, a promote workflow with an environment otherwise, and no tag-on-merge there) and the `GITHUB_TOKEN` trigger limitation; `contents: write` for releasing; version files exist. Exit code 1 on errors. |
-| `release_status.py version` | Reads the version from `devops.version_files` (`Cargo.toml`, `package.json`, `pyproject.toml`, `version.txt`, ...) and fails when they disagree. |
-| `release_status.py next-rc` | Next `vX.Y.Z-rc.N` for the current version; fails when the final `vX.Y.Z` tag already exists (bump first). |
-| `release_status.py verify --tag T [--asset PATTERN ...]` | Checks with `gh` that the release exists in `devops.releases_repo`, is a pre-release exactly when the tag has `-rc`, has assets, and has every asset pattern given. |
+| `release_status version` (engine: `bin/dev-cycle devops-release release_status`) | Reads the version from `devops.version_files` (`Cargo.toml`, `package.json`, `pyproject.toml`, `version.txt`, ...) and fails when they disagree. |
+| `release_status next-rc` | Next `vX.Y.Z-rc.N` for the current version; fails when the final `vX.Y.Z` tag already exists (bump first). |
+| `release_status verify --tag T [--asset PATTERN ...]` | Checks with `gh` that the release exists in `devops.releases_repo`, is a pre-release exactly when the tag has `-rc`, has assets, and has every asset pattern given. |
 
 Workflow templates in [`templates/`](templates/): `ci.yml` (pull request CI: lint and tests, with the branch lists of each model), `release.yml` (build and publish, pre-release for `-rc` tags), `tag-on-merge.yml` (`integration`: final tag and release when the production branch receives the merge) and `promote.yml` (`trunk`, `release-branches`: final tag on the accepted candidate's commit and release, run by the user).

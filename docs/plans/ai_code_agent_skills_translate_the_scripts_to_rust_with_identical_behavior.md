@@ -7,7 +7,7 @@ version: v2.10.0
 status: in_progress
 author: Levi Silveira
 created_at: '2026-10-27T18:17:46'
-updated_at: '2026-10-29T13:20:07'
+updated_at: '2026-10-29T13:57:44'
 session_id: null
 tags:
 - rust
@@ -72,7 +72,9 @@ milestones:
   done_at: '2026-10-29'
   by: Levi Silveira
 - name: M14 release_status
-  done: false
+  done: true
+  done_at: '2026-10-29'
+  by: Levi Silveira
 - name: M15 branching
   done: false
 - name: M16 list_plans
@@ -182,6 +184,9 @@ status_log:
 - at: '2026-10-29T13:20:07'
   by: Levi Silveira
   note: 'Milestone ''M13 check_ci_policy'' completed: Engine 0.12.0: check_ci_policy in Rust (crates/devops-release, with the BranchingModel it reads; the kernel gains fnmatch and one-directory glob); verify_gate runs it on the engine and its pytest cases now call the engine; 11 parity cases; 4,500 differential fuzz runs on 3.13 and 3.10 with 0 differences; gate 8 matches main.'
+- at: '2026-10-29T13:57:44'
+  by: Levi Silveira
+  note: 'Milestone ''M14 release_status'' completed: Kernel tomllib port; 10 parity cases; fuzz 4500 runs 0 differences; gates 8/rc match main on 42 fixtures; script kept as module (branching imports project_version)'
 ---
 
 # Translate the scripts to Rust with identical behavior

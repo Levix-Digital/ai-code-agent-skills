@@ -1,0 +1,12 @@
+{
+  "devops": {
+    "version_files": [
+      "Cargo.toml",
+      "crates/core/Cargo.toml",
+      "package.json",
+      "pyproject.toml",
+      "version.txt",
+      "src/app.py"
+    ]
+  }
+}

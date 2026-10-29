@@ -60,6 +60,11 @@ const COMMANDS: &[(&str, &str, Command)] = &[
         "check_ci_policy",
         devops_release::check_ci_policy::main,
     ),
+    (
+        "devops-release",
+        "release_status",
+        devops_release::release_status::main,
+    ),
 ];
 
 fn main() -> ExitCode {

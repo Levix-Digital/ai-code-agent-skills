@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ version.txt: '1.9' is not a semantic version\n❌ missing.txt: file not found\n❌ notes.md: no version found\n❌ version files disagree: Cargo.toml=2.0.0, package.json=2.1.0\n",
+  "stderr": "",
+  "files": {}
+}

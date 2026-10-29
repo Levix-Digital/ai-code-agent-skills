@@ -7,6 +7,7 @@ pub mod json;
 pub mod num;
 pub mod path;
 pub mod textwrap;
+pub mod tomllib;
 pub mod unicode;
 pub mod value;
 pub mod yaml;

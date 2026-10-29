@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "usage: release_status.py [-h] [--dir DIR] [--tag TAG] [--repo REPO]\n                         [--asset ASSET]\n                         {version,next-rc,verify}\n\nVersion, release candidate and published release helpers\n\npositional arguments:\n  {version,next-rc,verify}\n\noptions:\n  -h, --help            show this help message and exit\n  --dir DIR             Project directory (default: current directory)\n  --tag TAG             With verify: the release tag\n  --repo REPO           With verify: repository (default:\n                        devops.releases_repo, else the current one)\n  --asset ASSET         With verify: asset name pattern that must exist;\n                        repeatable\n",
+  "stderr": "",
+  "files": {}
+}

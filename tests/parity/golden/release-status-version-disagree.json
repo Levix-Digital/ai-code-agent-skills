@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ version files disagree: Cargo.toml=1.2.4, version.txt=1.2.3\n",
+  "stderr": "",
+  "files": {}
+}

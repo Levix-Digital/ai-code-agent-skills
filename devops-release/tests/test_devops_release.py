@@ -219,9 +219,8 @@ def test_next_rc_cli_with_git_tags(tmp_path):
     git("init", "-q")
     git("-c", "user.name=t", "-c", "user.email=t@t", "commit", "-q", "--allow-empty", "-m", "init")
     git("tag", "v2.0.0-rc.1")
-    script = os.path.join(SKILL, "release_status.py")
-    res = subprocess.run([sys.executable, script, "next-rc", "--dir", str(tmp_path)], capture_output=True, text=True, encoding="utf-8")
-    assert res.returncode == 0 and res.stdout.strip() == "v2.0.0-rc.2"
+    code, output = run_checker("devops-release", "release_status.py", ["next-rc", "--dir", str(tmp_path)])
+    assert code == 0 and output == "v2.0.0-rc.2"
 
 
 def test_evaluate_release():

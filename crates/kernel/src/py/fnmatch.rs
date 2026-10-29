@@ -155,6 +155,20 @@ pub fn fnmatch(name: &str, pat: &Value) -> Result<bool, Crash> {
     }
 }
 
+/// `fnmatch.fnmatch(name, pat)` for a name of any type: `normcase(name)` fails first.
+pub fn fnmatch_name(name: &Value, pat: &str) -> Result<bool, Crash> {
+    match name {
+        Value::Str(n) => Ok(fnmatchcase(&normcase(n), &normcase(pat))),
+        Value::Bytes(_) => Err(Crash::new(
+            "TypeError: cannot use a str pattern on a bytes-like object",
+        )),
+        other => Err(Crash::new(format!(
+            "TypeError: expected str, bytes or os.PathLike object, not {}",
+            other.tp_name()
+        ))),
+    }
+}
+
 /// `glob.glob(os.path.join(dir, pattern))` for a pattern without a directory part: the
 /// matching entries of `dir`, hidden ones left out unless the pattern starts with `.`.
 pub fn glob_in(dir: &str, pattern: &str) -> Vec<String> {

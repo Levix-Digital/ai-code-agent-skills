@@ -86,6 +86,7 @@ ENGINE_CHECKERS = {
     ("user-docs", "check_readme.py"),
     ("quality-assurance", "manual_tests.py"),
     ("devops-release", "check_ci_policy.py"),
+    ("devops-release", "release_status.py"),
 }
 ENGINE_BIN = os.path.join(SKILLS_ROOT, "dev-cycle-protocol", "bin")
 

@@ -176,7 +176,7 @@ python <skills_root>/dev-cycle-protocol/constitution.py generate|check
 - `verify_gate.py --gate 0` (before the product baseline approval): product documents, architecture style, technical docs, a backlog with epics, a roadmap with a first release, Spec Kit and the constitution when enabled; open questions are listed.
 - `verify_gate.py --gate 3` (before plan approval): working tree, active plan, bugs first (a plan that is not a bug plan is blocked while an open critical, high or medium bug, or a bug not triaged, is outside it, unless you accept the risk: `--accept-open-bugs "<reason>"`), with Spec Kit the spec folder (no open clarification), branch and constitution, no secrets tracked or staged.
 - `verify_gate.py --gate rc --run <tag>` (candidate acceptance): every manual test of the run is Pass.
-- `verify_gate.py --gate 8` (before the release gate: the release pull request, or the promotion of the candidate): documentation and manual test files exist and the checkers of every role pass (`check_docs`, `check_readme`, `manual_tests validate`, `check_design`, `check_ci_policy`, `release_status.py version`, `backlog.py validate`, `roadmap.py validate`), plus the candidate run with `--run`, no secrets and a clean tree, no open bug untriaged; open blocking bugs are listed for the release notes and open items of the release for you to move or finish.
+- `verify_gate.py --gate 8` (before the release gate: the release pull request, or the promotion of the candidate): documentation and manual test files exist and the checkers of every role pass (`check_docs`, `check_readme`, `manual_tests validate`, `check_design`, `check_ci_policy`, `release_status version`, `backlog.py validate`, `roadmap.py validate`), plus the candidate run with `--run`, no secrets and a clean tree, no open bug untriaged; open blocking bugs are listed for the release notes and open items of the release for you to move or finish.
 
 **Spec Kit** ([GitHub Spec Kit](https://github.com/github/spec-kit)) can do the detail of feature plans in Discovery, Plan and Implementation, at a version pinned per project after a compatibility check, with a constitution generated from the project's rules: [docs/spec-kit.md](docs/spec-kit.md).
 
@@ -315,9 +315,9 @@ The DevOps role. Each project chooses its branching model (`devops.branching`), 
 |---|---|
 | The project's branching model | `branching.py show` / `rc-branch` |
 | Check the workflows against the policy | `<skills_root>/dev-cycle-protocol/bin/dev-cycle devops-release check_ci_policy [--dir .]` (`bin/dev-cycle.ps1` in PowerShell) |
-| Version in the version files | `release_status.py version` |
-| Next release candidate tag | `release_status.py next-rc` |
-| Verify a published release | `release_status.py verify --tag v1.4.0 [--asset "*.zip"]` |
+| Version in the version files | `<skills_root>/dev-cycle-protocol/bin/dev-cycle devops-release release_status version` (`bin/dev-cycle.ps1` in PowerShell) |
+| Next release candidate tag | `release_status next-rc` |
+| Verify a published release | `release_status verify --tag v1.4.0 [--asset "*.zip"]` |
 
 Workflow templates: [devops-release/templates](devops-release/templates) (`ci.yml`, `release.yml`, `tag-on-merge.yml`, `promote.yml`). Details: [devops-release/SKILL.md](devops-release/SKILL.md).
 
