@@ -1,6 +1,6 @@
 {
   "exit": 0,
-  "stdout": "{\n  \"active\": true,\n  \"reason\": \"\",\n  \"dir\": \"{project}/docs/gedo-feedback\",\n  \"repo\": \"Levix-Digital/gedo\",\n  \"counts\": {\n    \"open\": 2,\n    \"reported\": 1,\n    \"closed\": 1\n  }\n}\n",
+  "stdout": "{\n  \"active\": true,\n  \"reason\": \"\",\n  <MASK>,\n  \"repo\": \"Levix-Digital/gedo\",\n  \"counts\": {\n    \"open\": 2,\n    \"reported\": 1,\n    \"closed\": 1\n  }\n}\n",
   "stderr": "",
   "files": {}
 }

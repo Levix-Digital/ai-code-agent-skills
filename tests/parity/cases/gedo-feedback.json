@@ -64,6 +64,7 @@
     "rust": ["gedo-feedback", "gedo_feedback"],
     "args": ["--dir", "{project}", "status", "--json"],
     "fixture": "gedo-off",
+    "masks": ["\"dir\": \"[^\"]*\""],
     "seps": ["(?:docs|notes)\\\\gedo(?:-feedback)?(?:\\\\\\S*)?"]
   },
   {
@@ -119,6 +120,7 @@
     "rust": ["gedo-feedback", "gedo_feedback"],
     "args": ["--dir", "{project}", "status", "--json"],
     "fixture": "gedo-on",
+    "masks": ["\"dir\": \"[^\"]*\""],
     "seps": ["(?:docs|notes)\\\\gedo(?:-feedback)?(?:\\\\\\S*)?"]
   },
   {
