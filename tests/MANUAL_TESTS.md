@@ -95,7 +95,7 @@ How to record a run: in each test of the current run, mark exactly one box of th
 - **Expected**:
   - Step 1: the feature plan does not pass gate 3 while the medium bug is open.
   - Step 2: the agent says the low bug goes into `v0.2.0` at the latest; while it is not in the roadmap, gate 3 fails with the bug as not triaged and `/dev-cycle` offers to triage it.
-  - Step 3: after `roadmap.py assign BUG-NNN --release v0.2.0`, gate 3 passes and gate 8 of `v0.2.0` lists the bug as an open item of the release.
+  - Step 3: after `roadmap assign BUG-NNN --release v0.2.0`, gate 3 passes and gate 8 of `v0.2.0` lists the bug as an open item of the release.
 - **Result**: [ ] Pass [ ] Fail [ ] Blocked
 - **Notes**:
 
@@ -110,8 +110,8 @@ How to record a run: in each test of the current run, mark exactly one box of th
   4. Ask the agent to promote the epic.
 - **Expected**:
   - Step 1 creates `EPIC-001` and two features with `- **Epic**: EPIC-001`.
-  - Step 2 creates `docs/ROADMAP.md` with `v0.1.0: MVP` holding both features; `roadmap.py current` lists them.
-  - Step 3 captures the two new items, closes the old one as `superseded by` them, and the roadmap (`roadmap.py validate`) asks for the new items to take its place in v0.1.0.
+  - Step 2 creates `docs/ROADMAP.md` with `v0.1.0: MVP` holding both features; `roadmap current` lists them.
+  - Step 3 captures the two new items, closes the old one as `superseded by` them, and the roadmap (`roadmap validate`) asks for the new items to take its place in v0.1.0.
   - Step 4 is refused: the agent offers to promote the epic's items instead.
 - **Result**: [ ] Pass [ ] Fail [ ] Blocked
 - **Notes**:

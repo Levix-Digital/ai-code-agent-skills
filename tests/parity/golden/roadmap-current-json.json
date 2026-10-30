@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "{\n  \"release\": {\n    \"version\": \"v0.2.0\",\n    \"name\": \"Reports\",\n    \"status\": \"in_progress\",\n    \"target\": \"2026-03\",\n    \"released\": null,\n    \"goal\": \"Reports people can share, continued on a second line\",\n    \"items\": [\n      \"FEAT-002\",\n      \"BUG-002\",\n      \"FEAT-003\",\n      \"ADJ-001\"\n    ]\n  },\n  \"open_items\": [\n    {\n      \"id\": \"BUG-002\",\n      \"title\": \"Typo in the help\",\n      \"status\": \"open\",\n      \"type\": \"bug\",\n      \"rank\": \"low\",\n      \"closed\": false,\n      \"epic\": null\n    },\n    {\n      \"id\": \"FEAT-002\",\n      \"title\": \"Dark theme\",\n      \"status\": \"planned\",\n      \"type\": \"feature\",\n      \"rank\": \"high\",\n      \"closed\": false,\n      \"epic\": \"EPIC-001\"\n    }\n  ],\n  \"unscheduled\": [\n    \"BUG-001\",\n    \"FEAT-001\",\n    \"FEAT-004\"\n  ]\n}\n",
+  "stderr": "",
+  "files": {}
+}

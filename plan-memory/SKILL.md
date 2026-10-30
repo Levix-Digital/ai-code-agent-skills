@@ -193,9 +193,15 @@ Features (`FEAT-NNN`), improvements (`IMP-NNN`) and adjustments (`ADJ-NNN`) have
 
 ---
 
-## 🗺️ Roadmap (`roadmap.py`)
+## 🗺️ Roadmap (`roadmap`)
 
 The releases of the product in delivery order (`roadmap.file` in `.dev-cycle.json`, default `docs/ROADMAP.md`), created by the first `add-release` from `templates/ROADMAP_TEMPLATE.md`. It is the **only** place that assigns backlog items to releases.
+
+`roadmap` runs on the native engine. In sh shells (Linux, macOS, Git Bash):
+```bash
+"<skills_root>/dev-cycle-protocol/bin/dev-cycle" plan-memory roadmap current
+```
+In PowerShell, run `& "<skills_root>/dev-cycle-protocol/bin/dev-cycle.ps1" plan-memory roadmap [arguments]` instead. The commands below are its arguments.
 
 ```markdown
 ## v0.1.0: MVP
@@ -208,13 +214,13 @@ The releases of the product in delivery order (`roadmap.file` in `.dev-cycle.jso
 
 | Task | Command |
 |---|---|
-| Add a release | `roadmap.py add-release vX.Y.Z --name N --goal G [--target T] [--before V \| --after V]` |
-| Change a release | `roadmap.py set-release vX.Y.Z [--name] [--goal] [--target] [--status planned\|in_progress\|released]` |
-| Reorder | `roadmap.py move-release vX.Y.Z --before V \| --after V` |
-| Assign items | `roadmap.py assign <ID> [<ID> ...] --release vX.Y.Z [--move]` (an epic adds its open items not in another release) |
-| Take items out | `roadmap.py unassign <ID> [...]` |
-| Show | `roadmap.py show [--json]`, `roadmap.py current [--json]` (open items of the first release not released, bugs first, and the unscheduled items) |
-| Validate | `roadmap.py validate` (format, version order, an item in one release only, ids in the backlog, no epics) |
+| Add a release | `roadmap add-release vX.Y.Z --name N --goal G [--target T] [--before V \| --after V]` |
+| Change a release | `roadmap set-release vX.Y.Z [--name] [--goal] [--target] [--status planned\|in_progress\|released]` |
+| Reorder | `roadmap move-release vX.Y.Z --before V \| --after V` |
+| Assign items | `roadmap assign <ID> [<ID> ...] --release vX.Y.Z [--move]` (an epic adds its open items not in another release) |
+| Take items out | `roadmap unassign <ID> [...]` |
+| Show | `roadmap show [--json]`, `roadmap current [--json]` (open items of the first release not released, bugs first, and the unscheduled items) |
+| Validate | `roadmap validate` (format, version order, an item in one release only, ids in the backlog, no epics) |
 
 - Released releases are frozen: their items cannot be moved or removed. `set-release --status released` records the date and lists items still open.
 - Moving items between releases is the user's decision, like triage.
@@ -241,11 +247,11 @@ When the project uses Spec Kit (`speckit.enabled`, see `dev-cycle-protocol`), th
 
 The whole development lifecycle follows 👉 **[`dev-cycle-protocol`](../dev-cycle-protocol/SKILL.md)**:
 - **Phase 0 (Product inception)**: the product backlog as epics and their items, and the roadmap from the MVP (`product-inception`).
-- **Phase 1 (Discovery)**: check `list_plans` (engine), `check_milestone.py --list` or `search_plans.py` for real progress and agreed guidelines, `backlog.py summary` for open bugs and captured ideas and `roadmap.py current` for the items of the current release; promote the items the user chooses.
+- **Phase 1 (Discovery)**: check `list_plans` (engine), `check_milestone.py --list` or `search_plans.py` for real progress and agreed guidelines, `backlog.py summary` for open bugs and captured ideas and `roadmap current` (engine) for the items of the current release; promote the items the user chooses.
 - **Phase 2 (Plan)**: save the full plan with `save_plan.py` (with `--supersedes` when it replaces one, `--spec-dir` with Spec Kit) and run `detect_drift.py`. The plan follows the orchestrator's template, with a section from each role.
 - **Phase 3 (Plan approval)**: `verify_gate.py --gate 3` checks there is an active plan, warns if its file is not committed, and blocks a non-bug plan while open blocking bugs (default `critical`, `high`, `medium`) or bugs not triaged are outside it (bugs first). A bug is triaged when it has a valid severity and, when its severity does not block, it is in the next release of the roadmap (`backlog.bug_deadline`). `backlog.py summary` lists the bugs not triaged; `backlog.py add` of a bug says where it goes.
 - **Phase 4 (Implementation)**: mark milestones with `check_milestone.py` as they are completed.
-- **Phase 10 (Release)**: close the remaining milestones or finish the plan with `update_plan_status.py`, and mark the release released (`roadmap.py set-release vX.Y.Z --status released`).
+- **Phase 10 (Release)**: close the remaining milestones or finish the plan with `update_plan_status.py`, and mark the release released (`roadmap set-release vX.Y.Z --status released` on the engine).
 
 ---
 

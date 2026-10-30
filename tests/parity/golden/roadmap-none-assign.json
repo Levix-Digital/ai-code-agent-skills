@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ no roadmap at docs/ROADMAP.md; the first 'add-release' creates it\n",
+  "stderr": "",
+  "files": {}
+}

@@ -60,7 +60,7 @@ description: "Tasks of the Rust migration, one per milestone of the envelope pla
 - [x] T016 [US1] M16: translate `list_plans` and swap its callers (#44)
 - [x] T017 [US1] M17: translate `get_plan` and swap its callers (#46)
 - [x] T018 [US1] M18: translate `export_plan` and swap its callers
-- [ ] T019 [US1] M19: translate `roadmap` and swap its callers
+- [x] T019 [US1] M19: translate `roadmap` and swap its callers
 
 ---
 

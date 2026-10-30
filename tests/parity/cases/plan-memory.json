@@ -18,14 +18,16 @@
     "python": "plan-memory/roadmap.py",
     "args": ["validate", "--dir", "{project}"],
     "fixture": "backlog-and-roadmap",
-    "git": true
+    "git": true,
+    "rust": ["plan-memory", "roadmap"]
   },
   {
     "name": "roadmap-current",
     "python": "plan-memory/roadmap.py",
     "args": ["current", "--dir", "{project}"],
     "fixture": "backlog-and-roadmap",
-    "git": true
+    "git": true,
+    "rust": ["plan-memory", "roadmap"]
   },
   {
     "name": "list-plans-help",
@@ -459,5 +461,230 @@
     "fixture": "plans-speckit",
     "git": true,
     "masks": ["Size    : [0-9]+ bytes"]
+  },
+  {
+    "name": "roadmap-show",
+    "python": "plan-memory/roadmap.py",
+    "rust": ["plan-memory", "roadmap"],
+    "args": ["show", "--dir", "{project}"],
+    "fixture": "roadmap-mixed",
+    "git": true
+  },
+  {
+    "name": "roadmap-show-json",
+    "python": "plan-memory/roadmap.py",
+    "rust": ["plan-memory", "roadmap"],
+    "args": ["show", "--json", "--dir", "{project}"],
+    "fixture": "roadmap-mixed",
+    "git": true
+  },
+  {
+    "name": "roadmap-current-mixed",
+    "python": "plan-memory/roadmap.py",
+    "rust": ["plan-memory", "roadmap"],
+    "args": ["current", "--dir", "{project}"],
+    "fixture": "roadmap-mixed",
+    "git": true
+  },
+  {
+    "name": "roadmap-current-json",
+    "python": "plan-memory/roadmap.py",
+    "rust": ["plan-memory", "roadmap"],
+    "args": ["current", "--json", "--dir", "{project}"],
+    "fixture": "roadmap-mixed",
+    "git": true
+  },
+  {
+    "name": "roadmap-validate-mixed",
+    "python": "plan-memory/roadmap.py",
+    "rust": ["plan-memory", "roadmap"],
+    "args": ["validate", "--dir", "{project}"],
+    "fixture": "roadmap-mixed",
+    "git": true
+  },
+  {
+    "name": "roadmap-validate-problems",
+    "python": "plan-memory/roadmap.py",
+    "rust": ["plan-memory", "roadmap"],
+    "args": ["validate", "--dir", "{project}"],
+    "fixture": "roadmap-problems",
+    "git": true
+  },
+  {
+    "name": "roadmap-show-problems",
+    "python": "plan-memory/roadmap.py",
+    "rust": ["plan-memory", "roadmap"],
+    "args": ["show", "--dir", "{project}"],
+    "fixture": "roadmap-problems",
+    "git": true
+  },
+  {
+    "name": "roadmap-add-before",
+    "python": "plan-memory/roadmap.py",
+    "rust": ["plan-memory", "roadmap"],
+    "args": ["add-release", "v0.2.5", "--name", "Polish", "--goal", "Small fixes", "--target", " 2026-04 ", "--before", "v0.3.0", "--dir", "{project}"],
+    "fixture": "roadmap-mixed",
+    "git": true
+  },
+  {
+    "name": "roadmap-add-first",
+    "python": "plan-memory/roadmap.py",
+    "rust": ["plan-memory", "roadmap"],
+    "args": ["add-release", "v1.0.0", "--name", " MVP ", "--goal", "The first release", "--dir", "{project}"],
+    "fixture": "backlog-with-problems",
+    "git": true
+  },
+  {
+    "name": "roadmap-add-structural",
+    "python": "plan-memory/roadmap.py",
+    "rust": ["plan-memory", "roadmap"],
+    "args": ["add-release", "v0.3.0", "--name", "x", "--goal", "y", "--dir", "{project}"],
+    "fixture": "roadmap-problems",
+    "git": true
+  },
+  {
+    "name": "roadmap-add-bad-version",
+    "python": "plan-memory/roadmap.py",
+    "rust": ["plan-memory", "roadmap"],
+    "args": ["add-release", "1.0", "--name", "x", "--goal", "y", "--dir", "{project}"],
+    "fixture": "roadmap-mixed",
+    "git": true
+  },
+  {
+    "name": "roadmap-set-released",
+    "python": "plan-memory/roadmap.py",
+    "rust": ["plan-memory", "roadmap"],
+    "args": ["set-release", "v0.2.0", "--status", "released", "--target", "", "--dir", "{project}"],
+    "fixture": "roadmap-mixed",
+    "git": true,
+    "masks": ["\\*\\*Released\\*\\*: [0-9]{4}-[0-9]{2}-[0-9]{2}"]
+  },
+  {
+    "name": "roadmap-set-planned",
+    "python": "plan-memory/roadmap.py",
+    "rust": ["plan-memory", "roadmap"],
+    "args": ["set-release", "v0.1.0", "--status", "planned", "--name", "Renamed", "--goal", "New goal\nsecond line", "--dir", "{project}"],
+    "fixture": "roadmap-mixed",
+    "git": true
+  },
+  {
+    "name": "roadmap-move",
+    "python": "plan-memory/roadmap.py",
+    "rust": ["plan-memory", "roadmap"],
+    "args": ["move-release", "v0.3.0", "--after", "v0.1.0", "--dir", "{project}"],
+    "fixture": "roadmap-mixed",
+    "git": true
+  },
+  {
+    "name": "roadmap-move-nowhere",
+    "python": "plan-memory/roadmap.py",
+    "rust": ["plan-memory", "roadmap"],
+    "args": ["move-release", "v0.3.0", "--dir", "{project}"],
+    "fixture": "roadmap-mixed",
+    "git": true
+  },
+  {
+    "name": "roadmap-assign-epic",
+    "python": "plan-memory/roadmap.py",
+    "rust": ["plan-memory", "roadmap"],
+    "args": ["assign", "EPIC-001", "bug-001", "--release", "v0.3.0", "--dir", "{project}"],
+    "fixture": "roadmap-mixed",
+    "git": true
+  },
+  {
+    "name": "roadmap-assign-move",
+    "python": "plan-memory/roadmap.py",
+    "rust": ["plan-memory", "roadmap"],
+    "args": ["assign", "FEAT-002", "--release", "v0.3.0", "--move", "--dir", "{project}"],
+    "fixture": "roadmap-mixed",
+    "git": true
+  },
+  {
+    "name": "roadmap-assign-taken",
+    "python": "plan-memory/roadmap.py",
+    "rust": ["plan-memory", "roadmap"],
+    "args": ["assign", "FEAT-002", "--release", "v0.3.0", "--dir", "{project}"],
+    "fixture": "roadmap-mixed",
+    "git": true
+  },
+  {
+    "name": "roadmap-assign-closed",
+    "python": "plan-memory/roadmap.py",
+    "rust": ["plan-memory", "roadmap"],
+    "args": ["assign", "IMP-002", "--release", "v0.3.0", "--dir", "{project}"],
+    "fixture": "roadmap-mixed",
+    "git": true
+  },
+  {
+    "name": "roadmap-assign-released",
+    "python": "plan-memory/roadmap.py",
+    "rust": ["plan-memory", "roadmap"],
+    "args": ["assign", "BUG-001", "--release", "v0.1.0", "--dir", "{project}"],
+    "fixture": "roadmap-mixed",
+    "git": true
+  },
+  {
+    "name": "roadmap-assign-epic-empty",
+    "python": "plan-memory/roadmap.py",
+    "rust": ["plan-memory", "roadmap"],
+    "args": ["assign", "EPIC-002", "--release", "v0.3.0", "--dir", "{project}"],
+    "fixture": "roadmap-mixed",
+    "git": true
+  },
+  {
+    "name": "roadmap-unassign",
+    "python": "plan-memory/roadmap.py",
+    "rust": ["plan-memory", "roadmap"],
+    "args": ["unassign", "feat-003", "ADJ-001", "--dir", "{project}"],
+    "fixture": "roadmap-mixed",
+    "git": true
+  },
+  {
+    "name": "roadmap-unassign-missing",
+    "python": "plan-memory/roadmap.py",
+    "rust": ["plan-memory", "roadmap"],
+    "args": ["unassign", "FEAT-001", "--dir", "{project}"],
+    "fixture": "roadmap-mixed",
+    "git": true
+  },
+  {
+    "name": "roadmap-none-show-json",
+    "python": "plan-memory/roadmap.py",
+    "rust": ["plan-memory", "roadmap"],
+    "args": ["show", "--json", "--dir", "{project}"],
+    "fixture": "backlog-with-problems",
+    "git": true
+  },
+  {
+    "name": "roadmap-none-assign",
+    "python": "plan-memory/roadmap.py",
+    "rust": ["plan-memory", "roadmap"],
+    "args": ["assign", "FEAT-001", "--release", "v1.0.0", "--dir", "{project}"],
+    "fixture": "backlog-with-problems",
+    "git": true
+  },
+  {
+    "name": "roadmap-add-help",
+    "python": "plan-memory/roadmap.py",
+    "rust": ["plan-memory", "roadmap"],
+    "args": ["add-release", "-h"],
+    "git": false,
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "roadmap-assign-missing",
+    "python": "plan-memory/roadmap.py",
+    "rust": ["plan-memory", "roadmap"],
+    "args": ["assign", "--move"],
+    "git": false,
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "roadmap-set-bad-status",
+    "python": "plan-memory/roadmap.py",
+    "rust": ["plan-memory", "roadmap"],
+    "args": ["set-release", "v1.0.0", "--status", "done"],
+    "git": false,
+    "env": {"COLUMNS": "80"}
   }
 ]

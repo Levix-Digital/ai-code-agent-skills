@@ -1,0 +1,8 @@
+{
+  "exit": 0,
+  "stdout": "✅ v0.3.0 moved\n",
+  "stderr": "",
+  "files": {
+    "project/docs/ROADMAP.md": "# Roadmap\n\nReleases for the roadmap parity cases.\n\n## v0.1.0: First cut\n- **Status**: released\n- **Released**: 2026-01-08\n- **Goal**: The first usable version\n- **Items**: IMP-002\n\n## v0.3.0: Speed\n- **Status**: planned\n- **Goal**: A fast start\n- **Items**: IMP-001, FEAT-009\n\n## v0.2.0: Reports\n- **Status**: in_progress\n- **Target**: 2026-03\n- **Goal**: Reports people can share,\n  continued on a second line\n- **Items**: FEAT-002, BUG-002, FEAT-003,\n  ADJ-001\n"
+  }
+}

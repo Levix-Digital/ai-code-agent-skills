@@ -89,6 +89,7 @@ ENGINE_CHECKERS = {
     ("devops-release", "release_status.py"),
     ("devops-release", "branching.py"),
     ("plan-memory", "list_plans.py"),
+    ("plan-memory", "roadmap.py"),
 }
 ENGINE_BIN = os.path.join(SKILLS_ROOT, "dev-cycle-protocol", "bin")
 

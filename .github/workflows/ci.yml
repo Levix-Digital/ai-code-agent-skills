@@ -31,7 +31,7 @@ jobs:
         if: github.event_name == 'pull_request'
         run: |
           base="origin/${{ github.base_ref }}"
-          if ! git diff --quiet "$base"...HEAD -- crates Cargo.toml Cargo.lock rust-toolchain.toml product-inception/templates \
+          if ! git diff --quiet "$base"...HEAD -- crates Cargo.toml Cargo.lock rust-toolchain.toml product-inception/templates plan-memory/templates/ROADMAP_TEMPLATE.md \
              && git diff --quiet "$base"...HEAD -- dev-cycle-protocol/bin/engine-version; then
             echo "::error::The engine changed: bump dev-cycle-protocol/bin/engine-version and the workspace version in Cargo.toml"
             exit 1

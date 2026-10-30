@@ -7,7 +7,7 @@ version: v2.10.0
 status: in_progress
 author: Levi Silveira
 created_at: '2026-10-27T18:17:46'
-updated_at: '2026-10-29T22:45:29'
+updated_at: '2026-10-29T23:39:58'
 session_id: null
 tags:
 - rust
@@ -93,7 +93,9 @@ milestones:
   done_at: '2026-10-29'
   by: Levi Silveira
 - name: M19 roadmap
-  done: false
+  done: true
+  done_at: '2026-10-29'
+  by: Levi Silveira
 - name: M20 constitution
   done: false
 - name: M21 speckit_setup
@@ -211,6 +213,9 @@ status_log:
 - at: '2026-10-29T22:45:29'
   by: Levi Silveira
   note: 'Milestone ''M18 export_plan'' completed: Kernel json::dump keeps Python''s partial output when a value cannot be encoded; 18 parity cases; fuzz 4500 runs 0 differences; gates 0/3/8/rc match main on 51 fixtures; export_plan.py removed (no importers); T018 checked'
+- at: '2026-10-29T23:39:58'
+  by: Levi Silveira
+  note: 'Milestone ''M19 roadmap'' completed: roadmap on the engine (subcommands in the kernel argparse, backlog reader); 30 parity cases; fuzz 1,500 runs on 3.13 and 800 on 3.10 with 0 differences; gates match main'
 ---
 
 # Translate the scripts to Rust with identical behavior

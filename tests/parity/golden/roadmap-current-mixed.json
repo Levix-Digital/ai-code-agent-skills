@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "🎯 Current release v0.2.0: Reports [in_progress]\n   Goal: Reports people can share, continued on a second line\n   · BUG-002   [open] (low) Typo in the help\n   · FEAT-002  [planned] (high) Dark theme\nℹ️ 3 open backlog item(s) in no release: BUG-001, FEAT-001, FEAT-004\n",
+  "stderr": "",
+  "files": {}
+}

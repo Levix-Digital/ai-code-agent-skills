@@ -1,0 +1,6 @@
+{
+  "exit": 2,
+  "stdout": "",
+  "stderr": "usage: roadmap.py assign [-h] [--dir DIR] --release RELEASE [--move]\n                         ids [ids ...]\nroadmap.py assign: error: the following arguments are required: ids, --release\n",
+  "files": {}
+}

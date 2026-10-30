@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ line 19: v0.3.0: FEAT-009 is not in the backlog\n⚠️ FEAT-003 in v0.2.0 was superseded; unassign it; assign FEAT-001, FEAT-004 (roadmap.py assign FEAT-001 FEAT-004 --release v0.2.0)\n⚠️ ADJ-001 in v0.2.0 was closed as dropped; unassign it\n\n❌ roadmap: 3 release(s), 1 problem(s).\n",
+  "stderr": "",
+  "files": {}
+}

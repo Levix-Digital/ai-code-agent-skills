@@ -1,0 +1,6 @@
+{
+  "exit": 2,
+  "stdout": "",
+  "stderr": "usage: roadmap.py set-release [-h] [--dir DIR] [--name NAME] [--goal GOAL]\n                              [--target TARGET]\n                              [--status {planned,in_progress,released}]\n                              version\nroadmap.py set-release: error: argument --status: invalid choice: 'done' (choose from 'planned', 'in_progress', 'released')\n",
+  "files": {}
+}

@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "🗺️ Roadmap: docs/ROADMAP.md\n\nv0.2.0: Later [released] (0/3 items closed)\n   Goal: Out of order\n   · FEAT-001  [open] (medium) Export to CSV\n   · EPIC-001  [open] (high) Reports\n   · X-1       [missing] (?) (not in the backlog)\n\nv0.1.0: Earlier [shipped, released 2026-01-01] (0/2 items closed)\n   Goal: \n   · FEAT-001  [open] (medium) Export to CSV\n   · FEAT-009  [missing] (?) (not in the backlog)\n\nv0.1.0: Again [released] (0/0 items closed)\n   Goal: Duplicate\n",
+  "stderr": "",
+  "files": {}
+}

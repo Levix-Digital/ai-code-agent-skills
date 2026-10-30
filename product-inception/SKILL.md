@@ -87,12 +87,13 @@ The backlog of the **complete (ideal) product**, not only the first release:
 
 ### 8. 🗺️ Roadmap
 Releases in delivery order, from the **MVP**: the smallest release that delivers the core value to the primary users and tests the riskiest assumptions. For each release: a version (`v0.1.0` for a first MVP, unless the project's versioning says otherwise), a name, a goal and its items:
-```powershell
-python "<skills_root>/plan-memory/roadmap.py" add-release v0.1.0 --name "MVP" --goal "<what users can do>"
-python "<skills_root>/plan-memory/roadmap.py" assign EPIC-001 FEAT-007 --release v0.1.0   # an epic adds its open items
-python "<skills_root>/plan-memory/roadmap.py" show
+```bash
+"<skills_root>/dev-cycle-protocol/bin/dev-cycle" plan-memory roadmap add-release v0.1.0 --name "MVP" --goal "<what users can do>"
+"<skills_root>/dev-cycle-protocol/bin/dev-cycle" plan-memory roadmap assign EPIC-001 FEAT-007 --release v0.1.0   # an epic adds its open items
+"<skills_root>/dev-cycle-protocol/bin/dev-cycle" plan-memory roadmap show
 ```
-Fit each item where it belongs: dependencies first, the MVP lean, later releases grouped by goal. Items not yet scheduled stay in the backlog (`roadmap.py current` lists them).
+In PowerShell, run `& "<skills_root>/dev-cycle-protocol/bin/dev-cycle.ps1" plan-memory roadmap [arguments]` instead.
+Fit each item where it belongs: dependencies first, the MVP lean, later releases grouped by goal. Items not yet scheduled stay in the backlog (`roadmap current` lists them).
 
 ### 🔒 Gate 0: Product Baseline (user)
 ```powershell
@@ -100,7 +101,7 @@ python "<skills_root>/dev-cycle-protocol/verify_gate.py" --gate 0
 ```
 It checks both product documents (`check_product`), the architecture style, the technical docs, a valid backlog with epics, a valid roadmap with a first release, Spec Kit and the constitution when enabled, and secret hygiene. Open questions are listed: answer them, or the user explicitly accepts them as open.
 
-End with (in the user's language): *"This is the product baseline. Would you like to adjust anything, or do you approve it so we start with the first items of the roadmap?"* After a short, explicit approval, commit the baseline (`docs(product): product baseline`) and continue with `dev-cycle-protocol` Phase 1 for the first items of the current release (`roadmap.py current`).
+End with (in the user's language): *"This is the product baseline. Would you like to adjust anything, or do you approve it so we start with the first items of the roadmap?"* After a short, explicit approval, commit the baseline (`docs(product): product baseline`) and continue with `dev-cycle-protocol` Phase 1 for the first items of the current release (`roadmap current`).
 
 ---
 
@@ -129,4 +130,4 @@ The same steps, written **from the code base**: read the README, the technical d
 
 ## 🔁 After Inception
 
-The product documents are **living documents**: when a decision changes the vision or the technical specification (a new user group, a new platform, a changed requirement), edit them in place in the plan of that change, regenerate the constitution when Spec Kit is used, and keep the backlog and roadmap in step. A new release cycle starts from `roadmap.py current`.
+The product documents are **living documents**: when a decision changes the vision or the technical specification (a new user group, a new platform, a changed requirement), edit them in place in the plan of that change, regenerate the constitution when Spec Kit is used, and keep the backlog and roadmap in step. A new release cycle starts from `roadmap current`.

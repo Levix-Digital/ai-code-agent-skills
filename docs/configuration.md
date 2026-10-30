@@ -80,7 +80,7 @@ Optional file at a project's root: the project configuration shared by every ski
 | `backlog.file` | The project backlog | `docs/BACKLOG.md` |
 | `backlog.blocking_severities` | Severities of open bugs that block plan approval of other work (bugs first); `[]` turns the rule off | `["critical", "high", "medium"]` |
 | `backlog.bug_deadline` | Deadline of the open bugs whose severity does not block: `next_release` (they must be in the first release of the roadmap not released, or gates 3 and 8 report them as not triaged) or `off` | `"next_release"` |
-| `roadmap.file` | The roadmap of releases (`plan-memory/roadmap.py`) | `docs/ROADMAP.md` |
+| `roadmap.file` | The roadmap of releases (`roadmap` on the engine) | `docs/ROADMAP.md` |
 | `product.vision`, `product.tech_spec` | The business document and the technical specification of Phase 0 (`product-inception`) | `docs/product/VISION.md`, `docs/product/TECH_SPEC.md` |
 | `product.max_lines` | Line limit of each product document | `400` |
 | `review.provider`, `review.host` | Platform of the pull requests: `auto` (from the `origin` remote), `github`, `gitlab` or `none`; the host for a self-hosted instance | `auto`, from the remote |
