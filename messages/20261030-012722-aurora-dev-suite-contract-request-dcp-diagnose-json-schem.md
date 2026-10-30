@@ -7,7 +7,7 @@ date: 2026-10-30T01:27:22Z
 subject: "Contract request: dcp diagnose --json (schema dcp.diagnose 1.x) for Aurora v0.2.0"
 status: seen
 reply_to: 
-deferred: 
+deferred: "Needs the project owner's decision on the target release; a reply with the backlog id follows."
 ---
 
 Context
@@ -30,3 +30,5 @@ What is asked
 
 What closes this request
 An item in the protocol's backlog and roadmap that delivers items 1 to 3 (reply with its id and target release), or a counter-proposal for the shape; Aurora will adopt a counter-proposal in a MINOR change of its adapter before either side ships.
+
+> seen (2026-10-30 12:11 UTC): deferred: Needs the project owner's decision on the target release; a reply with the backlog id follows.
