@@ -430,7 +430,7 @@ fn specify(root: &str, name: &str) -> String {
 }
 
 /// The Spec Kit version that initialized or last upgraded the project, as a tag (vX.Y.Z).
-fn installed_version(root: &str) -> Value {
+pub fn installed_version(root: &str) -> Value {
     for (name, key) in [
         ("integration.json", "version"),
         ("init-options.json", "speckit_version"),

@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "🧭 Project state: no roadmap, no blocking bugs, no plans in progress. Where to start:\n   1. Adopt a product baseline (Phase 0, adoption mode): vision, technical specification, backlog with epics, roadmap (recommended) — the project has no product baseline\n   2. Your request: add search — Phase 1, discovery\n",
+  "stderr": "",
+  "files": {}
+}

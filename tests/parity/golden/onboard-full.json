@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "🧭 Project state: current release v2.9.0 Baseline and zero friction, 1 blocking bug, 2 plans in progress. Where to start:\n   1. Resume the plan 'Export' (1/3 milestones) (recommended) — plan in_progress\n   2. Resume the plan 'Started' (no milestones) — plan active\n   3. Finish the acceptance of v1.0.0-rc.1 (2 failed) — release candidate pending\n   4. Plan the open blocking bugs: BUG-001 — bugs come first\n   5. Triage the open bugs: BUG-002 — no known bug stays untriaged\n   6. Adopt the Spec Kit already in the repository (pin its version, preset, feat/NNN-slug branches; the hand-written constitution is kept and moved into the sources) — Spec Kit is used here without the protocol\n   7. Next items of v2.9.0 Baseline and zero friction: FEAT-006, IMP-002, IMP-004 — current release of the roadmap\n   8. Your request: add search — Phase 1, discovery\n",
+  "stderr": "",
+  "files": {}
+}

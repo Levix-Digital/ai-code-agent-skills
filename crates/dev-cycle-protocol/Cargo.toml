@@ -9,8 +9,10 @@ publish.workspace = true
 
 [dependencies]
 architecture-docs.workspace = true
+devops-release.workspace = true
 kernel.workspace = true
 plan-memory.workspace = true
+quality-assurance.workspace = true
 
 [lints]
 workspace = true

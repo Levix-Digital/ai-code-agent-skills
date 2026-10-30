@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ the file must hold a JSON object\n",
+  "stderr": "",
+  "files": {}
+}

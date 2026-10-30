@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "🧭 This repository is not set up for the cycle yet (no roadmap, no blocking bugs, no plans in progress). Initial setup, in the recommended order:\n   1. Create .dev-cycle.json (proposed from what was detected, written after you confirm) (recommended) — the project has no configuration\n   2. Let the protocol's files into Git: add !/.dev-cycle.json, !/.specify/, !/TECDOC.md, !/specs/, !/tests/ to .gitignore — ignored now: .dev-cycle.json, TECDOC.md, tests/MANUAL_TESTS.md, .specify/memory/constitution.md, specs/001-feature/spec.md\n   3. <MASK> — <MASK>\n   4. Adopt a product baseline (Phase 0, adoption mode): vision, technical specification, backlog with epics, roadmap — the project has no product baseline\n",
+  "stderr": "",
+  "files": {}
+}

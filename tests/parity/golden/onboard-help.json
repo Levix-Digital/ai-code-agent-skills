@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "usage: onboard.py [-h] {diagnose,propose-config,write-config,set-attribution,create-branch} ...\n\nDiagnose a repository for the development cycle (/dev-cycle)\n\npositional arguments:\n  {diagnose,propose-config,write-config,set-attribution,create-branch}\n    diagnose            Where to start, in the recommended order\n    propose-config      The .dev-cycle.json keys that can be detected and are missing\n    write-config        Write confirmed additions to .dev-cycle.json (never overwrites)\n    set-attribution     Claude Code: turn off automatic commit and pull request attribution\n    create-branch       Create the integration branch from the production branch\n\noptions:\n  -h, --help            show this help message and exit\n",
+  "stderr": "",
+  "files": {}
+}

@@ -220,7 +220,7 @@ fn first(found: Vec<String>) -> Option<String> {
     found.into_iter().next()
 }
 
-fn detect_project_profile(skills: &Skills, workspace_dir: Option<&str>) -> Result<Dict, Crash> {
+pub fn detect_project_profile(skills: &Skills, workspace_dir: Option<&str>) -> Result<Dict, Crash> {
     let cwd = abspath(workspace_dir.unwrap_or(""))
         .to_string_lossy()
         .into_owned();

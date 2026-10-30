@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "{\n  <MASK>,\n  \"exists\": true,\n  \"additions\": {\n    \"docs\": {\n      \"tec_doc\": \"TECDOC.md\"\n    },\n    \"tests\": {\n      \"manual_tests\": \"tests/MANUAL_TESTS.md\"\n    },\n    \"devops\": {\n      \"production_branch\": \"main\",\n      \"version_files\": []\n    }\n  },\n  \"branching\": {\n    \"model\": \"trunk\",\n    \"integration_branch\": null,\n    \"reason\": \"only 'main' and short-lived branches\"\n  }\n}\n",
+  "stderr": "",
+  "files": {}
+}

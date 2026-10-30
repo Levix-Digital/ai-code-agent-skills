@@ -16,7 +16,7 @@ Owns what gets built and in which order: product inception (Phase 0), the backlo
 
 - `product-inception/`: the Phase 0 process and `check_product` (engine) for `docs/product/VISION.md` and `TECH_SPEC.md`.
 - `plan-memory/backlog.py` and `backlog/`: capture, triage, close and promote items in `docs/BACKLOG.md`; bugs carry a severity, others a priority.
-- `crates/plan-memory` (engine): `list_plans`, `get_plan`, `export_plan` and the plan store they read (`PlanStore` and `read_plan` of `plan-memory/_store.py`, which stays for the Python scripts that import it), and `roadmap`: releases and item assignment in `docs/ROADMAP.md`, with the backlog reader it needs (also the blocking bugs and the bug triage that `inspect_project` reports). `plan-memory/roadmap.py`, `_roadmap.py` and `_roadmap_store.py` stay for the Python scripts that import them (`onboard.py`, `inspect_project.py`, `verify_gate.py`, `backlog.py`).
+- `crates/plan-memory` (engine): `list_plans`, `get_plan`, `export_plan` and the plan store they read (`PlanStore` and `read_plan` of `plan-memory/_store.py`, which stays for the Python scripts that import it), and `roadmap`: releases and item assignment in `docs/ROADMAP.md`, with the backlog reader it needs (also the blocking bugs and the bug triage that `inspect_project` reports). `plan-memory/_roadmap.py` and `_roadmap_store.py` stay for the Python scripts that import them (`verify_gate.py`, `backlog.py`), and `roadmap.py` for the backlog tests that drive it (`tests/test_roadmap.py`).
 - `plan-memory/save_plan.py`, `check_milestone.py`, `update_plan_status.py`, `search_plans.py`, `detect_drift.py`: plans as Markdown with YAML frontmatter in `docs/plans/`, lineage, milestones, search and drift checks.
 
 ## Behavior

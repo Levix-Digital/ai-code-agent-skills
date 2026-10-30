@@ -357,7 +357,9 @@ pub fn fold_newlines(o: &Outcome, seps: &[String]) -> Outcome {
         let mut s = s.replace("\r\n", "\n");
         for p in &paths {
             s = p
-                .replace_all(&s, |c: &regex::Captures| c[0].replace('\\', "/"))
+                .replace_all(&s, |c: &regex::Captures| {
+                    c[0].replace("\\\\", "/").replace('\\', "/")
+                })
                 .into_owned();
         }
         s
@@ -566,6 +568,15 @@ mod tests {
         assert_eq!(
             fold_newlines(&outcome("(docs\\adr, a\\b)\r\n"), &seps).stdout,
             "(docs/adr, a\\b)\n"
+        );
+    }
+
+    #[test]
+    fn folds_json_escaped_separators() {
+        let seps = [r"docs(?:\\\\|\\)adr".to_string()];
+        assert_eq!(
+            fold_newlines(&outcome("\"docs\\\\adr\"\n"), &seps).stdout,
+            "\"docs/adr\"\n"
         );
     }
 

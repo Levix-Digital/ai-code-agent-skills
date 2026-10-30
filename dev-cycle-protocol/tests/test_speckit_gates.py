@@ -9,10 +9,16 @@ SCRIPT = os.path.join(SKILL, "verify_gate.py")
 sys.path.insert(0, SKILL)
 sys.path.insert(0, os.path.join(os.path.dirname(SKILL), "plan-memory"))
 
-import constitution  # noqa: E402
 from _store import PlanStore  # noqa: E402
-from test_speckit_setup import GIT_CONFIG  # noqa: E402
 from test_verify_gate import make_project  # noqa: E402
+from verify_gate import run_checker  # noqa: E402
+
+GIT_CONFIG = """# Git Branching Workflow Extension Configuration
+branch_numbering: sequential
+branch_template: ""
+branch_prefix: ""
+init_commit_message: "[Spec Kit] Initial commit"
+"""
 
 PLAN = """# Implementation Plan: Photo upload
 
@@ -85,7 +91,8 @@ def speckit_project(tmp_path, branch="feat/001-photo-upload", spec_files=("spec.
     (spec / "presets" / "dev-cycle").mkdir(parents=True)
     (spec / "presets" / "dev-cycle" / "preset.yml").write_text("preset: {}\n", encoding="utf-8")
     (spec / "memory").mkdir()
-    assert constitution.main(["generate", "--dir", str(root)]) == 0
+    code, out = run_checker("dev-cycle-protocol", "constitution.py", ["generate", "--dir", str(root)])
+    assert code == 0, out
     folder = root / "specs" / "001-photo-upload"
     folder.mkdir(parents=True)
     texts = {"spec.md": spec_text, "plan.md": plan_text, "tasks.md": "# Tasks\n- [ ] T001 Upload\n"}

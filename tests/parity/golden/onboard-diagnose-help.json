@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "usage: onboard.py diagnose [-h] [--request REQUEST] [--agent AGENT] [--dir DIR] [--json]\n\noptions:\n  -h, --help         show this help message and exit\n  --request REQUEST  The user's text after /dev-cycle (an idea or a request)\n  --agent AGENT      The coding agent running the command, e.g. claude-code\n  --dir DIR\n  --json\n",
+  "stderr": "",
+  "files": {}
+}

@@ -141,7 +141,7 @@ Cloud sessions do not see your local folders. For them, this repository is also 
 
 ### dev-cycle
 
-The `/dev-cycle` command, a thin router over `dev-cycle-protocol/onboard.py`: `diagnose` reads the configuration, the branching model and branches, product baseline, plans, the latest release candidate run, blocking bugs, the roadmap and Spec Kit; `propose-config` and `write-config` create or complete `.dev-cycle.json` from what can be detected (adding keys, never overwriting); `create-branch` creates the integration branch (`integration` model). The branching model and Spec Kit are each asked about once per project (the model detected from the branches), and a repository that already uses Spec Kit is adopted (`speckit_setup adopt` on the engine) with its hand-written constitution moved into the sources before it is replaced. Details: [dev-cycle/SKILL.md](dev-cycle/SKILL.md).
+The `/dev-cycle` command, a thin router over the engine's `dev-cycle-protocol onboard` command: `diagnose` reads the configuration, the branching model and branches, product baseline, plans, the latest release candidate run, blocking bugs, the roadmap and Spec Kit; `propose-config` and `write-config` create or complete `.dev-cycle.json` from what can be detected (adding keys, never overwriting); `create-branch` creates the integration branch (`integration` model). The branching model and Spec Kit are each asked about once per project (the model detected from the branches), and a repository that already uses Spec Kit is adopted (`speckit_setup adopt` on the engine) with its hand-written constitution moved into the sources before it is replaced. Details: [dev-cycle/SKILL.md](dev-cycle/SKILL.md).
 
 ### dev-cycle-protocol
 

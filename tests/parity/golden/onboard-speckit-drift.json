@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "🧭 New repository: the cycle starts with Phase 0 (product inception).\n   1. Choose the branching model (asked once): the repository looks like 'trunk' (only 'main' and short-lived branches), the configuration defaults to 'integration' (recommended) — <MASK>\n   2. Fix the Spec Kit setup — pinned v1.2.3 but the project was set up with v1.1.0; preset 'dev-cycle' is not installed; git extension branch_prefix is '', expected 'work'; .specify/memory/constitution.md is missing: run constitution.py generate\n   3. Start the product from the idea (tell the agent your idea) — new repository: Phase 0, product inception\n",
+  "stderr": "",
+  "files": {}
+}

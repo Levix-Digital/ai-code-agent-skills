@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "🧭 This repository is not set up for the cycle yet (no roadmap, no blocking bugs, no plans in progress). Initial setup, in the recommended order:\n   1. Initialize the Git repository (recommended) — there is no Git repository\n   2. Create .dev-cycle.json (proposed from what was detected, written after you confirm) — the project has no configuration\n   3. <MASK> — <MASK>\n   4. Adopt a product baseline (Phase 0, adoption mode): vision, technical specification, backlog with epics, roadmap — the project has no product baseline\n   5. Your request: fix login — Phase 1, discovery\n",
+  "stderr": "",
+  "files": {}
+}

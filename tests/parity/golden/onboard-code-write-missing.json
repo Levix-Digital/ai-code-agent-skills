@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ [Errno 2] No such file or directory: 'missing.json'\n",
+  "stderr": "",
+  "files": {}
+}

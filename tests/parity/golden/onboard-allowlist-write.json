@@ -1,0 +1,8 @@
+{
+  "exit": 0,
+  "stdout": "✅ {project}/.dev-cycle.json: added project_name\n⚠️ .gitignore keeps .dev-cycle.json out of Git: add '!/.dev-cycle.json' to it, or the configuration is lost in the next clone\n",
+  "stderr": "",
+  "files": {
+    "project/.dev-cycle.json": "{\n  \"project_name\": \"demo\"\n}\n"
+  }
+}

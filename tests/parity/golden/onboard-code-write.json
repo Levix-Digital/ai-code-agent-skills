@@ -1,0 +1,8 @@
+{
+  "exit": 0,
+  "stdout": "✅ {project}/.dev-cycle.json: added project_name, devops.{branching, integration_branch}, docs.{user_doc}\n",
+  "stderr": "",
+  "files": {
+    "project/.dev-cycle.json": "{\n  \"project_name\": \"demo\",\n  \"devops\": {\n    \"branching\": \"integration\",\n    \"integration_branch\": \"dev\"\n  },\n  \"docs\": {\n    \"user_doc\": \"README.md\"\n  }\n}\n"
+  }
+}

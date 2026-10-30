@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ Expecting value: line 1 column 18 (char 17)\n",
+  "stderr": "",
+  "files": {}
+}

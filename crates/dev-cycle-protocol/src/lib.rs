@@ -2,6 +2,8 @@
 
 pub mod constitution;
 pub mod inspect_project;
+pub mod onboard;
+pub mod onboard_rules;
 pub mod pr_model;
 pub mod pr_providers;
 pub mod pr_sync;
