@@ -124,7 +124,7 @@ It warns about long files, body text that looks like another language, ADRs miss
 - **Phase 6 (Documentation)**: apply "Where Each Change Goes", run `build_index` and `check_docs`. The README is owned by [`user-docs`](../user-docs/SKILL.md) and the structure itself by [`software-design`](../software-design/SKILL.md).
 - **Gate 8**: `verify_gate.py --gate 8` runs `check_docs`; errors block the release. Projects that have not adopted the layout get a warning only.
 - **Phase 0 (Product inception)**: the index, the first subsystem pages and an ADR per founding decision (`product-inception`).
-- **Spec Kit**: accepted ADRs are listed in the generated constitution; after accepting, superseding or deprecating an ADR in a project that uses Spec Kit, run `dev-cycle-protocol/constitution.py generate` and commit the result with the ADR.
+- **Spec Kit**: accepted ADRs are listed in the generated constitution; after accepting, superseding or deprecating an ADR in a project that uses Spec Kit, run `constitution generate` on the engine (`<skills_root>/dev-cycle-protocol/bin/dev-cycle dev-cycle-protocol constitution generate`) and commit the result with the ADR.
 
 ---
 

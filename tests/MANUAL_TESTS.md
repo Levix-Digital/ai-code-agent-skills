@@ -265,7 +265,7 @@ How to record a run: in each test of the current run, mark exactly one box of th
   2. Ask for the first feature of the current release and answer the clarification questions.
   3. Approve the plan, let the agent implement it and open the pull request.
 - **Expected**:
-  - Step 1 runs `speckit_setup.py init` (version pinned in `.dev-cycle.json`, preset installed) and `constitution.py generate`.
+  - Step 1 runs `speckit_setup.py init` (version pinned in `.dev-cycle.json`, preset installed) and `constitution generate` (engine).
   - Step 2 creates the branch `feat/001-...` from `dev`, `specs/001-.../spec.md` without `[NEEDS CLARIFICATION]`, then `plan.md` with the "Dev Cycle Protocol" sections, `tasks.md` and the analysis; the plan in `docs/plans` has `spec_dir` and milestones from the task phases.
   - Gate 3 reports the Spec Kit artifacts complete and the constitution current.
   - Implementation follows `tasks.md`; tests, documentation and the pull request follow the protocol as usual.
@@ -292,7 +292,7 @@ How to record a run: in each test of the current run, mark exactly one box of th
   1. Accept a new ADR, then run gate 3 on a new plan.
   2. Edit `.specify/memory/constitution.md` by hand and run gate 3 again.
 - **Expected**:
-  - Step 1: gate 3 reports the constitution as stale until `constitution.py generate` is run; the regenerated file lists the ADR and its version moves to `1.1.0`.
+  - Step 1: gate 3 reports the constitution as stale until `constitution generate` (engine) is run; the regenerated file lists the ADR and its version moves to `1.1.0`.
   - Step 2: gate 3 reports the hand edit; regenerating replaces it.
 - **Result**: [ ] Pass [ ] Fail [ ] Blocked
 - **Notes**:

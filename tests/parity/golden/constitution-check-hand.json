@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ .specify/memory/constitution.md is hand-written (Spec Kit used without the protocol): move its principles into the sources (TECH_SPEC.md, ADRs) with the user, then run constitution.py generate --replace-hand-written\n❌ constitution: 1 problem(s).\n",
+  "stderr": "",
+  "files": {}
+}

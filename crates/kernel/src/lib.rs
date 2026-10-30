@@ -4,3 +4,5 @@
 pub mod out;
 pub mod project_config;
 pub mod py;
+pub mod sha256;
+pub mod skills;

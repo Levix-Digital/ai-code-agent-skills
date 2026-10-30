@@ -8,6 +8,9 @@ $ErrorActionPreference = 'Stop'
 $Repo = 'Levix-Digital/ai-code-agent-skills'
 $Version = (Get-Content -Raw (Join-Path $PSScriptRoot 'engine-version')).Trim()
 
+# The commands read their sibling skills' files (SKILL.md, styles) from this skills folder.
+$env:DEV_CYCLE_SKILLS_ROOT = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
+
 if ($env:DEV_CYCLE_BIN) {
     & $env:DEV_CYCLE_BIN @args
     exit $LASTEXITCODE

@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "usage: constitution.py [-h] [--dir DIR] [--stdout] [--replace-hand-written]\n                       {generate,check}\n\nGenerate or check Spec Kit's constitution from the project's sources\n\npositional arguments:\n  {generate,check}\n\noptions:\n  -h, --help            show this help message and exit\n  --dir DIR             Project directory (default: current; the Git root is\n                        used)\n  --stdout              generate: print instead of writing\n  --replace-hand-written\n                        generate: replace a hand-written constitution, keeping\n                        a copy, after its principles were moved\n",
+  "stderr": "",
+  "files": {}
+}

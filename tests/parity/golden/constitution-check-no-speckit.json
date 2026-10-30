@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ Spec Kit is not initialized (.specify/ missing)\n❌ constitution: 1 problem(s).\n",
+  "stderr": "",
+  "files": {}
+}

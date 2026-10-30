@@ -1,0 +1,15 @@
+[package]
+name = "dev-cycle-protocol"
+description = "The dev-cycle-protocol skill's commands: the cycle's gates and Spec Kit setup"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+architecture-docs.workspace = true
+kernel.workspace = true
+
+[lints]
+workspace = true

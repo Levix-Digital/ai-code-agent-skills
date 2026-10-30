@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ .specify/memory/constitution.md was edited by hand: change the source instead and run constitution.py generate\n❌ .specify/memory/constitution.md is stale: a source changed (principles, style, technical specification or ADRs); run constitution.py generate\n❌ constitution: 2 problem(s).\n",
+  "stderr": "",
+  "files": {}
+}

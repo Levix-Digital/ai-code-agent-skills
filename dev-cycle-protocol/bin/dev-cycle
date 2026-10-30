@@ -10,6 +10,10 @@ REPO="Levix-Digital/ai-code-agent-skills"
 here=$(cd "$(dirname "$0")" && pwd -P)
 version=$(tr -d ' \r\n' < "$here/engine-version")
 
+# The commands read their sibling skills' files (SKILL.md, styles) from this skills folder.
+DEV_CYCLE_SKILLS_ROOT=$(cd "$here/../.." && pwd -P)
+export DEV_CYCLE_SKILLS_ROOT
+
 if [ -n "${DEV_CYCLE_BIN:-}" ]; then
   exec "$DEV_CYCLE_BIN" "$@"
 fi

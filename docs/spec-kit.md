@@ -6,7 +6,7 @@
 
 | Phase | Spec Kit |
 |---|---|
-| 0. Product inception | `speckit_setup.py init`, then `constitution.py generate` |
+| 0. Product inception | `speckit_setup.py init`, then `constitution generate` (engine) |
 | 1. Discovery | `/speckit-specify` creates the branch `feat/NNN-slug` and `specs/NNN-slug/spec.md`; `/speckit-clarify` until no `[NEEDS CLARIFICATION]` is left |
 | 2. Plan | `/speckit-plan` (with the protocol's sections), `/speckit-tasks`, `/speckit-analyze`; the plan in `docs/plans` is the envelope of the spec folder (`save_plan.py --spec-dir`) |
 | 3. Plan approval | gate 3 checks the spec folder, the branch, the setup and the constitution |
@@ -21,7 +21,7 @@ Requires [uv](https://docs.astral.sh/uv/) and network access to GitHub. In the p
 
 ```bash
 python ~/.ai-code-agent-skills/dev-cycle-protocol/speckit_setup.py init
-python ~/.ai-code-agent-skills/dev-cycle-protocol/constitution.py generate
+~/.ai-code-agent-skills/dev-cycle-protocol/bin/dev-cycle dev-cycle-protocol constitution generate
 ```
 
 `init` installs Spec Kit at an exact version through `uvx` (never a global install), with the agent integration (`speckit.integration`, default `claude`), the script type (`speckit.script`: `sh`, or `ps` on Windows), branches `feat/NNN-slug` (`speckit.branch_prefix`) and the protocol's `dev-cycle` preset, which adds the tests, documentation, CI and release, and security and rollback sections to every Spec Kit plan. It records the version in `.dev-cycle.json`. Commit `.specify/`, the agent command files and `.dev-cycle.json`.
@@ -38,7 +38,7 @@ python ~/.ai-code-agent-skills/dev-cycle-protocol/speckit_setup.py adopt
 
 It pins the installed version when it passes the compatibility check (otherwise it asks for `upgrade --to <verified version>` first), adds the git extension when it is missing, installs the `dev-cycle` preset and sets `feat/NNN-slug` branches. Existing `specs/` stay as they are.
 
-The project's constitution was written by hand, so it is not replaced right away: the agent shows each of its principles and proposes where it goes (constraints and non-functional requirements to `TECH_SPEC.md`, decisions to ADRs, general design rules as a suggestion for software-design). After you confirm, `constitution.py generate --replace-hand-written` writes the generated one and keeps the old one in `.specify/memory/constitution.hand-written.md`.
+The project's constitution was written by hand, so it is not replaced right away: the agent shows each of its principles and proposes where it goes (constraints and non-functional requirements to `TECH_SPEC.md`, decisions to ADRs, general design rules as a suggestion for software-design). After you confirm, `constitution generate --replace-hand-written` writes the generated one and keeps the old one in `.specify/memory/constitution.hand-written.md`.
 
 ## Versions
 
@@ -57,4 +57,4 @@ python ~/.ai-code-agent-skills/dev-cycle-protocol/speckit_setup.py check --versi
 
 `.specify/memory/constitution.md` is generated from the project's sources of truth: software-design's principles and the guide of the project's architecture style, the protocol's principles, the technical specification's requirements and constraints, and the accepted ADRs. Spec Kit's Constitution Check then enforces the same rules as the cycle.
 
-It is never edited by hand: change the source (an ADR, the technical specification, the architecture style), run `constitution.py generate` and commit the result with the change. Its header records a hash of the content and of the sources, so `constitution.py check` (and gates 0 and 3) report a hand edit or a stale file.
+It is never edited by hand: change the source (an ADR, the technical specification, the architecture style), run `constitution generate` (engine) and commit the result with the change. Its header records a hash of the content and of the sources, so `constitution check` (and gates 0 and 3) report a hand edit or a stale file.

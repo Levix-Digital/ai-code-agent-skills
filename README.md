@@ -169,7 +169,7 @@ python <skills_root>/dev-cycle-protocol/inspect_project.py [--dir .] [--json]
 <skills_root>/dev-cycle-protocol/bin/dev-cycle dev-cycle-protocol project_config [--json] [--validate] [--migrate [--write]]
 python <skills_root>/dev-cycle-protocol/verify_gate.py --gate 0|3|rc|8 [--run vX.Y.Z-rc.N] [--dir .]
 python <skills_root>/dev-cycle-protocol/speckit_setup.py status|latest|check|init|upgrade
-python <skills_root>/dev-cycle-protocol/constitution.py generate|check
+<skills_root>/dev-cycle-protocol/bin/dev-cycle dev-cycle-protocol constitution generate|check
 ```
 - `inspect_project.py` detects languages, manifests, test runners, documentation files and Git state, and shows the configured architecture style, branching model, releases repository, backlog, current release of the roadmap, product baseline and Spec Kit state.
 - `project_config` shows, validates or migrates `.dev-cycle.json`. It runs on the native engine: `bin/dev-cycle` in sh shells, `bin/dev-cycle.ps1` in PowerShell (the first run downloads it).

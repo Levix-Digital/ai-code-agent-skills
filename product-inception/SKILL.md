@@ -75,8 +75,9 @@ Sections: Platforms and Stack, Architecture Overview (links to the technical doc
 Ask the user whether the project uses Spec Kit for the detail of features (see `dev-cycle-protocol`, "Spec Kit"). If yes, initialize it and generate the constitution from the baseline:
 ```powershell
 python "<skills_root>/dev-cycle-protocol/speckit_setup.py" init
-python "<skills_root>/dev-cycle-protocol/constitution.py" generate
+"<skills_root>/dev-cycle-protocol/bin/dev-cycle" dev-cycle-protocol constitution generate
 ```
+In PowerShell, run the engine as `& "<skills_root>/dev-cycle-protocol/bin/dev-cycle.ps1" dev-cycle-protocol constitution generate`.
 The constitution is generated from `software-design`, the protocol's principles, the technical specification and the accepted ADRs; it is never edited by hand.
 
 ### 7. 📥 Product Backlog
