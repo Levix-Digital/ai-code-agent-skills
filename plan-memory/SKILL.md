@@ -133,10 +133,12 @@ In PowerShell, run `& "<skills_root>/dev-cycle-protocol/bin/dev-cycle.ps1" plan-
 ```
 In PowerShell, run `& "<skills_root>/dev-cycle-protocol/bin/dev-cycle.ps1" plan-memory get_plan [arguments]` instead.
 
-### 6. Semantic Search (`search_plans.py`)
-```powershell
-python "<skills_root>/plan-memory/search_plans.py" --query "how to implement the model router in chat" [--limit 5] [--all-projects]
+### 6. Semantic Search (`search_plans`)
+`search_plans` runs on the native engine. In sh shells (Linux, macOS, Git Bash):
+```bash
+"<skills_root>/dev-cycle-protocol/bin/dev-cycle" plan-memory search_plans --query "how to implement the model router in chat" [--limit 5] [--all-projects]
 ```
+In PowerShell, run `& "<skills_root>/dev-cycle-protocol/bin/dev-cycle.ps1" plan-memory search_plans [arguments]` instead.
 
 ### 7. Update Lifecycle Status (`update_plan_status.py`)
 ```powershell
@@ -249,7 +251,7 @@ When the project uses Spec Kit (`speckit.enabled`, see `dev-cycle-protocol`), th
 
 The whole development lifecycle follows 👉 **[`dev-cycle-protocol`](../dev-cycle-protocol/SKILL.md)**:
 - **Phase 0 (Product inception)**: the product backlog as epics and their items, and the roadmap from the MVP (`product-inception`).
-- **Phase 1 (Discovery)**: check `list_plans` (engine), `check_milestone.py --list` or `search_plans.py` for real progress and agreed guidelines, `backlog.py summary` for open bugs and captured ideas and `roadmap current` (engine) for the items of the current release; promote the items the user chooses.
+- **Phase 1 (Discovery)**: check `list_plans` (engine), `check_milestone.py --list` or `search_plans` (engine) for real progress and agreed guidelines, `backlog.py summary` for open bugs and captured ideas and `roadmap current` (engine) for the items of the current release; promote the items the user chooses.
 - **Phase 2 (Plan)**: save the full plan with `save_plan.py` (with `--supersedes` when it replaces one, `--spec-dir` with Spec Kit) and run `detect_drift.py`. The plan follows the orchestrator's template, with a section from each role.
 - **Phase 3 (Plan approval)**: `verify_gate --gate 3` (engine) checks there is an active plan, warns if its file is not committed, and blocks a non-bug plan while open blocking bugs (default `critical`, `high`, `medium`) or bugs not triaged are outside it (bugs first). A bug is triaged when it has a valid severity and, when its severity does not block, it is in the next release of the roadmap (`backlog.bug_deadline`). `backlog.py summary` lists the bugs not triaged; `backlog.py add` of a bug says where it goes.
 - **Phase 4 (Implementation)**: mark milestones with `check_milestone.py` as they are completed.

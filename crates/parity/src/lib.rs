@@ -246,7 +246,7 @@ impl Harness {
             }
             let to = home.join(rel);
             fs::create_dir_all(&to).map_err(|e| e.to_string())?;
-            copy_dir(&from, &to)?;
+            link_dir(&from, &to)?;
         }
         // Canonical paths: the scripts print resolved paths (macOS /private/var, Windows \\?\ aside).
         let project = canonical(&project);
@@ -505,6 +505,21 @@ fn snapshot(root: &Path) -> Result<BTreeMap<String, Vec<u8>>, String> {
         }
     }
     Ok(out)
+}
+
+/// Hard links of the files (copies where linking fails): the seeds are large and read only.
+fn link_dir(from: &Path, to: &Path) -> Result<(), String> {
+    for entry in fs::read_dir(from).map_err(|e| format!("{}: {e}", from.display()))? {
+        let path = entry.map_err(|e| e.to_string())?.path();
+        let target = to.join(path.file_name().ok_or("bad file name")?);
+        if path.is_dir() {
+            fs::create_dir_all(&target).map_err(|e| e.to_string())?;
+            link_dir(&path, &target)?;
+        } else if fs::hard_link(&path, &target).is_err() {
+            fs::copy(&path, &target).map_err(|e| e.to_string())?;
+        }
+    }
+    Ok(())
 }
 
 fn copy_dir(from: &Path, to: &Path) -> Result<(), String> {

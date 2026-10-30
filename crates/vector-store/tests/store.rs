@@ -204,3 +204,18 @@ fn a_collection_name_is_validated() {
     assert_eq!(a.id, b.id);
     let _ = std::fs::remove_dir_all(&dir);
 }
+
+#[test]
+fn equal_distances_come_in_insertion_order() {
+    let dir = temp("ties");
+    let mut c = Client::persistent(&dir).unwrap();
+    let col = c.get_or_create_collection("plan_index", None).unwrap();
+    let v = vectors(1, 8, 3).remove(0);
+    let names = ids(&["z", "a", "m"]);
+    let same = vec![v.clone(), v.clone(), v.clone()];
+    c.upsert_embeddings(&col, &names, &same, &ids(&["", "", ""]), &[])
+        .unwrap();
+    let hits = c.query_embedding(&col, v, 3, None).unwrap();
+    assert_eq!(hits.ids, names);
+    let _ = std::fs::remove_dir_all(&dir);
+}

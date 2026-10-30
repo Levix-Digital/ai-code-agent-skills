@@ -115,6 +115,11 @@ const COMMANDS: &[(&str, &str, Command)] = &[
         plan_memory::rebuild_index::main,
     ),
     ("plan-memory", "roadmap", plan_memory::roadmap::main),
+    (
+        "plan-memory",
+        "search_plans",
+        plan_memory::search_plans::main,
+    ),
 ];
 
 fn main() -> ExitCode {

@@ -740,5 +740,86 @@
     "env": {"PLAN_MEMORY_DB": "{home}/db"},
     "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"],
     "ignore": ["home/db", "home/.cache"]
+  },
+  {
+    "name": "search-plans-help",
+    "python": "plan-memory/search_plans.py",
+    "rust": ["plan-memory", "search_plans"],
+    "args": ["--help"],
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "search-plans-no-query",
+    "python": "plan-memory/search_plans.py",
+    "rust": ["plan-memory", "search_plans"],
+    "args": [],
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "search-plans-bad-limit",
+    "python": "plan-memory/search_plans.py",
+    "rust": ["plan-memory", "search_plans"],
+    "args": ["--query", "x", "--limit", "two"],
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "search-plans-query",
+    "python": "plan-memory/search_plans.py",
+    "rust": ["plan-memory", "search_plans"],
+    "args": ["--query", "export the answers to Markdown"],
+    "fixture": "plans-list",
+    "env": {"PLAN_MEMORY_DB": "{home}/db"},
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"],
+    "ignore": ["home/db", "home/.cache"]
+  },
+  {
+    "name": "search-plans-limit",
+    "python": "plan-memory/search_plans.py",
+    "rust": ["plan-memory", "search_plans"],
+    "args": ["--query", "release", "--limit", "2"],
+    "fixture": "plans-list",
+    "env": {"PLAN_MEMORY_DB": "{home}/db"},
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"],
+    "ignore": ["home/db", "home/.cache"]
+  },
+  {
+    "name": "search-plans-all-projects",
+    "python": "plan-memory/search_plans.py",
+    "rust": ["plan-memory", "search_plans"],
+    "args": ["--query", "bug fix", "--all-projects", "--limit", "3"],
+    "fixture": "plans-list",
+    "env": {"PLAN_MEMORY_DB": "{home}/db"},
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"],
+    "ignore": ["home/db", "home/.cache"]
+  },
+  {
+    "name": "search-plans-project",
+    "python": "plan-memory/search_plans.py",
+    "rust": ["plan-memory", "search_plans"],
+    "args": ["--query", "plan", "--project", "Other Name", "--dir", "{project}"],
+    "fixture": "plans-list",
+    "env": {"PLAN_MEMORY_DB": "{home}/db"},
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"],
+    "ignore": ["home/db", "home/.cache"]
+  },
+  {
+    "name": "search-plans-speckit",
+    "python": "plan-memory/search_plans.py",
+    "rust": ["plan-memory", "search_plans"],
+    "args": ["--query", "spec kit tasks"],
+    "fixture": "plans-speckit",
+    "git": true,
+    "env": {"PLAN_MEMORY_DB": "{home}/db"},
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"],
+    "ignore": ["home/db", "home/.cache"]
+  },
+  {
+    "name": "search-plans-no-plans",
+    "python": "plan-memory/search_plans.py",
+    "rust": ["plan-memory", "search_plans"],
+    "args": ["--query", "anything"],
+    "env": {"PLAN_MEMORY_DB": "{home}/db"},
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"],
+    "ignore": ["home/db", "home/.cache"]
   }
 ]

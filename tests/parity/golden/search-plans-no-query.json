@@ -1,0 +1,6 @@
+{
+  "exit": 2,
+  "stdout": "",
+  "stderr": "usage: search_plans.py [-h] --query QUERY [--limit LIMIT] [--project PROJECT]\n                       [--dir DIR] [--all-projects]\nsearch_plans.py: error: the following arguments are required: --query\n",
+  "files": {}
+}
