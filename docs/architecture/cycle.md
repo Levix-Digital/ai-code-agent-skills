@@ -1,7 +1,7 @@
 ---
 title: Cycle Orchestration
 summary: The /dev-cycle entry command, the phases and roles, the onboarding diagnosis and the gates.
-code: [dev-cycle, dev-cycle-protocol/SKILL.md, dev-cycle-protocol/onboard.py, dev-cycle-protocol/_onboard.py, dev-cycle-protocol/verify_gate.py, dev-cycle-protocol/inspect_project.py]
+code: [dev-cycle, dev-cycle-protocol/SKILL.md, dev-cycle-protocol/onboard.py, dev-cycle-protocol/_onboard.py, dev-cycle-protocol/verify_gate.py, dev-cycle-protocol/inspect_project.py, crates/dev-cycle-protocol]
 ---
 
 # Cycle Orchestration
@@ -19,7 +19,7 @@ Owns the cycle itself: the single entry command, the phases 0 to 10 with the rol
 - `dev-cycle-protocol/onboard.py`: reads the repository (configuration, branching model, branches, product baseline, plans, release candidate, bugs, roadmap, Spec Kit, pull requests, protocol files the ignore rules hide) and writes only after the user confirms (`write-config`, `create-branch`, `set-attribution`).
 - `dev-cycle-protocol/_onboard.py`: pure rules that turn that state into the ordered options and the recommendation.
 - `dev-cycle-protocol/verify_gate.py`: gates `0`, `3`, `rc` and `8`, each running the role skills' checkers.
-- `dev-cycle-protocol/inspect_project.py`: detects stack, build tools, test runners and surfaces.
+- `inspect_project` (engine, `crates/dev-cycle-protocol`; `dev-cycle-protocol/inspect_project.py` stays for `onboard.py`, which imports it): detects stack, build tools, test runners and surfaces.
 
 ## Behavior
 

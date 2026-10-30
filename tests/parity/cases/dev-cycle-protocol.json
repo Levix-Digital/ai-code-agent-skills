@@ -477,5 +477,159 @@
     "python": "dev-cycle-protocol/speckit_setup.py",
     "rust": ["dev-cycle-protocol", "speckit_setup"],
     "args": ["init", "--script", "bat"]
+  },
+  {
+    "name": "inspect-empty",
+    "python": "dev-cycle-protocol/inspect_project.py",
+    "rust": ["dev-cycle-protocol", "inspect_project"],
+    "args": ["--dir", "{project}"],
+    "seps": ["docs[\\\\/]ARCHITECTURE\\.md", "tests[\\\\/]MANUAL_TESTS\\.md"]
+  },
+  {
+    "name": "inspect-empty-json",
+    "python": "dev-cycle-protocol/inspect_project.py",
+    "rust": ["dev-cycle-protocol", "inspect_project"],
+    "args": ["--dir", "{project}", "--json"],
+    "masks": ["\"workspace_root\": \"[^\"]*\"", "\"config_manifest\": \"[^\"]*\"", "\"manual_tests\": \"[^\"]*\"", "\"tec_doc\": \"[^\"]*\"", "\"uv\": (?:true|false)"]
+  },
+  {
+    "name": "inspect-full",
+    "python": "dev-cycle-protocol/inspect_project.py",
+    "rust": ["dev-cycle-protocol", "inspect_project"],
+    "args": ["--dir", "{project}"],
+    "fixture": "inspect-full",
+    "git": true,
+    "seps": ["docs[\\\\/]ARCHITECTURE\\.md", "tests[\\\\/]MANUAL_TESTS\\.md"]
+  },
+  {
+    "name": "inspect-full-json",
+    "python": "dev-cycle-protocol/inspect_project.py",
+    "rust": ["dev-cycle-protocol", "inspect_project"],
+    "args": ["--dir", "{project}", "--json"],
+    "fixture": "inspect-full",
+    "git": true,
+    "masks": ["\"workspace_root\": \"[^\"]*\"", "\"config_manifest\": \"[^\"]*\"", "\"manual_tests\": \"[^\"]*\"", "\"tec_doc\": \"[^\"]*\"", "\"uv\": (?:true|false)"]
+  },
+  {
+    "name": "inspect-full-from-cwd",
+    "python": "dev-cycle-protocol/inspect_project.py",
+    "rust": ["dev-cycle-protocol", "inspect_project"],
+    "args": [],
+    "fixture": "inspect-full",
+    "git": true,
+    "seps": ["docs[\\\\/]ARCHITECTURE\\.md", "tests[\\\\/]MANUAL_TESTS\\.md"]
+  },
+  {
+    "name": "inspect-root-docs",
+    "python": "dev-cycle-protocol/inspect_project.py",
+    "rust": ["dev-cycle-protocol", "inspect_project"],
+    "args": ["--dir", "{project}"],
+    "fixture": "inspect-root-docs",
+    "git": true,
+    "seps": ["docs[\\\\/]ARCHITECTURE\\.md", "tests[\\\\/]MANUAL_TESTS\\.md"]
+  },
+  {
+    "name": "inspect-root-docs-json",
+    "python": "dev-cycle-protocol/inspect_project.py",
+    "rust": ["dev-cycle-protocol", "inspect_project"],
+    "args": ["--json", "--dir", "{project}"],
+    "fixture": "inspect-root-docs",
+    "git": true,
+    "masks": ["\"workspace_root\": \"[^\"]*\"", "\"config_manifest\": \"[^\"]*\"", "\"manual_tests\": \"[^\"]*\"", "\"tec_doc\": \"[^\"]*\"", "\"uv\": (?:true|false)"]
+  },
+  {
+    "name": "inspect-backlog-and-roadmap",
+    "python": "dev-cycle-protocol/inspect_project.py",
+    "rust": ["dev-cycle-protocol", "inspect_project"],
+    "args": ["--dir", "{project}"],
+    "fixture": "backlog-and-roadmap",
+    "git": true,
+    "seps": ["docs[\\\\/]ARCHITECTURE\\.md", "tests[\\\\/]MANUAL_TESTS\\.md"]
+  },
+  {
+    "name": "inspect-roadmap-problems",
+    "python": "dev-cycle-protocol/inspect_project.py",
+    "rust": ["dev-cycle-protocol", "inspect_project"],
+    "args": ["--dir", "{project}"],
+    "fixture": "roadmap-problems",
+    "git": true,
+    "seps": ["docs[\\\\/]ARCHITECTURE\\.md", "tests[\\\\/]MANUAL_TESTS\\.md"]
+  },
+  {
+    "name": "inspect-backlog-with-problems",
+    "python": "dev-cycle-protocol/inspect_project.py",
+    "rust": ["dev-cycle-protocol", "inspect_project"],
+    "args": ["--dir", "{project}"],
+    "fixture": "backlog-with-problems",
+    "git": true,
+    "seps": ["docs[\\\\/]ARCHITECTURE\\.md", "tests[\\\\/]MANUAL_TESTS\\.md"]
+  },
+  {
+    "name": "inspect-config-problems",
+    "python": "dev-cycle-protocol/inspect_project.py",
+    "rust": ["dev-cycle-protocol", "inspect_project"],
+    "args": ["--dir", "{project}"],
+    "fixture": "config-problems",
+    "git": true,
+    "seps": ["docs[\\\\/]ARCHITECTURE\\.md", "tests[\\\\/]MANUAL_TESTS\\.md"]
+  },
+  {
+    "name": "inspect-config-broken",
+    "python": "dev-cycle-protocol/inspect_project.py",
+    "rust": ["dev-cycle-protocol", "inspect_project"],
+    "args": ["--dir", "{project}"],
+    "fixture": "config-broken",
+    "git": true,
+    "seps": ["docs[\\\\/]ARCHITECTURE\\.md", "tests[\\\\/]MANUAL_TESTS\\.md"]
+  },
+  {
+    "name": "inspect-config-array",
+    "python": "dev-cycle-protocol/inspect_project.py",
+    "rust": ["dev-cycle-protocol", "inspect_project"],
+    "args": ["--dir", "{project}"],
+    "fixture": "config-array",
+    "git": true,
+    "seps": ["docs[\\\\/]ARCHITECTURE\\.md", "tests[\\\\/]MANUAL_TESTS\\.md"]
+  },
+  {
+    "name": "inspect-product-complete",
+    "python": "dev-cycle-protocol/inspect_project.py",
+    "rust": ["dev-cycle-protocol", "inspect_project"],
+    "args": ["--dir", "{project}"],
+    "fixture": "product-complete",
+    "git": true,
+    "seps": ["docs[\\\\/]ARCHITECTURE\\.md", "tests[\\\\/]MANUAL_TESTS\\.md"]
+  },
+  {
+    "name": "inspect-speckit-drift",
+    "python": "dev-cycle-protocol/inspect_project.py",
+    "rust": ["dev-cycle-protocol", "inspect_project"],
+    "args": ["--dir", "{project}"],
+    "fixture": "speckit-drift",
+    "git": true,
+    "seps": ["docs[\\\\/]ARCHITECTURE\\.md", "tests[\\\\/]MANUAL_TESTS\\.md"]
+  },
+  {
+    "name": "inspect-speckit-drift-json",
+    "python": "dev-cycle-protocol/inspect_project.py",
+    "rust": ["dev-cycle-protocol", "inspect_project"],
+    "args": ["--dir", "{project}", "--json"],
+    "fixture": "speckit-drift",
+    "git": true,
+    "masks": ["\"workspace_root\": \"[^\"]*\"", "\"config_manifest\": \"[^\"]*\"", "\"manual_tests\": \"[^\"]*\"", "\"tec_doc\": \"[^\"]*\"", "\"uv\": (?:true|false)"]
+  },
+  {
+    "name": "inspect-help",
+    "python": "dev-cycle-protocol/inspect_project.py",
+    "rust": ["dev-cycle-protocol", "inspect_project"],
+    "args": ["-h"],
+    "seps": ["docs[\\\\/]ARCHITECTURE\\.md", "tests[\\\\/]MANUAL_TESTS\\.md"]
+  },
+  {
+    "name": "inspect-unrecognized",
+    "python": "dev-cycle-protocol/inspect_project.py",
+    "rust": ["dev-cycle-protocol", "inspect_project"],
+    "args": ["--bogus"],
+    "seps": ["docs[\\\\/]ARCHITECTURE\\.md", "tests[\\\\/]MANUAL_TESTS\\.md"]
   }
 ]

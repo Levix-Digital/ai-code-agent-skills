@@ -1,0 +1,1 @@
+{"project_name": "Acme", "test_commands": ["cargo test", "pytest -q"], "architecture": {"style": "hexagonal"}, "devops": {"releases_repo": "acme/releases", "release_candidates": true}, "docs": {"tec_doc": "docs/ARCHITECTURE.md"}, "backlog": {"blocking_severities": ["critical", "high"]}, "speckit": {"enabled": true, "version": "v1.2.3", "integration": "claude", "script": "sh"}}

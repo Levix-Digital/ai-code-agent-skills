@@ -47,7 +47,7 @@ const REQUIRED_TEMPLATES: [&str; 4] = [
 
 /// `SetupError` (a setup step that cannot continue; printed after `❌`), or an exception the
 /// script does not catch.
-enum Error {
+pub enum Error {
     Setup(String),
     Crash(Crash),
 }
@@ -103,11 +103,21 @@ fn tail(text: &str, n: usize) -> &str {
 }
 
 /// Where the skills are: the preset, the verified version and the adaptation documents.
-struct Skills {
+pub struct Skills {
     root: String,
 }
 
 impl Skills {
+    /// The skills folder the launcher passes, or the checkout the binary was built in.
+    pub fn find() -> Option<Self> {
+        let root = kernel::skills::root()?;
+        Some(Skills {
+            root: abspath(&root.to_string_lossy())
+                .to_string_lossy()
+                .into_owned(),
+        })
+    }
+
     fn here(&self) -> String {
         join(&self.root, "dev-cycle-protocol")
     }
@@ -1434,7 +1444,7 @@ fn prefix_value(prefix: Option<String>) -> Value {
     prefix.map_or(Value::Null, Value::Str)
 }
 
-fn status_data(skills: &Skills, root: &str) -> Res<Dict> {
+pub fn status_data(skills: &Skills, root: &str) -> Res<Dict> {
     let config = load_project_config(Some(root))?;
     let cfg = config.section("speckit");
     let initialized = isdir(&join(root, ".specify"));
@@ -1644,17 +1654,12 @@ fn run_main(argv: &[String]) -> Result<u8, Crash> {
         Ok(a) => a,
         Err(exit) => return Ok(exit.report()),
     };
-    let Some(root) = kernel::skills::root() else {
+    let Some(skills) = Skills::find() else {
         err(&format!(
             "dev-cycle: cannot find the skills folder; set {} to it\n",
             kernel::skills::ENV
         ));
         return Ok(2);
-    };
-    let skills = Skills {
-        root: abspath(&root.to_string_lossy())
-            .to_string_lossy()
-            .into_owned(),
     };
     let result = match args.value("command").unwrap_or_default() {
         "status" => cmd_status(&skills, &args),

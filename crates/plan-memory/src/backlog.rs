@@ -4,10 +4,10 @@
 //! newline, `re.I` with Python's case folding).
 
 use kernel::project_config::{ConfigError, load_project_config};
-use kernel::py::Crash;
 use kernel::py::num::{decimal_value, is_space};
 use kernel::py::path::{isfile, join};
 use kernel::py::unicode::{ignorecase_eq, upper};
+use kernel::py::{Crash, Value};
 
 use crate::roadmap::{RoadmapError, field_line, read_exact, section_heading};
 
@@ -345,4 +345,157 @@ impl From<BacklogError> for RoadmapError {
     fn from(e: BacklogError) -> Self {
         RoadmapError::Error(e.0)
     }
+}
+
+/// `value in container`, for a value from the project configuration.
+fn contains(container: &Value, item: &str) -> Result<bool, Crash> {
+    match container {
+        Value::Str(s) => Ok(s.contains(item)),
+        Value::List(v) | Value::Tuple(v) | Value::Set(v) => {
+            Ok(v.iter().any(|x| x.as_str() == Some(item)))
+        }
+        Value::Dict(d) => Ok(d.contains_key(item)),
+        other => Err(Crash::new(format!(
+            "TypeError: argument of type '{}' is not iterable",
+            other.type_name()
+        ))),
+    }
+}
+
+impl Backlog {
+    /// `open_items(item_type)`: the open items of one type, in `open_items()` order.
+    pub fn open_items_of(&self, kind: &str) -> Vec<&Item> {
+        self.open_items()
+            .into_iter()
+            .filter(|i| i.kind() == Some(kind))
+            .collect()
+    }
+
+    /// `blocking_bugs(severities)`: the open bugs whose severity holds up new work.
+    pub fn blocking_bugs(&self, severities: &Value) -> Result<Vec<&Item>, Crash> {
+        let mut out = Vec::new();
+        for bug in self.open_items_of("bug") {
+            if contains(severities, &bug.get("Severity"))? {
+                out.push(bug);
+            }
+        }
+        Ok(out)
+    }
+}
+
+/// `BacklogFile(start_dir)`: the backlog file of one project and its triage settings.
+pub struct BacklogFile {
+    root: String,
+    pub path: String,
+    pub blocking_severities: Value,
+    pub bug_deadline: Value,
+}
+
+impl BacklogFile {
+    pub fn new(start_dir: Option<&str>) -> Result<Self, Crash> {
+        let root = architecture_docs::docs::repo_root(start_dir);
+        let config = load_project_config(Some(&root)).map_err(ConfigError::into_crash)?;
+        let root = config.root.to_string_lossy().into_owned();
+        let section = config.section("backlog");
+        let file = section.get_or_none("file");
+        let default = Value::Str(join("docs", "BACKLOG.md"));
+        let path = architecture_docs::docs::join_value(
+            &root,
+            if file.truthy() { file } else { &default },
+        )?;
+        let or = |key: &str, default: Value| {
+            let v = section.get_or_none(key);
+            if v.truthy() { v.clone() } else { default }
+        };
+        Ok(BacklogFile {
+            path,
+            blocking_severities: or("blocking_severities", Value::List(Vec::new())),
+            bug_deadline: or("bug_deadline", Value::str("next_release")),
+            root,
+        })
+    }
+
+    pub fn exists(&self) -> bool {
+        isfile(&self.path)
+    }
+
+    pub fn rel(&self) -> Result<String, Crash> {
+        Ok(kernel::py::path::relpath(&self.path, &self.root)?.replace('\\', "/"))
+    }
+
+    pub fn load(&self) -> Result<Backlog, RoadmapError> {
+        if !self.exists() {
+            return Err(RoadmapError::Error(format!(
+                "no backlog at {}; the first 'add' creates it",
+                self.rel()?
+            )));
+        }
+        Ok(Backlog::parse(&read_exact(&self.path)?))
+    }
+
+    /// `triage(backlog)`: the open bugs not triaged yet, with the reason, reading the
+    /// project roadmap when there is one.
+    pub fn untriaged<'a>(
+        &self,
+        backlog: &'a Backlog,
+    ) -> Result<Vec<(&'a Item, String)>, RoadmapError> {
+        let rf = crate::roadmap::RoadmapFile::new(Some(&self.root))?;
+        let roadmap = if rf.exists() {
+            Some(rf.load(false)?)
+        } else {
+            None
+        };
+        Ok(bug_triage(
+            backlog,
+            roadmap.as_ref(),
+            &self.blocking_severities,
+            &self.bug_deadline,
+        )?)
+    }
+}
+
+/// `bug_triage(backlog, roadmap, blocking, deadline)["untriaged"]`: an open bug is untriaged
+/// when its severity is missing or invalid, or, with a deadline, when its severity does not
+/// block new work and it is not in the next release of the roadmap.
+pub fn bug_triage<'a>(
+    backlog: &'a Backlog,
+    roadmap: Option<&crate::roadmap::Roadmap>,
+    blocking: &Value,
+    deadline: &Value,
+) -> Result<Vec<(&'a Item, String)>, Crash> {
+    let roadmap = roadmap.filter(|_| deadline.as_str() == Some("next_release"));
+    let current = roadmap.and_then(|r| r.current());
+    let mut out = Vec::new();
+    for bug in backlog.open_items_of("bug") {
+        let severity = bug.get("Severity");
+        if !SEVERITIES.contains(&severity.as_str()) {
+            let why = if severity.is_empty() {
+                "no severity".to_string()
+            } else {
+                format!("invalid severity '{severity}'")
+            };
+            out.push((bug, why));
+            continue;
+        }
+        let Some(roadmap) = roadmap else {
+            continue;
+        };
+        if contains(blocking, &severity)? {
+            continue;
+        }
+        let release = roadmap.release_of(&bug.id).map(|i| &roadmap.releases[i]);
+        match (current, release) {
+            (None, _) => out.push((bug, "no release left in the roadmap to schedule it".into())),
+            (Some(c), None) => out.push((
+                bug,
+                format!("not scheduled; it goes into {} at the latest", c.version),
+            )),
+            (Some(c), Some(r)) if r.version != c.version => out.push((
+                bug,
+                format!("scheduled for {}; the deadline is {}", r.version, c.version),
+            )),
+            _ => {}
+        }
+    }
+    Ok(out)
 }
