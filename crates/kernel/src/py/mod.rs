@@ -130,6 +130,11 @@ pub fn today() -> String {
         .to_string()
 }
 
+/// `datetime.datetime.now().replace(microsecond=0).isoformat()`: the local time.
+pub fn now_iso() -> String {
+    chrono::Local::now().format("%Y-%m-%dT%H:%M:%S").to_string()
+}
+
 pub fn universal_newlines(text: &str) -> String {
     if text.contains('\r') {
         text.replace("\r\n", "\n").replace('\r', "\n")

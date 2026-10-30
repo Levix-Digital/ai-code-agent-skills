@@ -101,7 +101,7 @@ Phase 0 runs once per product. Phases 1 to 7 run for every change. Phases 8 to 1
 ### 0. 🌱 Product Inception (once per product)
 Follow [`product-inception`](../product-inception/SKILL.md): interview, business document, architecture, technical specification, constitution (Spec Kit), product backlog with epics, roadmap, each approved by the user. It ends at **gate 0**, the user's approval of the product baseline:
 ```powershell
-python "<skills_root>/dev-cycle-protocol/verify_gate.py" --gate 0
+"<skills_root>/dev-cycle-protocol/bin/dev-cycle" dev-cycle-protocol verify_gate --gate 0
 ```
 A project without a baseline that is already under way can adopt it (adoption mode) or skip it: Phase 0 is required for new products, recommended for existing ones.
 
@@ -142,7 +142,7 @@ End with (in the user's language): *"This is the complete plan. Would you like t
 
 ### 3. 🔒 Plan Approval Gate (user)
 ```powershell
-python "<skills_root>/dev-cycle-protocol/verify_gate.py" --gate 3
+"<skills_root>/dev-cycle-protocol/bin/dev-cycle" dev-cycle-protocol verify_gate --gate 3
 ```
 - Implementation starts **only** after a short, explicit approval from the user ("Approved", "Go ahead"). A reply with a question, a reservation or a new idea goes back to Phase 1.
 - With Spec Kit, the gate also checks the spec folder (spec, plan and tasks exist, no open clarification), the branch name and that the constitution is current.
@@ -190,13 +190,13 @@ python "<skills_root>/dev-cycle-protocol/verify_gate.py" --gate 3
 - Read the results (`manual_tests failed --run <rc>`): each failure goes back to Phase 4 as a fix into the candidate branch, followed by a new candidate and run. A failure the user decides to leave for later is captured in the backlog (`backlog.py add --from-failed --run <rc>`).
 - The candidate is accepted when the acceptance gate passes:
   ```powershell
-  python "<skills_root>/dev-cycle-protocol/verify_gate.py" --gate rc --run vX.Y.Z-rc.N
+  "<skills_root>/dev-cycle-protocol/bin/dev-cycle" dev-cycle-protocol verify_gate --gate rc --run vX.Y.Z-rc.N
   ```
 
 ### 10. 🚀 Release Gate (user) and Verified Release
 - Run the release readiness gate, then hand the release to the user with the release notes highlights (user-visible changes, upgrade steps, known limitations):
   ```powershell
-  python "<skills_root>/dev-cycle-protocol/verify_gate.py" --gate 8 --run vX.Y.Z-rc.N
+  "<skills_root>/dev-cycle-protocol/bin/dev-cycle" dev-cycle-protocol verify_gate --gate 8 --run vX.Y.Z-rc.N
   ```
   - `integration`: open the pull request from the integration branch into the production branch with the highlights; **the user merges**, and the merge creates the final tag and release (`devops-release` tag-on-merge).
   - `trunk`, `release-branches`: give the user the highlights and the command for the accepted candidate (`gh workflow run promote.yml -f candidate=vX.Y.Z-rc.N`, or Actions > Promote); **the user promotes**, and the promote workflow tags that candidate's commit and creates the release.
@@ -251,7 +251,7 @@ The backlog (`backlog.file` in `.dev-cycle.json`, default `docs/BACKLOG.md`) is 
 
 ## 🔐 Security, Data and Rollback
 
-- **Secrets**: never commit `.env` files, keys, certificates or credentials; `verify_gate.py` checks tracked and staged files.
+- **Secrets**: never commit `.env` files, keys, certificates or credentials; `verify_gate` (engine) checks tracked and staged files.
 - **Data migrations** are additive or backward compatible so older versions and parallel instances keep working; destructive changes need a plan section and a backup step.
 - **Rollback**: a broken release is reverted through a pull request on the branch it was released from and followed by the next patch release (`devops-release`).
 
@@ -269,7 +269,7 @@ The backlog (`backlog.file` in `.dev-cycle.json`, default `docs/BACKLOG.md`) is 
 Secret hygiene flags committed or staged credential files by file name only: exact names (`.env`, `.env.*`, `id_rsa`, `credentials.json`, `.netrc`...), key and certificate stores (`*.pem`, `*.key`, `*.p12`, `*.pfx`, `*.jks`, `*.keystore`, `*.ppk`, `*.env`) and secret-named data files (`*secret*` or `*private_key*` as `.json`, `.yaml`, `.yml`, `.toml`, `.ini`, `.properties`). Source code and docs about secrets are never flagged, nor are templates (`.example`, `.sample`, `.template`, `.dist`).
 
 ```powershell
-python "<skills_root>/dev-cycle-protocol/verify_gate.py" --gate 0|3|rc|8 [--run <rc tag>] [--accept-open-bugs "<reason>"] [--dir <project>]
+"<skills_root>/dev-cycle-protocol/bin/dev-cycle" dev-cycle-protocol verify_gate --gate 0|3|rc|8 [--run <rc tag>] [--accept-open-bugs "<reason>"] [--dir <project>]
 "<skills_root>/dev-cycle-protocol/bin/dev-cycle" dev-cycle-protocol inspect_project [--json]
 "<skills_root>/dev-cycle-protocol/bin/dev-cycle" dev-cycle-protocol project_config [--json] [--validate] [--migrate [--write]]
 "<skills_root>/dev-cycle-protocol/bin/dev-cycle" dev-cycle-protocol pr_sync status|open|gate-merge|reply|resolve|comment|review|request-review [...]
@@ -285,4 +285,4 @@ python "<skills_root>/dev-cycle-protocol/verify_gate.py" --gate 0|3|rc|8 [--run 
 
 Optional file at the repository root: the project configuration shared by every skill (the branching model is `devops.branching`), with one section per skill (`architecture`, `docs`, `tests`, `devops`, `plans`, `backlog`, `roadmap`, `product`, `speckit`, `architecture_docs`, `drift_rules`) and `test_commands`. Read it through the single loader, which fills defaults, accepts the legacy flat keys of older files and validates the result (`project_config`). The Python scripts of other skills import it from the sibling folder (`from project_config import load_project_config`). The full key reference is in the skills repository README ("Project configuration").
 
-If the file does not exist, `inspect_project` and `verify_gate.py` detect the repository's standard stack and use the defaults.
+If the file does not exist, `inspect_project` and `verify_gate` detect the repository's standard stack and use the defaults.

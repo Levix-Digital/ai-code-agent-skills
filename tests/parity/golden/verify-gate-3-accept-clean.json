@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "================================================================================\n🔒 VERIFYING GATE 3 (PLAN APPROVAL): clean\n================================================================================\n✅ Git working tree is clean.\n✅ Active plan found in {project}/docs/plans: 'feat_y' (1 active/in progress)\nℹ️ Other open bugs in docs/BACKLOG.md (triaged): BUG-002, BUG-001\n✅ Bugs first: no open critical bug outside this plan, every other bug is triaged.\n✅ Secret hygiene check passed (no unencrypted credential files detected).\n--------------------------------------------------------------------------------\n🟢 GATE 3 STATUS: READY FOR EXPLICIT USER APPROVAL\n================================================================================\n\n",
+  "stderr": "",
+  "files": {}
+}

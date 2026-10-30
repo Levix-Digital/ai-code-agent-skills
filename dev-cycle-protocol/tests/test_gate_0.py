@@ -4,7 +4,9 @@ import subprocess
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-SCRIPT = os.path.join(os.path.dirname(HERE), "verify_gate.py")
+sys.path.insert(0, HERE)
+
+from _engine import run_engine  # noqa: E402
 
 VISION = """# PhotoShare
 
@@ -138,8 +140,7 @@ def make_project(tmp_path, config=None, backlog=BACKLOG, roadmap=ROADMAP, vision
 
 
 def gate(project):
-    return subprocess.run([sys.executable, SCRIPT, "--dir", project, "--gate", "0"],
-                          capture_output=True, text=True, encoding="utf-8")
+    return run_engine("dev-cycle-protocol", "verify_gate", ["--dir", project, "--gate", "0"])
 
 
 def test_gate_0_passes_on_a_complete_baseline(tmp_path):

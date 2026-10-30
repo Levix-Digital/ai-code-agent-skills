@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "================================================================================\n🔒 VERIFYING GATE 3 (PLAN APPROVAL): project\n================================================================================\n✅ Git working tree is clean.\n✅ Active plan found in {project}/docs/plans: 'alpha' (3 active/in progress)\n✅ Secret hygiene check passed (no unencrypted credential files detected).\n--------------------------------------------------------------------------------\n🟢 GATE 3 STATUS: READY FOR EXPLICIT USER APPROVAL\n================================================================================\n\n",
+  "stderr": "",
+  "files": {}
+}

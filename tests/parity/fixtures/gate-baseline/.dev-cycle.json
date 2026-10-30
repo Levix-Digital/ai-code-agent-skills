@@ -1,0 +1,25 @@
+{
+  "project_name": "Baseline",
+  "architecture": {
+    "style": "modular-monolith"
+  },
+  "docs": {
+    "user_doc": "README.md",
+    "tec_doc": "TECDOC.md"
+  },
+  "tests": {
+    "manual_tests": "tests/MANUAL_TESTS.md"
+  },
+  "devops": {
+    "version_files": [
+      "version.txt"
+    ],
+    "branching": "trunk"
+  },
+  "backlog": {
+    "blocking_severities": [
+      "critical",
+      "high"
+    ]
+  }
+}

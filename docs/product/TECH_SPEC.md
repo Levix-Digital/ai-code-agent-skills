@@ -17,8 +17,8 @@ A set of skills in the open `SKILL.md` format, each a module with its instructio
 - **Entry and orchestration**: `dev-cycle` (the command) and `dev-cycle-protocol` (phases, roles, gates, onboarding diagnosis, Spec Kit setup, constitution, pull request sync).
 - **Role skills**: `product-inception`, `plan-memory` and `backlog`, `software-design`, `code-review`, `quality-assurance`, `devops-release`, `architecture-docs`, `user-docs`.
 - **Support skills**: `session-memory`, `folder-sync`, `gedo-feedback`.
-- **Shared kernel**: the project configuration (`project_config.py`, `.dev-cycle.json`) and the attribution guard (`_no_ai.py`, principle 9).
-- **Gates** call the role skills' checkers (`verify_gate.py`), never the other way around; skills talk to each other through files in the project (backlog, roadmap, plans, product docs, ADRs) and through their documented commands.
+- **Shared kernel**: the project configuration (`project_config`, `.dev-cycle.json`) and the attribution guard (`_no_ai`, principle 9), in the engine's kernel.
+- **Gates** call the role skills' checkers (`verify_gate`), never the other way around; skills talk to each other through files in the project (backlog, roadmap, plans, product docs, ADRs) and through their documented commands.
 
 ## Non-Functional Requirements
 

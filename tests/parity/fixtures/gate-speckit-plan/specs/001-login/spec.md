@@ -1,0 +1,4 @@
+# Spec
+
+[NEEDS CLARIFICATION: who logs in?]
+[NEEDS CLARIFICATION: how?]

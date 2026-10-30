@@ -238,7 +238,7 @@ How to record a run: in each test of the current run, mark exactly one box of th
   - `docs/product/VISION.md` and `docs/product/TECH_SPEC.md` are in English, with every section filled; the open question is listed under Open Questions.
   - The architecture style is set in `.dev-cycle.json`, the technical docs exist with ADRs for the founding decisions.
   - `docs/BACKLOG.md` has epics with their features; `docs/ROADMAP.md` starts with an MVP release.
-  - `verify_gate.py --gate 0` passes and lists the open question; the agent asks for the baseline approval and, after it, starts Phase 1 with the first items of the MVP.
+  - `verify_gate --gate 0` passes and lists the open question; the agent asks for the baseline approval and, after it, starts Phase 1 with the first items of the MVP.
 - **Result**: [ ] Pass [ ] Fail [ ] Blocked
 - **Notes**:
 
@@ -321,7 +321,7 @@ How to record a run: in each test of the current run, mark exactly one box of th
   2. Tell the agent the tests are done.
 - **Expected**:
   - The agent reads the failure with `manual_tests.py failed`, fixes it in `dev` with a regression test and cuts the next candidate.
-  - `verify_gate.py --gate rc --run <first rc>` fails and the agent does not open the release pull request for it.
+  - `verify_gate --gate rc --run <first rc>` fails and the agent does not open the release pull request for it.
 - **Result**: [ ] Pass [ ] Fail [ ] Blocked
 - **Notes**:
 
@@ -333,7 +333,7 @@ How to record a run: in each test of the current run, mark exactly one box of th
   1. Let the agent open the pull request from `dev` into `main`.
   2. Merge it yourself.
 - **Expected**:
-  - `verify_gate.py --gate 8 --run <rc>` passes before the pull request is opened.
+  - `verify_gate --gate 8 --run <rc>` passes before the pull request is opened.
   - The merge creates the final tag and release without manual steps.
   - The agent follows the workflow and reports the release verified with `release_status verify --tag vX.Y.Z`.
 - **Result**: [ ] Pass [ ] Fail [ ] Blocked

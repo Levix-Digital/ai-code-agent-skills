@@ -1,0 +1,8 @@
+{
+  "exit": 0,
+  "stdout": "================================================================================\n🔒 VERIFYING GATE 3 (PLAN APPROVAL): plans\n================================================================================\n✅ Git working tree is clean.\n✅ Active plan found in {project}/docs/plans: 'feat_x' (2 active/in progress)\n⚠️ Backlog docs/BACKLOG.md has 1 problem(s); run plan-memory/backlog.py validate.\n⚠️ Bugs first overridden by the user: BUG-001 (critical), BUG-002 (high), BUG-003 (not triaged), BUG-004 (not triaged). Recorded in the plan's status log; commit the plan file.\n✅ Secret hygiene check passed (no unencrypted credential files detected).\n--------------------------------------------------------------------------------\n🟢 GATE 3 STATUS: READY FOR EXPLICIT USER APPROVAL\n================================================================================\n\n",
+  "stderr": "",
+  "files": {
+    "project/docs/plans/feat_x.md": "---\nplan_id: feat_x\ntitle: feat_x title\nkind: feature\nstatus: active\ncreated_at: '<MASK>'\nbacklog_items:\n- FEAT-001\n- BUG-005\nmilestones:\n- name: M1 First\n  done: false\nstatus_log:\n- at: '<MASK>'\n  by: Parity\n  note: 'Approved with open bugs before new work BUG-001, BUG-002, BUG-003, BUG-004: the user ships it anyway'\n---\n\n# feat_x\n\nThe plan body.\n"
+  }
+}

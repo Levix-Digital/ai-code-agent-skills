@@ -5,13 +5,12 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SKILL = os.path.dirname(HERE)
-SCRIPT = os.path.join(SKILL, "verify_gate.py")
-sys.path.insert(0, SKILL)
+sys.path.insert(0, HERE)
 sys.path.insert(0, os.path.join(os.path.dirname(SKILL), "plan-memory"))
 
 from _store import PlanStore  # noqa: E402
+from _engine import run_checker, run_engine  # noqa: E402
 from test_verify_gate import make_project  # noqa: E402
-from verify_gate import run_checker  # noqa: E402
 
 GIT_CONFIG = """# Git Branching Workflow Extension Configuration
 branch_numbering: sequential
@@ -108,8 +107,7 @@ def speckit_project(tmp_path, branch="feat/001-photo-upload", spec_files=("spec.
 
 
 def gate(root, *args):
-    return subprocess.run([sys.executable, SCRIPT, "--dir", str(root), *args],
-                          capture_output=True, text=True, encoding="utf-8")
+    return run_engine("dev-cycle-protocol", "verify_gate", ["--dir", str(root), *args])
 
 
 def test_gate_3_passes_with_complete_spec_kit_artifacts(tmp_path):

@@ -12,7 +12,8 @@ from release_status import evaluate_release, next_rc_tag, project_version, read_
 
 sys.path.insert(0, os.path.join(SKILL, "..", "dev-cycle-protocol"))
 from project_config import load_project_config  # noqa: E402
-from verify_gate import run_checker  # noqa: E402
+sys.path.insert(0, os.path.join(SKILL, "..", "dev-cycle-protocol", "tests"))
+from _engine import run_checker  # noqa: E402
 
 TEMPLATES = os.path.join(SKILL, "templates")
 
