@@ -1,0 +1,6 @@
+{
+  "exit": 2,
+  "stdout": "",
+  "stderr": "usage: inspect_project.py [-h] [--dir DIR] [--json]\ninspect_project.py: error: unrecognized arguments: --bogus\n",
+  "files": {}
+}

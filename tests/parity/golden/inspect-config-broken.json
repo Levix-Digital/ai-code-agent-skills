@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "=====================================================================================\n🛡️ DEV-CYCLE PROJECT PROFILE: project\n   • Workspace Root : {project}\n   • Tech Stack     : Generic / Undetermined\n   • Manifests      : None\n   • Test Runners   : None detected\n   • Config         : none (.dev-cycle.json recommended)\n   • Architecture   : not set (architecture.style in .dev-cycle.json)\n   ⚠️ Config: could not read .dev-cycle.json: Expecting ',' delimiter: line 5 column 3 (char 53)\n-------------------------------------------------------------------------------------\n-------------------------------------------------------------------------------------\n📚 DOCUMENTATION STANDARD STATUS (Dual-Doc + Manual Tests):\n   • UserDoc (Public Guide) : ❌ MISSING (README.md recommended)\n   • TecDoc (Architecture)  : ❌ MISSING (TECDOC.md recommended)\n   • Manual Tests Suite     : ❌ MISSING (tests/MANUAL_TESTS.md recommended)\n-------------------------------------------------------------------------------------\n🌿 GIT REPOSITORY HEALTH:\n   • Active Branch  : main\n   • Working Tree   : 🟢 Clean\n   • Current Tag    : none\n=====================================================================================\n\n",
+  "stderr": "",
+  "files": {}
+}

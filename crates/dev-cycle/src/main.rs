@@ -41,6 +41,11 @@ const COMMANDS: &[(&str, &str, Command)] = &[
     ),
     (
         "dev-cycle-protocol",
+        "inspect_project",
+        dev_cycle_protocol::inspect_project::main,
+    ),
+    (
+        "dev-cycle-protocol",
         "project_config",
         kernel::project_config::main,
     ),

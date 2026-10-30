@@ -165,13 +165,13 @@ Phase 0 runs once per product, phases 1 to 7 for every change, phases 8 to 10 fo
 
 Scripts:
 ```bash
-python <skills_root>/dev-cycle-protocol/inspect_project.py [--dir .] [--json]
+<skills_root>/dev-cycle-protocol/bin/dev-cycle dev-cycle-protocol inspect_project [--dir .] [--json]
 <skills_root>/dev-cycle-protocol/bin/dev-cycle dev-cycle-protocol project_config [--json] [--validate] [--migrate [--write]]
 python <skills_root>/dev-cycle-protocol/verify_gate.py --gate 0|3|rc|8 [--run vX.Y.Z-rc.N] [--dir .]
 <skills_root>/dev-cycle-protocol/bin/dev-cycle dev-cycle-protocol speckit_setup status|latest|check|init|adopt|upgrade
 <skills_root>/dev-cycle-protocol/bin/dev-cycle dev-cycle-protocol constitution generate|check
 ```
-- `inspect_project.py` detects languages, manifests, test runners, documentation files and Git state, and shows the configured architecture style, branching model, releases repository, backlog, current release of the roadmap, product baseline and Spec Kit state.
+- `inspect_project` (engine) detects languages, manifests, test runners, documentation files and Git state, and shows the configured architecture style, branching model, releases repository, backlog, current release of the roadmap, product baseline and Spec Kit state.
 - `project_config` shows, validates or migrates `.dev-cycle.json`. It runs on the native engine: `bin/dev-cycle` in sh shells, `bin/dev-cycle.ps1` in PowerShell (the first run downloads it).
 - `verify_gate.py --gate 0` (before the product baseline approval): product documents, architecture style, technical docs, a backlog with epics, a roadmap with a first release, Spec Kit and the constitution when enabled; open questions are listed.
 - `verify_gate.py --gate 3` (before plan approval): working tree, active plan, bugs first (a plan that is not a bug plan is blocked while an open critical, high or medium bug, or a bug not triaged, is outside it, unless you accept the risk: `--accept-open-bugs "<reason>"`), with Spec Kit the spec folder (no open clarification), branch and constitution, no secrets tracked or staged.

@@ -7,7 +7,7 @@ version: v2.10.0
 status: in_progress
 author: Levi Silveira
 created_at: '2026-10-27T18:17:46'
-updated_at: '2026-10-30T12:28:19'
+updated_at: '2026-10-30T12:58:55'
 session_id: null
 tags:
 - rust
@@ -105,7 +105,9 @@ milestones:
   done_at: '2026-10-30'
   by: Levi Silveira
 - name: M22 inspect_project
-  done: false
+  done: true
+  done_at: '2026-10-30'
+  by: Levi Silveira
 - name: M23 pr_sync
   done: false
 - name: M24 gedo_feedback
@@ -226,6 +228,9 @@ status_log:
 - at: '2026-10-30T12:28:19'
   by: Levi Silveira
   note: 'Milestone ''M21 speckit_setup'' completed: speckit_setup runs on the engine (0.20.0); parity, fuzz and gates match'
+- at: '2026-10-30T12:58:55'
+  by: Levi Silveira
+  note: 'Milestone ''M22 inspect_project'' completed: inspect_project on the engine (0.21.0), with the blocking bugs and bug triage in the plan-memory crate; 18 parity cases; fuzz with 0 differences; gates match main'
 ---
 
 # Translate the scripts to Rust with identical behavior

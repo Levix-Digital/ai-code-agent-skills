@@ -109,12 +109,12 @@ A project without a baseline that is already under way can adopt it (adoption mo
 - Stay **consultative**: while the user is asking, debating or proposing, do not edit files or start code.
 - Inspect the project and its configuration:
   ```powershell
-  python "<skills_root>/dev-cycle-protocol/inspect_project.py"
+  "<skills_root>/dev-cycle-protocol/bin/dev-cycle" dev-cycle-protocol inspect_project
   "<skills_root>/dev-cycle-protocol/bin/dev-cycle" dev-cycle-protocol project_config --validate
   ```
 - **Logs first**: for any reported error, read the real logs before forming hypotheses.
 - Read the active plans (`list_plans` on the engine: `"<skills_root>/dev-cycle-protocol/bin/dev-cycle" plan-memory list_plans`; `check_milestone.py --list`) and the architecture style and structure (`software-design`).
-- Read the backlog and the roadmap (`plan-memory/backlog.py summary`, `roadmap current` on the engine: `"<skills_root>/dev-cycle-protocol/bin/dev-cycle" plan-memory roadmap current`; `inspect_project.py` shows both). Show the user the open bugs that come before new work, then the open items of the current release and the items related to the request; the user decides what to promote, re-prioritize, move or drop (see "Backlog and Roadmap").
+- Read the backlog and the roadmap (`plan-memory/backlog.py summary`, `roadmap current` on the engine: `"<skills_root>/dev-cycle-protocol/bin/dev-cycle" plan-memory roadmap current`; `inspect_project` shows both). Show the user the open bugs that come before new work, then the open items of the current release and the items related to the request; the user decides what to promote, re-prioritize, move or drop (see "Backlog and Roadmap").
 - To plan backlog items, promote them (`backlog.py promote <ID> ...`): the draft plan (a bug plan for bugs) is where the discovery is written.
 - **Spec Kit**: check out the work base, then run `/speckit-specify` with the items' description: it creates the work branch `feat/NNN-slug` and `specs/NNN-slug/spec.md`. Run `/speckit-clarify` until no `[NEEDS CLARIFICATION]` marker is left; the user answers its questions. The promoted plan is the envelope; the discovery lives in the spec.
 - Exhaust the open questions and converge on an approach with the user.
@@ -270,7 +270,7 @@ Secret hygiene flags committed or staged credential files by file name only: exa
 
 ```powershell
 python "<skills_root>/dev-cycle-protocol/verify_gate.py" --gate 0|3|rc|8 [--run <rc tag>] [--accept-open-bugs "<reason>"] [--dir <project>]
-python "<skills_root>/dev-cycle-protocol/inspect_project.py" [--json]
+"<skills_root>/dev-cycle-protocol/bin/dev-cycle" dev-cycle-protocol inspect_project [--json]
 "<skills_root>/dev-cycle-protocol/bin/dev-cycle" dev-cycle-protocol project_config [--json] [--validate] [--migrate [--write]]
 python "<skills_root>/dev-cycle-protocol/pr_sync.py" status|open|reply|resolve|comment|review|request-review [...]
 python "<skills_root>/dev-cycle-protocol/onboard.py" diagnose [--request "<text>"] [--json] | propose-config | write-config --file <f> | create-branch
@@ -284,4 +284,4 @@ python "<skills_root>/dev-cycle-protocol/onboard.py" diagnose [--request "<text>
 
 Optional file at the repository root: the project configuration shared by every skill (the branching model is `devops.branching`), with one section per skill (`architecture`, `docs`, `tests`, `devops`, `plans`, `backlog`, `roadmap`, `product`, `speckit`, `architecture_docs`, `drift_rules`) and `test_commands`. Read it through the single loader, which fills defaults, accepts the legacy flat keys of older files and validates the result (`project_config`). The Python scripts of other skills import it from the sibling folder (`from project_config import load_project_config`). The full key reference is in the skills repository README ("Project configuration").
 
-If the file does not exist, `inspect_project.py` and `verify_gate.py` detect the repository's standard stack and use the defaults.
+If the file does not exist, `inspect_project` and `verify_gate.py` detect the repository's standard stack and use the defaults.
