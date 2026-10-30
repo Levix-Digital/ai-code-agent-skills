@@ -83,7 +83,7 @@ description: "Tasks of the Rust migration, one per milestone of the envelope pla
 **Purpose**: the plan index in chromadb's local store, written by the engine (D-store, decided 2026-10-30).
 
 - [x] T027 [US1] M27: translate `rebuild_index` and swap its callers
-- [ ] T028 [US1] M28: translate `search_plans` and swap its callers
+- [x] T028 [US1] M28: translate `search_plans` and swap its callers
 - [ ] T029 [US1] M29: translate `save_plan` and swap its callers
 - [ ] T030 [US1] M30: translate `update_plan_status` and swap its callers
 - [ ] T031 [US1] M31: translate `check_milestone` and swap its callers

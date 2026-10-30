@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "==========================================================================================\n🔍 SEMANTIC SEARCH IN PLANS: 'bug fix' (Found: 3)\n==========================================================================================\n🎯 Score: 0.400 | [project] dot (-)\n   • Plan ID    : .md | Status: DRAFT\n   • File       : {project}/docs/plans/.md\n   • Preview    : \n------------------------------------------------------------------------------------------\n🎯 Score: 0.400 | [project] Delta (-)\n   • Plan ID    : delta | Status: STRASSE\n   • File       : {project}/docs/plans/delta.md\n   • Preview    : \n------------------------------------------------------------------------------------------\n🎯 Score: 0.390 | [project] Beta fix (-)\n   • Plan ID    : beta | Status: COMPLETED\n   • File       : {project}/docs/plans/beta.md\n   • Preview    : Beta body.\n------------------------------------------------------------------------------------------\n",
+  "stderr": "🔄 Plan index synced from {project}/docs/plans: 7 updated, 0 removed, 7 plan(s).\n",
+  "files": {}
+}

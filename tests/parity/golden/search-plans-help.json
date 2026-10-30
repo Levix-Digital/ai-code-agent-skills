@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "usage: search_plans.py [-h] --query QUERY [--limit LIMIT] [--project PROJECT]\n                       [--dir DIR] [--all-projects]\n\nSemantic search over the project's plans\n\noptions:\n  -h, --help         show this help message and exit\n  --query QUERY      Search query or concept\n  --limit LIMIT      Maximum number of results to return\n  --project PROJECT  Project name (default: from the repository)\n  --dir DIR          Project directory (default: current)\n  --all-projects     Search every project indexed on this machine\n",
+  "stderr": "",
+  "files": {}
+}

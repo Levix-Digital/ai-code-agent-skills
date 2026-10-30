@@ -203,7 +203,7 @@ Keeps the project's planning in its repository: the **backlog**, where work is c
 | Plan releases | `<skills_root>/dev-cycle-protocol/bin/dev-cycle plan-memory roadmap add-release v0.1.0 --name MVP --goal "<g>"`, then `assign <ID...> --release v0.1.0`, `current`, `show`, `validate` (`bin/dev-cycle.ps1` in PowerShell) |
 | List plans | `<skills_root>/dev-cycle-protocol/bin/dev-cycle plan-memory list_plans [--status active] [--kind bug]` (`bin/dev-cycle.ps1` in PowerShell) |
 | Read a plan in full | `<skills_root>/dev-cycle-protocol/bin/dev-cycle plan-memory get_plan --id <plan_id>` or without `--id` (latest active; `bin/dev-cycle.ps1` in PowerShell) |
-| Semantic search | `search_plans.py --query "<text>" [--limit 5] [--all-projects]` |
+| Semantic search | `<skills_root>/dev-cycle-protocol/bin/dev-cycle plan-memory search_plans --query "<text>" [--limit 5] [--all-projects]` (`bin/dev-cycle.ps1` in PowerShell) |
 | Milestones | `check_milestone.py --list` / `--milestone "A" [--notes "..."]` / `--milestone "A" --uncheck` |
 | Change status | `update_plan_status.py --id <plan_id> --status completed [--notes "..."]` |
 | Check a proposal for drift | `detect_drift.py --proposal "<text>"` or `--file proposal.md [--strict]` |

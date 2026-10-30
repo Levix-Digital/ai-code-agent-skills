@@ -931,7 +931,8 @@ impl Hnsw {
             .into_iter()
             .map(|(D(d), i)| (d, self.label(i)))
             .collect();
-        out.sort_by(|a, b| a.0.total_cmp(&b.0));
+        // `knnQuery` pops the (distance, label) queue from the back: ties by label.
+        out.sort_by(|a, b| a.0.total_cmp(&b.0).then(a.1.cmp(&b.1)));
         out
     }
 }
