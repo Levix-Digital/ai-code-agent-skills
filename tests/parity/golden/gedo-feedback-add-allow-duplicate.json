@@ -1,0 +1,8 @@
+{
+  "exit": 0,
+  "stdout": "✅ <MASK>-radar-missed-an-edit-of-the: Radar missed an edit of the same function (missed-collision, medium)\n   docs/gedo-feedback/<MASK>-radar-missed-an-edit-of-the.md\n",
+  "stderr": "",
+  "files": {
+    "project/docs/gedo-feedback/<MASK>-radar-missed-an-edit-of-the.md": "# Radar missed an edit of the same function\n\n- **Id**: <MASK>-radar-missed-an-edit-of-the\n- **Kind**: missed-collision\n- **Severity**: medium\n- **Status**: open\n- **Recorded**: <MASK>\n\n## Scenario\n\nTwo threads edited parse_rust in separate worktrees\n\n## Expected\n\ngedo radar reports the collision\n\n## Actual\n\nNothing reported until the merge\n"
+  }
+}

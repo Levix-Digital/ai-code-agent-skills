@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ [Errno 2] No such file or directory: 'missing.log'\n",
+  "stderr": "",
+  "files": {}
+}

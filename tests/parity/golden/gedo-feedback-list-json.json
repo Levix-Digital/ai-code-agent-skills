@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "[\n  {\n    \"id\": \"2026-01-05-radar-missed-an-edit-of-the\",\n    \"title\": \"Radar missed an edit of the same function\",\n    \"kind\": \"missed-collision\",\n    \"severity\": \"high\",\n    \"status\": \"open\",\n    \"issue\": null,\n    \"recorded\": \"2026-01-05\"\n  },\n  {\n    \"id\": \"2026-01-06-daemon-exits-on-save\",\n    \"title\": \"Daemon exits on save\",\n    \"kind\": \"crash\",\n    \"severity\": \"medium\",\n    \"status\": \"open\",\n    \"issue\": null,\n    \"recorded\": \"2026-01-06\"\n  },\n  {\n    \"id\": \"2026-01-07-merge-fell-back-to-text\",\n    \"title\": \"Merge fell back to text\",\n    \"kind\": \"merge-fallback\",\n    \"severity\": \"low\",\n    \"status\": \"reported\",\n    \"issue\": \"https://github.com/Levix-Digital/gedo/issues/9\",\n    \"recorded\": \"2026-01-07\"\n  }\n]\n",
+  "stderr": "",
+  "files": {}
+}

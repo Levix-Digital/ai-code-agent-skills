@@ -1,0 +1,6 @@
+{
+  "exit": 2,
+  "stdout": "",
+  "stderr": "usage: gedo_feedback.py add [-h] --kind {missed-collision,false-collision,merge-fallback,wrong-merge,contract-miss,identity,performance,crash,data-loss,setup,interface,workaround,other} --title TITLE [--severity {critical,high,medium,low}] --scenario SCENARIO --expected EXPECTED --actual ACTUAL [--reproduction REPRODUCTION] [--workaround WORKAROUND] [--command COMMAND]\n                            [--gedo-version GEDO_VERSION] [--found-in FOUND_IN] [--related RELATED] [--diagnostics-file DIAGNOSTICS_FILE] [--doctor] [--allow-duplicate]\ngedo_feedback.py add: error: argument --kind: invalid choice: 'oops' (choose from 'missed-collision', 'false-collision', 'merge-fallback', 'wrong-merge', 'contract-miss', 'identity', 'performance', 'crash', 'data-loss', 'setup', 'interface', 'workaround', 'other')\n",
+  "files": {}
+}

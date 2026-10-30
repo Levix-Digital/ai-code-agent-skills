@@ -106,7 +106,7 @@ pub struct Case {
     /// With `git`: the URL of the repository's `origin` remote.
     #[serde(default)]
     pub remote: Option<String>,
-    /// Programs replaced by the fake CLI (`gh`, `glab`): it answers from
+    /// Programs replaced by the fake CLI (`gh`, `glab`, `gedo`): it answers from
     /// `<project>/.fake/<name>.json` and logs every call to `<project>/.fake/<name>.log`.
     #[serde(default)]
     pub fakes: Vec<String>,
@@ -114,7 +114,8 @@ pub struct Case {
     pub stdin: Option<String>,
     #[serde(default)]
     pub env: BTreeMap<String, String>,
-    /// Regular expressions replaced with `<MASK>` before comparing (clocks, random ids).
+    /// Regular expressions replaced with `<MASK>` before comparing (clocks, random ids), in
+    /// the output, in the files and in the files' paths.
     #[serde(default)]
     pub masks: Vec<String>,
     /// Path prefixes (`project/...`, `home/...`) left out of the file comparison.
@@ -294,12 +295,12 @@ impl Harness {
         let mut files = BTreeMap::new();
         for (path, content) in &after {
             if before.get(path) != Some(content) {
-                files.insert(path.clone(), Some(norm.apply(&text(content, path)?)));
+                files.insert(norm.apply(path), Some(norm.apply(&text(content, path)?)));
             }
         }
         for path in before.keys() {
             if !after.contains_key(path) {
-                files.insert(path.clone(), None);
+                files.insert(norm.apply(path), None);
             }
         }
         files.retain(|p, _| !ignored(p, &case.ignore));

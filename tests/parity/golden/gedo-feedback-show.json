@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "# Merge fell back to text\n\n- **Id**: 2026-01-07-merge-fell-back-to-text\n- **Kind**: merge-fallback\n- **Severity**: low\n- **Status**: reported\n- **Issue**: https://github.com/Levix-Digital/gedo/issues/9\n- **Recorded**: 2026-01-07\n\n## Scenario\n\nMerging two branches that renamed one function\n\n## Expected\n\nA structural merge\n\n## Actual\n\nGit's textual merge with markers\n\n## Workaround\n\nResolved by hand\n",
+  "stderr": "",
+  "files": {}
+}

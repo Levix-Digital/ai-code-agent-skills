@@ -12,11 +12,11 @@ use std::process::ExitCode;
 
 fn main() -> ExitCode {
     let args: Vec<String> = std::env::args().skip(1).collect();
-    // Copied as `gh` or `glab` into a case's PATH: the fake CLI.
+    // Copied as `gh`, `glab` or `gedo` into a case's PATH: the fake CLI.
     let name = std::env::current_exe()
         .ok()
         .and_then(|p| p.file_stem().map(|s| s.to_string_lossy().into_owned()));
-    if let Some(name) = name.filter(|n| n == "gh" || n == "glab") {
+    if let Some(name) = name.filter(|n| ["gh", "glab", "gedo"].contains(&n.as_str())) {
         let code = parity::fake_cli(&name, &args);
         return ExitCode::from(u8::try_from(code).unwrap_or(1));
     }

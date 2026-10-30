@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "usage: gedo_feedback.py [-h] [--dir DIR] {status,add,list,show,issue,reported,close,validate} ...\n\nRecord what goes wrong with Gedo, for Gedo's own backlog\n\npositional arguments:\n  {status,add,list,show,issue,reported,close,validate}\n    status              Whether recording is on, and the entry counts\n    add                 Record a new entry\n    list                List entries (open and reported by default)\n    show                Show one entry\n    issue               Title and body of the Gedo issue for an open entry\n    reported            Mark an entry as reported, with its issue URL\n    close               Close an entry (fixed in Gedo, not a Gedo problem, ...)\n    validate            Check every entry\n\noptions:\n  -h, --help            show this help message and exit\n  --dir DIR             Project directory (default: current directory)\n",
+  "stderr": "",
+  "files": {}
+}

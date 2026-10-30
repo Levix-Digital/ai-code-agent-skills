@@ -61,6 +61,11 @@ const COMMANDS: &[(&str, &str, Command)] = &[
         dev_cycle_protocol::speckit_setup::main,
     ),
     (
+        "gedo-feedback",
+        "gedo_feedback",
+        gedo_feedback::gedo_feedback::main,
+    ),
+    (
         "product-inception",
         "check_product",
         product_inception::check_product::main,

@@ -1,0 +1,6 @@
+{
+  "exit": 2,
+  "stdout": "",
+  "stderr": "usage: gedo_feedback.py [-h] [--dir DIR] {status,add,list,show,issue,reported,close,validate} ...\ngedo_feedback.py: error: unrecognized arguments: --dir {project}\n",
+  "files": {}
+}

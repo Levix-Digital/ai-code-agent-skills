@@ -72,7 +72,7 @@ description: "Tasks of the Rust migration, one per milestone of the envelope pla
 - [x] T021 [US1] M21: translate `speckit_setup` and swap its callers
 - [x] T022 [US1] M22: translate `inspect_project` and swap its callers
 - [x] T023 [US1] M23: translate `pr_sync` and swap its callers
-- [ ] T024 [US1] M24: translate `gedo_feedback` and swap its callers
+- [x] T024 [US1] M24: translate `gedo_feedback` and swap its callers
 - [ ] T025 [US1] M25: translate `onboard` and swap its callers
 - [ ] T026 [US1] M26: translate `verify_gate` and swap its callers
 

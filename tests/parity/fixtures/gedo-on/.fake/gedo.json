@@ -1,0 +1,1 @@
+[{"match": "doctor --json", "code": 1, "stdout": "{\"ok\": false, \"problems\": [\"hooks missing\"]}\n", "stderr": ""}]

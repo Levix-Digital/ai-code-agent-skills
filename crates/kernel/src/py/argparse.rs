@@ -227,6 +227,15 @@ impl Parser {
         self
     }
 
+    /// `add_argument(flag, required=True, choices=choices)`.
+    pub fn required_choice_option(self, flag: &str, choices: &[&str], help: &str) -> Self {
+        let mut p = self.choice_option(flag, choices, help);
+        if let Some(arg) = p.args.last_mut() {
+            arg.required = true;
+        }
+        p
+    }
+
     /// `add_argument(flag, action="append", default=[])`.
     pub fn append_option(self, flag: &str, help: &str) -> Self {
         self.add(flag, Kind::Append, help, false)

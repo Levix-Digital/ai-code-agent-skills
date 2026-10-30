@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ --issue must be the issue URL\n",
+  "stderr": "",
+  "files": {}
+}

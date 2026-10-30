@@ -1,0 +1,398 @@
+[
+  {
+    "name": "gedo-feedback-help",
+    "python": "gedo-feedback/gedo_feedback.py",
+    "rust": ["gedo-feedback", "gedo_feedback"],
+    "args": ["--help"],
+    "env": {"COLUMNS": "400"},
+    "seps": ["(?:docs|notes)\\\\gedo(?:-feedback)?(?:\\\\\\S*)?"]
+  },
+  {
+    "name": "gedo-feedback-add-help",
+    "python": "gedo-feedback/gedo_feedback.py",
+    "rust": ["gedo-feedback", "gedo_feedback"],
+    "args": ["add", "--help"],
+    "env": {"COLUMNS": "400"},
+    "seps": ["(?:docs|notes)\\\\gedo(?:-feedback)?(?:\\\\\\S*)?"]
+  },
+  {
+    "name": "gedo-feedback-no-command",
+    "python": "gedo-feedback/gedo_feedback.py",
+    "rust": ["gedo-feedback", "gedo_feedback"],
+    "args": [],
+    "env": {"COLUMNS": "400"},
+    "seps": ["(?:docs|notes)\\\\gedo(?:-feedback)?(?:\\\\\\S*)?"]
+  },
+  {
+    "name": "gedo-feedback-bad-kind",
+    "python": "gedo-feedback/gedo_feedback.py",
+    "rust": ["gedo-feedback", "gedo_feedback"],
+    "args": ["--dir", "{project}", "add", "--kind", "oops", "--title", "x", "--scenario", "s", "--expected", "e", "--actual", "a"],
+    "fixture": "gedo-on",
+    "env": {"COLUMNS": "400"},
+    "seps": ["(?:docs|notes)\\\\gedo(?:-feedback)?(?:\\\\\\S*)?"]
+  },
+  {
+    "name": "gedo-feedback-add-missing-arguments",
+    "python": "gedo-feedback/gedo_feedback.py",
+    "rust": ["gedo-feedback", "gedo_feedback"],
+    "args": ["--dir", "{project}", "add", "--kind", "crash"],
+    "fixture": "gedo-on",
+    "env": {"COLUMNS": "400"},
+    "seps": ["(?:docs|notes)\\\\gedo(?:-feedback)?(?:\\\\\\S*)?"]
+  },
+  {
+    "name": "gedo-feedback-dir-after-command",
+    "python": "gedo-feedback/gedo_feedback.py",
+    "rust": ["gedo-feedback", "gedo_feedback"],
+    "args": ["status", "--dir", "{project}"],
+    "fixture": "gedo-on",
+    "env": {"COLUMNS": "400"},
+    "seps": ["(?:docs|notes)\\\\gedo(?:-feedback)?(?:\\\\\\S*)?"]
+  },
+  {
+    "name": "gedo-feedback-status-off",
+    "python": "gedo-feedback/gedo_feedback.py",
+    "rust": ["gedo-feedback", "gedo_feedback"],
+    "args": ["--dir", "{project}", "status"],
+    "fixture": "gedo-off",
+    "seps": ["(?:docs|notes)\\\\gedo(?:-feedback)?(?:\\\\\\S*)?"]
+  },
+  {
+    "name": "gedo-feedback-status-off-json",
+    "python": "gedo-feedback/gedo_feedback.py",
+    "rust": ["gedo-feedback", "gedo_feedback"],
+    "args": ["--dir", "{project}", "status", "--json"],
+    "fixture": "gedo-off",
+    "masks": ["\"dir\": \"[^\"]*\""],
+    "seps": ["(?:docs|notes)\\\\gedo(?:-feedback)?(?:\\\\\\S*)?"]
+  },
+  {
+    "name": "gedo-feedback-status-no-config",
+    "python": "gedo-feedback/gedo_feedback.py",
+    "rust": ["gedo-feedback", "gedo_feedback"],
+    "args": ["--dir", "{project}", "status"],
+    "seps": ["(?:docs|notes)\\\\gedo(?:-feedback)?(?:\\\\\\S*)?"]
+  },
+  {
+    "name": "gedo-feedback-add-off",
+    "python": "gedo-feedback/gedo_feedback.py",
+    "rust": ["gedo-feedback", "gedo_feedback"],
+    "args": ["--dir", "{project}", "add", "--kind", "missed-collision", "--title", "Radar missed an edit of the same function", "--scenario", "Two threads edited parse_rust in separate worktrees", "--expected", "gedo radar reports the collision", "--actual", "Nothing reported until the merge"],
+    "fixture": "gedo-off",
+    "seps": ["(?:docs|notes)\\\\gedo(?:-feedback)?(?:\\\\\\S*)?"]
+  },
+  {
+    "name": "gedo-feedback-add-feedback-off",
+    "python": "gedo-feedback/gedo_feedback.py",
+    "rust": ["gedo-feedback", "gedo_feedback"],
+    "args": ["--dir", "{project}", "add", "--kind", "missed-collision", "--title", "Radar missed an edit of the same function", "--scenario", "Two threads edited parse_rust in separate worktrees", "--expected", "gedo radar reports the collision", "--actual", "Nothing reported until the merge"],
+    "fixture": "gedo-feedback-off",
+    "seps": ["(?:docs|notes)\\\\gedo(?:-feedback)?(?:\\\\\\S*)?"]
+  },
+  {
+    "name": "gedo-feedback-issue-off",
+    "python": "gedo-feedback/gedo_feedback.py",
+    "rust": ["gedo-feedback", "gedo_feedback"],
+    "args": ["--dir", "{project}", "issue", "2026-01-05-radar-missed-an-edit-of-the"],
+    "fixture": "gedo-off",
+    "seps": ["(?:docs|notes)\\\\gedo(?:-feedback)?(?:\\\\\\S*)?"]
+  },
+  {
+    "name": "gedo-feedback-config-broken",
+    "python": "gedo-feedback/gedo_feedback.py",
+    "rust": ["gedo-feedback", "gedo_feedback"],
+    "args": ["--dir", "{project}", "status"],
+    "fixture": "gedo-config-broken",
+    "seps": ["(?:docs|notes)\\\\gedo(?:-feedback)?(?:\\\\\\S*)?"]
+  },
+  {
+    "name": "gedo-feedback-status",
+    "python": "gedo-feedback/gedo_feedback.py",
+    "rust": ["gedo-feedback", "gedo_feedback"],
+    "args": ["--dir", "{project}", "status"],
+    "fixture": "gedo-on",
+    "seps": ["(?:docs|notes)\\\\gedo(?:-feedback)?(?:\\\\\\S*)?"]
+  },
+  {
+    "name": "gedo-feedback-status-json",
+    "python": "gedo-feedback/gedo_feedback.py",
+    "rust": ["gedo-feedback", "gedo_feedback"],
+    "args": ["--dir", "{project}", "status", "--json"],
+    "fixture": "gedo-on",
+    "masks": ["\"dir\": \"[^\"]*\""],
+    "seps": ["(?:docs|notes)\\\\gedo(?:-feedback)?(?:\\\\\\S*)?"]
+  },
+  {
+    "name": "gedo-feedback-status-from-cwd",
+    "python": "gedo-feedback/gedo_feedback.py",
+    "rust": ["gedo-feedback", "gedo_feedback"],
+    "args": ["status"],
+    "fixture": "gedo-on",
+    "seps": ["(?:docs|notes)\\\\gedo(?:-feedback)?(?:\\\\\\S*)?"]
+  },
+  {
+    "name": "gedo-feedback-add",
+    "python": "gedo-feedback/gedo_feedback.py",
+    "rust": ["gedo-feedback", "gedo_feedback"],
+    "args": ["--dir", "{project}", "add", "--kind", "workaround", "--title", "  Ran git merge by hand: radar was down  ", "--scenario", "Two threads, one on the parser", "--expected", "gedo merge", "--actual", "  The daemon was not running  ", "--severity", "high", "--related", "G3, FEAT-074", "--gedo-version", "0.4.0", "--command", "gedo merge", "--found-in", "feat/x", "--reproduction", "1. Stop the daemon", "--workaround", "git merge"],
+    "fixture": "gedo-on",
+    "masks": ["\\d{4}-\\d{2}-\\d{2}"],
+    "seps": ["(?:docs|notes)\\\\gedo(?:-feedback)?(?:\\\\\\S*)?"]
+  },
+  {
+    "name": "gedo-feedback-add-into-new-folder",
+    "python": "gedo-feedback/gedo_feedback.py",
+    "rust": ["gedo-feedback", "gedo_feedback"],
+    "args": ["--dir", "{project}", "add", "--kind", "workaround", "--title", "  Ran git merge by hand: radar was down  ", "--scenario", "Two threads, one on the parser", "--expected", "gedo merge", "--actual", "  The daemon was not running  "],
+    "fixture": "gedo-custom",
+    "masks": ["\\d{4}-\\d{2}-\\d{2}"],
+    "seps": ["(?:docs|notes)\\\\gedo(?:-feedback)?(?:\\\\\\S*)?"]
+  },
+  {
+    "name": "gedo-feedback-add-duplicate",
+    "python": "gedo-feedback/gedo_feedback.py",
+    "rust": ["gedo-feedback", "gedo_feedback"],
+    "args": ["--dir", "{project}", "add", "--kind", "missed-collision", "--title", "Radar missed an edit of the same function", "--scenario", "Two threads edited parse_rust in separate worktrees", "--expected", "gedo radar reports the collision", "--actual", "Nothing reported until the merge"],
+    "fixture": "gedo-on",
+    "seps": ["(?:docs|notes)\\\\gedo(?:-feedback)?(?:\\\\\\S*)?"]
+  },
+  {
+    "name": "gedo-feedback-add-allow-duplicate",
+    "python": "gedo-feedback/gedo_feedback.py",
+    "rust": ["gedo-feedback", "gedo_feedback"],
+    "args": ["--dir", "{project}", "add", "--kind", "missed-collision", "--title", "Radar missed an edit of the same function", "--scenario", "Two threads edited parse_rust in separate worktrees", "--expected", "gedo radar reports the collision", "--actual", "Nothing reported until the merge", "--allow-duplicate"],
+    "fixture": "gedo-on",
+    "masks": ["\\d{4}-\\d{2}-\\d{2}"],
+    "seps": ["(?:docs|notes)\\\\gedo(?:-feedback)?(?:\\\\\\S*)?"]
+  },
+  {
+    "name": "gedo-feedback-add-diagnostics",
+    "python": "gedo-feedback/gedo_feedback.py",
+    "rust": ["gedo-feedback", "gedo_feedback"],
+    "args": ["--dir", "{project}", "add", "--kind", "workaround", "--title", "  Ran git merge by hand: radar was down  ", "--scenario", "Two threads, one on the parser", "--expected", "gedo merge", "--actual", "  The daemon was not running  ", "--diagnostics-file", "gedo.log"],
+    "fixture": "gedo-on",
+    "masks": ["\\d{4}-\\d{2}-\\d{2}"],
+    "seps": ["(?:docs|notes)\\\\gedo(?:-feedback)?(?:\\\\\\S*)?"]
+  },
+  {
+    "name": "gedo-feedback-add-diagnostics-missing",
+    "python": "gedo-feedback/gedo_feedback.py",
+    "rust": ["gedo-feedback", "gedo_feedback"],
+    "args": ["--dir", "{project}", "add", "--kind", "workaround", "--title", "  Ran git merge by hand: radar was down  ", "--scenario", "Two threads, one on the parser", "--expected", "gedo merge", "--actual", "  The daemon was not running  ", "--diagnostics-file", "missing.log"],
+    "fixture": "gedo-on",
+    "seps": ["(?:docs|notes)\\\\gedo(?:-feedback)?(?:\\\\\\S*)?"]
+  },
+  {
+    "name": "gedo-feedback-add-doctor",
+    "python": "gedo-feedback/gedo_feedback.py",
+    "rust": ["gedo-feedback", "gedo_feedback"],
+    "args": ["--dir", "{project}", "add", "--kind", "workaround", "--title", "  Ran git merge by hand: radar was down  ", "--scenario", "Two threads, one on the parser", "--expected", "gedo merge", "--actual", "  The daemon was not running  ", "--doctor"],
+    "fixture": "gedo-on",
+    "masks": ["\\d{4}-\\d{2}-\\d{2}"],
+    "fakes": ["gedo"],
+    "seps": ["(?:docs|notes)\\\\gedo(?:-feedback)?(?:\\\\\\S*)?"]
+  },
+  {
+    "name": "gedo-feedback-add-doctor-not-installed",
+    "python": "gedo-feedback/gedo_feedback.py",
+    "rust": ["gedo-feedback", "gedo_feedback"],
+    "args": ["--dir", "{project}", "add", "--kind", "workaround", "--title", "  Ran git merge by hand: radar was down  ", "--scenario", "Two threads, one on the parser", "--expected", "gedo merge", "--actual", "  The daemon was not running  ", "--doctor"],
+    "fixture": "gedo-custom",
+    "masks": ["\\d{4}-\\d{2}-\\d{2}"],
+    "seps": ["(?:docs|notes)\\\\gedo(?:-feedback)?(?:\\\\\\S*)?"]
+  },
+  {
+    "name": "gedo-feedback-list",
+    "python": "gedo-feedback/gedo_feedback.py",
+    "rust": ["gedo-feedback", "gedo_feedback"],
+    "args": ["--dir", "{project}", "list"],
+    "fixture": "gedo-on",
+    "seps": ["(?:docs|notes)\\\\gedo(?:-feedback)?(?:\\\\\\S*)?"]
+  },
+  {
+    "name": "gedo-feedback-list-json",
+    "python": "gedo-feedback/gedo_feedback.py",
+    "rust": ["gedo-feedback", "gedo_feedback"],
+    "args": ["--dir", "{project}", "list", "--json"],
+    "fixture": "gedo-on",
+    "seps": ["(?:docs|notes)\\\\gedo(?:-feedback)?(?:\\\\\\S*)?"]
+  },
+  {
+    "name": "gedo-feedback-list-all-json",
+    "python": "gedo-feedback/gedo_feedback.py",
+    "rust": ["gedo-feedback", "gedo_feedback"],
+    "args": ["--dir", "{project}", "list", "--all", "--json"],
+    "fixture": "gedo-on",
+    "seps": ["(?:docs|notes)\\\\gedo(?:-feedback)?(?:\\\\\\S*)?"]
+  },
+  {
+    "name": "gedo-feedback-list-closed",
+    "python": "gedo-feedback/gedo_feedback.py",
+    "rust": ["gedo-feedback", "gedo_feedback"],
+    "args": ["--dir", "{project}", "list", "--status", "closed"],
+    "fixture": "gedo-on",
+    "seps": ["(?:docs|notes)\\\\gedo(?:-feedback)?(?:\\\\\\S*)?"]
+  },
+  {
+    "name": "gedo-feedback-list-kind",
+    "python": "gedo-feedback/gedo_feedback.py",
+    "rust": ["gedo-feedback", "gedo_feedback"],
+    "args": ["--dir", "{project}", "list", "--all", "--kind", "crash"],
+    "fixture": "gedo-on",
+    "seps": ["(?:docs|notes)\\\\gedo(?:-feedback)?(?:\\\\\\S*)?"]
+  },
+  {
+    "name": "gedo-feedback-list-empty",
+    "python": "gedo-feedback/gedo_feedback.py",
+    "rust": ["gedo-feedback", "gedo_feedback"],
+    "args": ["--dir", "{project}", "list"],
+    "fixture": "gedo-off",
+    "seps": ["(?:docs|notes)\\\\gedo(?:-feedback)?(?:\\\\\\S*)?"]
+  },
+  {
+    "name": "gedo-feedback-list-no-title",
+    "python": "gedo-feedback/gedo_feedback.py",
+    "rust": ["gedo-feedback", "gedo_feedback"],
+    "args": ["--dir", "{project}", "list"],
+    "fixture": "gedo-no-title",
+    "seps": ["(?:docs|notes)\\\\gedo(?:-feedback)?(?:\\\\\\S*)?"]
+  },
+  {
+    "name": "gedo-feedback-show",
+    "python": "gedo-feedback/gedo_feedback.py",
+    "rust": ["gedo-feedback", "gedo_feedback"],
+    "args": ["--dir", "{project}", "show", "2026-01-07-merge-fell-back-to-text"],
+    "fixture": "gedo-on",
+    "seps": ["(?:docs|notes)\\\\gedo(?:-feedback)?(?:\\\\\\S*)?"]
+  },
+  {
+    "name": "gedo-feedback-show-json",
+    "python": "gedo-feedback/gedo_feedback.py",
+    "rust": ["gedo-feedback", "gedo_feedback"],
+    "args": ["--dir", "{project}", "show", "2026-01-05-radar-missed-an-edit-of-the", "--json"],
+    "fixture": "gedo-on",
+    "seps": ["(?:docs|notes)\\\\gedo(?:-feedback)?(?:\\\\\\S*)?"]
+  },
+  {
+    "name": "gedo-feedback-show-missing",
+    "python": "gedo-feedback/gedo_feedback.py",
+    "rust": ["gedo-feedback", "gedo_feedback"],
+    "args": ["--dir", "{project}", "show", "2026-01-01-nothing"],
+    "fixture": "gedo-on",
+    "seps": ["(?:docs|notes)\\\\gedo(?:-feedback)?(?:\\\\\\S*)?"]
+  },
+  {
+    "name": "gedo-feedback-issue",
+    "python": "gedo-feedback/gedo_feedback.py",
+    "rust": ["gedo-feedback", "gedo_feedback"],
+    "args": ["--dir", "{project}", "issue", "2026-01-05-radar-missed-an-edit-of-the"],
+    "fixture": "gedo-on",
+    "seps": ["(?:docs|notes)\\\\gedo(?:-feedback)?(?:\\\\\\S*)?"]
+  },
+  {
+    "name": "gedo-feedback-issue-body-file",
+    "python": "gedo-feedback/gedo_feedback.py",
+    "rust": ["gedo-feedback", "gedo_feedback"],
+    "args": ["--dir", "{project}", "issue", "2026-01-05-radar-missed-an-edit-of-the", "--body-file", "body.md"],
+    "fixture": "gedo-on",
+    "seps": ["(?:docs|notes)\\\\gedo(?:-feedback)?(?:\\\\\\S*)?"]
+  },
+  {
+    "name": "gedo-feedback-issue-json",
+    "python": "gedo-feedback/gedo_feedback.py",
+    "rust": ["gedo-feedback", "gedo_feedback"],
+    "args": ["--dir", "{project}", "issue", "2026-01-05-radar-missed-an-edit-of-the", "--body-file", "body.md", "--json"],
+    "fixture": "gedo-on",
+    "seps": ["(?:docs|notes)\\\\gedo(?:-feedback)?(?:\\\\\\S*)?"]
+  },
+  {
+    "name": "gedo-feedback-issue-reported",
+    "python": "gedo-feedback/gedo_feedback.py",
+    "rust": ["gedo-feedback", "gedo_feedback"],
+    "args": ["--dir", "{project}", "issue", "2026-01-07-merge-fell-back-to-text"],
+    "fixture": "gedo-on",
+    "seps": ["(?:docs|notes)\\\\gedo(?:-feedback)?(?:\\\\\\S*)?"]
+  },
+  {
+    "name": "gedo-feedback-issue-ai",
+    "python": "gedo-feedback/gedo_feedback.py",
+    "rust": ["gedo-feedback", "gedo_feedback"],
+    "args": ["--dir", "{project}", "issue", "2026-01-06-daemon-exits-on-save"],
+    "fixture": "gedo-on",
+    "seps": ["(?:docs|notes)\\\\gedo(?:-feedback)?(?:\\\\\\S*)?"]
+  },
+  {
+    "name": "gedo-feedback-issue-allowed-term",
+    "python": "gedo-feedback/gedo_feedback.py",
+    "rust": ["gedo-feedback", "gedo_feedback"],
+    "args": ["--dir", "{project}", "issue", "2026-02-01-claude-code-plugin-hooks-break"],
+    "fixture": "gedo-custom",
+    "seps": ["(?:docs|notes)\\\\gedo(?:-feedback)?(?:\\\\\\S*)?"]
+  },
+  {
+    "name": "gedo-feedback-reported",
+    "python": "gedo-feedback/gedo_feedback.py",
+    "rust": ["gedo-feedback", "gedo_feedback"],
+    "args": ["--dir", "{project}", "reported", "2026-01-05-radar-missed-an-edit-of-the", "--issue", "https://github.com/Levix-Digital/gedo/issues/12"],
+    "fixture": "gedo-on",
+    "seps": ["(?:docs|notes)\\\\gedo(?:-feedback)?(?:\\\\\\S*)?"]
+  },
+  {
+    "name": "gedo-feedback-reported-not-a-url",
+    "python": "gedo-feedback/gedo_feedback.py",
+    "rust": ["gedo-feedback", "gedo_feedback"],
+    "args": ["--dir", "{project}", "reported", "2026-01-05-radar-missed-an-edit-of-the", "--issue", "not a url"],
+    "fixture": "gedo-on",
+    "seps": ["(?:docs|notes)\\\\gedo(?:-feedback)?(?:\\\\\\S*)?"]
+  },
+  {
+    "name": "gedo-feedback-close",
+    "python": "gedo-feedback/gedo_feedback.py",
+    "rust": ["gedo-feedback", "gedo_feedback"],
+    "args": ["--dir", "{project}", "close", "2026-01-06-daemon-exits-on-save", "--reason", "not a Gedo problem"],
+    "fixture": "gedo-on",
+    "masks": ["\\d{4}-\\d{2}-\\d{2}"],
+    "seps": ["(?:docs|notes)\\\\gedo(?:-feedback)?(?:\\\\\\S*)?"]
+  },
+  {
+    "name": "gedo-feedback-validate",
+    "python": "gedo-feedback/gedo_feedback.py",
+    "rust": ["gedo-feedback", "gedo_feedback"],
+    "args": ["--dir", "{project}", "validate"],
+    "fixture": "gedo-on",
+    "seps": ["(?:docs|notes)\\\\gedo(?:-feedback)?(?:\\\\\\S*)?"]
+  },
+  {
+    "name": "gedo-feedback-validate-custom",
+    "python": "gedo-feedback/gedo_feedback.py",
+    "rust": ["gedo-feedback", "gedo_feedback"],
+    "args": ["--dir", "{project}", "validate"],
+    "fixture": "gedo-custom",
+    "seps": ["(?:docs|notes)\\\\gedo(?:-feedback)?(?:\\\\\\S*)?"]
+  },
+  {
+    "name": "gedo-feedback-validate-broken",
+    "python": "gedo-feedback/gedo_feedback.py",
+    "rust": ["gedo-feedback", "gedo_feedback"],
+    "args": ["--dir", "{project}", "validate"],
+    "fixture": "gedo-broken",
+    "seps": ["(?:docs|notes)\\\\gedo(?:-feedback)?(?:\\\\\\S*)?"]
+  },
+  {
+    "name": "gedo-feedback-validate-no-title",
+    "python": "gedo-feedback/gedo_feedback.py",
+    "rust": ["gedo-feedback", "gedo_feedback"],
+    "args": ["--dir", "{project}", "validate"],
+    "fixture": "gedo-no-title",
+    "seps": ["(?:docs|notes)\\\\gedo(?:-feedback)?(?:\\\\\\S*)?"]
+  },
+  {
+    "name": "gedo-feedback-validate-empty",
+    "python": "gedo-feedback/gedo_feedback.py",
+    "rust": ["gedo-feedback", "gedo_feedback"],
+    "args": ["--dir", "{project}", "validate"],
+    "fixture": "gedo-off",
+    "seps": ["(?:docs|notes)\\\\gedo(?:-feedback)?(?:\\\\\\S*)?"]
+  }
+]

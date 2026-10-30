@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "{\n  \"id\": \"2026-01-05-radar-missed-an-edit-of-the\",\n  \"title\": \"Radar missed an edit of the same function\",\n  \"kind\": \"missed-collision\",\n  \"severity\": \"high\",\n  \"status\": \"open\",\n  \"issue\": null,\n  \"recorded\": \"2026-01-05\",\n  \"fields\": {\n    \"Id\": \"2026-01-05-radar-missed-an-edit-of-the\",\n    \"Kind\": \"missed-collision\",\n    \"Severity\": \"high\",\n    \"Status\": \"open\",\n    \"Gedo version\": \"0.4.0\",\n    \"Found\": \"feat/007-private-thing\",\n    \"Related\": \"G3, FEAT-074\",\n    \"Recorded\": \"2026-01-05\"\n  },\n  \"sections\": {\n    \"Scenario\": \"Two threads edited parse_rust in separate worktrees\",\n    \"Expected\": \"gedo radar reports the collision\",\n    \"Actual\": \"Nothing reported until the merge\"\n  }\n}\n",
+  "stderr": "",
+  "files": {}
+}

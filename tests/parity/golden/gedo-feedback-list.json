@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "2026-01-05-radar-missed-an-edit-of-the  [open] missed-collision, high: Radar missed an edit of the same function\n2026-01-06-daemon-exits-on-save  [open] crash, medium: Daemon exits on save\n2026-01-07-merge-fell-back-to-text  [reported] merge-fallback, low: Merge fell back to text -> https://github.com/Levix-Digital/gedo/issues/9\n",
+  "stderr": "",
+  "files": {}
+}

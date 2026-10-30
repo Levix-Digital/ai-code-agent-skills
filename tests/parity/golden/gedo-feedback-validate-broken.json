@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ 2026-01-01-bad.md: Id 'other' does not match the file name\n❌ 2026-01-01-bad.md: Kind 'oops' is not one of: missed-collision, false-collision, merge-fallback, wrong-merge, contract-miss, identity, performance, crash, data-loss, setup, interface, workaround, other\n❌ 2026-01-01-bad.md: a reported entry needs its Issue link\n❌ 2026-01-01-bad.md: missing section '## Scenario'\n❌ 2026-01-01-bad.md: missing section '## Expected'\n❌ 2026-01-01-bad.md: missing section '## Actual'\n❌ 2026-01-02-closed.md: Severity 'urgent' is not one of: critical, high, medium, low\n❌ 2026-01-02-closed.md: a closed entry needs its Closed reason\n❌ 2026-01-02-closed.md: missing section '## Expected'\n❌ 2026-01-02-closed.md: missing section '## Actual'\n",
+  "stderr": "",
+  "files": {}
+}

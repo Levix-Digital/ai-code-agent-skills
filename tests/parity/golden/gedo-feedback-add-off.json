@@ -1,0 +1,6 @@
+{
+  "exit": 2,
+  "stdout": "❌ Gedo feedback is off: the project does not use Gedo yet (gedo.enabled is false in .dev-cycle.json).\n",
+  "stderr": "",
+  "files": {}
+}
