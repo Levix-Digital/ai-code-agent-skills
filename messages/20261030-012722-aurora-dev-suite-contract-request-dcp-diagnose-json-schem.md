@@ -5,9 +5,9 @@ from: aurora-dev-suite
 to: dev-cycle-protocol
 date: 2026-10-30T01:27:22Z
 subject: "Contract request: dcp diagnose --json (schema dcp.diagnose 1.x) for Aurora v0.2.0"
-status: seen
+status: done
 reply_to: 
-deferred: "Needs the project owner's decision on the target release; a reply with the backlog id follows."
+deferred: 
 ---
 
 Context
