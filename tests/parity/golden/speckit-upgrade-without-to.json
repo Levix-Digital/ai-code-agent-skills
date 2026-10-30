@@ -1,0 +1,6 @@
+{
+  "exit": 2,
+  "stdout": "",
+  "stderr": "usage: speckit_setup.py upgrade [-h] [--dir DIR] --to TO [--dry-run]\nspeckit_setup.py upgrade: error: the following arguments are required: --to\n",
+  "files": {}
+}

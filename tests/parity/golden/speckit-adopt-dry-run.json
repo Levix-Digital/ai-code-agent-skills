@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "$ uvx --from git+https://github.com/github/spec-kit.git@v1.2.3 specify extension add git\n$ uvx --from git+https://github.com/github/spec-kit.git@v1.2.3 specify preset add --dev {skills}/dev-cycle-protocol/speckit-preset\n(dry run) would pin speckit.version = v1.2.3 and set branches feat/NNN-slug\n",
+  "stderr": "",
+  "files": {}
+}

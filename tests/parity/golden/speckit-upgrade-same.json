@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ v1.2.3 is not newer than the pinned v1.2.3\n",
+  "stderr": "",
+  "files": {}
+}

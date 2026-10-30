@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ 'latest' is not a release tag like v1.2.3 (branches, hashes and 'latest' are not accepted)\n",
+  "stderr": "",
+  "files": {}
+}

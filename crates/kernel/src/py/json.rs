@@ -412,6 +412,32 @@ pub fn dumps(value: &Value, indent: Option<usize>) -> Result<String, Crash> {
     Ok(out)
 }
 
+/// `json.dumps(value, indent=indent)`: every character outside printable ASCII is escaped.
+pub fn dumps_ascii(value: &Value, indent: Option<usize>) -> Result<String, Crash> {
+    let text = dumps(value, indent)?;
+    let mut out = String::with_capacity(text.len());
+    // Outside strings there are only ASCII characters; inside, control characters are
+    // already escaped.
+    for c in text.chars() {
+        let u = c as u32;
+        if (0x20..0x7f).contains(&u) || c == '\n' {
+            out.push(c);
+        } else if let Some(s) = super::as_surrogate(c) {
+            out.push_str(&format!("\\u{s:04x}"));
+        } else if u > 0xffff {
+            let v = u - 0x10000;
+            out.push_str(&format!(
+                "\\u{:04x}\\u{:04x}",
+                0xd800 + (v >> 10),
+                0xdc00 + (v & 0x3ff)
+            ));
+        } else {
+            out.push_str(&format!("\\u{u:04x}"));
+        }
+    }
+    Ok(out)
+}
+
 /// `json.dump(value, f, indent=indent, ensure_ascii=False)`: the text written, and the error
 /// that stopped it. Python writes as it encodes, so a value that cannot be encoded leaves
 /// the text before it in the file.

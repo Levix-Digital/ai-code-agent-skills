@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "usage: speckit_setup.py check [-h] [--version VERSION]\n                              [--integration INTEGRATION]\n                              [--script {sh,ps,py}] [--record] [--keep]\n                              [--json]\n\noptions:\n  -h, --help            show this help message and exit\n  --version VERSION     Release tag (default: the latest release)\n  --integration INTEGRATION\n  --script {sh,ps,py}\n  --record              When it passes, move the verified version forward\n  --keep                Keep the temporary repository\n  --json\n",
+  "stderr": "",
+  "files": {}
+}

@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "usage: speckit_setup.py status [-h] [--dir DIR] [--json]\n\noptions:\n  -h, --help  show this help message and exit\n  --dir DIR\n  --json\n",
+  "stderr": "",
+  "files": {}
+}

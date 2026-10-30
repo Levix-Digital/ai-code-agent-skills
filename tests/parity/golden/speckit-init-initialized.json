@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ Spec Kit is already initialized in {project}; use 'upgrade --to <version>' to change versions\n",
+  "stderr": "",
+  "files": {}
+}

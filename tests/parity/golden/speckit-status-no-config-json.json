@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "{\n  \"enabled\": false,\n  \"pinned\": null,\n  \"installed\": null,\n  \"integration\": \"claude\",\n  \"script\": null,\n  \"initialized\": false,\n  \"preset\": false,\n  \"branch_prefix\": null,\n  \"verified\": \"v1.2.3\",\n  <MASK>,\n  \"problems\": []\n}\n",
+  "stderr": "",
+  "files": {}
+}

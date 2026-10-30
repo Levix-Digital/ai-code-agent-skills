@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ Spec Kit is already managed by the protocol here (speckit.enabled); use 'status' or 'upgrade'\n",
+  "stderr": "",
+  "files": {}
+}

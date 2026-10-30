@@ -91,6 +91,7 @@ ENGINE_CHECKERS = {
     ("plan-memory", "list_plans.py"),
     ("plan-memory", "roadmap.py"),
     ("dev-cycle-protocol", "constitution.py"),
+    ("dev-cycle-protocol", "speckit_setup.py"),
 }
 ENGINE_BIN = os.path.join(SKILLS_ROOT, "dev-cycle-protocol", "bin")
 

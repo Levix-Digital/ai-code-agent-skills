@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ the installed Spec Kit version is unknown (no .specify/integration.json or init-options.json); run 'upgrade --to v1.2.3' after enabling, or re-initialize\n",
+  "stderr": "",
+  "files": {}
+}

@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "🧩 Spec Kit: enabled\n   Pinned / installed : v1.2.3 / v1.1.0 (verified by the protocol: v1.2.3)\n   Integration, script: claude, sh\n   Preset, branches   : missing, -/NNN-slug\n   <MASK>\n⚠️  pinned v1.2.3 but the project was set up with v1.1.0\n⚠️  preset 'dev-cycle' is not installed\n⚠️  git extension branch_prefix is '', expected 'work'\n",
+  "stderr": "",
+  "files": {}
+}

@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "🧩 Spec Kit: enabled\n   Pinned / installed : v1.2.3 / v1.2.3 (verified by the protocol: v1.2.3)\n   Integration, script: claude, sh\n   Preset, branches   : installed, feat/NNN-slug\n   <MASK>\n",
+  "stderr": "",
+  "files": {}
+}
