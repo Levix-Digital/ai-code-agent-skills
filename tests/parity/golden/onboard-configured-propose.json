@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "📝 Proposed additions to {project}/.dev-cycle.json (written only after you confirm):\n{\n  \"devops\": {\n    \"version_files\": []\n  }\n}\nℹ️ Branching model detected: trunk (only 'main' and short-lived branches); the alternatives are in devops-release.\nℹ️ architecture.style is chosen with software-design, not detected.\n",
+  "stderr": "",
+  "files": {}
+}

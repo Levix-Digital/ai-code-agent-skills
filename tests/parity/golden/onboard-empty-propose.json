@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "📝 Proposed new {project}/.dev-cycle.json (written only after you confirm):\n{\n  \"project_name\": \"project\",\n  \"devops\": {\n    \"branching\": \"integration\",\n    \"integration_branch\": \"dev\",\n    \"production_branch\": \"main\",\n    \"version_files\": []\n  }\n}\nℹ️ architecture.style is chosen with software-design, not detected.\n",
+  "stderr": "",
+  "files": {}
+}

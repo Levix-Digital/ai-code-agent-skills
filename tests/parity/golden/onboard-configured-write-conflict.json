@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ the file already sets project_name, devops.branching; edit those keys by hand\n",
+  "stderr": "",
+  "files": {}
+}

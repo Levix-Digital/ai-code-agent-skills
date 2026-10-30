@@ -17,7 +17,7 @@ description: Orchestrator of the role-based development cycle - phases from prod
 
 ## 🧭 Starting a Session (`/dev-cycle`)
 
-The user starts with one command, [`/dev-cycle`](../dev-cycle/SKILL.md) (with a product idea or a request, or alone). It runs the diagnosis (`onboard.py diagnose`), says in one line that the project is up to date and goes on, or shows the options in the recommended order: a plan in progress, a pending release candidate, open blocking bugs, missing setup (configuration, branching model, integration branch, Spec Kit), a missing product baseline, the next items of the current release, the request. A new repository goes to Phase 0. A repository that never used the protocol gets one initial setup list, confirmed at once or item by item; nothing is written before the user confirms. When the user asks for work without the command, run the same diagnosis first.
+The user starts with one command, [`/dev-cycle`](../dev-cycle/SKILL.md) (with a product idea or a request, or alone). It runs the diagnosis (`onboard diagnose` on the engine), says in one line that the project is up to date and goes on, or shows the options in the recommended order: a plan in progress, a pending release candidate, open blocking bugs, missing setup (configuration, branching model, integration branch, Spec Kit), a missing product baseline, the next items of the current release, the request. A new repository goes to Phase 0. A repository that never used the protocol gets one initial setup list, confirmed at once or item by item; nothing is written before the user confirms. When the user asks for work without the command, run the same diagnosis first.
 
 ---
 
@@ -274,7 +274,7 @@ python "<skills_root>/dev-cycle-protocol/verify_gate.py" --gate 0|3|rc|8 [--run 
 "<skills_root>/dev-cycle-protocol/bin/dev-cycle" dev-cycle-protocol project_config [--json] [--validate] [--migrate [--write]]
 "<skills_root>/dev-cycle-protocol/bin/dev-cycle" dev-cycle-protocol pr_sync status|open|gate-merge|reply|resolve|comment|review|request-review [...]
 "<skills_root>/dev-cycle-protocol/bin/dev-cycle" dev-cycle-protocol _no_ai [--file <text>] [--allow <phrase> ...]
-python "<skills_root>/dev-cycle-protocol/onboard.py" diagnose [--request "<text>"] [--json] | propose-config | write-config --file <f> | create-branch
+"<skills_root>/dev-cycle-protocol/bin/dev-cycle" dev-cycle-protocol onboard diagnose [--request "<text>"] [--agent claude-code] [--json] | propose-config [--json] | write-config --file <f> | create-branch | set-attribution
 "<skills_root>/dev-cycle-protocol/bin/dev-cycle" dev-cycle-protocol speckit_setup status|latest|check|init|adopt|upgrade [...]
 "<skills_root>/dev-cycle-protocol/bin/dev-cycle" dev-cycle-protocol constitution generate [--replace-hand-written] | check [--dir <project>]
 ```

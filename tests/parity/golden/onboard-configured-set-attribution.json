@@ -1,0 +1,8 @@
+{
+  "exit": 0,
+  "stdout": "✅ {project}/.claude/settings.json: commit and pull request attribution off; commit it with the configuration\n",
+  "stderr": "",
+  "files": {
+    "project/.claude/settings.json": "{\n  \"enabledPlugins\": {\n    \"x@y\": true\n  },\n  \"attribution\": {\n    \"commit\": \"\",\n    \"pr\": \"\",\n    \"sessionUrl\": false\n  }\n}\n"
+  }
+}

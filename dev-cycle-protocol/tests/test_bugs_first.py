@@ -8,8 +8,6 @@ SKILL = os.path.dirname(HERE)
 SCRIPT = os.path.join(SKILL, "verify_gate.py")
 sys.path.insert(0, SKILL)
 
-from inspect_project import backlog_profile  # noqa: E402
-
 from test_verify_gate import make_project  # noqa: E402
 
 BACKLOG = """# Backlog
@@ -183,18 +181,6 @@ def test_gate_8_validates_the_backlog_and_lists_blocking_bugs(tmp_path):
     (tmp_path / "docs" / "BACKLOG.md").write_text(BACKLOG.format(severity="urgent"), encoding="utf-8")
     res = gate(root, "--gate", "8", "--run", "v1.0.0-rc.1")
     assert res.returncode == 1 and "Backlog (plan-memory) failed" in res.stdout
-
-
-def test_inspect_project_reports_the_backlog(tmp_path):
-    assert backlog_profile(str(tmp_path)) == {"file": "docs/BACKLOG.md", "exists": False}
-    root = project(tmp_path)
-    info = backlog_profile(str(root))
-    assert info["open"]["bug"] == 1 and info["blocking_bugs"] == ["BUG-001 (high) Crash on start"]
-    assert info["untriaged_bugs"] == []
-    root = project(tmp_path, severity="low")
-    write_roadmap(root)
-    assert backlog_profile(str(root))["untriaged_bugs"] == [
-        "BUG-001 (low) Crash on start: not scheduled; it goes into v0.2.0 at the latest"]
 
 
 def test_gate_8_fails_while_a_bug_is_not_triaged(tmp_path):

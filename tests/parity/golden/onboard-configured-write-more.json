@@ -1,0 +1,8 @@
+{
+  "exit": 0,
+  "stdout": "✅ {project}/.dev-cycle.json: added devops.{version_files}, docs.{tec_doc}\n",
+  "stderr": "",
+  "files": {
+    "project/.dev-cycle.json": "{\n  \"project_name\": \"mine\",\n  \"devops\": {\n    \"branching\": \"trunk\",\n    \"production_branch\": \"main\",\n    \"version_files\": [\n      \"Cargo.toml\"\n    ]\n  },\n  \"speckit\": {\n    \"enabled\": false\n  },\n  \"review\": {\n    \"provider\": \"none\"\n  },\n  \"docs\": {\n    \"tec_doc\": \"TECDOC.md\"\n  }\n}\n"
+  }
+}

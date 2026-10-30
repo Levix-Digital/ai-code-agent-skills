@@ -1,0 +1,6 @@
+{
+  "exit": 2,
+  "stdout": "",
+  "stderr": "usage: onboard.py write-config [-h] [--dir DIR] --file FILE\nonboard.py write-config: error: the following arguments are required: --file\n",
+  "files": {}
+}

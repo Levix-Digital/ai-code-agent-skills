@@ -7,7 +7,7 @@ version: v2.10.0
 status: in_progress
 author: Levi Silveira
 created_at: '2026-10-27T18:17:46'
-updated_at: '2026-10-30T14:17:10'
+updated_at: '2026-10-30T15:30:31'
 session_id: null
 tags:
 - rust
@@ -117,7 +117,9 @@ milestones:
   done_at: '2026-10-30'
   by: Levi Silveira
 - name: M25 onboard
-  done: false
+  done: true
+  done_at: '2026-10-30'
+  by: Levi Silveira
 - name: M26 verify_gate
   done: false
 - name: M27 rebuild_index
@@ -241,6 +243,9 @@ status_log:
 - at: '2026-10-30T14:17:10'
   by: Levi Silveira
   note: Milestone 'M24 gedo_feedback' completed
+- at: '2026-10-30T15:30:31'
+  by: Levi Silveira
+  note: Milestone 'M25 onboard' completed
 ---
 
 # Translate the scripts to Rust with identical behavior

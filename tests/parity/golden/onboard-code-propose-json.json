@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "{\n  <MASK>,\n  \"exists\": false,\n  \"additions\": {\n    \"project_name\": \"project\",\n    \"test_commands\": [\n      \"python -m pytest\"\n    ],\n    \"docs\": {\n      \"user_doc\": \"README.md\"\n    },\n    \"devops\": {\n      \"branching\": \"trunk\",\n      \"production_branch\": \"main\",\n      \"version_files\": [\n        \"pyproject.toml\"\n      ]\n    }\n  },\n  \"branching\": {\n    \"model\": \"trunk\",\n    \"integration_branch\": null,\n    \"reason\": \"only 'main' and short-lived branches\"\n  }\n}\n",
+  "stderr": "",
+  "files": {}
+}

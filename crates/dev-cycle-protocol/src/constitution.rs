@@ -33,7 +33,7 @@ fn hand_written_copy() -> String {
 }
 
 /// `ConstitutionError` (printed after `❌`), or an exception the script does not catch.
-enum Error {
+pub enum Error {
     Constitution(String),
     Crash(Crash),
 }
@@ -552,7 +552,7 @@ fn path_of(root: &str) -> String {
 }
 
 /// Problems with the project's constitution; empty when it is current.
-fn check(root: &str, skills: &Path) -> Result<Vec<String>, Error> {
+pub fn check(root: &str, skills: &Path) -> Result<Vec<String>, Error> {
     let c = constitution();
     if !isdir(&join(root, ".specify")) {
         return Ok(vec![

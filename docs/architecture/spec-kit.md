@@ -1,7 +1,7 @@
 ---
 title: Spec Kit Integration
 summary: Installs, pins, adopts and upgrades GitHub Spec Kit per project and generates its constitution from the baseline.
-code: [dev-cycle-protocol/speckit_setup.py, dev-cycle-protocol/constitution.py, crates/dev-cycle-protocol, dev-cycle-protocol/speckit-preset]
+code: [crates/dev-cycle-protocol/src/speckit_setup.rs, crates/dev-cycle-protocol/src/constitution.rs, dev-cycle-protocol/speckit-preset]
 ---
 
 # Spec Kit Integration
@@ -14,8 +14,8 @@ Owns GitHub Spec Kit in a project: install at a pinned version, adopt an existin
 
 ## Structure
 
-- `speckit_setup` (engine, `crates/dev-cycle-protocol`; `dev-cycle-protocol/speckit_setup.py` stays for `onboard.py` and `inspect_project.py`, which import it): `status`, `latest`, `check`, `init`, `adopt`, `upgrade`; always runs the pinned CLI through `uvx`.
-- `constitution` (engine, `crates/dev-cycle-protocol`; `dev-cycle-protocol/constitution.py` stays for `onboard.py`, which imports it): generates `.specify/memory/constitution.md` from `software-design`, the cycle's principles, the technical specification and the accepted ADRs; never edited by hand.
+- `speckit_setup` (engine, `crates/dev-cycle-protocol`): `status`, `latest`, `check`, `init`, `adopt`, `upgrade`; always runs the pinned CLI through `uvx`.
+- `constitution` (engine, `crates/dev-cycle-protocol`): generates `.specify/memory/constitution.md` from `software-design`, the cycle's principles, the technical specification and the accepted ADRs; never edited by hand.
 - `dev-cycle-protocol/speckit-preset/`: the `dev-cycle` preset with the plan addendum and the verified versions (`compat.json`).
 
 ## Behavior

@@ -1,7 +1,7 @@
 ---
 title: Pull Request Sync
 summary: Reads and answers pull requests on GitHub and GitLab through one model, and holds the merge while something blocks it.
-code: [crates/dev-cycle-protocol/src/pr_sync.rs, crates/dev-cycle-protocol/src/pr_model.rs, crates/dev-cycle-protocol/src/pr_providers.rs, dev-cycle-protocol/pr_sync.py, code-review]
+code: [crates/dev-cycle-protocol/src/pr_sync.rs, crates/dev-cycle-protocol/src/pr_model.rs, crates/dev-cycle-protocol/src/pr_providers.rs, code-review]
 ---
 
 # Pull Request Sync
@@ -17,7 +17,7 @@ Owns Phase 7 on the platform: reading the pull request (merge request on GitLab)
 - `crates/dev-cycle-protocol/src/pr_model.rs`: the platform-independent model, pending items, triage hints, merge blockers, post format with markers.
 - `crates/dev-cycle-protocol/src/pr_providers.rs`: the GitHub provider (`gh api`, REST; GraphQL only for thread resolution) and the GitLab provider (`glab api`).
 - `crates/dev-cycle-protocol/src/pr_sync.rs` (engine command `dev-cycle-protocol pr_sync`): the commands `status`, `open`, `gate-merge`, `reply`, `resolve`, `comment`, `review`, `request-review`.
-- `dev-cycle-protocol/pr_sync.py`, `_pr_model.py` and `_pr_providers.py` stay for `onboard.py`, which imports them, until it is translated (IMP-005).
+- `onboard` (engine) lists the open pull requests with what is pending for the `/dev-cycle` diagnosis.
 
 ## Behavior
 

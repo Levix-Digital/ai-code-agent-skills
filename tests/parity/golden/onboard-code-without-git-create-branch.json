@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ could not create 'dev' from 'origin/main': \n",
+  "stderr": "",
+  "files": {}
+}

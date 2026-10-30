@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "🧭 This repository is not set up for the cycle yet (no roadmap, no blocking bugs, no plans in progress). Initial setup, in the recommended order:\n   1. Create .dev-cycle.json (proposed from what was detected, written after you confirm) (recommended) — the project has no configuration\n   2. <MASK> — <MASK>\n   3. Adopt a product baseline (Phase 0, adoption mode): vision, technical specification, backlog with epics, roadmap — the project has no product baseline\n   ⚠️ backlog: could not be read ('utf-8' codec can't decode byte 0xff in position 0: invalid start byte)\n   ⚠️ plans: could not be read ('name')\n",
+  "stderr": "",
+  "files": {}
+}

@@ -1,0 +1,6 @@
+{
+  "exit": 2,
+  "stdout": "",
+  "stderr": "usage: onboard.py [-h] {diagnose,propose-config,write-config,set-attribution,create-branch} ...\nonboard.py: error: the following arguments are required: command\n",
+  "files": {}
+}

@@ -174,6 +174,68 @@ impl BranchingModel {
     }
 }
 
+/// Integration branch names a repository may already use.
+const INTEGRATION_NAMES: [&str; 2] = ["dev", "develop"];
+
+/// `GATES.get(model)`: the user's release action of a model, `None` for an unknown one.
+pub fn gate_of(model: &Value) -> Result<Value, Crash> {
+    if !model.is_hashable() {
+        return Err(Crash::new(format!(
+            "TypeError: unhashable type: '{}'",
+            model.type_name()
+        )));
+    }
+    Ok(match model.as_str() {
+        Some("integration") => Value::str("merge"),
+        Some("trunk" | "release-branches") => Value::str("promote"),
+        _ => Value::Null,
+    })
+}
+
+/// `detect(branches, production)`: the model a repository already follows, from its branch
+/// names (local or `origin/`). `{model, integration_branch, reason}`; model `None` when there
+/// is nothing to go by.
+pub fn detect(branches: &[String], production: &Value) -> Dict {
+    let names: Vec<&str> = branches
+        .iter()
+        .map(|b| b.strip_prefix("origin/").unwrap_or(b))
+        .collect();
+    let found = |model: Option<&str>, integration: Option<&str>, reason: String| {
+        let mut d = Dict::new();
+        d.insert("model", model.map_or(Value::Null, Value::str));
+        d.insert(
+            "integration_branch",
+            integration.map_or(Value::Null, Value::str),
+        );
+        d.insert("reason", Value::Str(reason));
+        d
+    };
+    if names.iter().any(|n| n.starts_with("release/")) {
+        return found(
+            Some("release-branches"),
+            None,
+            "release/* branches exist".into(),
+        );
+    }
+    for name in INTEGRATION_NAMES {
+        if names.contains(&name) {
+            return found(
+                Some("integration"),
+                Some(name),
+                format!("'{name}' branch exists"),
+            );
+        }
+    }
+    if !names.is_empty() {
+        return found(
+            Some("trunk"),
+            None,
+            format!("only '{}' and short-lived branches", production.py_str()),
+        );
+    }
+    found(None, None, "no branches yet".into())
+}
+
 pub fn main(argv: &[String]) -> u8 {
     match run(argv) {
         Ok(code) => code,

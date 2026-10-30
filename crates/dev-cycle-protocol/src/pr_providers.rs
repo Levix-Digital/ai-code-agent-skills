@@ -1278,6 +1278,16 @@ pub enum Provider {
 }
 
 /// `provider_for(provider, host, path)`.
+/// `cli_available(provider)`: the platform's CLI is on the PATH.
+pub fn cli_available(provider: &str) -> bool {
+    let cli = match provider {
+        "github" => "gh",
+        "gitlab" => "glab",
+        _ => "",
+    };
+    kernel::py::subprocess::which(cli).is_some()
+}
+
 pub fn provider_for(provider: &Value, host: &Value, path: &str) -> Res<Provider> {
     match provider.as_str() {
         Some("github") => Ok(Provider::GitHub(GitHub::new(path, host))),

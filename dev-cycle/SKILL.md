@@ -18,7 +18,7 @@ The one command the user needs: the protocol guides the user, not the other way 
 
 1. **Diagnose** (it only reads):
    ```powershell
-   python "<skills_root>/dev-cycle-protocol/onboard.py" diagnose --json [--request "<the text>"] [--agent claude-code]
+   "<skills_root>/dev-cycle-protocol/bin/dev-cycle" dev-cycle-protocol onboard diagnose --json [--request "<the text>"] [--agent claude-code]
    ```
    Pass `--agent claude-code` when the command runs in Claude Code, so the diagnosis can check its attribution settings.
    The result has `mode` (`new` or `existing`), `summary`, `ask`, `options` (in the recommended order) and `recommended`.
@@ -37,11 +37,11 @@ The one command the user needs: the protocol guides the user, not the other way 
 | `bugs` | Phase 1 with the blocking bugs: show them, the user decides which to promote (`backlog.py promote`). |
 | `triage` | Show the open bugs not triaged and why; with the user, give each a severity (`backlog.py set <ID> --severity <s>`) and schedule the ones that do not block in the next release at the latest (`roadmap assign <ID> --release <vX.Y.Z> [--move]` on the engine), or promote them. |
 | `git` | Ask, then `git init` with the production branch (`main`). |
-| `config` | `onboard.py propose-config`, show the proposal, let the user change it, write only what they confirm: save it to a file and `onboard.py write-config --file <it>`. The proposal carries the detected branching model (`devops.branching`): present the choice as in `branching` below before writing. The architecture style is chosen later with `software-design` (or in Phase 0). |
+| `config` | `onboard propose-config` on the engine, show the proposal, let the user change it, write only what they confirm: save it to a file and `onboard write-config --file <it>`. The proposal carries the detected branching model (`devops.branching`): present the choice as in `branching` below before writing. The architecture style is chosen later with `software-design` (or in Phase 0). |
 | `gitignore` | The project's `.gitignore` keeps files of the protocol out of Git (an allowlist `.gitignore`, a `docs/` entry), so the decisions in them would be lost in the next clone. Show the ignored paths and the proposed entries; after the user confirms, add the entries to `.gitignore` and commit it with the configuration. If the user prefers another layout, change the paths in `.dev-cycle.json` instead. |
 | `branching` | Asked once. Show the three models in a short table (`devops-release`, "Branching Model": work base, candidate branch, release gate, what each fits) and recommend the detected one. Record the answer: `write-config` with `{"devops": {"branching": "<model>"}}` (with `integration_branch` for `integration` when it is not `dev`). For `integration` without its branch, the next item creates it; for `trunk` and `release-branches`, offer to add `templates/promote.yml` and the `release` environment when the project publishes releases. |
-| `attribution` | Ask, then `onboard.py set-attribution`: it turns off the automatic attribution in `.claude/settings.json` (commit trailer, pull request footer, session link); commit the file. Remove any attribution that still appears in a pull request description. |
-| `branch` | `integration` model only. Ask, then `onboard.py create-branch`; offer to push it (`git push -u origin <branch>`). |
+| `attribution` | Ask, then `onboard set-attribution` on the engine: it turns off the automatic attribution in `.claude/settings.json` (commit trailer, pull request footer, session link); commit the file. Remove any attribution that still appears in a pull request description. |
+| `branch` | `integration` model only. Ask, then `onboard create-branch` on the engine; offer to push it (`git push -u origin <branch>`). |
 | `speckit-ask` | Explain in two sentences what Spec Kit does in the cycle (the detail of features: specification, clarification, plan, tasks, implementation; at a version pinned per project; needs uv) and recommend it for products that will grow, not for small tools. Yes: `speckit_setup init` on the engine, then `constitution generate` on the engine (Phase 0 does it when the baseline is not there yet). No: record the decision so it is not asked again: `write-config` with `{"speckit": {"enabled": false}}`. |
 | `speckit-adopt` | `speckit_setup adopt` (engine). If `constitution check` (engine) says the constitution is hand-written: show each of its principles, propose where it goes (constraints and non-functional requirements to `TECH_SPEC.md`, decisions to ADRs, general design rules as a suggestion for `software-design`), apply what the user confirms, then `constitution generate --replace-hand-written` (a copy is kept). |
 | `speckit-fix` | Fix each reported problem: version drift (`speckit_setup upgrade --to <version>` after the user agrees), preset or branch prefix (`adopt` again or `upgrade`), stale constitution (`constitution generate`). |
@@ -55,4 +55,4 @@ The one command the user needs: the protocol guides the user, not the other way 
 - The diagnosis never changes anything. Every write (configuration, branch, Spec Kit, constitution) happens after the user's confirmation, and the configuration is only added to, never overwritten.
 - Spec Kit and the branching model are asked about at most once per project: the answers are recorded in `.dev-cycle.json`.
 - Commits made while setting up follow `devops-release` (Conventional Commits, authored by the repository's Git identity); the configuration is committed as `chore: dev-cycle configuration`.
-- When `onboard.py` reports findings (a file it could not read), show them; they are not blocking unless the user's choice needs that file.
+- When `onboard` reports findings (a file it could not read), show them; they are not blocking unless the user's choice needs that file.

@@ -1,0 +1,16 @@
+{
+  "project_name": "Full",
+  "architecture": {
+    "style": "layered"
+  },
+  "devops": {
+    "branching": "release-branches"
+  },
+  "backlog": {
+    "blocking_severities": [
+      "critical",
+      "high"
+    ]
+  },
+  "extra": 1
+}

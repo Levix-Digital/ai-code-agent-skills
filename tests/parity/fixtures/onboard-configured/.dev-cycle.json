@@ -1,0 +1,13 @@
+{
+  "project_name": "mine",
+  "devops": {
+    "branching": "trunk",
+    "production_branch": "main"
+  },
+  "speckit": {
+    "enabled": false
+  },
+  "review": {
+    "provider": "none"
+  }
+}

@@ -47,6 +47,11 @@ const COMMANDS: &[(&str, &str, Command)] = &[
     ),
     (
         "dev-cycle-protocol",
+        "onboard",
+        dev_cycle_protocol::onboard::main,
+    ),
+    (
+        "dev-cycle-protocol",
         "pr_sync",
         dev_cycle_protocol::pr_sync::main,
     ),
