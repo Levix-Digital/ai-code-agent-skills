@@ -12,7 +12,7 @@ Replace the Python scripts of the skills with one Rust binary, one script per pu
 
 **Language/Version**: Rust (edition 2024, `rust-version` in `Cargo.toml`); reference Python 3.13, CI also on 3.10
 
-**Primary Dependencies**: `regex`, `serde`/`serde_json` (harness), `chrono`, `unicode-normalization`, `terminal_size`; Rust crates only, no C toolchain unless D-store decides otherwise
+**Primary Dependencies**: `regex`, `serde`/`serde_json` (harness), `chrono`, `unicode-normalization`, `terminal_size`; `rusqlite` (SQLite bundled, D-store), `tract-onnx` and `tokenizers` (embeddings), `ureq` (model download); Rust crates only apart from the bundled SQLite
 
 **Storage**: project files (`docs/`, `.dev-cycle.json`, `specs/`); local data under `~/.ai-code-agent-memory/` from M27
 

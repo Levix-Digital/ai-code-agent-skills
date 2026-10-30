@@ -10,7 +10,7 @@ description: Shared, versioned planning of a project in its repository - the bac
 The **`plan-memory`** skill keeps **100% complete, uncompressed architectural plans, strategic roadmaps and multi-step blueprints** of a project, shared by everyone who works on it.
 
 - **Source of truth**: one Markdown file per plan in the project repository, `docs/plans/<plan_id>.md` (YAML frontmatter + plan body). Plans are versioned, reviewed and merged with the code. Change the folder with `"plans_dir"` in the project's `.dev-cycle.json`.
-- **Search index**: a local ChromaDB at `~/.ai-code-agent-memory/plan-memory/db` (override with `PLAN_MEMORY_DB`), collection `plan_index`. It is **disposable**: every command syncs it from the files (by SHA-256), and `rebuild_index.py` recreates it.
+- **Search index**: a local ChromaDB at `~/.ai-code-agent-memory/plan-memory/db` (override with `PLAN_MEMORY_DB`), collection `plan_index`. It is **disposable**: every command syncs it from the files (by SHA-256), and `rebuild_index` (engine) recreates it.
 - **Project**: resolved from the Git repository of the current directory (or `--dir`): `project_name` in `.dev-cycle.json`, else the repository folder name, normalized to kebab-case. `--project` overrides it.
 - **Levels**: the **backlog** (`docs/BACKLOG.md`) captures work in seconds, without discovery, grouped under epics; the **roadmap** (`docs/ROADMAP.md`) orders the releases and assigns items to them; a **plan** is created when the user promotes backlog items and holds the discovery and the planning (see "Backlog" and "Roadmap").
 - **Spec Kit envelopes**: when the project uses Spec Kit, a feature plan is an envelope (`spec_dir`) of a Spec Kit folder (`specs/NNN-slug/`) that holds the detail; search, drift detection and `get_plan` read the folder's artifacts with the plan (see "Plans with Spec Kit").
@@ -150,10 +150,12 @@ Copies a plan elsewhere, as JSON or Markdown with or without frontmatter. `expor
 ```
 In PowerShell, run `& "<skills_root>/dev-cycle-protocol/bin/dev-cycle.ps1" plan-memory export_plan [arguments]` instead.
 
-### 9. Rebuild the Index (`rebuild_index.py`)
-```powershell
-python "<skills_root>/plan-memory/rebuild_index.py"
+### 9. Rebuild the Index (`rebuild_index`)
+`rebuild_index` runs on the native engine. In sh shells (Linux, macOS, Git Bash):
+```bash
+"<skills_root>/dev-cycle-protocol/bin/dev-cycle" plan-memory rebuild_index [--project <name>] [--dir <path>]
 ```
+In PowerShell, run `& "<skills_root>/dev-cycle-protocol/bin/dev-cycle.ps1" plan-memory rebuild_index [arguments]` instead.
 
 ---
 

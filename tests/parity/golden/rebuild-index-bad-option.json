@@ -1,0 +1,6 @@
+{
+  "exit": 2,
+  "stdout": "",
+  "stderr": "usage: rebuild_index.py [-h] [--project PROJECT] [--dir DIR]\nrebuild_index.py: error: unrecognized arguments: --force\n",
+  "files": {}
+}

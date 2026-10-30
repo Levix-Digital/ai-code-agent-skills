@@ -125,6 +125,10 @@ pub struct Case {
     /// comparisons fold their separators to `/`, as they do for the run's absolute paths.
     #[serde(default)]
     pub seps: Vec<String>,
+    /// Paths under the real home copied into the run's home first (the embedding model's
+    /// cache, so no run downloads it); list them in `ignore` as well.
+    #[serde(default)]
+    pub seed_home: Vec<String>,
 }
 
 /// What a run leaves behind, normalized: paths of the run replaced with placeholders.
@@ -232,6 +236,18 @@ impl Harness {
                 fs::copy(&me, &target).map_err(|e| format!("{}: {e}", target.display()))?;
             }
         }
+        let real_home = std::env::var_os(if cfg!(windows) { "USERPROFILE" } else { "HOME" })
+            .map(PathBuf::from)
+            .ok_or("no home directory")?;
+        for rel in &case.seed_home {
+            let from = real_home.join(rel);
+            if !from.is_dir() {
+                return Err(format!("seed_home: {} is missing", from.display()));
+            }
+            let to = home.join(rel);
+            fs::create_dir_all(&to).map_err(|e| e.to_string())?;
+            copy_dir(&from, &to)?;
+        }
         // Canonical paths: the scripts print resolved paths (macOS /private/var, Windows \\?\ aside).
         let project = canonical(&project);
         let home = canonical(&home);
@@ -294,7 +310,7 @@ impl Harness {
         };
         let mut files = BTreeMap::new();
         for (path, content) in &after {
-            if before.get(path) != Some(content) {
+            if before.get(path) != Some(content) && !ignored(&norm.apply(path), &case.ignore) {
                 files.insert(norm.apply(path), Some(norm.apply(&text(content, path)?)));
             }
         }

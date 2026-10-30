@@ -276,6 +276,8 @@ pub struct Plan {
     pub meta: Dict,
     pub body: String,
     pub path: String,
+    /// SHA-256 of the file text as read or last written; `None` for an empty file.
+    pub sha256: Option<String>,
 }
 
 impl Plan {
@@ -342,7 +344,7 @@ impl Plan {
 }
 
 /// `write_plan(plan)`: the frontmatter in `FIELD_ORDER`, then the body.
-fn write_plan(plan: &Plan) -> Result<(), Crash> {
+fn write_plan(plan: &mut Plan) -> Result<(), Crash> {
     let mut ordered = Dict::new();
     for k in FIELD_ORDER {
         if let Some(v) = plan.meta.get(k) {
@@ -364,7 +366,9 @@ fn write_plan(plan: &Plan) -> Result<(), Crash> {
         "---\n{front}---\n\n{}\n",
         kernel::py::num::strip(&plan.body)
     );
-    write_text(std::path::Path::new(&plan.path), &text)
+    write_text(std::path::Path::new(&plan.path), &text)?;
+    plan.sha256 = Some(kernel::sha256::hex(text.as_bytes()));
+    Ok(())
 }
 
 /// `m["name"]`.
@@ -417,6 +421,7 @@ pub fn read_plan(path: &str, name: &str) -> Result<Plan, Crash> {
         meta,
         body,
         path: path.to_string(),
+        sha256: (!raw.is_empty()).then(|| kernel::sha256::hex(raw.as_bytes())),
     })
 }
 

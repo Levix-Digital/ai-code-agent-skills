@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "✅ Index rebuilt for 'project'.\n",
+  "stderr": "🔄 Plan index synced from {project}/docs/plans: 3 updated, 0 removed, 3 plan(s).\n",
+  "files": {}
+}

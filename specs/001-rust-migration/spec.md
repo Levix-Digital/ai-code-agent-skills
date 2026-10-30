@@ -58,7 +58,7 @@ Someone installs the skills on a machine without Python and uses every command.
 - **FR-004**: The proof MUST include parity cases recorded as golden files (Python 3.13 and 3.10) and a differential fuzz with no differences.
 - **FR-005**: Gates 0, 3, 8 and rc MUST give the same output and exit code on the branch as on main for every fixture.
 - **FR-006**: The engine MUST carry its own version (`dev-cycle-protocol/bin/engine-version`), raised on every pull request that changes the crates, and be published as `engine-vX.Y.Z` with SHA256SUMS.
-- **FR-007**: Local data under `~/.ai-code-agent-memory/` MUST be read and written in the same places and formats (D-store, open before M27).
+- **FR-007**: Local data under `~/.ai-code-agent-memory/` MUST be read and written in the same places and formats (D-store, decided 2026-10-30: chromadb 1.5's local store, written by the engine over bundled SQLite).
 - **FR-008**: Similarity scores MUST come in the same order and within a stated tolerance (D-embed).
 
 ### Key Entities

@@ -686,5 +686,59 @@
     "args": ["set-release", "v1.0.0", "--status", "done"],
     "git": false,
     "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "rebuild-index-help",
+    "python": "plan-memory/rebuild_index.py",
+    "rust": ["plan-memory", "rebuild_index"],
+    "args": ["--help"],
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "rebuild-index-bad-option",
+    "python": "plan-memory/rebuild_index.py",
+    "rust": ["plan-memory", "rebuild_index"],
+    "args": ["--force"],
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "rebuild-index-plans",
+    "python": "plan-memory/rebuild_index.py",
+    "rust": ["plan-memory", "rebuild_index"],
+    "args": [],
+    "fixture": "plans-list",
+    "env": {"PLAN_MEMORY_DB": "{home}/db"},
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"],
+    "ignore": ["home/db", "home/.cache"]
+  },
+  {
+    "name": "rebuild-index-project",
+    "python": "plan-memory/rebuild_index.py",
+    "rust": ["plan-memory", "rebuild_index"],
+    "args": ["--project", "Other Name", "--dir", "{project}"],
+    "fixture": "plans-list",
+    "env": {"PLAN_MEMORY_DB": "{home}/db"},
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"],
+    "ignore": ["home/db", "home/.cache"]
+  },
+  {
+    "name": "rebuild-index-speckit",
+    "python": "plan-memory/rebuild_index.py",
+    "rust": ["plan-memory", "rebuild_index"],
+    "args": [],
+    "fixture": "plans-speckit",
+    "git": true,
+    "env": {"PLAN_MEMORY_DB": "{home}/db"},
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"],
+    "ignore": ["home/db", "home/.cache"]
+  },
+  {
+    "name": "rebuild-index-no-plans",
+    "python": "plan-memory/rebuild_index.py",
+    "rust": ["plan-memory", "rebuild_index"],
+    "args": [],
+    "env": {"PLAN_MEMORY_DB": "{home}/db"},
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"],
+    "ignore": ["home/db", "home/.cache"]
   }
 ]
