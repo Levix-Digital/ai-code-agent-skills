@@ -1,0 +1,24 @@
+[package]
+name = "vector-store"
+description = "The local vector store of the memory skills, in chromadb 1.5's on-disk format"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+rusqlite = { version = "=0.40.2", features = ["bundled"] }
+serde = { workspace = true }
+serde_json = { workspace = true }
+serde-pickle = "=1.2.0"
+uuid = { version = "1", features = ["v4"] }
+tract-onnx = "=0.23.7"
+tokenizers = { version = "=0.23.2", default-features = false, features = ["fancy-regex"] }
+ureq = "=3.4.2"
+flate2 = "1"
+tar = "0.4"
+kernel.workspace = true
+
+[lints]
+workspace = true

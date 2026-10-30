@@ -80,9 +80,9 @@ description: "Tasks of the Rust migration, one per milestone of the envelope pla
 
 ## Phase 6: Plan index (D-embed, D-store)
 
-**Purpose**: **Blocked** until D-store is decided (before M27).
+**Purpose**: the plan index in chromadb's local store, written by the engine (D-store, decided 2026-10-30).
 
-- [ ] T027 [US1] M27: translate `rebuild_index` and swap its callers
+- [x] T027 [US1] M27: translate `rebuild_index` and swap its callers
 - [ ] T028 [US1] M28: translate `search_plans` and swap its callers
 - [ ] T029 [US1] M29: translate `save_plan` and swap its callers
 - [ ] T030 [US1] M30: translate `update_plan_status` and swap its callers
@@ -126,5 +126,5 @@ description: "Tasks of the Rust migration, one per milestone of the envelope pla
 ## Dependencies & Execution Order
 
 - Phase 1 blocks everything; the shared modules are translated with the first task that needs them.
-- T027 to T038 wait for the D-store decision.
+- T027 to T038 build on the engine's store (`crates/vector-store`, D-store).
 - T043 runs after every other task and after the acceptance run on a sample project (spec.md, User Story 2).

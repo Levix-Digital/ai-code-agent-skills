@@ -195,7 +195,7 @@ Keeps the project's planning in its repository: the **backlog**, where work is c
 - **Backlog**: `docs/BACKLOG.md` (`backlog.file`), sections Bugs (`BUG-NNN`, with severity), Features (`FEAT-NNN`), Improvements (`IMP-NNN`), Adjustments (`ADJ-NNN`) and Epics (`EPIC-NNN`, with priority), and Closed. An item may belong to an epic (`--epic EPIC-NNN`); epics group the complete product and are never promoted, their items are. `backlog.py promote <ID>` turns items into a draft plan (a bug plan for bugs, with reproduction, root cause and regression test); the items follow the plan and close when it is completed.
 - **Roadmap**: `docs/ROADMAP.md` (`roadmap.file`), releases in delivery order (`## vX.Y.Z: <name>` with status, goal and items). `roadmap` (engine) adds and orders releases, assigns items (an epic adds its open items), shows the current release and validates the ids against the backlog.
 - **Plan files**: `docs/plans/<plan_id>.md` in the project repository, with YAML frontmatter (status, version, author, milestones, lineage, status log) and the plan body. They are committed and reviewed like code. Change the folder with `plans.dir` in `.dev-cycle.json`.
-- **Local index**: a ChromaDB index for semantic search and drift detection, synced from the files on every command (including teammates' changes after `git pull`). It is disposable: `rebuild_index.py` recreates it.
+- **Local index**: a ChromaDB index for semantic search and drift detection, synced from the files on every command (including teammates' changes after `git pull`). It is disposable: `rebuild_index` (engine) recreates it.
 
 | Task | Command |
 |---|---|
@@ -208,6 +208,7 @@ Keeps the project's planning in its repository: the **backlog**, where work is c
 | Change status | `update_plan_status.py --id <plan_id> --status completed [--notes "..."]` |
 | Check a proposal for drift | `detect_drift.py --proposal "<text>"` or `--file proposal.md [--strict]` |
 | Export (JSON or copy) | `<skills_root>/dev-cycle-protocol/bin/dev-cycle plan-memory export_plan --id <plan_id> --format json --output-dir out/` (`bin/dev-cycle.ps1` in PowerShell) |
+| Rebuild the search index | `<skills_root>/dev-cycle-protocol/bin/dev-cycle plan-memory rebuild_index` (`bin/dev-cycle.ps1` in PowerShell) |
 | Migrate from the old database | `migrate_legacy.py [--source <old_db>] [--dry-run]` |
 
 All scripts are in `<skills_root>/plan-memory/`. They work on the Git repository of the current directory; use `--dir` for another one and `--project` to override the project name.

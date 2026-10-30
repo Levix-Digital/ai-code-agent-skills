@@ -7,7 +7,7 @@ version: v2.10.0
 status: in_progress
 author: Levi Silveira
 created_at: '2026-10-27T18:17:46'
-updated_at: '2026-10-30T16:40:08'
+updated_at: '2026-10-30T18:28:11'
 session_id: null
 tags:
 - rust
@@ -125,7 +125,9 @@ milestones:
   done_at: '2026-10-30'
   by: Levi Silveira
 - name: M27 rebuild_index
-  done: false
+  done: true
+  done_at: '2026-10-30'
+  by: Levi Silveira
 - name: M28 search_plans
   done: false
 - name: M29 save_plan
@@ -251,6 +253,9 @@ status_log:
 - at: '2026-10-30T16:40:08'
   by: Levi Silveira
   note: Milestone 'M26 verify_gate' completed
+- at: '2026-10-30T18:28:11'
+  by: Levi Silveira
+  note: Milestone 'M27 rebuild_index' completed
 ---
 
 # Translate the scripts to Rust with identical behavior
@@ -273,18 +278,18 @@ Decisions (ADR-0007, proposed):
 - **Shared Python modules** (`_docs.py`, `_store.py`, `project_config.py` and the others) are translated with the first script that needs them and deleted only when their last Python importer is gone.
 - **Python callers in the window**: `verify_gate.py` runs the checkers as subprocesses; it calls the Rust command for every checker already swapped.
 
-Decisions taken with the plan approval (2026-10-27) and the one still open:
+Decisions taken with the plan approval (2026-10-27) and later:
 
 - **D-dist (decided)**: a binary per target on GitHub Releases, fetched and checksum-verified by a small launcher (`sh` and `ps1`) on first use over plain HTTPS (the repository is public).
 - **D-embed (decided)**: chromadb's similarity scores (`detect_drift`, `search_plans`, session memory and folder search) come from an embedding model; the same model run from Rust may differ in the last decimals. Results must come in the same order with scores equal within a stated tolerance.
-- **D-store (open, before M27)**: session memory lives only in chromadb's local store; reading it from Rust needs a SQLite library compiled from C by Cargo. Whether that fits "pure Rust".
+- **D-store (decided 2026-10-30)**: the indexes stay in chromadb 1.5's local store, in the same place and format, so Python and Rust read and write the same store during the migration and existing stores keep working. The engine reaches SQLite through `rusqlite` with SQLite bundled (C compiled by Cargo, accepted), and writes chromadb's tables, log and HNSW index files itself (crate `vector-store`), since chromadb's Rust core is not published as a library. Embeddings come from the same model (all-MiniLM-L6-v2, ONNX, same cache and download) run in pure Rust with `tract` and `tokenizers`; scores follow D-embed.
 - **D-pdf (decided 2026-10-27)**: PDF text extraction in `folder-sync` uses a pure-Rust library (`pdf-extract`, on `lopdf`) and is the one accepted exception to identity: the text of a PDF page may differ from pypdf's in spacing, line breaks and order. Everything around it (other formats, page markers, sections, chunking, index metadata, output) stays identical; PDF parity cases check the page and section structure instead of the extracted text.
 
 ## 2. Design (`software-design`)
 
 - `Cargo.toml` workspace at the root, crates under `crates/`: one crate per skill (modular monolith, ADR-0002) plus a small kernel crate (project configuration, principle 9 guard, output helpers) and the binary crate.
 - Command shape: `dev-cycle <skill> <script> [the same arguments]`, for example `dev-cycle plan-memory backlog validate --dir X`. Argument parsing reproduces argparse's usage and error messages exactly.
-- Rust dependencies: Rust crates only, no C toolchain, unless D-store says otherwise.
+- Rust dependencies: Rust crates only; the one C dependency is SQLite, bundled by `rusqlite` (D-store).
 - The parity harness lives in `tests/parity/`: fixtures (project trees, recorded platform and Gedo responses), one case file per script, and a runner usable from `cargo test`.
 
 ## 3. Affected surfaces and files

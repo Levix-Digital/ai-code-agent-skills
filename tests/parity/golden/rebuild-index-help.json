@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "usage: rebuild_index.py [-h] [--project PROJECT] [--dir DIR]\n\nRebuild the local plan search index from docs/plans\n\noptions:\n  -h, --help         show this help message and exit\n  --project PROJECT  Project name (default: from the repository)\n  --dir DIR          Project directory (default: current)\n",
+  "stderr": "",
+  "files": {}
+}

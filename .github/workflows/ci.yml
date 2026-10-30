@@ -56,6 +56,9 @@ jobs:
       - uses: Swatinem/rust-cache@v2
       - name: Install the Python dependencies
         run: python -m pip install -r requirements.txt pytest
+      - name: Fetch the embedding model
+        # The parity cases of the search indexes copy it into each run's home.
+        run: python -c "from chromadb.utils.embedding_functions import DefaultEmbeddingFunction as E; E()(['model'])"
       - name: Run the Rust tests
         run: cargo test --workspace
       - name: Compare Python and Rust (parity)
