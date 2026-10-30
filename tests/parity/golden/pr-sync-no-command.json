@@ -1,0 +1,6 @@
+{
+  "exit": 2,
+  "stdout": "",
+  "stderr": "usage: pr_sync.py [-h] {status,open,gate-merge,reply,comment,resolve,review,request-review} ...\npr_sync.py: error: the following arguments are required: command\n",
+  "files": {}
+}

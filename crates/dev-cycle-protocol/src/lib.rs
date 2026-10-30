@@ -2,4 +2,7 @@
 
 pub mod constitution;
 pub mod inspect_project;
+pub mod pr_model;
+pub mod pr_providers;
+pub mod pr_sync;
 pub mod speckit_setup;

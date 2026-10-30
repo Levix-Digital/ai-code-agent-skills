@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "usage: pr_sync.py reply [-h] [--dir DIR] [--pr PR] --thread THREAD\n                        [--body BODY] [--body-file BODY_FILE]\n\noptions:\n  -h, --help            show this help message and exit\n  --dir DIR\n  --pr PR               Number (default: the open one of the current branch)\n  --thread THREAD\n  --body BODY\n  --body-file BODY_FILE\n",
+  "stderr": "",
+  "files": {}
+}

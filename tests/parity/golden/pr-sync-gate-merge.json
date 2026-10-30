@@ -1,0 +1,8 @@
+{
+  "exit": 1,
+  "stdout": "🔀 PR #12 Add the widget cache: TTL: 6 threads waiting (1 for you), 1 comment to answer, changes requested by ana, CI red\n   ❌ blocking finding still open at src/cache.py:10 (thread PRRT_1)\n   ❌ blocking finding still open at db.py:30 (thread PRRT_7)\n   ❌ changes requested by ana\n   ❌ check Test failed\n   ❌ check Lint still running\n   ❌ check license failed\n   ⚠️ merging into 'main' does not require resolved conversations; turn it on in Settings > Branches (or Rules): Require conversation resolution before merging\n❌ not ready to merge\n",
+  "stderr": "",
+  "files": {
+    "project/.fake/gh.log": "{\"args\":[\"api\",\"repos/acme/widgets/pulls?state=open&head=acme:main&per_page=1\"]}\n{\"args\":[\"api\",\"repos/acme/widgets/pulls/12\"]}\n{\"args\":[\"api\",\"repos/acme/widgets/pulls/12/reviews?per_page=100\",\"--paginate\"]}\n{\"args\":[\"api\",\"repos/acme/widgets/issues/12/comments?per_page=100\",\"--paginate\"]}\n{\"args\":[\"api\",\"repos/acme/widgets/commits/abc123/check-runs?per_page=100\",\"--paginate\"]}\n{\"args\":[\"api\",\"repos/acme/widgets/commits/abc123/status\"]}\n{\"args\":[\"api\",\"graphql\",\"-f\",\"query=\\nquery($owner: String!, $repo: String!, $number: Int!) {\\n  repository(owner: $owner, name: $repo) {\\n    pullRequest(number: $number) {\\n      reviewThreads(first: 100) {\\n        nodes {\\n          id isResolved isOutdated path line originalLine\\n          comments(first: 100) { nodes { id author { login } body createdAt } }\\n        }\\n      }\\n    }\\n  }\\n}\\n\",\"-f\",\"owner=acme\",\"-f\",\"repo=widgets\",\"-F\",\"number=12\"]}\n{\"args\":[\"api\",\"repos/acme/widgets/rules/branches/main\"]}\n{\"args\":[\"api\",\"repos/acme/widgets/branches/main/protection\"]}\n"
+  }
+}

@@ -6,6 +6,7 @@ pub mod fnmatch;
 pub mod json;
 pub mod num;
 pub mod path;
+pub mod re;
 pub mod subprocess;
 pub mod textwrap;
 pub mod tomllib;

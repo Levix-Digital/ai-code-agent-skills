@@ -1,0 +1,6 @@
+{
+  "exit": 2,
+  "stdout": "",
+  "stderr": "usage: pr_sync.py request-review [-h] [--dir DIR] [--pr PR] --reviewer REVIEWER\npr_sync.py request-review: error: the following arguments are required: --reviewer\n",
+  "files": {}
+}

@@ -1,0 +1,66 @@
+[
+  {
+    "match": "addPullRequestReviewThreadReply",
+    "stdout": "{\"data\": {\"addPullRequestReviewThreadReply\": {\"comment\": {\"id\": \"c99\"}}}}"
+  },
+  {
+    "match": "resolveReviewThread",
+    "stdout": "{\"data\": {\"resolveReviewThread\": {\"thread\": {\"id\": \"PRRT_1\", \"isResolved\": true}}}}"
+  },
+  {
+    "match": "reviewThreads",
+    "stdout": "{\"data\": {\"repository\": {\"pullRequest\": {\"reviewThreads\": {\"nodes\": [{\"id\": \"PRRT_1\", \"isResolved\": false, \"isOutdated\": false, \"path\": \"src/cache.py\", \"line\": 10, \"comments\": {\"nodes\": [{\"id\": \"c1\", \"author\": {\"login\": \"levi\"}, \"body\": \"**[review]** `blocking` The cache is never invalidated; add a TTL.\", \"createdAt\": \"2026-01-01T00:00:00Z\"}]}}, {\"id\": \"PRRT_2\", \"isResolved\": false, \"isOutdated\": true, \"path\": \"src/api.py\", \"line\": null, \"originalLine\": 4, \"comments\": {\"nodes\": [{\"id\": \"c2\", \"author\": {\"login\": \"ana\"}, \"body\": \"nit: rename this variable\", \"createdAt\": \"2026-01-01T00:00:00Z\"}]}}, {\"id\": \"PRRT_3\", \"isResolved\": false, \"isOutdated\": false, \"path\": \"README.md\", \"line\": 3, \"comments\": {\"nodes\": [{\"id\": \"c3\", \"author\": {\"login\": \"ana\"}, \"body\": \"Why not reuse the existing helper?\", \"createdAt\": \"2026-01-01T00:00:00Z\"}]}}, {\"id\": \"PRRT_4\", \"isResolved\": true, \"isOutdated\": false, \"path\": \"a.py\", \"line\": 1, \"comments\": {\"nodes\": [{\"id\": \"c4\", \"author\": {\"login\": \"ana\"}, \"body\": \"**[review]** `blocking` Old finding\", \"createdAt\": \"2026-01-01T00:00:00Z\"}]}}, {\"id\": \"PRRT_5\", \"isResolved\": false, \"isOutdated\": false, \"path\": \"src/b.py\", \"line\": 7, \"comments\": {\"nodes\": [{\"id\": \"c5\", \"author\": {\"login\": \"ana\"}, \"body\": \"Maybe:\\n```suggestion\\nreturn None\\n```\", \"createdAt\": \"2026-01-01T00:00:00Z\"}]}}, {\"id\": \"PRRT_6\", \"isResolved\": false, \"isOutdated\": false, \"path\": \"src/c.py\", \"line\": 2, \"comments\": {\"nodes\": [{\"id\": \"c6\", \"author\": {\"login\": \"ana\"}, \"body\": \"This changes the whole design, can we discuss the approach?\", \"createdAt\": \"2026-01-01T00:00:00Z\"}, {\"id\": \"c7\", \"author\": {\"login\": \"levi\"}, \"body\": \"**[reply]** Good point, see the issue.\", \"createdAt\": \"2026-01-01T00:00:00Z\"}]}}, {\"id\": \"PRRT_7\", \"isResolved\": false, \"isOutdated\": false, \"path\": \"db.py\", \"line\": 30, \"comments\": {\"nodes\": [{\"id\": \"c8\", \"author\": {\"login\": \"levi\"}, \"body\": \"**[review]** `blocking` Rewrite the schema migration\", \"createdAt\": \"2026-01-01T00:00:00Z\"}, {\"id\": \"c9\", \"author\": {\"login\": \"ana\"}, \"body\": \"still failing\", \"createdAt\": \"2026-01-01T00:00:00Z\"}]}}, {\"id\": \"PRRT_8\", \"isResolved\": false, \"isOutdated\": false, \"path\": \"x.py\", \"line\": 1, \"comments\": {\"nodes\": [{\"id\": \"c10\", \"author\": {\"login\": \"dan\"}, \"body\": \"Small thing: add a log line.\", \"createdAt\": \"2026-01-01T00:00:00Z\"}]}}]}}}}}"
+  },
+  {
+    "match": "pulls/12/comments/42/replies",
+    "stdout": "{\"id\": 100}"
+  },
+  {
+    "match": "issues/12/comments --method POST",
+    "stdout": "{\"id\": 5}"
+  },
+  {
+    "match": "issues/12/comments?per_page=100",
+    "stdout": "[{\"id\": 1, \"user\": {\"login\": \"ana\"}, \"body\": \"Can you add a changelog entry?\", \"created_at\": \"2026-01-02T10:00:00Z\"}, {\"id\": 2, \"user\": {\"login\": \"levi\"}, \"body\": \"**[reply]** Added.\", \"created_at\": \"2026-01-02T11:00:00Z\"}, {\"id\": 3, \"user\": {\"login\": \"ana\"}, \"body\": \"Thanks!   Also   the docs\\nplease, and more and more and more and more and more and more and more and more and more and more and more and more and more and more and more and more and more and more and more and more \", \"created_at\": \"2026-01-02T12:00:00Z\"}, {\"id\": 4, \"user\": {\"login\": \"levi\"}, \"body\": \"**[review]** Review of the changes.\", \"created_at\": \"2026-01-02T13:00:00Z\"}]"
+  },
+  {
+    "match": "pulls/12/reviews --method POST",
+    "stdout": "{\"id\": 7}"
+  },
+  {
+    "match": "pulls/12/reviews?per_page=100",
+    "stdout": "[{\"user\": {\"login\": \"ana\"}, \"state\": \"CHANGES_REQUESTED\"}, {\"user\": {\"login\": \"bob\"}, \"state\": \"APPROVED\"}, {\"user\": {\"login\": \"ana\"}, \"state\": \"COMMENTED\"}, {\"user\": {\"login\": \"carla\"}, \"state\": \"APPROVED\"}]"
+  },
+  {
+    "match": "pulls/12/requested_reviewers",
+    "stdout": "{}"
+  },
+  {
+    "match": "commits/abc123/check-runs",
+    "stdout": "{\"total_count\": 3, \"check_runs\": [{\"name\": \"Test\", \"status\": \"completed\", \"conclusion\": \"failure\", \"details_url\": \"https://ci.example.com/1\"}, {\"name\": \"Lint\", \"status\": \"in_progress\", \"html_url\": \"https://ci.example.com/2\"}, {\"name\": \"Docs\", \"status\": \"completed\", \"conclusion\": \"neutral\"}, {\"name\": \"Bench\", \"status\": \"COMPLETED\", \"conclusion\": \"Skipped\"}]}"
+  },
+  {
+    "match": "commits/abc123/status",
+    "stdout": "{\"statuses\": [{\"context\": \"deploy/preview\", \"state\": \"success\", \"target_url\": \"https://preview.example.com\"}, {\"context\": \"license\", \"state\": \"error\"}]}"
+  },
+  {
+    "match": "rules/branches/main",
+    "stdout": "[]"
+  },
+  {
+    "match": "branches/main/protection",
+    "stdout": "{\"required_conversation_resolution\": {\"enabled\": false}}"
+  },
+  {
+    "match": "pulls?state=open&head=acme:main",
+    "stdout": "[{\"number\": 12}]"
+  },
+  {
+    "match": "pulls?state=open&per_page=10",
+    "stdout": "[{\"number\": 12}]"
+  },
+  {
+    "match": "repos/acme/widgets/pulls/12",
+    "stdout": "{\"number\": 12, \"html_url\": \"https://github.com/acme/widgets/pull/12\", \"title\": \"Add the widget cache: TTL\", \"state\": \"open\", \"draft\": false, \"user\": {\"login\": \"levi\"}, \"base\": {\"ref\": \"main\"}, \"head\": {\"ref\": \"feat/cache\", \"sha\": \"abc123\"}, \"mergeable\": true, \"mergeable_state\": \"clean\"}"
+  }
+]

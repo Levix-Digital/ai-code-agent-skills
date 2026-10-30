@@ -1,0 +1,6 @@
+{
+  "exit": 2,
+  "stdout": "",
+  "stderr": "usage: pr_sync.py status [-h] [--dir DIR] [--pr PR] [--json]\npr_sync.py status: error: argument --pr: invalid int value: 'x'\n",
+  "files": {}
+}

@@ -1,0 +1,8 @@
+{
+  "exit": 0,
+  "stdout": "✅ Review requested from ana, bob\n",
+  "stderr": "",
+  "files": {
+    "project/.fake/glab.log": "{\"args\":[\"api\",\"projects/group%2Fsub%2Fwidgets/merge_requests?state=opened&source_branch=main\",\"--hostname\",\"gitlab.example.com\"]}\n{\"args\":[\"api\",\"projects/group%2Fsub%2Fwidgets/merge_requests/7\",\"--hostname\",\"gitlab.example.com\"]}\n{\"args\":[\"api\",\"projects/group%2Fsub%2Fwidgets/merge_requests/7/discussions?per_page=100\",\"--paginate\",\"--hostname\",\"gitlab.example.com\"]}\n{\"args\":[\"api\",\"projects/group%2Fsub%2Fwidgets/merge_requests/7/approvals\",\"--hostname\",\"gitlab.example.com\"]}\n{\"args\":[\"api\",\"projects/group%2Fsub%2Fwidgets/merge_requests/7\",\"--hostname\",\"gitlab.example.com\"]}\n{\"args\":[\"api\",\"users?username=ana\",\"--hostname\",\"gitlab.example.com\"]}\n{\"args\":[\"api\",\"users?username=bob\",\"--hostname\",\"gitlab.example.com\"]}\n{\"args\":[\"api\",\"projects/group%2Fsub%2Fwidgets/merge_requests/7\",\"--method\",\"PUT\",\"--hostname\",\"gitlab.example.com\",\"--input\",\"-\",\"-H\",\"Content-Type: application/json\"],\"stdin\":\"{\\\"reviewer_ids\\\": [3, 5]}\"}\n"
+  }
+}

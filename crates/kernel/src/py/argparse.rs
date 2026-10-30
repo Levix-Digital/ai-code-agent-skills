@@ -232,6 +232,11 @@ impl Parser {
         self.add(flag, Kind::Append, help, false)
     }
 
+    /// `add_argument(flag, action="append", required=True)`.
+    pub fn required_append_option(self, flag: &str, help: &str) -> Self {
+        self.add(flag, Kind::Append, help, true)
+    }
+
     /// `add_argument(name, choices=choices)`: a positional argument (help text optional).
     pub fn positional_choice(mut self, name: &str, choices: &[&str], help: &str) -> Self {
         self.args.push(Arg {

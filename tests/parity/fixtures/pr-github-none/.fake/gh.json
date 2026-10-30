@@ -1,0 +1,14 @@
+[
+  {
+    "match": "pulls?state=open&head=",
+    "stdout": "[]"
+  },
+  {
+    "match": "pulls?state=open&per_page=10",
+    "stdout": "[]"
+  },
+  {
+    "match": "pulls/99",
+    "stdout": "not json"
+  }
+]

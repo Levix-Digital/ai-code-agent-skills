@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "usage: pr_sync.py [-h] {status,open,gate-merge,reply,comment,resolve,review,request-review} ...\n\nRead and answer the pull request on its platform (Phase 7)\n\npositional arguments:\n  {status,open,gate-merge,reply,comment,resolve,review,request-review}\n    status              What is pending on the pull request\n    open                Open pull requests with what is pending\n    gate-merge          Fail while a blocking finding, a change request, CI or a conflict holds the merge\n    reply               Answer a review thread\n    comment             Comment on the pull request\n    resolve             Resolve a review thread (after its fix is pushed or the reviewer agreed)\n    review              Post the protocol's code review (line comments with marker and level)\n    request-review      Ask people to review again\n\noptions:\n  -h, --help            show this help message and exit\n",
+  "stderr": "",
+  "files": {}
+}

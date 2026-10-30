@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ pull request platform 'bitbucket' is not supported yet (GitHub and GitLab are)\n",
+  "stderr": "",
+  "files": {}
+}

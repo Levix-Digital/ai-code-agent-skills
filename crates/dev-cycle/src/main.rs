@@ -34,6 +34,7 @@ const COMMANDS: &[(&str, &str, Command)] = &[
         "new_subsystem",
         architecture_docs::new_subsystem::main,
     ),
+    ("dev-cycle-protocol", "_no_ai", kernel::no_ai::main),
     (
         "dev-cycle-protocol",
         "constitution",
@@ -43,6 +44,11 @@ const COMMANDS: &[(&str, &str, Command)] = &[
         "dev-cycle-protocol",
         "inspect_project",
         dev_cycle_protocol::inspect_project::main,
+    ),
+    (
+        "dev-cycle-protocol",
+        "pr_sync",
+        dev_cycle_protocol::pr_sync::main,
     ),
     (
         "dev-cycle-protocol",

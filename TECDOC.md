@@ -16,7 +16,7 @@ flowchart LR
     DC --> G["Gates: verify_gate.py"]
     G --> R
     R --> F[("Project files under Git")]
-    DC --> PR["pr_sync.py"]
+    DC --> PR["pr_sync (engine)"]
     PR --> P["gh / glab"]
     DC -.optional.-> SK["Spec Kit via uvx"]
     DC -.optional.-> GE["Gedo CLI --json"]
