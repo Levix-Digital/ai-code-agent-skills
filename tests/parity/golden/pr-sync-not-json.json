@@ -1,0 +1,8 @@
+{
+  "exit": 1,
+  "stdout": "❌ gh api repos/acme/widgets/pulls/99 returned no JSON: not json\n",
+  "stderr": "",
+  "files": {
+    "project/.fake/gh.log": "{\"args\":[\"api\",\"repos/acme/widgets/pulls/99\",\"--hostname\",\"github.example.com\"]}\n"
+  }
+}

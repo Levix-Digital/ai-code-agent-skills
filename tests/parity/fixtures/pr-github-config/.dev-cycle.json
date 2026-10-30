@@ -1,0 +1,9 @@
+{
+  "review": {
+    "marker": "[rev]",
+    "reply_marker": "[reply]",
+    "allowed_terms": [
+      "Claude Code"
+    ]
+  }
+}

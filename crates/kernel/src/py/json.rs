@@ -370,6 +370,35 @@ pub fn loads(text: &str) -> Result<Value, LoadError> {
     Ok(value)
 }
 
+/// `json.JSONDecoder().raw_decode(text, idx)` over one text: each call decodes the value that
+/// starts exactly at `idx` (no whitespace skipped) and says where it ends.
+pub struct RawDecoder {
+    sc: Scanner,
+}
+
+impl RawDecoder {
+    pub fn new(text: &str) -> Self {
+        RawDecoder {
+            sc: Scanner {
+                s: text.chars().collect(),
+            },
+        }
+    }
+
+    pub fn chars(&self) -> &[char] {
+        &self.sc.s
+    }
+
+    pub fn decode(&self, idx: usize) -> Result<(Value, usize), LoadError> {
+        match self.sc.scan_once(idx, 0) {
+            Ok(v) => Ok(v),
+            Err(Fail::Stop(i)) => Err(LoadError::Decode(self.sc.error("Expecting value", i))),
+            Err(Fail::Error(m, i)) => Err(LoadError::Decode(self.sc.error(m, i))),
+            Err(Fail::Crash(c)) => Err(LoadError::Crash(c)),
+        }
+    }
+}
+
 /// `json.load(open(path, encoding="utf-8"))`: text mode turns `\r\n` and `\r` into `\n`.
 pub fn load_file(path: &std::path::Path) -> Result<Value, LoadError> {
     let text = super::read_text(path)?;

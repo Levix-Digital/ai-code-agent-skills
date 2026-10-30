@@ -631,5 +631,540 @@
     "rust": ["dev-cycle-protocol", "inspect_project"],
     "args": ["--bogus"],
     "seps": ["docs[\\\\/]ARCHITECTURE\\.md", "tests[\\\\/]MANUAL_TESTS\\.md"]
+  },
+  {
+    "name": "pr-sync-status",
+    "python": "dev-cycle-protocol/pr_sync.py",
+    "rust": ["dev-cycle-protocol", "pr_sync"],
+    "args": ["status"],
+    "fixture": "pr-github",
+    "git": true,
+    "remote": "https://github.com/acme/widgets.git",
+    "fakes": ["gh"]
+  },
+  {
+    "name": "pr-sync-status-json",
+    "python": "dev-cycle-protocol/pr_sync.py",
+    "rust": ["dev-cycle-protocol", "pr_sync"],
+    "args": ["status", "--json"],
+    "fixture": "pr-github",
+    "git": true,
+    "remote": "https://github.com/acme/widgets.git",
+    "fakes": ["gh"]
+  },
+  {
+    "name": "pr-sync-status-number",
+    "python": "dev-cycle-protocol/pr_sync.py",
+    "rust": ["dev-cycle-protocol", "pr_sync"],
+    "args": ["status", "--pr", "012", "--dir", "{project}"],
+    "fixture": "pr-github",
+    "git": true,
+    "remote": "https://github.com/acme/widgets.git",
+    "fakes": ["gh"]
+  },
+  {
+    "name": "pr-sync-gate-merge",
+    "python": "dev-cycle-protocol/pr_sync.py",
+    "rust": ["dev-cycle-protocol", "pr_sync"],
+    "args": ["gate-merge"],
+    "fixture": "pr-github",
+    "git": true,
+    "remote": "https://github.com/acme/widgets.git",
+    "fakes": ["gh"]
+  },
+  {
+    "name": "pr-sync-reply",
+    "python": "dev-cycle-protocol/pr_sync.py",
+    "rust": ["dev-cycle-protocol", "pr_sync"],
+    "args": ["reply", "--thread", "PRRT_3", "--body", "  Reused it in `a.py`.  "],
+    "fixture": "pr-github",
+    "git": true,
+    "remote": "https://github.com/acme/widgets.git",
+    "fakes": ["gh"]
+  },
+  {
+    "name": "pr-sync-reply-rest-id",
+    "python": "dev-cycle-protocol/pr_sync.py",
+    "rust": ["dev-cycle-protocol", "pr_sync"],
+    "args": ["reply", "--thread", "42", "--body-file", "body.txt"],
+    "fixture": "pr-github",
+    "git": true,
+    "remote": "https://github.com/acme/widgets.git",
+    "fakes": ["gh"]
+  },
+  {
+    "name": "pr-sync-reply-ai",
+    "python": "dev-cycle-protocol/pr_sync.py",
+    "rust": ["dev-cycle-protocol", "pr_sync"],
+    "args": ["reply", "--thread", "PRRT_3", "--body", "Fixed, as Claude suggested."],
+    "fixture": "pr-github",
+    "git": true,
+    "remote": "https://github.com/acme/widgets.git",
+    "fakes": ["gh"]
+  },
+  {
+    "name": "pr-sync-reply-no-body",
+    "python": "dev-cycle-protocol/pr_sync.py",
+    "rust": ["dev-cycle-protocol", "pr_sync"],
+    "args": ["reply", "--thread", "PRRT_3"],
+    "fixture": "pr-github",
+    "git": true,
+    "remote": "https://github.com/acme/widgets.git",
+    "fakes": ["gh"]
+  },
+  {
+    "name": "pr-sync-reply-missing-file",
+    "python": "dev-cycle-protocol/pr_sync.py",
+    "rust": ["dev-cycle-protocol", "pr_sync"],
+    "args": ["reply", "--thread", "PRRT_3", "--body-file", "nope.txt"],
+    "fixture": "pr-github",
+    "git": true,
+    "remote": "https://github.com/acme/widgets.git",
+    "fakes": ["gh"]
+  },
+  {
+    "name": "pr-sync-comment",
+    "python": "dev-cycle-protocol/pr_sync.py",
+    "rust": ["dev-cycle-protocol", "pr_sync"],
+    "args": ["comment", "--body", "Rebased on main."],
+    "fixture": "pr-github",
+    "git": true,
+    "remote": "https://github.com/acme/widgets.git",
+    "fakes": ["gh"]
+  },
+  {
+    "name": "pr-sync-resolve",
+    "python": "dev-cycle-protocol/pr_sync.py",
+    "rust": ["dev-cycle-protocol", "pr_sync"],
+    "args": ["resolve", "--thread", "PRRT_1"],
+    "fixture": "pr-github",
+    "git": true,
+    "remote": "https://github.com/acme/widgets.git",
+    "fakes": ["gh"]
+  },
+  {
+    "name": "pr-sync-resolve-rest-id",
+    "python": "dev-cycle-protocol/pr_sync.py",
+    "rust": ["dev-cycle-protocol", "pr_sync"],
+    "args": ["resolve", "--thread", "42"],
+    "fixture": "pr-github",
+    "git": true,
+    "remote": "https://github.com/acme/widgets.git",
+    "fakes": ["gh"]
+  },
+  {
+    "name": "pr-sync-review",
+    "python": "dev-cycle-protocol/pr_sync.py",
+    "rust": ["dev-cycle-protocol", "pr_sync"],
+    "args": ["review", "--file", "review.json"],
+    "fixture": "pr-github",
+    "git": true,
+    "remote": "https://github.com/acme/widgets.git",
+    "fakes": ["gh"]
+  },
+  {
+    "name": "pr-sync-review-missing",
+    "python": "dev-cycle-protocol/pr_sync.py",
+    "rust": ["dev-cycle-protocol", "pr_sync"],
+    "args": ["review", "--file", "review-missing.json"],
+    "fixture": "pr-github",
+    "git": true,
+    "remote": "https://github.com/acme/widgets.git",
+    "fakes": ["gh"]
+  },
+  {
+    "name": "pr-sync-review-level",
+    "python": "dev-cycle-protocol/pr_sync.py",
+    "rust": ["dev-cycle-protocol", "pr_sync"],
+    "args": ["review", "--file", "review-level.json"],
+    "fixture": "pr-github",
+    "git": true,
+    "remote": "https://github.com/acme/widgets.git",
+    "fakes": ["gh"]
+  },
+  {
+    "name": "pr-sync-review-ai",
+    "python": "dev-cycle-protocol/pr_sync.py",
+    "rust": ["dev-cycle-protocol", "pr_sync"],
+    "args": ["review", "--file", "review-ai.json"],
+    "fixture": "pr-github",
+    "git": true,
+    "remote": "https://github.com/acme/widgets.git",
+    "fakes": ["gh"]
+  },
+  {
+    "name": "pr-sync-review-line",
+    "python": "dev-cycle-protocol/pr_sync.py",
+    "rust": ["dev-cycle-protocol", "pr_sync"],
+    "args": ["review", "--file", "review-line.json"],
+    "fixture": "pr-github",
+    "git": true,
+    "remote": "https://github.com/acme/widgets.git",
+    "fakes": ["gh"]
+  },
+  {
+    "name": "pr-sync-review-array",
+    "python": "dev-cycle-protocol/pr_sync.py",
+    "rust": ["dev-cycle-protocol", "pr_sync"],
+    "args": ["review", "--file", "review-array.json"],
+    "fixture": "pr-github",
+    "git": true,
+    "remote": "https://github.com/acme/widgets.git",
+    "fakes": ["gh"]
+  },
+  {
+    "name": "pr-sync-review-broken",
+    "python": "dev-cycle-protocol/pr_sync.py",
+    "rust": ["dev-cycle-protocol", "pr_sync"],
+    "args": ["review", "--file", "review-broken.json"],
+    "fixture": "pr-github",
+    "git": true,
+    "remote": "https://github.com/acme/widgets.git",
+    "fakes": ["gh"]
+  },
+  {
+    "name": "pr-sync-request-review",
+    "python": "dev-cycle-protocol/pr_sync.py",
+    "rust": ["dev-cycle-protocol", "pr_sync"],
+    "args": ["request-review", "--reviewer", "ana", "--reviewer", "bob"],
+    "fixture": "pr-github",
+    "git": true,
+    "remote": "https://github.com/acme/widgets.git",
+    "fakes": ["gh"]
+  },
+  {
+    "name": "pr-sync-open",
+    "python": "dev-cycle-protocol/pr_sync.py",
+    "rust": ["dev-cycle-protocol", "pr_sync"],
+    "args": ["open"],
+    "fixture": "pr-github",
+    "git": true,
+    "remote": "https://github.com/acme/widgets.git",
+    "fakes": ["gh"]
+  },
+  {
+    "name": "pr-sync-open-json",
+    "python": "dev-cycle-protocol/pr_sync.py",
+    "rust": ["dev-cycle-protocol", "pr_sync"],
+    "args": ["open", "--json"],
+    "fixture": "pr-github",
+    "git": true,
+    "remote": "https://github.com/acme/widgets.git",
+    "fakes": ["gh"]
+  },
+  {
+    "name": "pr-sync-config-markers",
+    "python": "dev-cycle-protocol/pr_sync.py",
+    "rust": ["dev-cycle-protocol", "pr_sync"],
+    "args": ["status"],
+    "fixture": "pr-github-config",
+    "git": true,
+    "remote": "https://github.com/acme/widgets.git",
+    "fakes": ["gh"]
+  },
+  {
+    "name": "pr-sync-config-allowed",
+    "python": "dev-cycle-protocol/pr_sync.py",
+    "rust": ["dev-cycle-protocol", "pr_sync"],
+    "args": ["review", "--file", "review-ai.json"],
+    "fixture": "pr-github-config",
+    "git": true,
+    "remote": "https://github.com/acme/widgets.git",
+    "fakes": ["gh"]
+  },
+  {
+    "name": "pr-sync-rest-status",
+    "python": "dev-cycle-protocol/pr_sync.py",
+    "rust": ["dev-cycle-protocol", "pr_sync"],
+    "args": ["status"],
+    "fixture": "pr-github-rest",
+    "git": true,
+    "remote": "https://github.com/acme/widgets.git",
+    "fakes": ["gh"]
+  },
+  {
+    "name": "pr-sync-rest-status-json",
+    "python": "dev-cycle-protocol/pr_sync.py",
+    "rust": ["dev-cycle-protocol", "pr_sync"],
+    "args": ["status", "--json"],
+    "fixture": "pr-github-rest",
+    "git": true,
+    "remote": "https://github.com/acme/widgets.git",
+    "fakes": ["gh"]
+  },
+  {
+    "name": "pr-sync-rest-gate-merge",
+    "python": "dev-cycle-protocol/pr_sync.py",
+    "rust": ["dev-cycle-protocol", "pr_sync"],
+    "args": ["gate-merge"],
+    "fixture": "pr-github-rest",
+    "git": true,
+    "remote": "https://github.com/acme/widgets.git",
+    "fakes": ["gh"]
+  },
+  {
+    "name": "pr-sync-rest-reply",
+    "python": "dev-cycle-protocol/pr_sync.py",
+    "rust": ["dev-cycle-protocol", "pr_sync"],
+    "args": ["reply", "--thread", "101", "--body", "Done."],
+    "fixture": "pr-github-rest",
+    "git": true,
+    "remote": "https://github.com/acme/widgets.git",
+    "fakes": ["gh"]
+  },
+  {
+    "name": "pr-sync-rest-resolve",
+    "python": "dev-cycle-protocol/pr_sync.py",
+    "rust": ["dev-cycle-protocol", "pr_sync"],
+    "args": ["resolve", "--thread", "101"],
+    "fixture": "pr-github-rest",
+    "git": true,
+    "remote": "https://github.com/acme/widgets.git",
+    "fakes": ["gh"]
+  },
+  {
+    "name": "pr-sync-not-logged-in",
+    "python": "dev-cycle-protocol/pr_sync.py",
+    "rust": ["dev-cycle-protocol", "pr_sync"],
+    "args": ["status"],
+    "fixture": "pr-github-login",
+    "git": true,
+    "remote": "https://github.com/acme/widgets.git",
+    "fakes": ["gh"]
+  },
+  {
+    "name": "pr-sync-no-pull-request",
+    "python": "dev-cycle-protocol/pr_sync.py",
+    "rust": ["dev-cycle-protocol", "pr_sync"],
+    "args": ["status"],
+    "fixture": "pr-github-none",
+    "git": true,
+    "remote": "https://github.com/acme/widgets.git",
+    "fakes": ["gh"]
+  },
+  {
+    "name": "pr-sync-no-open",
+    "python": "dev-cycle-protocol/pr_sync.py",
+    "rust": ["dev-cycle-protocol", "pr_sync"],
+    "args": ["open"],
+    "fixture": "pr-github-none",
+    "git": true,
+    "remote": "https://github.com/acme/widgets.git",
+    "fakes": ["gh"]
+  },
+  {
+    "name": "pr-sync-not-json",
+    "python": "dev-cycle-protocol/pr_sync.py",
+    "rust": ["dev-cycle-protocol", "pr_sync"],
+    "args": ["status", "--pr", "99"],
+    "fixture": "pr-github-none",
+    "git": true,
+    "remote": "https://github.com/acme/widgets.git",
+    "fakes": ["gh"]
+  },
+  {
+    "name": "pr-sync-unsupported",
+    "python": "dev-cycle-protocol/pr_sync.py",
+    "rust": ["dev-cycle-protocol", "pr_sync"],
+    "args": ["status"],
+    "fixture": "pr-unsupported",
+    "git": true,
+    "remote": "https://github.com/acme/widgets.git",
+    "fakes": ["gh"]
+  },
+  {
+    "name": "pr-sync-no-remote",
+    "python": "dev-cycle-protocol/pr_sync.py",
+    "rust": ["dev-cycle-protocol", "pr_sync"],
+    "args": ["gate-merge"],
+    "fixture": "pr-unsupported",
+    "git": true
+  },
+  {
+    "name": "pr-sync-gitlab-status",
+    "python": "dev-cycle-protocol/pr_sync.py",
+    "rust": ["dev-cycle-protocol", "pr_sync"],
+    "args": ["status"],
+    "fixture": "pr-gitlab",
+    "git": true,
+    "remote": "git@gitlab.example.com:group/sub/widgets.git",
+    "fakes": ["glab"]
+  },
+  {
+    "name": "pr-sync-gitlab-status-json",
+    "python": "dev-cycle-protocol/pr_sync.py",
+    "rust": ["dev-cycle-protocol", "pr_sync"],
+    "args": ["status", "--json"],
+    "fixture": "pr-gitlab",
+    "git": true,
+    "remote": "git@gitlab.example.com:group/sub/widgets.git",
+    "fakes": ["glab"]
+  },
+  {
+    "name": "pr-sync-gitlab-gate-merge",
+    "python": "dev-cycle-protocol/pr_sync.py",
+    "rust": ["dev-cycle-protocol", "pr_sync"],
+    "args": ["gate-merge", "--pr", "7"],
+    "fixture": "pr-gitlab",
+    "git": true,
+    "remote": "git@gitlab.example.com:group/sub/widgets.git",
+    "fakes": ["glab"]
+  },
+  {
+    "name": "pr-sync-gitlab-reply",
+    "python": "dev-cycle-protocol/pr_sync.py",
+    "rust": ["dev-cycle-protocol", "pr_sync"],
+    "args": ["reply", "--thread", "d1", "--body-file", "body.txt"],
+    "fixture": "pr-gitlab",
+    "git": true,
+    "remote": "git@gitlab.example.com:group/sub/widgets.git",
+    "fakes": ["glab"]
+  },
+  {
+    "name": "pr-sync-gitlab-resolve",
+    "python": "dev-cycle-protocol/pr_sync.py",
+    "rust": ["dev-cycle-protocol", "pr_sync"],
+    "args": ["resolve", "--thread", "d1"],
+    "fixture": "pr-gitlab",
+    "git": true,
+    "remote": "git@gitlab.example.com:group/sub/widgets.git",
+    "fakes": ["glab"]
+  },
+  {
+    "name": "pr-sync-gitlab-comment",
+    "python": "dev-cycle-protocol/pr_sync.py",
+    "rust": ["dev-cycle-protocol", "pr_sync"],
+    "args": ["comment", "--body", "Rebased."],
+    "fixture": "pr-gitlab",
+    "git": true,
+    "remote": "git@gitlab.example.com:group/sub/widgets.git",
+    "fakes": ["glab"]
+  },
+  {
+    "name": "pr-sync-gitlab-review",
+    "python": "dev-cycle-protocol/pr_sync.py",
+    "rust": ["dev-cycle-protocol", "pr_sync"],
+    "args": ["review", "--file", "review.json"],
+    "fixture": "pr-gitlab",
+    "git": true,
+    "remote": "git@gitlab.example.com:group/sub/widgets.git",
+    "fakes": ["glab"]
+  },
+  {
+    "name": "pr-sync-gitlab-request-review",
+    "python": "dev-cycle-protocol/pr_sync.py",
+    "rust": ["dev-cycle-protocol", "pr_sync"],
+    "args": ["request-review", "--reviewer", "ana", "--reviewer", "bob"],
+    "fixture": "pr-gitlab",
+    "git": true,
+    "remote": "git@gitlab.example.com:group/sub/widgets.git",
+    "fakes": ["glab"]
+  },
+  {
+    "name": "pr-sync-gitlab-unknown-user",
+    "python": "dev-cycle-protocol/pr_sync.py",
+    "rust": ["dev-cycle-protocol", "pr_sync"],
+    "args": ["request-review", "--reviewer", "ghost"],
+    "fixture": "pr-gitlab",
+    "git": true,
+    "remote": "git@gitlab.example.com:group/sub/widgets.git",
+    "fakes": ["glab"]
+  },
+  {
+    "name": "pr-sync-gitlab-open",
+    "python": "dev-cycle-protocol/pr_sync.py",
+    "rust": ["dev-cycle-protocol", "pr_sync"],
+    "args": ["open"],
+    "fixture": "pr-gitlab",
+    "git": true,
+    "remote": "git@gitlab.example.com:group/sub/widgets.git",
+    "fakes": ["glab"]
+  },
+  {
+    "name": "pr-sync-gitlab-not-logged-in",
+    "python": "dev-cycle-protocol/pr_sync.py",
+    "rust": ["dev-cycle-protocol", "pr_sync"],
+    "args": ["open", "--json"],
+    "fixture": "pr-gitlab-login",
+    "git": true,
+    "remote": "git@gitlab.example.com:group/sub/widgets.git",
+    "fakes": ["glab"]
+  },
+  {
+    "name": "pr-sync-help",
+    "python": "dev-cycle-protocol/pr_sync.py",
+    "rust": ["dev-cycle-protocol", "pr_sync"],
+    "args": ["--help"],
+    "env": {"COLUMNS": "200"}
+  },
+  {
+    "name": "pr-sync-reply-help",
+    "python": "dev-cycle-protocol/pr_sync.py",
+    "rust": ["dev-cycle-protocol", "pr_sync"],
+    "args": ["reply", "-h"],
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "pr-sync-no-command",
+    "python": "dev-cycle-protocol/pr_sync.py",
+    "rust": ["dev-cycle-protocol", "pr_sync"],
+    "args": [],
+    "env": {"COLUMNS": "200"}
+  },
+  {
+    "name": "pr-sync-bad-pr",
+    "python": "dev-cycle-protocol/pr_sync.py",
+    "rust": ["dev-cycle-protocol", "pr_sync"],
+    "args": ["status", "--pr", "x"],
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "pr-sync-request-review-no-reviewer",
+    "python": "dev-cycle-protocol/pr_sync.py",
+    "rust": ["dev-cycle-protocol", "pr_sync"],
+    "args": ["request-review"],
+    "env": {"COLUMNS": "200"}
+  },
+  {
+    "name": "no-ai-clean",
+    "python": "dev-cycle-protocol/_no_ai.py",
+    "rust": ["dev-cycle-protocol", "_no_ai"],
+    "args": ["--file", "clean.md"],
+    "fixture": "no-ai"
+  },
+  {
+    "name": "no-ai-attributed",
+    "python": "dev-cycle-protocol/_no_ai.py",
+    "rust": ["dev-cycle-protocol", "_no_ai"],
+    "args": ["--file", "attributed.md"],
+    "fixture": "no-ai"
+  },
+  {
+    "name": "no-ai-allowed",
+    "python": "dev-cycle-protocol/_no_ai.py",
+    "rust": ["dev-cycle-protocol", "_no_ai"],
+    "args": ["--file", "attributed.md", "--allow", "claude code", "--allow", "the agent"],
+    "fixture": "no-ai"
+  },
+  {
+    "name": "no-ai-stdin",
+    "python": "dev-cycle-protocol/_no_ai.py",
+    "rust": ["dev-cycle-protocol", "_no_ai"],
+    "args": [],
+    "stdin": "Reviewed by the assistant.\r\nOK\n"
+  },
+  {
+    "name": "no-ai-stdin-clean",
+    "python": "dev-cycle-protocol/_no_ai.py",
+    "rust": ["dev-cycle-protocol", "_no_ai"],
+    "args": [],
+    "stdin": "plain text\n"
+  },
+  {
+    "name": "no-ai-help",
+    "python": "dev-cycle-protocol/_no_ai.py",
+    "rust": ["dev-cycle-protocol", "_no_ai"],
+    "args": ["--help"],
+    "env": {"COLUMNS": "80"}
   }
 ]

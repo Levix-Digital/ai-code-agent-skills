@@ -7,7 +7,7 @@ version: v2.10.0
 status: in_progress
 author: Levi Silveira
 created_at: '2026-10-27T18:17:46'
-updated_at: '2026-10-30T12:58:55'
+updated_at: '2026-10-30T13:47:57'
 session_id: null
 tags:
 - rust
@@ -109,7 +109,9 @@ milestones:
   done_at: '2026-10-30'
   by: Levi Silveira
 - name: M23 pr_sync
-  done: false
+  done: true
+  done_at: '2026-10-30'
+  by: Levi Silveira
 - name: M24 gedo_feedback
   done: false
 - name: M25 onboard
@@ -231,6 +233,9 @@ status_log:
 - at: '2026-10-30T12:58:55'
   by: Levi Silveira
   note: 'Milestone ''M22 inspect_project'' completed: inspect_project on the engine (0.21.0), with the blocking bugs and bug triage in the plan-memory crate; 18 parity cases; fuzz with 0 differences; gates match main'
+- at: '2026-10-30T13:47:57'
+  by: Levi Silveira
+  note: 'Milestone ''M23 pr_sync'' completed: pr_sync and its modules (_pr_model, _pr_providers) and the _no_ai guard run on the engine (0.22.0): kernel::no_ai and the engine command _no_ai, kernel py::re with Python''s re semantics; parity cases fake gh and glab (answers per fixture, every call logged); 57 new cases; fuzz 0 differences (pr_sync 2,500 runs on 3.13 and 800 on 3.10, _no_ai 4,000); pr_sync.py, _pr_model.py, _pr_providers.py and _no_ai.py stay for their importers'
 ---
 
 # Translate the scripts to Rust with identical behavior

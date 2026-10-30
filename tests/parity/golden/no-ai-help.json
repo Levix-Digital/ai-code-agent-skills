@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "usage: _no_ai.py [-h] [--file FILE] [--allow ALLOW]\n\nCheck a text for AI attribution (protocol principle 9) before it is posted\n\noptions:\n  -h, --help     show this help message and exit\n  --file FILE    The text to check (stdin when left out)\n  --allow ALLOW  A phrase that is the project's subject\n",
+  "stderr": "",
+  "files": {}
+}

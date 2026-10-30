@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "'Co-Authored-By: Claude <noreply@anthropic' (co-author trailer naming an AI)\n'Claude-Session:' (session trailer)\n'claude.ai/code/session' (session link)\n'claude.com/claude-code' (link to a coding agent)\n'🤖' (robot attribution emoji)\n'As an AI' (speaking as an AI)\n❌ 6 AI attribution(s): remove them before posting (protocol principle 9).\n",
+  "stderr": "",
+  "files": {}
+}

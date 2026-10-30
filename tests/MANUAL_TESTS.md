@@ -216,7 +216,7 @@ How to record a run: in each test of the current run, mark exactly one box of th
   2. Let the agent fix the finding, reply and resolve the thread, then ask again.
   3. Turn on "Require conversation resolution before merging" on the base branch and ask again.
 - **Expected**:
-  - Step 1: `pr_sync.py gate-merge` fails naming the open blocking finding, and the agent does not ask for the merge.
+  - Step 1: `pr_sync gate-merge` fails naming the open blocking finding, and the agent does not ask for the merge.
   - Step 2: the gate passes and warns that the base branch does not require resolved conversations; the agent asks the user to merge.
   - Step 3: the gate passes without the warning.
 - **Result**: [ ] Pass [ ] Fail [ ] Blocked

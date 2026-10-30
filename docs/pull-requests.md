@@ -41,11 +41,11 @@ The platform is detected from the `origin` remote. Set it in `.dev-cycle.json` w
    | Red CI or a merge conflict | Reads the logs, reproduces, fixes and pushes |
 
 5. After changes someone requested, the agent asks them to review again.
-6. Before asking you to merge, the agent runs the merge gate (`pr_sync.py gate-merge`): it fails while a **[review]** `blocking` thread is open, someone requested changes, a check is red or still running, or there is a conflict. It also warns when the platform does not require resolved conversations before merging; turn that on in the branch protection (GitHub) or the merge request settings (GitLab). People approve; you merge.
+6. Before asking you to merge, the agent runs the merge gate (`pr_sync gate-merge`): it fails while a **[review]** `blocking` thread is open, someone requested changes, a check is red or still running, or there is a conflict. It also warns when the platform does not require resolved conversations before merging; turn that on in the branch protection (GitHub) or the merge request settings (GitLab). People approve; you merge.
 
    The agent talks to GitHub through its REST API, which works the same on your machine, GitHub Enterprise and cloud agent environments. Only one thing needs GitHub's GraphQL API: knowing whether a review thread is resolved, and resolving it. Some environments refuse GraphQL; there the agent still reads and answers everything, tells you the resolution could not be read, and the gate keeps a **[review]** `blocking` thread holding the merge until you (or another GitHub tool the agent has) resolve it on the pull request page. GitLab needs nothing extra.
 
-Everything the agent posts carries a marker, so its findings and answers are told apart from people's comments, and nothing it posts or commits mentions an AI (protocol principle 9; `pr_sync.py` refuses such text, text posted through other tools is checked with `_no_ai.py` and read back after posting to remove any footer the tool appended, and gate 8 checks the commit messages and the Git identities of the release). If a project's subject legitimately needs a phrase the guard flags, add it to `review.allowed_terms`.
+Everything the agent posts carries a marker, so its findings and answers are told apart from people's comments, and nothing it posts or commits mentions an AI (protocol principle 9; `pr_sync` refuses such text, text posted through other tools is checked with `_no_ai` (engine) and read back after posting to remove any footer the tool appended, and gate 8 checks the commit messages and the Git identities of the release). If a project's subject legitimately needs a phrase the guard flags, add it to `review.allowed_terms`.
 
 ## When the Agent Reads the Pull Request
 
@@ -61,11 +61,11 @@ Agents that receive pull request events (for example a cloud session subscribed 
 ## Commands
 
 ```bash
-python ~/.ai-code-agent-skills/dev-cycle-protocol/pr_sync.py status            # what is pending on the current branch's pull request
-python ~/.ai-code-agent-skills/dev-cycle-protocol/pr_sync.py open              # open pull requests with what is pending
-python ~/.ai-code-agent-skills/dev-cycle-protocol/pr_sync.py gate-merge        # exit 1 while something holds the merge
-python ~/.ai-code-agent-skills/dev-cycle-protocol/pr_sync.py reply --thread <id> --body "Fixed in abc123."
-python ~/.ai-code-agent-skills/dev-cycle-protocol/pr_sync.py resolve --thread <id>
-python ~/.ai-code-agent-skills/dev-cycle-protocol/pr_sync.py review --file review.json
-python ~/.ai-code-agent-skills/dev-cycle-protocol/pr_sync.py request-review --reviewer <login>
+~/.ai-code-agent-skills/dev-cycle-protocol/bin/dev-cycle dev-cycle-protocol pr_sync status            # what is pending on the current branch's pull request
+~/.ai-code-agent-skills/dev-cycle-protocol/bin/dev-cycle dev-cycle-protocol pr_sync open              # open pull requests with what is pending
+~/.ai-code-agent-skills/dev-cycle-protocol/bin/dev-cycle dev-cycle-protocol pr_sync gate-merge        # exit 1 while something holds the merge
+~/.ai-code-agent-skills/dev-cycle-protocol/bin/dev-cycle dev-cycle-protocol pr_sync reply --thread <id> --body "Fixed in abc123."
+~/.ai-code-agent-skills/dev-cycle-protocol/bin/dev-cycle dev-cycle-protocol pr_sync resolve --thread <id>
+~/.ai-code-agent-skills/dev-cycle-protocol/bin/dev-cycle dev-cycle-protocol pr_sync review --file review.json
+~/.ai-code-agent-skills/dev-cycle-protocol/bin/dev-cycle dev-cycle-protocol pr_sync request-review --reviewer <login>
 ```

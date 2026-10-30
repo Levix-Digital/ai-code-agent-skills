@@ -1,0 +1,10 @@
+{
+  "comments": [
+    {
+      "path": "a.py",
+      "line": "ten",
+      "level": "nit",
+      "body": "x"
+    }
+  ]
+}

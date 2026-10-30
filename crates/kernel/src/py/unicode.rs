@@ -812,6 +812,61 @@ pub fn lower(s: &str) -> String {
     out
 }
 
+/// Digits that are not decimal (`str.isdigit()` but not `str.isdecimal()`, Python 3.13):
+/// superscripts, subscripts, circled digits.
+const OTHER_DIGITS: [(u32, u32); 20] = [
+    (0xb2, 0xb3),
+    (0xb9, 0xb9),
+    (0x1369, 0x1371),
+    (0x19da, 0x19da),
+    (0x2070, 0x2070),
+    (0x2074, 0x2079),
+    (0x2080, 0x2089),
+    (0x2460, 0x2468),
+    (0x2474, 0x247c),
+    (0x2488, 0x2490),
+    (0x24ea, 0x24ea),
+    (0x24f5, 0x24fd),
+    (0x24ff, 0x24ff),
+    (0x2776, 0x277e),
+    (0x2780, 0x2788),
+    (0x278a, 0x2792),
+    (0x10a40, 0x10a43),
+    (0x10e60, 0x10e68),
+    (0x11052, 0x1105a),
+    (0x1f100, 0x1f10a),
+];
+
+/// A digit that `str.isdigit()` accepts and `str.isdecimal()` does not.
+pub fn is_other_digit(c: char) -> bool {
+    in_table(&OTHER_DIGITS, c)
+}
+
+/// The simple lower-case mapping of one character, as `re` compares under `IGNORECASE`.
+pub fn lower_char(c: char) -> char {
+    if in_table(&NOT_CASED, c) {
+        return c;
+    }
+    let mut l = c.to_lowercase();
+    match (l.next(), l.next()) {
+        (Some(x), None) => x,
+        _ if c == '\u{130}' => 'i',
+        _ => c,
+    }
+}
+
+/// The simple upper-case mapping of one character.
+pub fn upper_char(c: char) -> char {
+    if in_table(&NOT_UPPERED, c) {
+        return c;
+    }
+    let mut u = c.to_uppercase();
+    match (u.next(), u.next()) {
+        (Some(x), None) => x,
+        _ => c,
+    }
+}
+
 /// Letters that Rust uppercases but Python 3.13 does not know yet: `upper()` keeps them.
 const NOT_UPPERED: [(u32, u32); 10] = [
     (0x19b, 0x19b),

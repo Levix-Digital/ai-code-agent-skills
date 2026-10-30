@@ -1,0 +1,58 @@
+[
+  {
+    "match": "discussions/d1/notes",
+    "stdout": "{}"
+  },
+  {
+    "match": "discussions/d1 --method PUT",
+    "stdout": "{}"
+  },
+  {
+    "match": "merge_requests/7/discussions --method POST",
+    "stdout": "{}"
+  },
+  {
+    "match": "merge_requests/7/discussions?per_page=100",
+    "stdout": "[{\"id\": \"d1\", \"individual_note\": false, \"notes\": [{\"id\": 11, \"author\": {\"username\": \"levi\"}, \"body\": \"**[review]** `blocking` Handle the empty cache\", \"created_at\": \"2026-01-01T00:00:00Z\", \"resolvable\": true, \"resolved\": false, \"position\": {\"new_path\": \"cache.go\", \"new_line\": 12}}]}, {\"id\": \"d2\", \"individual_note\": true, \"notes\": [{\"id\": 12, \"author\": {\"username\": \"ana\"}, \"body\": \"Looks good overall?\", \"created_at\": \"2026-01-01T00:00:00Z\", \"resolvable\": false}]}, {\"id\": \"d3\", \"individual_note\": false, \"notes\": [{\"id\": 13, \"author\": {\"username\": \"bot\"}, \"body\": \"added 1 commit\", \"created_at\": \"2026-01-01T00:00:00Z\", \"system\": true}]}, {\"id\": \"d4\", \"notes\": [{\"id\": 14, \"author\": {\"username\": \"ana\"}, \"body\": \"nit: spacing\", \"created_at\": \"2026-01-01T00:00:00Z\", \"resolvable\": true, \"resolved\": true, \"position\": {\"old_path\": \"old.go\", \"old_line\": 3}}]}, {\"id\": \"d5\", \"notes\": [{\"id\": 15, \"author\": {\"username\": \"ana\"}, \"body\": \"Please split this change, it touches the whole interface\", \"created_at\": \"2026-01-01T00:00:00Z\", \"resolvable\": true, \"resolved\": false, \"position\": {\"new_path\": \"api.go\", \"new_line\": 40}}, {\"id\": 16, \"author\": {\"username\": \"ana\"}, \"body\": \"any update?\", \"created_at\": \"2026-01-01T00:00:00Z\", \"resolvable\": true, \"resolved\": false}]}]"
+  },
+  {
+    "match": "merge_requests/7/notes",
+    "stdout": "{}"
+  },
+  {
+    "match": "merge_requests/7/approvals",
+    "stdout": "{\"approved_by\": [{\"user\": {\"username\": \"bob\"}}]}"
+  },
+  {
+    "match": "users?username=ana",
+    "stdout": "[{\"id\": 5}]"
+  },
+  {
+    "match": "users?username=bob",
+    "stdout": "[{\"id\": 3}]"
+  },
+  {
+    "match": "users?username=",
+    "stdout": "[]"
+  },
+  {
+    "match": "merge_requests/7 --method PUT",
+    "stdout": "{}"
+  },
+  {
+    "match": "merge_requests?state=opened&source_branch=main",
+    "stdout": "[{\"iid\": 7}]"
+  },
+  {
+    "match": "merge_requests?state=opened&per_page=10",
+    "stdout": "[{\"iid\": 7}]"
+  },
+  {
+    "match": "merge_requests/7",
+    "stdout": "{\"iid\": 7, \"web_url\": \"https://gitlab.example.com/group/sub/widgets/-/merge_requests/7\", \"title\": \"Cache: add a TTL\", \"state\": \"opened\", \"draft\": false, \"author\": {\"username\": \"levi\"}, \"target_branch\": \"main\", \"source_branch\": \"feat/ttl\", \"has_conflicts\": true, \"head_pipeline\": {\"status\": \"running\", \"web_url\": \"https://gitlab.example.com/p/1\"}, \"diff_refs\": {\"base_sha\": \"b1\", \"start_sha\": \"s1\", \"head_sha\": \"h1\"}, \"reviewers\": [{\"id\": 3}]}"
+  },
+  {
+    "match": "projects/group%2Fsub%2Fwidgets --hostname",
+    "stdout": "{\"only_allow_merge_if_all_discussions_are_resolved\": true}"
+  }
+]

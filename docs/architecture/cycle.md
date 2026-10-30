@@ -28,7 +28,7 @@ The diagnosis never writes. Competing work comes first, in this order: a plan in
 ## Interfaces
 
 - Called by the user through the agent (`/dev-cycle`) and by the protocol's phases.
-- Calls `plan-memory` (backlog, roadmap, plans), `pr_sync.py`, `quality-assurance`, `devops-release`, `architecture-docs`, `user-docs`, `product-inception` and Spec Kit setup.
+- Calls `plan-memory` (backlog, roadmap, plans), `pr_sync` (engine), `quality-assurance`, `devops-release`, `architecture-docs`, `user-docs`, `product-inception` and Spec Kit setup.
 
 ## Decisions
 

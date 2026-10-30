@@ -1,6 +1,6 @@
 ---
 name: code-review
-description: The reviewer role of the development cycle - reviews every pull request (merge request on GitLab) on its platform with a fixed checklist (the plan's acceptance criteria, design, tests, documentation, security, data and release safety), writes each finding as a line comment with a level (blocking, suggestion, nit), a reason and a concrete fix, posts the review through pr_sync.py with the [review] marker, and never approves. Use when a pull request is opened or receives new pushes, when the user asks for a review, or when reviewing a diff before it is pushed.
+description: The reviewer role of the development cycle - reviews every pull request (merge request on GitLab) on its platform with a fixed checklist (the plan's acceptance criteria, design, tests, documentation, security, data and release safety), writes each finding as a line comment with a level (blocking, suggestion, nit), a reason and a concrete fix, posts the review through pr_sync (engine) with the [review] marker, and never approves. Use when a pull request is opened or receives new pushes, when the user asks for a review, or when reviewing a diff before it is pushed.
 ---
 
 # 🔍 Code Review Skill (`code-review`)
@@ -43,7 +43,7 @@ One line comment per finding, on the line it is about:
   ```
   ````
 - Specific and short; no praise padding, no restating the code; one issue per comment.
-- Never mention an AI, a model or an agent (protocol principle 9); `pr_sync.py` refuses such text.
+- Never mention an AI, a model or an agent (protocol principle 9); `pr_sync` refuses such text.
 
 The summary says what was reviewed (commits, plan), the count per level, and the one or two things that matter most.
 
@@ -59,7 +59,7 @@ Write the review to a file and post it:
 }
 ```
 ```powershell
-python "<skills_root>/dev-cycle-protocol/pr_sync.py" review --file review.json
+"<skills_root>/dev-cycle-protocol/bin/dev-cycle" dev-cycle-protocol pr_sync review --file review.json
 ```
 The script adds the marker and the level to every comment and checks principle 9. With no finding, post only the summary.
 

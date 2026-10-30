@@ -1,0 +1,17 @@
+{
+  "body": "Two findings.",
+  "comments": [
+    {
+      "path": "src/cache.py",
+      "line": "12",
+      "level": "blocking",
+      "body": "Handle the empty cache."
+    },
+    {
+      "path": "src/api.py",
+      "line": 3,
+      "level": "nit",
+      "body": "  Typo in the name.  "
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+[
+  {
+    "match": "",
+    "code": 1,
+    "stderr": "glab: 401 Unauthorized\n"
+  }
+]

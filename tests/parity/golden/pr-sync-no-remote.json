@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ the pull request platform is unknown: no 'origin' remote on GitHub or GitLab (set review.provider and review.host in .dev-cycle.json)\n",
+  "stderr": "",
+  "files": {}
+}

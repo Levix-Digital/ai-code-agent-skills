@@ -23,6 +23,65 @@ const GIT_ENV: [(&str, &str); 6] = [
     ("GIT_COMMITTER_DATE", "2026-01-01T00:00:00Z"),
 ];
 
+/// Where the fake CLI finds its answers and writes its log.
+pub const FAKE_DIR: &str = "PARITY_FAKE_DIR";
+
+/// A canned answer of the fake CLI: the first one whose `match` is part of the command line
+/// (the arguments joined with spaces) is given.
+#[derive(Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct FakeAnswer {
+    #[serde(rename = "match")]
+    pattern: String,
+    #[serde(default)]
+    code: i32,
+    #[serde(default)]
+    stdout: String,
+    #[serde(default)]
+    stderr: String,
+}
+
+/// The fake CLI, when this binary runs under another name (`gh`, `glab`): logs the call (the
+/// arguments, and stdin when `--input -` asks for it) and answers from the case's file.
+pub fn fake_cli(name: &str, args: &[String]) -> i32 {
+    let Some(dir) = std::env::var_os(FAKE_DIR).map(PathBuf::from) else {
+        eprintln!("{name}: {FAKE_DIR} is not set");
+        return 1;
+    };
+    let reads_stdin = args.windows(2).any(|w| w[0] == "--input" && w[1] == "-");
+    let mut input = String::new();
+    if reads_stdin {
+        let _ = std::io::Read::read_to_string(&mut std::io::stdin(), &mut input);
+    }
+    let mut entry = serde_json::Map::new();
+    entry.insert("args".into(), serde_json::json!(args));
+    if reads_stdin {
+        entry.insert("stdin".into(), serde_json::json!(input));
+    }
+    let line = serde_json::Value::Object(entry).to_string() + "\n";
+    let _ = fs::OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open(dir.join(format!("{name}.log")))
+        .and_then(|mut f| f.write_all(line.as_bytes()));
+    let answers: Vec<FakeAnswer> = fs::read_to_string(dir.join(format!("{name}.json")))
+        .ok()
+        .and_then(|t| serde_json::from_str(&t).ok())
+        .unwrap_or_default();
+    let command = args.join(" ");
+    match answers.iter().find(|a| command.contains(&a.pattern)) {
+        Some(a) => {
+            print!("{}", a.stdout);
+            eprint!("{}", a.stderr);
+            a.code
+        }
+        None => {
+            eprintln!("{name}: no answer for: {command}");
+            1
+        }
+    }
+}
+
 /// Never compared: Git internals and Python bytecode caches.
 const ALWAYS_IGNORED: [&str; 2] = [".git/", "__pycache__/"];
 
@@ -44,6 +103,13 @@ pub struct Case {
     /// Make the project a Git repository with one commit of the fixture.
     #[serde(default)]
     pub git: bool,
+    /// With `git`: the URL of the repository's `origin` remote.
+    #[serde(default)]
+    pub remote: Option<String>,
+    /// Programs replaced by the fake CLI (`gh`, `glab`): it answers from
+    /// `<project>/.fake/<name>.json` and logs every call to `<project>/.fake/<name>.log`.
+    #[serde(default)]
+    pub fakes: Vec<String>,
     #[serde(default)]
     pub stdin: Option<String>,
     #[serde(default)]
@@ -152,6 +218,18 @@ impl Harness {
         }
         if case.git {
             git_init(&project, &home)?;
+            if let Some(url) = &case.remote {
+                git(&project, &home, &["remote", "add", "origin", url])?;
+            }
+        }
+        let fake_bin = root.join("bin");
+        if !case.fakes.is_empty() {
+            fs::create_dir_all(&fake_bin).map_err(|e| e.to_string())?;
+            let me = std::env::current_exe().map_err(|e| e.to_string())?;
+            for name in &case.fakes {
+                let target = fake_bin.join(format!("{name}{}", std::env::consts::EXE_SUFFIX));
+                fs::copy(&me, &target).map_err(|e| format!("{}: {e}", target.display()))?;
+            }
         }
         // Canonical paths: the scripts print resolved paths (macOS /private/var, Windows \\?\ aside).
         let project = canonical(&project);
@@ -172,7 +250,20 @@ impl Harness {
             .env("HOME", &home)
             .env("USERPROFILE", &home)
             .envs(GIT_ENV)
-            .envs(case.env.iter().map(|(k, v)| (k.clone(), fill(v))))
+            .envs(case.env.iter().map(|(k, v)| (k.clone(), fill(v))));
+        if !case.fakes.is_empty() {
+            let mut dirs = vec![fake_bin.clone()];
+            if let Some(path) = std::env::var_os("PATH") {
+                dirs.extend(std::env::split_paths(&path));
+            }
+            command
+                .env(
+                    "PATH",
+                    std::env::join_paths(dirs).map_err(|e| e.to_string())?,
+                )
+                .env(FAKE_DIR, project.join(".fake"));
+        }
+        command
             .stdin(if case.stdin.is_some() {
                 Stdio::piped()
             } else {
@@ -411,6 +502,22 @@ fn copy_dir(from: &Path, to: &Path) -> Result<(), String> {
     Ok(())
 }
 
+fn git(project: &Path, home: &Path, args: &[&str]) -> Result<(), String> {
+    let st = Command::new("git")
+        .args(args)
+        .current_dir(project)
+        .env("HOME", home)
+        .env("USERPROFILE", home)
+        .envs(GIT_ENV)
+        .status()
+        .map_err(|e| format!("git: {e}"))?;
+    if st.success() {
+        Ok(())
+    } else {
+        Err(format!("git {}: failed", args.join(" ")))
+    }
+}
+
 fn git_init(project: &Path, home: &Path) -> Result<(), String> {
     for args in [
         &["init", "-q", "-b", "main"][..],
@@ -420,17 +527,7 @@ fn git_init(project: &Path, home: &Path) -> Result<(), String> {
         &["add", "-A"],
         &["commit", "-q", "--allow-empty", "-m", "fixture"],
     ] {
-        let st = Command::new("git")
-            .args(args)
-            .current_dir(project)
-            .env("HOME", home)
-            .env("USERPROFILE", home)
-            .envs(GIT_ENV)
-            .status()
-            .map_err(|e| format!("git: {e}"))?;
-        if !st.success() {
-            return Err(format!("git {}: failed", args.join(" ")));
-        }
+        git(project, home, args)?;
     }
     Ok(())
 }
