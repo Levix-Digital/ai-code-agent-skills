@@ -199,7 +199,7 @@ Keeps the project's planning in its repository: the **backlog**, where work is c
 
 | Task | Command |
 |---|---|
-| Save or update a plan | `save_plan.py --title "<t>" --file plan.md [--version v1.2.0] [--milestones "A,B,C"] [--supersedes <old_id>] [--kind bug] [--backlog-items "BUG-001"] [--spec-dir specs/001-x]` |
+| Save or update a plan | `<skills_root>/dev-cycle-protocol/bin/dev-cycle plan-memory save_plan --title "<t>" --file plan.md [--version v1.2.0] [--milestones "A,B,C"] [--supersedes <old_id>] [--kind bug] [--backlog-items "BUG-001"] [--spec-dir specs/001-x]` (`bin/dev-cycle.ps1` in PowerShell) |
 | Plan releases | `<skills_root>/dev-cycle-protocol/bin/dev-cycle plan-memory roadmap add-release v0.1.0 --name MVP --goal "<g>"`, then `assign <ID...> --release v0.1.0`, `current`, `show`, `validate` (`bin/dev-cycle.ps1` in PowerShell) |
 | List plans | `<skills_root>/dev-cycle-protocol/bin/dev-cycle plan-memory list_plans [--status active] [--kind bug]` (`bin/dev-cycle.ps1` in PowerShell) |
 | Read a plan in full | `<skills_root>/dev-cycle-protocol/bin/dev-cycle plan-memory get_plan --id <plan_id>` or without `--id` (latest active; `bin/dev-cycle.ps1` in PowerShell) |

@@ -1,0 +1,6 @@
+{
+  "exit": 2,
+  "stdout": "",
+  "stderr": "usage: save_plan.py [-h] --title TITLE [--content CONTENT] [--file FILE]\n                    [--project PROJECT] [--dir DIR] [--id ID]\n                    [--session-id SESSION_ID] [--version VERSION]\n                    [--tags TAGS] [--milestones MILESTONES]\n                    [--status {draft,planned,active,in_progress,completed,superseded}]\n                    [--parent-id PARENT_ID] [--supersedes SUPERSEDES]\n                    [--kind {feature,bug}] [--backlog-items BACKLOG_ITEMS]\n                    [--spec-dir SPEC_DIR]\nsave_plan.py: error: argument --kind: invalid choice: 'epic' (choose from 'feature', 'bug')\n",
+  "files": {}
+}

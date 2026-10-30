@@ -8,7 +8,7 @@
 |---|---|
 | 0. Product inception | `speckit_setup init`, then `constitution generate` (engine) |
 | 1. Discovery | `/speckit-specify` creates the branch `feat/NNN-slug` and `specs/NNN-slug/spec.md`; `/speckit-clarify` until no `[NEEDS CLARIFICATION]` is left |
-| 2. Plan | `/speckit-plan` (with the protocol's sections), `/speckit-tasks`, `/speckit-analyze`; the plan in `docs/plans` is the envelope of the spec folder (`save_plan.py --spec-dir`) |
+| 2. Plan | `/speckit-plan` (with the protocol's sections), `/speckit-tasks`, `/speckit-analyze`; the plan in `docs/plans` is the envelope of the spec folder (`save_plan --spec-dir`, engine) |
 | 3. Plan approval | gate 3 checks the spec folder, the branch, the setup and the constitution |
 | 4–5. Implementation and tests | `/speckit-implement` executes `tasks.md` under the protocol's rules |
 | 6–10 | not used |

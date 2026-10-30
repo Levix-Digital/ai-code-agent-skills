@@ -4,6 +4,8 @@ Saves an uncompressed, comprehensive architectural plan or roadmap as
 <repo>/docs/plans/<plan_id>.md (YAML frontmatter + Markdown body) and indexes it.
 Supports plan lineage via --supersedes to automatically deprecate older plans.
 Saving an existing plan ID updates it, keeping its author, creation date and milestone progress.
+The skills run the engine's `plan-memory save_plan` (IMP-005); this module stays for backlog.py,
+which promotes items with save_plan(), until backlog is translated (M32).
 """
 import argparse
 import os

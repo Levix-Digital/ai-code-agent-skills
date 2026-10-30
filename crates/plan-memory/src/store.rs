@@ -13,6 +13,14 @@ use kernel::py::unicode::{is_word, lower};
 use kernel::py::yaml::{self, DumpOptions};
 use kernel::py::{Crash, Dict, Value, iterate, read_text, write_text};
 
+pub const STATUSES: [&str; 6] = [
+    "draft",
+    "planned",
+    "active",
+    "in_progress",
+    "completed",
+    "superseded",
+];
 pub const KINDS: [&str; 2] = ["feature", "bug"];
 const FIELD_ORDER: [&str; 18] = [
     "plan_id",
@@ -81,6 +89,39 @@ pub fn normalize_project(name: &Value) -> Result<String, Crash> {
         }
     }
     Ok(out.trim_matches('-').to_string())
+}
+
+/// `slugify_id(text)`: `AnyContext Plan!` -> `anycontext_plan`.
+pub fn slugify_id(text: &str) -> String {
+    let is_space = |c: char| kernel::py::num::is_space(c);
+    let lowered = lower(text);
+    let kept: String = kernel::py::num::strip(&lowered)
+        .chars()
+        .filter(|&c| is_word(c) || is_space(c) || c == '-')
+        .collect();
+    let mut out = String::new();
+    let mut in_run = false;
+    for c in kept.chars() {
+        if is_space(c) || c == '_' || c == '-' {
+            if !in_run {
+                out.push('_');
+            }
+            in_run = true;
+        } else {
+            out.push(c);
+            in_run = false;
+        }
+    }
+    out.trim_matches('_').to_string()
+}
+
+/// `split_csv(value)`: the comma-separated values, stripped, without empty ones.
+pub fn split_csv(value: &str) -> Vec<String> {
+    value
+        .split(',')
+        .map(|v| kernel::py::num::strip(v).to_string())
+        .filter(|v| !v.is_empty())
+        .collect()
 }
 
 /// `load_config(root)`: the `.dev-cycle.json` as it is, or `{}` with a warning when it
@@ -327,9 +368,22 @@ impl Plan {
 impl Plan {
     /// `add_log(by, note)`: appends a `status_log` entry stamped with the local time.
     pub fn add_log(&mut self, by: Value, note: &str) -> Result<(), Crash> {
+        self.add_log_status(by, note, None)
+    }
+
+    /// `add_log(by, note, status=status)`: the entry records the status when one is given.
+    pub fn add_log_status(
+        &mut self,
+        by: Value,
+        note: &str,
+        status: Option<&Value>,
+    ) -> Result<(), Crash> {
         let mut entry = Dict::new();
         entry.insert("at", Value::Str(kernel::py::now_iso()));
         entry.insert("by", by);
+        if let Some(status) = status.filter(|s| s.truthy()) {
+            entry.insert("status", status.clone());
+        }
         entry.insert("note", Value::str(note));
         let log = match self.meta.get("status_log") {
             None | Some(Value::Null) => Vec::new(),

@@ -1,0 +1,8 @@
+{
+  "exit": 0,
+  "stdout": "✅ Plan created: {project}/docs/plans/project_export_answers_v2.md\n   • Plan ID    : project_export_answers_v2\n   • Project    : project\n   • Title      : Export Answers: v2!\n   • Kind       : bug\n   • Backlog    : BUG-001, BUG-002, FEAT-001, EPIC-001, IMP-001, IMP-999\n   • Spec Kit   : specs/001-export (1 artifact(s))\n   • Author     : Parity\n   • Version    : v0.2.0\n   • Status     : ACTIVE\n   • Size       : 21 characters (100% uncompressed)\n   • Milestones : Design, Build, Ship\n   🔗 Backlog: BUG-001 is planned (plan 'project_export_answers_v2').\n   ⚠️ BUG-002 belongs to plan 'other_plan', not 'project_export_answers_v2'; left unchanged.\n   🔗 Backlog: FEAT-001 is planned (plan 'project_export_answers_v2').\n   ⚠️ Backlog not updated: EPIC-001 is an epic; its items are promoted, not the epic\n   👉 Commit the plan file with the change it describes (dev-cycle-protocol Phase 3).\n\n",
+  "stderr": "🔄 Plan index synced from {project}/docs/plans: 2 updated, 0 removed, 2 plan(s).\n",
+  "files": {
+    "project/docs/plans/project_export_answers_v2.md": "---\nplan_id: project_export_answers_v2\nproject: project\ntitle: 'Export Answers: v2!'\nkind: bug\nversion: v0.2.0\nstatus: active\nauthor: Parity\ncreated_at: '<MASK>'\nupdated_at: '<MASK>'\nsession_id: s-1\ntags:\n- export\n- md\nsupersedes: null\nsuperseded_by: null\nparent_plan_id: root\nbacklog_items:\n- BUG-001\n- BUG-002\n- FEAT-001\n- EPIC-001\n- IMP-001\n- IMP-999\nspec_dir: specs/001-export\nmilestones:\n- name: Design\n  done: false\n- name: Build\n  done: false\n- name: Ship\n  done: false\nstatus_log:\n- at: '<MASK>'\n  by: Parity\n  status: active\n  note: Plan created\n---\n\n# Export\n\nPlan body.\n"
+  }
+}

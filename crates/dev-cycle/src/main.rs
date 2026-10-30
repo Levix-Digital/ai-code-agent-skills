@@ -115,6 +115,7 @@ const COMMANDS: &[(&str, &str, Command)] = &[
         plan_memory::rebuild_index::main,
     ),
     ("plan-memory", "roadmap", plan_memory::roadmap::main),
+    ("plan-memory", "save_plan", plan_memory::save_plan::main),
     (
         "plan-memory",
         "search_plans",

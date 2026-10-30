@@ -57,7 +57,7 @@ status_log:
 ...full plan body in Markdown...
 ```
 
-- The scripts **only rewrite the frontmatter**; the body is written once by `save_plan.py` (or edited by hand). Milestone and status changes produce small, readable diffs.
+- The scripts **only rewrite the frontmatter**; the body is written once by `save_plan` (or edited by hand). Milestone and status changes produce small, readable diffs.
 - The file name is the plan ID. Lineage fields (`supersedes`, `superseded_by`, `parent_plan_id`) reference other plan IDs.
 - **The scripts never commit.** The agent commits plan files with the work they describe (see "Team workflow").
 
@@ -67,19 +67,20 @@ status_log:
 
 All scripts are in `<skills_root>/plan-memory/` and accept `--dir <project dir>` (default: current directory) and `--project <name>`.
 
-### 1. Save / Update a Plan with Lineage (`save_plan.py`)
-Writes `docs/plans/<plan_id>.md` with the full plan, without cuts or summaries. Saving an existing ID updates title, body and fields, keeping author, creation date and milestone progress. `--supersedes` marks the older plan as `superseded`:
-```powershell
-python "<skills_root>/plan-memory/save_plan.py" `
-  --title "Integrated Roadmap: Python -> Rust, Model Router & Model Kit" `
-  --file "path/to/plan.md" `
-  --version "v1.2.0" `
-  --tags "roadmap,rust_refactor,model_router" `
-  --milestones "Priority 1,Priority 2,Milestone 3" `
-  --status "active" `
-  --session-id "<session_id>" `
+### 1. Save / Update a Plan with Lineage (`save_plan`)
+Writes `docs/plans/<plan_id>.md` with the full plan, without cuts or summaries. Saving an existing ID updates title, body and fields, keeping author, creation date and milestone progress. `--supersedes` marks the older plan as `superseded`. `save_plan` runs on the native engine. In sh shells (Linux, macOS, Git Bash):
+```bash
+"<skills_root>/dev-cycle-protocol/bin/dev-cycle" plan-memory save_plan \
+  --title "Integrated Roadmap: Python -> Rust, Model Router & Model Kit" \
+  --file "path/to/plan.md" \
+  --version "v1.2.0" \
+  --tags "roadmap,rust_refactor,model_router" \
+  --milestones "Priority 1,Priority 2,Milestone 3" \
+  --status "active" \
+  --session-id "<session_id>" \
   --supersedes "<old_plan_id>"
 ```
+In PowerShell, run `& "<skills_root>/dev-cycle-protocol/bin/dev-cycle.ps1" plan-memory save_plan [arguments]` instead.
 Options: `--id` (default: `<project>_<title>` slug), `--parent-id`, `--content` instead of `--file`, `--kind feature|bug`, `--backlog-items "BUG-001,FEAT-002"` (links the items, which become `planned`), `--spec-dir specs/NNN-slug` (the plan is the envelope of that Spec Kit folder).
 
 ### 2. Milestone & Progress Tracker (`check_milestone.py`)
@@ -239,7 +240,7 @@ When the project uses Spec Kit (`speckit.enabled`, see `dev-cycle-protocol`), th
 
 ## 👥 Team Workflow
 
-- **Phase 2 (plan)**: save the plan with `save_plan.py`. The file is part of the proposal the user approves.
+- **Phase 2 (plan)**: save the plan with `save_plan` (engine). The file is part of the proposal the user approves.
 - **Phase 3 (approval)**: once approved, commit the plan file (`docs(plan): <title>`) on the work branch before implementing. In a team, plan files go through pull requests like code.
 - **Phases 4 to 10**: commit milestone and status changes with the work that completes them.
 - Someone else's plan changes arrive with `git pull`; the next command re-indexes them automatically.
@@ -252,7 +253,7 @@ When the project uses Spec Kit (`speckit.enabled`, see `dev-cycle-protocol`), th
 The whole development lifecycle follows 👉 **[`dev-cycle-protocol`](../dev-cycle-protocol/SKILL.md)**:
 - **Phase 0 (Product inception)**: the product backlog as epics and their items, and the roadmap from the MVP (`product-inception`).
 - **Phase 1 (Discovery)**: check `list_plans` (engine), `check_milestone.py --list` or `search_plans` (engine) for real progress and agreed guidelines, `backlog.py summary` for open bugs and captured ideas and `roadmap current` (engine) for the items of the current release; promote the items the user chooses.
-- **Phase 2 (Plan)**: save the full plan with `save_plan.py` (with `--supersedes` when it replaces one, `--spec-dir` with Spec Kit) and run `detect_drift.py`. The plan follows the orchestrator's template, with a section from each role.
+- **Phase 2 (Plan)**: save the full plan with `save_plan` (engine, with `--supersedes` when it replaces one, `--spec-dir` with Spec Kit) and run `detect_drift.py`. The plan follows the orchestrator's template, with a section from each role.
 - **Phase 3 (Plan approval)**: `verify_gate --gate 3` (engine) checks there is an active plan, warns if its file is not committed, and blocks a non-bug plan while open blocking bugs (default `critical`, `high`, `medium`) or bugs not triaged are outside it (bugs first). A bug is triaged when it has a valid severity and, when its severity does not block, it is in the next release of the roadmap (`backlog.bug_deadline`). `backlog.py summary` lists the bugs not triaged; `backlog.py add` of a bug says where it goes.
 - **Phase 4 (Implementation)**: mark milestones with `check_milestone.py` as they are completed.
 - **Phase 10 (Release)**: close the remaining milestones or finish the plan with `update_plan_status.py`, and mark the release released (`roadmap set-release vX.Y.Z --status released` on the engine).
