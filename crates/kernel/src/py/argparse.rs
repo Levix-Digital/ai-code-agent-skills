@@ -38,6 +38,8 @@ pub struct Arg {
     pub int: bool,
     /// The subcommands of a `Commands` argument: name and help.
     pub commands: Vec<(String, String)>,
+    /// `metavar=...`: the value's name in the usage and help.
+    pub metavar: Option<String>,
 }
 
 impl Arg {
@@ -46,7 +48,9 @@ impl Arg {
     }
 
     fn metavar(&self) -> String {
-        if self.choices.is_empty() && self.is_positional() {
+        if let Some(m) = &self.metavar {
+            m.clone()
+        } else if self.choices.is_empty() && self.is_positional() {
             self.dest.clone()
         } else if self.choices.is_empty() {
             self.dest.to_uppercase()
@@ -186,6 +190,7 @@ impl Parser {
                 choices: Vec::new(),
                 int: false,
                 commands: Vec::new(),
+                metavar: None,
             }],
         }
     }
@@ -201,6 +206,7 @@ impl Parser {
             choices: Vec::new(),
             int: false,
             commands: Vec::new(),
+            metavar: None,
         });
         self
     }
@@ -236,6 +242,14 @@ impl Parser {
         p
     }
 
+    /// `metavar=name` for the last argument added.
+    pub fn metavar(mut self, name: &str) -> Self {
+        if let Some(arg) = self.args.last_mut() {
+            arg.metavar = Some(name.to_string());
+        }
+        self
+    }
+
     /// `add_argument(flag, action="append", default=[])`.
     pub fn append_option(self, flag: &str, help: &str) -> Self {
         self.add(flag, Kind::Append, help, false)
@@ -257,6 +271,7 @@ impl Parser {
             choices: choices.iter().map(|c| c.to_string()).collect(),
             int: false,
             commands: Vec::new(),
+            metavar: None,
         });
         self
     }

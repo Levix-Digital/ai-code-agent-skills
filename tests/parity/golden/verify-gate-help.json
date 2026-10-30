@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "usage: verify_gate.py [-h] --gate {0,3,8,rc,gate0,gate3,gate8,gaterc} [--dir DIR] [--project PROJECT] [--run RUN] [--accept-open-bugs REASON]\n\nVerify gate compliance for dev-cycle-protocol\n\noptions:\n  -h, --help            show this help message and exit\n  --gate {0,3,8,rc,gate0,gate3,gate8,gaterc}\n                        Gate to verify (0=product baseline, 3=plan approval, rc=candidate acceptance, 8=release readiness)\n  --dir DIR             Workspace directory\n  --project PROJECT     Project name override\n  --run RUN             Release candidate run label, for example v1.4.0-rc.1\n  --accept-open-bugs REASON\n                        Gate 3: the user explicitly accepts approving a non-bug plan with open blocking bugs\n",
+  "stderr": "",
+  "files": {}
+}

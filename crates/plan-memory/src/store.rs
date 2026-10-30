@@ -8,11 +8,32 @@ use architecture_docs::docs::{
 };
 use kernel::out::err;
 use kernel::py::json::{self, LoadError};
-use kernel::py::path::{basename, isdir, isfile, join, relpath};
+use kernel::py::path::{basename, isdir, isfile, join, makedirs, relpath};
 use kernel::py::unicode::{is_word, lower};
-use kernel::py::{Crash, Dict, Value, iterate, read_text};
+use kernel::py::yaml::{self, DumpOptions};
+use kernel::py::{Crash, Dict, Value, iterate, read_text, write_text};
 
 pub const KINDS: [&str; 2] = ["feature", "bug"];
+const FIELD_ORDER: [&str; 18] = [
+    "plan_id",
+    "project",
+    "title",
+    "kind",
+    "version",
+    "status",
+    "author",
+    "created_at",
+    "updated_at",
+    "session_id",
+    "tags",
+    "supersedes",
+    "superseded_by",
+    "parent_plan_id",
+    "backlog_items",
+    "spec_dir",
+    "milestones",
+    "status_log",
+];
 /// Spec Kit artifacts of a plan's spec folder (`spec_dir`), in reading order.
 pub const SPEC_FILES: [&str; 6] = [
     "spec.md",
@@ -136,6 +157,11 @@ impl PlanStore {
 
     /// `latest()`: active and in-progress plans first, then the most recently created.
     pub fn latest(&self) -> Result<Option<Plan>, Crash> {
+        Ok(Self::latest_of(self.load_all()?))
+    }
+
+    /// `latest(plans)`.
+    pub fn latest_of(plans: Vec<Plan>) -> Option<Plan> {
         let active = [Value::str("active"), Value::str("in_progress")];
         let key = |p: &Plan| {
             let status = p.meta.get_or_none("status");
@@ -151,13 +177,13 @@ impl PlanStore {
         };
         // `sorted(..., reverse=True)[0]`: the first plan with the greatest key.
         let mut best: Option<(Plan, (bool, String))> = None;
-        for p in self.load_all()? {
+        for p in plans {
             let k = key(&p);
             if best.as_ref().is_none_or(|(_, b)| k > *b) {
                 best = Some((p, k));
             }
         }
-        Ok(best.map(|(p, _)| p))
+        best.map(|(p, _)| p)
     }
 
     /// `spec_files(plan)`: (relative path, text) of the Spec Kit artifacts in the plan's
@@ -198,6 +224,37 @@ impl PlanStore {
             ));
         }
         Ok(text)
+    }
+
+    /// `save(plan)`: writes the plan to the file of its `plan_id`.
+    pub fn save(&self, plan: &mut Plan) -> Result<(), Crash> {
+        makedirs(&self.plans_dir)?;
+        let id = plan.meta.get_or_none("plan_id").py_str();
+        plan.path = self.path_for(&id);
+        write_plan(plan)
+    }
+
+    /// `author()`: the repository's `git config user.name`, or `None`.
+    pub fn author(&self) -> Value {
+        let out = std::process::Command::new("git")
+            .args(["config", "user.name"])
+            .current_dir(&self.root)
+            .output();
+        match out {
+            Ok(o) if o.status.success() => match String::from_utf8(o.stdout) {
+                Ok(text) => {
+                    let name =
+                        kernel::py::num::strip(&kernel::py::universal_newlines(&text)).to_string();
+                    if name.is_empty() {
+                        Value::Null
+                    } else {
+                        Value::Str(name)
+                    }
+                }
+                Err(_) => Value::Null,
+            },
+            _ => Value::Null,
+        }
     }
 
     /// `load_all()`: the `.md` files of the plans folder, by name.
@@ -263,6 +320,51 @@ impl Plan {
         }
         Ok(out)
     }
+}
+
+impl Plan {
+    /// `add_log(by, note)`: appends a `status_log` entry stamped with the local time.
+    pub fn add_log(&mut self, by: Value, note: &str) -> Result<(), Crash> {
+        let mut entry = Dict::new();
+        entry.insert("at", Value::Str(kernel::py::now_iso()));
+        entry.insert("by", by);
+        entry.insert("note", Value::str(note));
+        let log = match self.meta.get("status_log") {
+            None | Some(Value::Null) => Vec::new(),
+            Some(Value::List(items)) => items.clone(),
+            Some(other) => return Err(no_attribute(other, "append")),
+        };
+        let mut log = log;
+        log.push(Value::Dict(entry));
+        self.meta.insert("status_log", Value::List(log));
+        Ok(())
+    }
+}
+
+/// `write_plan(plan)`: the frontmatter in `FIELD_ORDER`, then the body.
+fn write_plan(plan: &Plan) -> Result<(), Crash> {
+    let mut ordered = Dict::new();
+    for k in FIELD_ORDER {
+        if let Some(v) = plan.meta.get(k) {
+            ordered.insert(k, v.clone());
+        }
+    }
+    for (k, v) in plan.meta.iter() {
+        if !k.as_str().is_some_and(|k| FIELD_ORDER.contains(&k)) {
+            ordered.push_new(k.clone(), v.clone());
+        }
+    }
+    let options = DumpOptions {
+        default_flow_style: Some(false),
+        allow_unicode: true,
+        width: Some(4096),
+    };
+    let front = yaml::safe_dump(&Value::Dict(ordered), &options)?;
+    let text = format!(
+        "---\n{front}---\n\n{}\n",
+        kernel::py::num::strip(&plan.body)
+    );
+    write_text(std::path::Path::new(&plan.path), &text)
 }
 
 /// `m["name"]`.

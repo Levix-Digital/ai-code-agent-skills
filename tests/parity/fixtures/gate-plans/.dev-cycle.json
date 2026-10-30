@@ -1,0 +1,9 @@
+{
+  "project_name": "plans",
+  "backlog": {
+    "blocking_severities": [
+      "critical",
+      "high"
+    ]
+  }
+}

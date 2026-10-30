@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "================================================================================\n🌱 VERIFYING GATE 0 (PRODUCT BASELINE): Baseline\n================================================================================\n✅ Product documents (product-inception) passed. ✅ product-inception: 0 error(s), 0 warning(s).\n✅ Architecture style set: modular-monolith\n⚠️ TecDoc not migrated to the architecture-docs layout (docs/architecture + docs/adr) yet.\n❌ Backlog docs/BACKLOG.md has 1 problem(s); run plan-memory/backlog.py validate.\n✅ Roadmap: 2 release(s); first: v1.0.0 MVP (3 item(s)).\n✅ Secret hygiene check passed.\n--------------------------------------------------------------------------------\n🚨 GATE 0 STATUS: PRODUCT BASELINE INCOMPLETE\n================================================================================\n\n",
+  "stderr": "",
+  "files": {}
+}

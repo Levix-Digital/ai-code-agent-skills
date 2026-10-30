@@ -96,11 +96,21 @@ fn number_key(digits: &str) -> (usize, String) {
 
 /// `SUPERSEDED_RE.search(text).group(1)`.
 fn superseded_ids(text: &str) -> Option<&str> {
-    const WORDS: &str = "superseded by";
+    ids_after(text, "superseded by", true)
+}
+
+/// `DUPLICATE_RE.search(text).group(1)`.
+fn duplicate_of(text: &str) -> Option<&str> {
+    ids_after(text, "duplicate of", false)
+}
+
+/// `re.search(words + r"\s+(ID(?:\s*,\s*ID)*)", text, re.I).group(1)`, the list part only
+/// with `many`.
+fn ids_after<'a>(text: &'a str, words: &str, many: bool) -> Option<&'a str> {
     for (start, _) in text.char_indices() {
         let mut rest = &text[start..];
         let mut ok = true;
-        for p in WORDS.chars() {
+        for p in words.chars() {
             match rest.chars().next() {
                 Some(c) if (p == ' ' && c == ' ') || (p != ' ' && ignorecase_eq(c, p)) => {
                     rest = &rest[c.len_utf8()..];
@@ -122,7 +132,8 @@ fn superseded_ids(text: &str) -> Option<&str> {
             continue;
         };
         // `(?:\s*,\s*ID)*`
-        while let Some(next) = lstrip(tail).strip_prefix(',')
+        while many
+            && let Some(next) = lstrip(tail).strip_prefix(',')
             && let Some((_, _, t)) = match_id(lstrip(next), true)
         {
             tail = t;
@@ -235,11 +246,17 @@ impl Item {
 pub struct Backlog {
     /// The items of each section, in `SECTIONS` order.
     pub sections: Vec<Vec<Item>>,
+    /// Structural problems found while parsing, with their line.
+    pub errors: Vec<String>,
+    /// (0-based line, name) of the `## ` headings that are not a known section.
+    pub unknown_sections: Vec<(usize, String)>,
 }
 
 impl Backlog {
     pub fn parse(text: &str) -> Self {
         let mut sections: Vec<Vec<Item>> = SECTIONS.iter().map(|_| Vec::new()).collect();
+        let mut errors = Vec::new();
+        let mut unknown_sections = Vec::new();
         let mut section: Option<usize> = None;
         let mut item = false;
         let mut field: Option<String> = None;
@@ -250,6 +267,9 @@ impl Backlog {
                 item = false;
                 field = None;
                 section = SECTIONS.iter().position(|s| *s == name);
+                if section.is_none() {
+                    unknown_sections.push((i, name.to_string()));
+                }
                 continue;
             }
             let Some(s) = section else {
@@ -267,6 +287,11 @@ impl Backlog {
                         fields: Vec::new(),
                     });
                     item = true;
+                } else {
+                    errors.push(format!(
+                        "line {}: item heading must be '### <ID>: <title>'",
+                        i + 1
+                    ));
                 }
                 continue;
             }
@@ -279,19 +304,36 @@ impl Backlog {
             if let Some((name, value)) = field_line(line) {
                 let value = vec![kernel::py::num::strip(value).to_string()];
                 match it.fields.iter_mut().find(|(n, _)| *n == name) {
-                    Some((_, lines)) => *lines = value,
+                    Some((_, lines)) => {
+                        errors.push(format!(
+                            "line {}: {} repeats the field '{name}'",
+                            i + 1,
+                            it.id
+                        ));
+                        *lines = value;
+                    }
                     None => it.fields.push((name.clone(), value)),
                 }
                 field = Some(name);
                 continue;
             }
-            if let Some(name) = &field
-                && let Some((_, lines)) = it.fields.iter_mut().find(|(n, _)| n == name)
-            {
-                lines.push(line.to_string());
+            if let Some(name) = &field {
+                if let Some((_, lines)) = it.fields.iter_mut().find(|(n, _)| n == name) {
+                    lines.push(line.to_string());
+                }
+            } else if !kernel::py::num::strip(line).is_empty() {
+                errors.push(format!(
+                    "line {}: text in {} outside a '- **Field**:' line",
+                    i + 1,
+                    it.id
+                ));
             }
         }
-        Backlog { sections }
+        Backlog {
+            sections,
+            errors,
+            unknown_sections,
+        }
     }
 
     pub fn items(&self) -> impl Iterator<Item = &Item> {
@@ -324,6 +366,153 @@ impl Backlog {
             .filter(|i| i.epic().as_deref() == Some(want.as_str()))
             .filter(|i| include_closed || !i.closed())
             .collect()
+    }
+}
+
+const OPEN_STATUSES: [&str; 3] = ["open", "planned", "in_progress"];
+const CLOSED_STATUSES: [&str; 4] = ["done", "dropped", "duplicate", "superseded"];
+
+impl Backlog {
+    /// `validate()`: the problems of the file, structural ones first.
+    pub fn validate(&self) -> Vec<String> {
+        let mut problems = self.errors.clone();
+        for (line, name) in &self.unknown_sections {
+            problems.push(format!(
+                "line {}: unknown section '## {name}' (expected: {})",
+                line + 1,
+                SECTIONS.join(", ")
+            ));
+        }
+        let mut seen: Vec<(&str, usize)> = Vec::new();
+        let ids: Vec<&str> = self.items().map(|i| i.id.as_str()).collect();
+        for item in self.items() {
+            let where_ = match item.line {
+                Some(line) => format!("line {}: {}", line + 1, item.id),
+                None => item.id.clone(),
+            };
+            let Some(kind) = item.kind() else {
+                problems.push(format!(
+                    "{where_}: id must be BUG-NNN, FEAT-NNN, IMP-NNN, ADJ-NNN or EPIC-NNN"
+                ));
+                continue;
+            };
+            if let Some((_, first)) = seen.iter().find(|(id, _)| *id == item.id) {
+                problems.push(format!(
+                    "{where_}: duplicate id (first at line {})",
+                    first + 1
+                ));
+            } else {
+                seen.push((&item.id, item.line.unwrap_or(0)));
+            }
+            let heading = TYPES.iter().find(|t| t.0 == kind).map_or("", |t| t.2);
+            if !item.closed() && item.section != heading {
+                problems.push(format!("{where_}: a {kind} belongs under '## {heading}'"));
+            }
+
+            let mut required = vec![if kind == "bug" {
+                "Severity"
+            } else {
+                "Priority"
+            }];
+            required.extend(["Status", "Found"]);
+            if kind != "epic" {
+                required.push("Plan");
+            }
+            required.push("Description");
+            if item.closed() {
+                required.push("Closed");
+            }
+            for name in required {
+                if item.get(name).is_empty() {
+                    problems.push(format!("{where_}: missing '- **{name}**:'"));
+                }
+            }
+            let severity = item.get("Severity");
+            if kind == "bug" && !severity.is_empty() && !SEVERITIES.contains(&severity.as_str()) {
+                problems.push(format!(
+                    "{where_}: severity must be one of: {}",
+                    SEVERITIES.join(", ")
+                ));
+            }
+            let priority = item.get("Priority");
+            if kind != "bug" && !priority.is_empty() && !PRIORITIES.contains(&priority.as_str()) {
+                problems.push(format!(
+                    "{where_}: priority must be one of: {}",
+                    PRIORITIES.join(", ")
+                ));
+            }
+
+            let status = item.status();
+            let allowed: &[&str] = if item.closed() {
+                &CLOSED_STATUSES
+            } else {
+                &OPEN_STATUSES
+            };
+            if !status.is_empty() && !allowed.contains(&status.as_str()) {
+                let place = if item.closed() {
+                    "under '## Closed'"
+                } else {
+                    "outside '## Closed'"
+                };
+                problems.push(format!(
+                    "{where_}: status {place} must be one of: {}",
+                    allowed.join(", ")
+                ));
+            }
+            let promoted = status == "planned" || status == "in_progress";
+            if kind == "epic" {
+                if promoted {
+                    problems.push(format!(
+                        "{where_}: an epic is never promoted; its status stays 'open' until it is closed"
+                    ));
+                }
+                if item.plan().is_some() {
+                    problems.push(format!("{where_}: an epic has no plan; promote its items"));
+                }
+                if item.epic().is_some() {
+                    problems.push(format!("{where_}: an epic cannot belong to another epic"));
+                }
+            } else if let Some(epic) = item.epic() {
+                if !ids.contains(&epic.as_str()) {
+                    problems.push(format!("{where_}: epic {epic} is not in the backlog"));
+                } else if id_match(&epic).is_none_or(|(prefix, _)| prefix != "EPIC") {
+                    problems.push(format!("{where_}: {epic} is not an epic"));
+                }
+            }
+            if promoted && item.plan().is_none() {
+                problems.push(format!(
+                    "{where_}: a {status} item needs its plan id in '- **Plan**:'"
+                ));
+            }
+            if status == "duplicate" {
+                let closed = item.get("Closed");
+                match duplicate_of(&closed) {
+                    None => problems.push(format!(
+                        "{where_}: a duplicate needs 'duplicate of <ID>' in '- **Closed**:'"
+                    )),
+                    Some(other) if !ids.contains(&upper(other).as_str()) => {
+                        problems.push(format!("{where_}: duplicate of unknown item {other}"))
+                    }
+                    Some(_) => {}
+                }
+            }
+            if status == "superseded" {
+                let by = item.superseded_by();
+                if by.is_empty() {
+                    problems.push(format!(
+                        "{where_}: a superseded item needs 'superseded by <ID>[, <ID>...]' in '- **Closed**:'"
+                    ));
+                }
+                for other in by {
+                    if !ids.contains(&other.as_str()) {
+                        problems.push(format!("{where_}: superseded by unknown item {other}"));
+                    } else if other == item.id {
+                        problems.push(format!("{where_}: an item cannot supersede itself"));
+                    }
+                }
+            }
+        }
+        problems
     }
 }
 
@@ -433,40 +622,73 @@ impl BacklogFile {
         Ok(Backlog::parse(&read_exact(&self.path)?))
     }
 
-    /// `triage(backlog)`: the open bugs not triaged yet, with the reason, reading the
-    /// project roadmap when there is one.
+    /// `triage(backlog)["untriaged"]`: the open bugs not triaged yet, with the reason,
+    /// reading the project roadmap when there is one.
     pub fn untriaged<'a>(
         &self,
         backlog: &'a Backlog,
     ) -> Result<Vec<(&'a Item, String)>, RoadmapError> {
+        Ok(self.triage(backlog, &[])?.untriaged)
+    }
+
+    /// `triage(backlog, exclude)`.
+    pub fn triage<'a>(
+        &self,
+        backlog: &'a Backlog,
+        exclude: &[String],
+    ) -> Result<Triage<'a>, RoadmapError> {
         let rf = crate::roadmap::RoadmapFile::new(Some(&self.root))?;
         let roadmap = if rf.exists() {
             Some(rf.load(false)?)
         } else {
             None
         };
-        Ok(bug_triage(
+        Ok(triage(
             backlog,
             roadmap.as_ref(),
             &self.blocking_severities,
             &self.bug_deadline,
+            exclude,
         )?)
     }
 }
 
-/// `bug_triage(backlog, roadmap, blocking, deadline)["untriaged"]`: an open bug is untriaged
-/// when its severity is missing or invalid, or, with a deadline, when its severity does not
-/// block new work and it is not in the next release of the roadmap.
+/// `bug_triage(backlog, roadmap, blocking, deadline)["untriaged"]`.
 pub fn bug_triage<'a>(
     backlog: &'a Backlog,
     roadmap: Option<&crate::roadmap::Roadmap>,
     blocking: &Value,
     deadline: &Value,
 ) -> Result<Vec<(&'a Item, String)>, Crash> {
+    Ok(triage(backlog, roadmap, blocking, deadline, &[])?.untriaged)
+}
+
+/// What `bug_triage` returns.
+pub struct Triage<'a> {
+    pub untriaged: Vec<(&'a Item, String)>,
+    pub deadline_checked: bool,
+    pub next_release: Option<String>,
+}
+
+/// `bug_triage(backlog, roadmap, blocking, deadline, exclude)`: an open bug is untriaged
+/// when its severity is missing or invalid, or, with a deadline, when its severity does not
+/// block new work and it is not in the next release of the roadmap. Ids in `exclude` are
+/// skipped.
+pub fn triage<'a>(
+    backlog: &'a Backlog,
+    roadmap: Option<&crate::roadmap::Roadmap>,
+    blocking: &Value,
+    deadline: &Value,
+    exclude: &[String],
+) -> Result<Triage<'a>, Crash> {
+    let exclude: Vec<String> = exclude.iter().map(|i| upper(i)).collect();
     let roadmap = roadmap.filter(|_| deadline.as_str() == Some("next_release"));
     let current = roadmap.and_then(|r| r.current());
     let mut out = Vec::new();
     for bug in backlog.open_items_of("bug") {
+        if exclude.contains(&bug.id) {
+            continue;
+        }
         let severity = bug.get("Severity");
         if !SEVERITIES.contains(&severity.as_str()) {
             let why = if severity.is_empty() {
@@ -497,5 +719,9 @@ pub fn bug_triage<'a>(
             _ => {}
         }
     }
-    Ok(out)
+    Ok(Triage {
+        untriaged: out,
+        deadline_checked: roadmap.is_some(),
+        next_release: current.map(|c| c.version.clone()),
+    })
 }

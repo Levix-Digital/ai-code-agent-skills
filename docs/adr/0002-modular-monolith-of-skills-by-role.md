@@ -19,7 +19,7 @@ The protocol has many roles (product, planner, architect, reviewer, QA, DevOps, 
 
 ## Decision
 
-The repository is a modular monolith: one module per skill, each with a small public interface (its `SKILL.md` and its script commands), and a small shared kernel (`dev-cycle-protocol/project_config.py` for `.dev-cycle.json`, `dev-cycle-protocol/_no_ai.py` for principle 9). Skills talk through files in the project (backlog, roadmap, plans, product docs, ADRs) and documented commands. The gates (`verify_gate.py`) call the role skills' checkers; role skills never call the orchestrator.
+The repository is a modular monolith: one module per skill, each with a small public interface (its `SKILL.md` and its script commands), and a small shared kernel (`project_config` for `.dev-cycle.json`, `_no_ai` for principle 9, both in the engine's kernel). Skills talk through files in the project (backlog, roadmap, plans, product docs, ADRs) and documented commands. The gates (`verify_gate`) call the role skills' checkers; role skills never call the orchestrator.
 
 ## Alternatives Considered
 

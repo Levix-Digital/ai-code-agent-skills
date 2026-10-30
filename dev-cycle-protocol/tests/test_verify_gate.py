@@ -1,10 +1,11 @@
 import json
 import os
-import subprocess
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-SCRIPT = os.path.join(os.path.dirname(HERE), "verify_gate.py")
+sys.path.insert(0, HERE)
+
+from _engine import run_engine  # noqa: E402
 
 README = """# Demo
 
@@ -71,8 +72,7 @@ def make_project(tmp_path, readme=README, mark="x", devops=None):
 
 
 def gate(project, *args):
-    return subprocess.run([sys.executable, SCRIPT, "--dir", project, *args],
-                          capture_output=True, text=True, encoding="utf-8")
+    return run_engine("dev-cycle-protocol", "verify_gate", ["--dir", project, *args])
 
 
 def test_gate_rc_requires_run_and_all_pass(tmp_path):

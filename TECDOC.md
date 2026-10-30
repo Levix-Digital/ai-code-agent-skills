@@ -13,7 +13,7 @@ flowchart LR
     U[User] --> AG[Coding agent]
     AG --> DC["/dev-cycle and dev-cycle-protocol"]
     DC --> R["Role skills: product, planning, design, review, QA, DevOps, docs"]
-    DC --> G["Gates: verify_gate.py"]
+    DC --> G["Gates: verify_gate (engine)"]
     G --> R
     R --> F[("Project files under Git")]
     DC --> PR["pr_sync (engine)"]

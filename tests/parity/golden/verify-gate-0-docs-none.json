@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "================================================================================\n🌱 VERIFYING GATE 0 (PRODUCT BASELINE): project\n================================================================================\n❌ Product documents (product-inception) failed:\n   ❌ docs/product/VISION.md:1: business document not found (create it with check_product.py --init)\n   ❌ docs/product/TECH_SPEC.md:1: technical specification not found (create it with check_product.py --init)\n   \n   ❌ product-inception: 2 error(s), 0 warning(s).\n❌ architecture.style is not set in .dev-cycle.json (software-design).\n❌ Technical documentation index missing (TECDOC.md): create it with architecture-docs.\n❌ No backlog at docs/BACKLOG.md: capture the product's epics and items (plan-memory/backlog.py).\n❌ No roadmap at docs/ROADMAP.md: plan the releases (plan-memory/roadmap.py add-release, assign).\n✅ Secret hygiene check passed.\n--------------------------------------------------------------------------------\n🚨 GATE 0 STATUS: PRODUCT BASELINE INCOMPLETE\n================================================================================\n\n",
+  "stderr": "",
+  "files": {}
+}

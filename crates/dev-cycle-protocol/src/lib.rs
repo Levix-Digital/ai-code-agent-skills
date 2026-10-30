@@ -8,3 +8,4 @@ pub mod pr_model;
 pub mod pr_providers;
 pub mod pr_sync;
 pub mod speckit_setup;
+pub mod verify_gate;

@@ -98,7 +98,7 @@ Fit each item where it belongs: dependencies first, the MVP lean, later releases
 
 ### 🔒 Gate 0: Product Baseline (user)
 ```powershell
-python "<skills_root>/dev-cycle-protocol/verify_gate.py" --gate 0
+"<skills_root>/dev-cycle-protocol/bin/dev-cycle" dev-cycle-protocol verify_gate --gate 0
 ```
 It checks both product documents (`check_product`), the architecture style, the technical docs, a valid backlog with epics, a valid roadmap with a first release, Spec Kit and the constitution when enabled, and secret hygiene. Open questions are listed: answer them, or the user explicitly accepts them as open.
 
@@ -120,7 +120,7 @@ The same steps, written **from the code base**: read the README, the technical d
 |---|---|
 | Create the missing product documents | `"<skills_root>/dev-cycle-protocol/bin/dev-cycle" product-inception check_product --init` |
 | Check the product documents | `"<skills_root>/dev-cycle-protocol/bin/dev-cycle" product-inception check_product [--json]` |
-| Gate 0 | `python "<skills_root>/dev-cycle-protocol/verify_gate.py" --gate 0` |
+| Gate 0 | `"<skills_root>/dev-cycle-protocol/bin/dev-cycle" dev-cycle-protocol verify_gate --gate 0` |
 
 `check_product` reports missing or empty sections, template placeholders or instructions left in place, text not in the configured language and documents over the line limit; open questions are warnings. Configuration (`.dev-cycle.json`):
 ```json

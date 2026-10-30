@@ -1,0 +1,9 @@
+{
+  "project_name": "clean",
+  "backlog": {
+    "blocking_severities": [
+      "critical"
+    ],
+    "bug_deadline": "next_release"
+  }
+}

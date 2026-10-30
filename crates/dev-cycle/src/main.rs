@@ -66,6 +66,11 @@ const COMMANDS: &[(&str, &str, Command)] = &[
         dev_cycle_protocol::speckit_setup::main,
     ),
     (
+        "dev-cycle-protocol",
+        "verify_gate",
+        dev_cycle_protocol::verify_gate::main,
+    ),
+    (
         "gedo-feedback",
         "gedo_feedback",
         gedo_feedback::gedo_feedback::main,

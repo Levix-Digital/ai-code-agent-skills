@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "================================================================================\n🔒 VERIFYING GATE 3 (PLAN APPROVAL): parity\n================================================================================\n✅ Git working tree is clean.\n⚠️ No active plan in {project}/docs/plans. Save the plan with plan-memory in Phase 2 (full path).\n✅ Secret hygiene check passed (no unencrypted credential files detected).\n--------------------------------------------------------------------------------\n🟢 GATE 3 STATUS: READY FOR EXPLICIT USER APPROVAL\n================================================================================\n\n",
+  "stderr": "",
+  "files": {}
+}

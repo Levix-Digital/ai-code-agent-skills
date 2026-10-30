@@ -1,13 +1,12 @@
 import json
 import os
-import subprocess
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SKILL = os.path.dirname(HERE)
-SCRIPT = os.path.join(SKILL, "verify_gate.py")
-sys.path.insert(0, SKILL)
+sys.path.insert(0, HERE)
 
+from _engine import run_engine  # noqa: E402
 from test_verify_gate import make_project  # noqa: E402
 
 BACKLOG = """# Backlog
@@ -49,8 +48,7 @@ def project(tmp_path, severity="high"):
 
 
 def gate(root, *args):
-    return subprocess.run([sys.executable, SCRIPT, "--dir", str(root), *args],
-                          capture_output=True, text=True, encoding="utf-8")
+    return run_engine("dev-cycle-protocol", "verify_gate", ["--dir", str(root), *args])
 
 
 def test_feature_plan_is_blocked_by_an_open_high_bug(tmp_path):

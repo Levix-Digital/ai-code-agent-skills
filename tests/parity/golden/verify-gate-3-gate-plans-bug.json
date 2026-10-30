@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "================================================================================\n🔒 VERIFYING GATE 3 (PLAN APPROVAL): plans\n================================================================================\n✅ Git working tree is clean.\n✅ Active plan found in {project}/docs/plans: 'fix_bug' (2 active/in progress)\n⚠️ Backlog docs/BACKLOG.md has 1 problem(s); run plan-memory/backlog.py validate.\nℹ️ Bug plan; other bugs still come before new work: BUG-002 (high), BUG-005 (high), BUG-003 (not triaged), BUG-004 (not triaged)\n✅ Secret hygiene check passed (no unencrypted credential files detected).\n--------------------------------------------------------------------------------\n🟢 GATE 3 STATUS: READY FOR EXPLICIT USER APPROVAL\n================================================================================\n\n",
+  "stderr": "",
+  "files": {}
+}

@@ -338,3 +338,116 @@ fn run(argv: &[String]) -> Result<u8, Crash> {
     }
     Ok(0)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn model(pairs: &[(&str, &str)]) -> Result<BranchingModel, String> {
+        let mut devops = Dict::new();
+        for (k, v) in pairs {
+            devops.insert(*k, Value::str(*v));
+        }
+        BranchingModel::from_devops(&devops)
+    }
+
+    fn strs(values: &[Value]) -> Vec<String> {
+        values.iter().map(Value::py_str).collect()
+    }
+
+    #[test]
+    fn integration_is_the_default() {
+        let m = model(&[]).expect("valid");
+        assert_eq!(
+            (
+                m.name.as_str(),
+                m.integration.py_str(),
+                m.production.py_str(),
+                m.gate()
+            ),
+            ("integration", "dev".into(), "main".into(), "merge")
+        );
+        assert_eq!(strs(&m.pr_targets()), ["dev", "main"]);
+        assert_eq!(m.rc_branch(Some("1.4.0")).as_deref(), Ok("dev"));
+        let develop = model(&[("integration_branch", "develop")]).expect("valid");
+        assert_eq!(develop.rc_branch(None).as_deref(), Ok("develop"));
+    }
+
+    #[test]
+    fn trunk_works_on_the_production_branch() {
+        let m = model(&[
+            ("branching", "trunk"),
+            ("integration_branch", "dev"),
+            ("production_branch", "trunk"),
+        ])
+        .expect("valid");
+        assert_eq!(m.integration.py_str(), "trunk");
+        assert_eq!(strs(&m.long_lived()), ["trunk"]);
+        assert_eq!(strs(&m.pr_targets()), ["trunk"]);
+        assert_eq!(m.rc_branch(Some("1.4.0")).as_deref(), Ok("trunk"));
+        assert_eq!(m.gate(), "promote");
+    }
+
+    #[test]
+    fn release_branches_cut_a_branch_per_minor_version() {
+        let m = model(&[("branching", "release-branches")]).expect("valid");
+        assert_eq!(
+            (m.integration.py_str().as_str(), m.gate()),
+            ("main", "promote")
+        );
+        assert_eq!(strs(&m.pr_targets()), ["main", "release/*"]);
+        assert_eq!(m.rc_branch(Some("1.4.0")).as_deref(), Ok("release/1.4"));
+        assert_eq!(m.rc_branch(Some("v2.0.3")).as_deref(), Ok("release/2.0"));
+        let maint = model(&[
+            ("branching", "release-branches"),
+            ("release_branch_prefix", "maint"),
+        ])
+        .expect("valid");
+        assert_eq!(maint.release_branch("3.1.0").as_deref(), Ok("maint/3.1"));
+        assert!(m.rc_branch(None).is_err());
+    }
+
+    #[test]
+    fn unknown_model_is_refused() {
+        let e = model(&[("branching", "gitflow")]).err().unwrap_or_default();
+        assert!(e.contains("gitflow"), "{e}");
+    }
+
+    #[test]
+    fn every_model_describes_each_question() {
+        for name in ["integration", "trunk", "release-branches"] {
+            let data = model(&[("branching", name)]).expect("valid").describe();
+            for key in [
+                "long_lived",
+                "work",
+                "pull_requests_into",
+                "release_candidate",
+                "release_gate",
+                "hotfix",
+            ] {
+                assert!(data.contains_key(key), "{name}: {key}");
+            }
+        }
+    }
+
+    #[test]
+    fn detect_from_branch_names() {
+        let main = Value::str("main");
+        let model_of = |names: &[&str]| {
+            let names: Vec<String> = names.iter().map(|n| n.to_string()).collect();
+            detect(&names, &main)
+        };
+        let get = |d: &Dict, k: &str| d.get_or_none(k).clone();
+        assert!(
+            get(&model_of(&["main", "origin/release/1.2"]), "model")
+                .py_eq(&Value::str("release-branches"))
+        );
+        let found = model_of(&["main", "origin/develop", "feat/x"]);
+        assert!(get(&found, "model").py_eq(&Value::str("integration")));
+        assert!(get(&found, "integration_branch").py_eq(&Value::str("develop")));
+        assert!(
+            get(&model_of(&["main", "origin/main", "fix/y"]), "model").py_eq(&Value::str("trunk"))
+        );
+        assert!(matches!(get(&model_of(&[]), "model"), Value::Null));
+    }
+}

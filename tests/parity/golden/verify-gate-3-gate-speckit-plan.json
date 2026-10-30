@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "================================================================================\n🔒 VERIFYING GATE 3 (PLAN APPROVAL): speckit\n================================================================================\n✅ Git working tree is clean.\n✅ Active plan found in {project}/docs/plans: 'feat_spec' (1 active/in progress)\n❌ specs/001-login/spec.md has 2 open [NEEDS CLARIFICATION] marker(s): run /speckit-clarify.\n⚠️ specs/001-login/plan.md has no 'Dev Cycle Protocol' sections (is the dev-cycle preset installed?).\n⚠️ Current branch 'main' is not a Spec Kit feature branch (feat/NNN-slug).\n✅ Spec Kit setup (speckit_setup.py status) passed.    <MASK>\n❌ Constitution (constitution.py check) failed:\n   ❌ .specify/memory/constitution.md is missing: run constitution.py generate\n   ❌ constitution: 1 problem(s).\n✅ Secret hygiene check passed (no unencrypted credential files detected).\n--------------------------------------------------------------------------------\n🚨 GATE 3 STATUS: BLOCKED BY COMPLIANCE CHECKS\n================================================================================\n\n",
+  "stderr": "",
+  "files": {}
+}

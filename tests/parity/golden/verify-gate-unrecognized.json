@@ -1,0 +1,6 @@
+{
+  "exit": 2,
+  "stdout": "",
+  "stderr": "usage: verify_gate.py [-h] --gate {0,3,8,rc,gate0,gate3,gate8,gaterc} [--dir DIR] [--project PROJECT] [--run RUN] [--accept-open-bugs REASON]\nverify_gate.py: error: unrecognized arguments: --bogus\n",
+  "files": {}
+}

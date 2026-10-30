@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "================================================================================\n✅ VERIFYING RELEASE CANDIDATE ACCEPTANCE: Baseline (no run)\n================================================================================\n❌ --run <rc tag> is required (the run started with quality-assurance/manual_tests.py start-run).\n================================================================================\n\n",
+  "stderr": "",
+  "files": {}
+}

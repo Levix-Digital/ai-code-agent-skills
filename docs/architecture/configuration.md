@@ -1,7 +1,7 @@
 ---
 title: Project Configuration and Shared Kernel
 summary: The .dev-cycle.json configuration with its defaults and validation, and the attribution guard every posted text passes.
-code: [crates/kernel/src/project_config.rs, crates/kernel/src/no_ai.rs, crates/kernel/src/py, dev-cycle-protocol/project_config.py, dev-cycle-protocol/_no_ai.py]
+code: [crates/kernel/src/project_config.rs, crates/kernel/src/no_ai.rs, crates/kernel/src/py, dev-cycle-protocol/project_config.py]
 ---
 
 # Project Configuration and Shared Kernel
@@ -16,7 +16,7 @@ Owns the project's configuration file `.dev-cycle.json` (defaults, validation, m
 
 - `crates/kernel/src/project_config.rs` (engine command `dev-cycle-protocol project_config`): `load_project_config()` finds the manifest from any folder of the repository and merges it over the defaults; `validate()` lists problems; `migrated()` rewrites legacy keys. Translated from `dev-cycle-protocol/project_config.py`, which stays for the Python scripts that import it until they are translated (IMP-005).
 - `crates/kernel/src/py`: the Python behavior the translated commands keep: `json` (CPython's decoder messages, `dumps`), `argparse` (prefix matching, help layout, errors), `textwrap`, `os.path`, and `str()`/`repr()` of values.
-- `crates/kernel/src/no_ai.rs` (engine command `dev-cycle-protocol _no_ai`): `findings()` and `check()` detect AI attribution (trailers, footers, session links, agent names used as authors) while allowing technical references and configured `allowed_terms`. `dev-cycle-protocol/_no_ai.py` stays for `verify_gate.py`, which imports it.
+- `crates/kernel/src/no_ai.rs` (engine command `dev-cycle-protocol _no_ai`): `findings()` and `check()` detect AI attribution (trailers, footers, session links, agent names used as authors) while allowing technical references and configured `allowed_terms`.
 - `crates/kernel/src/py/re.rs`: the part of Python's `re` the guard and the pull request triage use (lookaround, Python's `\w`, `\s` and `\b`, `IGNORECASE` as `sre` applies it).
 
 ## Behavior
