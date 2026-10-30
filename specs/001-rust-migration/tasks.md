@@ -68,7 +68,7 @@ description: "Tasks of the Rust migration, one per milestone of the envelope pla
 
 **Purpose**: The protocol's own scripts.
 
-- [ ] T020 [US1] M20: translate `constitution` and swap its callers
+- [x] T020 [US1] M20: translate `constitution` and swap its callers
 - [ ] T021 [US1] M21: translate `speckit_setup` and swap its callers
 - [ ] T022 [US1] M22: translate `inspect_project` and swap its callers
 - [ ] T023 [US1] M23: translate `pr_sync` and swap its callers

@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ .specify/memory/constitution.md is missing: run constitution.py generate\n❌ constitution: 1 problem(s).\n",
+  "stderr": "",
+  "files": {}
+}

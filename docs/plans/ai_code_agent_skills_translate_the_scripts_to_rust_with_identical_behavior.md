@@ -7,7 +7,7 @@ version: v2.10.0
 status: in_progress
 author: Levi Silveira
 created_at: '2026-10-27T18:17:46'
-updated_at: '2026-10-29T23:39:58'
+updated_at: '2026-10-30T01:23:10'
 session_id: null
 tags:
 - rust
@@ -97,7 +97,9 @@ milestones:
   done_at: '2026-10-29'
   by: Levi Silveira
 - name: M20 constitution
-  done: false
+  done: true
+  done_at: '2026-10-30'
+  by: Levi Silveira
 - name: M21 speckit_setup
   done: false
 - name: M22 inspect_project
@@ -216,6 +218,9 @@ status_log:
 - at: '2026-10-29T23:39:58'
   by: Levi Silveira
   note: 'Milestone ''M19 roadmap'' completed: roadmap on the engine (subcommands in the kernel argparse, backlog reader); 30 parity cases; fuzz 1,500 runs on 3.13 and 800 on 3.10 with 0 differences; gates match main'
+- at: '2026-10-30T01:23:10'
+  by: Levi Silveira
+  note: 'Milestone ''M20 constitution'' completed: constitution on the engine (new dev-cycle-protocol crate, SHA-256 in the kernel, DEV_CYCLE_SKILLS_ROOT set by the launchers); 14 parity cases; fuzz 1,500 runs on 3.13 and 800 on 3.10 with 0 differences; gates match main'
 ---
 
 # Translate the scripts to Rust with identical behavior

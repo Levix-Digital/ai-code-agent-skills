@@ -114,5 +114,141 @@
     "rust": ["dev-cycle-protocol", "project_config"],
     "args": ["--dir"],
     "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "constitution-generate-stdout",
+    "python": "dev-cycle-protocol/constitution.py",
+    "rust": ["dev-cycle-protocol", "constitution"],
+    "args": ["generate", "--stdout", "--dir", "{project}"],
+    "fixture": "constitution-sources",
+    "git": true,
+    "masks": ["[0-9a-f]{64}", "[0-9]{4}-[0-9]{2}-[0-9]{2}", "(?s)## Core Principles\\n.*?\\n## (?:Product|Architecture|Governance)"],
+    "seps": ["\\.specify[\\\\/]memory[\\\\/]constitution[.a-z-]*md"]
+  },
+  {
+    "name": "constitution-generate",
+    "python": "dev-cycle-protocol/constitution.py",
+    "rust": ["dev-cycle-protocol", "constitution"],
+    "args": ["generate", "--dir", "{project}"],
+    "fixture": "constitution-sources",
+    "git": true,
+    "masks": ["[0-9a-f]{64}", "[0-9]{4}-[0-9]{2}-[0-9]{2}", "(?s)## Core Principles\\n.*?\\n## (?:Product|Architecture|Governance)"],
+    "seps": ["\\.specify[\\\\/]memory[\\\\/]constitution[.a-z-]*md"]
+  },
+  {
+    "name": "constitution-check-missing",
+    "python": "dev-cycle-protocol/constitution.py",
+    "rust": ["dev-cycle-protocol", "constitution"],
+    "args": ["check", "--dir", "{project}"],
+    "fixture": "constitution-sources",
+    "git": true,
+    "masks": ["[0-9a-f]{64}", "[0-9]{4}-[0-9]{2}-[0-9]{2}", "(?s)## Core Principles\\n.*?\\n## (?:Product|Architecture|Governance)"],
+    "seps": ["\\.specify[\\\\/]memory[\\\\/]constitution[.a-z-]*md"]
+  },
+  {
+    "name": "constitution-generate-update",
+    "python": "dev-cycle-protocol/constitution.py",
+    "rust": ["dev-cycle-protocol", "constitution"],
+    "args": ["generate", "--dir", "{project}"],
+    "fixture": "constitution-old",
+    "git": true,
+    "masks": ["[0-9a-f]{64}", "[0-9]{4}-[0-9]{2}-[0-9]{2}", "(?s)## Core Principles\\n.*?\\n## (?:Product|Architecture|Governance)"],
+    "seps": ["\\.specify[\\\\/]memory[\\\\/]constitution[.a-z-]*md"]
+  },
+  {
+    "name": "constitution-check-old",
+    "python": "dev-cycle-protocol/constitution.py",
+    "rust": ["dev-cycle-protocol", "constitution"],
+    "args": ["check", "--dir", "{project}"],
+    "fixture": "constitution-old",
+    "git": true,
+    "masks": ["[0-9a-f]{64}", "[0-9]{4}-[0-9]{2}-[0-9]{2}", "(?s)## Core Principles\\n.*?\\n## (?:Product|Architecture|Governance)"],
+    "seps": ["\\.specify[\\\\/]memory[\\\\/]constitution[.a-z-]*md"]
+  },
+  {
+    "name": "constitution-check-template",
+    "python": "dev-cycle-protocol/constitution.py",
+    "rust": ["dev-cycle-protocol", "constitution"],
+    "args": ["check", "--dir", "{project}"],
+    "fixture": "constitution-template",
+    "git": true,
+    "masks": ["[0-9a-f]{64}", "[0-9]{4}-[0-9]{2}-[0-9]{2}", "(?s)## Core Principles\\n.*?\\n## (?:Product|Architecture|Governance)"],
+    "seps": ["\\.specify[\\\\/]memory[\\\\/]constitution[.a-z-]*md"]
+  },
+  {
+    "name": "constitution-generate-template",
+    "python": "dev-cycle-protocol/constitution.py",
+    "rust": ["dev-cycle-protocol", "constitution"],
+    "args": ["generate", "--dir", "{project}"],
+    "fixture": "constitution-template",
+    "git": true,
+    "masks": ["[0-9a-f]{64}", "[0-9]{4}-[0-9]{2}-[0-9]{2}", "(?s)## Core Principles\\n.*?\\n## (?:Product|Architecture|Governance)"],
+    "seps": ["\\.specify[\\\\/]memory[\\\\/]constitution[.a-z-]*md"]
+  },
+  {
+    "name": "constitution-check-hand",
+    "python": "dev-cycle-protocol/constitution.py",
+    "rust": ["dev-cycle-protocol", "constitution"],
+    "args": ["check", "--dir", "{project}"],
+    "fixture": "constitution-hand",
+    "git": true,
+    "masks": ["[0-9a-f]{64}", "[0-9]{4}-[0-9]{2}-[0-9]{2}", "(?s)## Core Principles\\n.*?\\n## (?:Product|Architecture|Governance)"],
+    "seps": ["\\.specify[\\\\/]memory[\\\\/]constitution[.a-z-]*md"]
+  },
+  {
+    "name": "constitution-generate-hand",
+    "python": "dev-cycle-protocol/constitution.py",
+    "rust": ["dev-cycle-protocol", "constitution"],
+    "args": ["generate", "--dir", "{project}"],
+    "fixture": "constitution-hand",
+    "git": true,
+    "masks": ["[0-9a-f]{64}", "[0-9]{4}-[0-9]{2}-[0-9]{2}", "(?s)## Core Principles\\n.*?\\n## (?:Product|Architecture|Governance)"],
+    "seps": ["\\.specify[\\\\/]memory[\\\\/]constitution[.a-z-]*md"]
+  },
+  {
+    "name": "constitution-generate-replace",
+    "python": "dev-cycle-protocol/constitution.py",
+    "rust": ["dev-cycle-protocol", "constitution"],
+    "args": ["generate", "--replace-hand-written", "--dir", "{project}"],
+    "fixture": "constitution-hand",
+    "git": true,
+    "masks": ["[0-9a-f]{64}", "[0-9]{4}-[0-9]{2}-[0-9]{2}", "(?s)## Core Principles\\n.*?\\n## (?:Product|Architecture|Governance)"],
+    "seps": ["\\.specify[\\\\/]memory[\\\\/]constitution[.a-z-]*md"]
+  },
+  {
+    "name": "constitution-check-no-speckit",
+    "python": "dev-cycle-protocol/constitution.py",
+    "rust": ["dev-cycle-protocol", "constitution"],
+    "args": ["check", "--dir", "{project}"],
+    "fixture": "product-complete",
+    "git": true,
+    "masks": ["[0-9a-f]{64}", "[0-9]{4}-[0-9]{2}-[0-9]{2}", "(?s)## Core Principles\\n.*?\\n## (?:Product|Architecture|Governance)"],
+    "seps": ["\\.specify[\\\\/]memory[\\\\/]constitution[.a-z-]*md"]
+  },
+  {
+    "name": "constitution-generate-no-speckit",
+    "python": "dev-cycle-protocol/constitution.py",
+    "rust": ["dev-cycle-protocol", "constitution"],
+    "args": ["generate", "--dir", "{project}"],
+    "fixture": "product-complete",
+    "git": true,
+    "masks": ["[0-9a-f]{64}", "[0-9]{4}-[0-9]{2}-[0-9]{2}", "(?s)## Core Principles\\n.*?\\n## (?:Product|Architecture|Governance)"],
+    "seps": ["\\.specify[\\\\/]memory[\\\\/]constitution[.a-z-]*md"]
+  },
+  {
+    "name": "constitution-help",
+    "python": "dev-cycle-protocol/constitution.py",
+    "rust": ["dev-cycle-protocol", "constitution"],
+    "args": ["--help"],
+    "env": {"COLUMNS": "80"},
+    "seps": ["\\.specify[\\\\/]memory[\\\\/]constitution[.a-z-]*md"]
+  },
+  {
+    "name": "constitution-bad-command",
+    "python": "dev-cycle-protocol/constitution.py",
+    "rust": ["dev-cycle-protocol", "constitution"],
+    "args": ["validate"],
+    "env": {"COLUMNS": "80"},
+    "seps": ["\\.specify[\\\\/]memory[\\\\/]constitution[.a-z-]*md"]
   }
 ]

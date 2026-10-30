@@ -14,6 +14,7 @@ product-inception.workspace = true
 user-docs.workspace = true
 quality-assurance.workspace = true
 devops-release.workspace = true
+dev-cycle-protocol.workspace = true
 plan-memory.workspace = true
 software-design.workspace = true
 

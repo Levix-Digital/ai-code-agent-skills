@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ Spec Kit is not initialized (.specify/ missing): run speckit_setup.py init first\n",
+  "stderr": "",
+  "files": {}
+}

@@ -1,0 +1,6 @@
+{
+  "exit": 2,
+  "stdout": "",
+  "stderr": "usage: constitution.py [-h] [--dir DIR] [--stdout] [--replace-hand-written]\n                       {generate,check}\nconstitution.py: error: argument command: invalid choice: 'validate' (choose from 'generate', 'check')\n",
+  "files": {}
+}

@@ -90,6 +90,7 @@ ENGINE_CHECKERS = {
     ("devops-release", "branching.py"),
     ("plan-memory", "list_plans.py"),
     ("plan-memory", "roadmap.py"),
+    ("dev-cycle-protocol", "constitution.py"),
 }
 ENGINE_BIN = os.path.join(SKILLS_ROOT, "dev-cycle-protocol", "bin")
 
@@ -128,8 +129,10 @@ def run_checker(skill: str, script: str, args: list) -> tuple:
         command = [sys.executable, path, *args]
     else:
         return None, f"{skill}/{script} not installed"
+    # The engine reads the skills' files from this skills folder, as the scripts do.
+    env = {**os.environ, "DEV_CYCLE_SKILLS_ROOT": SKILLS_ROOT}
     res = subprocess.run(command, capture_output=True, text=True,
-                         encoding="utf-8", errors="replace")
+                         encoding="utf-8", errors="replace", env=env)
     return res.returncode, (res.stdout + res.stderr).strip()
 
 

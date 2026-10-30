@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ .specify/memory/constitution.md is hand-written. Move its principles into the sources first (constraints and non-functional requirements to TECH_SPEC.md, decisions to ADRs, general design rules as a suggestion for software-design), then run generate --replace-hand-written; a copy is kept.\n",
+  "stderr": "",
+  "files": {}
+}
