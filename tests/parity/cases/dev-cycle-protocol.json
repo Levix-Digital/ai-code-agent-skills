@@ -1174,7 +1174,7 @@
     "args": ["--help"],
     "env": {"COLUMNS": "400"},
     "masks": ["\"uv\": (?:true|false)", "Decide whether to use Spec Kit (?:for the detail of features \\(asked once\\)|\\(needs uv: https://docs\\.astral\\.sh/uv/\\))", "no decision recorded(?:; uv is not installed)?"],
-    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify[\\\\/]memory[\\\\/]constitution[.a-z-]*md"]
+    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify(?:\\\\\\\\|[\\\\/])memory(?:\\\\\\\\|[\\\\/])constitution[.a-z-]*md"]
   },
   {
     "name": "onboard-diagnose-help",
@@ -1183,7 +1183,7 @@
     "args": ["diagnose", "--help"],
     "env": {"COLUMNS": "400"},
     "masks": ["\"uv\": (?:true|false)", "Decide whether to use Spec Kit (?:for the detail of features \\(asked once\\)|\\(needs uv: https://docs\\.astral\\.sh/uv/\\))", "no decision recorded(?:; uv is not installed)?"],
-    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify[\\\\/]memory[\\\\/]constitution[.a-z-]*md"]
+    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify(?:\\\\\\\\|[\\\\/])memory(?:\\\\\\\\|[\\\\/])constitution[.a-z-]*md"]
   },
   {
     "name": "onboard-no-command",
@@ -1192,7 +1192,7 @@
     "args": [],
     "env": {"COLUMNS": "400"},
     "masks": ["\"uv\": (?:true|false)", "Decide whether to use Spec Kit (?:for the detail of features \\(asked once\\)|\\(needs uv: https://docs\\.astral\\.sh/uv/\\))", "no decision recorded(?:; uv is not installed)?"],
-    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify[\\\\/]memory[\\\\/]constitution[.a-z-]*md"]
+    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify(?:\\\\\\\\|[\\\\/])memory(?:\\\\\\\\|[\\\\/])constitution[.a-z-]*md"]
   },
   {
     "name": "onboard-unknown-command",
@@ -1201,7 +1201,7 @@
     "args": ["nope"],
     "env": {"COLUMNS": "400"},
     "masks": ["\"uv\": (?:true|false)", "Decide whether to use Spec Kit (?:for the detail of features \\(asked once\\)|\\(needs uv: https://docs\\.astral\\.sh/uv/\\))", "no decision recorded(?:; uv is not installed)?"],
-    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify[\\\\/]memory[\\\\/]constitution[.a-z-]*md"]
+    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify(?:\\\\\\\\|[\\\\/])memory(?:\\\\\\\\|[\\\\/])constitution[.a-z-]*md"]
   },
   {
     "name": "onboard-write-config-without-file",
@@ -1210,7 +1210,7 @@
     "args": ["write-config"],
     "env": {"COLUMNS": "400"},
     "masks": ["\"uv\": (?:true|false)", "Decide whether to use Spec Kit (?:for the detail of features \\(asked once\\)|\\(needs uv: https://docs\\.astral\\.sh/uv/\\))", "no decision recorded(?:; uv is not installed)?"],
-    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify[\\\\/]memory[\\\\/]constitution[.a-z-]*md"]
+    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify(?:\\\\\\\\|[\\\\/])memory(?:\\\\\\\\|[\\\\/])constitution[.a-z-]*md"]
   },
   {
     "name": "onboard-empty-new",
@@ -1219,7 +1219,7 @@
     "args": ["diagnose", "--dir", "{project}"],
     "env": {"COLUMNS": "400"},
     "masks": ["\"uv\": (?:true|false)", "Decide whether to use Spec Kit (?:for the detail of features \\(asked once\\)|\\(needs uv: https://docs\\.astral\\.sh/uv/\\))", "no decision recorded(?:; uv is not installed)?"],
-    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify[\\\\/]memory[\\\\/]constitution[.a-z-]*md"]
+    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify(?:\\\\\\\\|[\\\\/])memory(?:\\\\\\\\|[\\\\/])constitution[.a-z-]*md"]
   },
   {
     "name": "onboard-empty-new-idea-json",
@@ -1228,7 +1228,7 @@
     "args": ["diagnose", "--json", "--request", "  an app where families keep their photos  ", "--dir", "{project}"],
     "env": {"COLUMNS": "400"},
     "masks": ["\"uv\": (?:true|false)", "Decide whether to use Spec Kit (?:for the detail of features \\(asked once\\)|\\(needs uv: https://docs\\.astral\\.sh/uv/\\))", "no decision recorded(?:; uv is not installed)?"],
-    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify[\\\\/]memory[\\\\/]constitution[.a-z-]*md"]
+    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify(?:\\\\\\\\|[\\\\/])memory(?:\\\\\\\\|[\\\\/])constitution[.a-z-]*md"]
   },
   {
     "name": "onboard-empty-propose",
@@ -1237,7 +1237,7 @@
     "args": ["propose-config"],
     "env": {"COLUMNS": "400"},
     "masks": ["\"uv\": (?:true|false)", "Decide whether to use Spec Kit (?:for the detail of features \\(asked once\\)|\\(needs uv: https://docs\\.astral\\.sh/uv/\\))", "no decision recorded(?:; uv is not installed)?"],
-    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify[\\\\/]memory[\\\\/]constitution[.a-z-]*md"]
+    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify(?:\\\\\\\\|[\\\\/])memory(?:\\\\\\\\|[\\\\/])constitution[.a-z-]*md"]
   },
   {
     "name": "onboard-code",
@@ -1248,7 +1248,7 @@
     "git": true,
     "env": {"COLUMNS": "400"},
     "masks": ["\"uv\": (?:true|false)", "Decide whether to use Spec Kit (?:for the detail of features \\(asked once\\)|\\(needs uv: https://docs\\.astral\\.sh/uv/\\))", "no decision recorded(?:; uv is not installed)?"],
-    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify[\\\\/]memory[\\\\/]constitution[.a-z-]*md"]
+    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify(?:\\\\\\\\|[\\\\/])memory(?:\\\\\\\\|[\\\\/])constitution[.a-z-]*md"]
   },
   {
     "name": "onboard-code-json",
@@ -1259,7 +1259,7 @@
     "git": true,
     "env": {"COLUMNS": "400"},
     "masks": ["\"uv\": (?:true|false)", "Decide whether to use Spec Kit (?:for the detail of features \\(asked once\\)|\\(needs uv: https://docs\\.astral\\.sh/uv/\\))", "no decision recorded(?:; uv is not installed)?"],
-    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify[\\\\/]memory[\\\\/]constitution[.a-z-]*md"]
+    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify(?:\\\\\\\\|[\\\\/])memory(?:\\\\\\\\|[\\\\/])constitution[.a-z-]*md"]
   },
   {
     "name": "onboard-code-propose",
@@ -1270,7 +1270,7 @@
     "git": true,
     "env": {"COLUMNS": "400"},
     "masks": ["\"uv\": (?:true|false)", "Decide whether to use Spec Kit (?:for the detail of features \\(asked once\\)|\\(needs uv: https://docs\\.astral\\.sh/uv/\\))", "no decision recorded(?:; uv is not installed)?"],
-    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify[\\\\/]memory[\\\\/]constitution[.a-z-]*md"]
+    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify(?:\\\\\\\\|[\\\\/])memory(?:\\\\\\\\|[\\\\/])constitution[.a-z-]*md"]
   },
   {
     "name": "onboard-code-propose-json",
@@ -1281,7 +1281,7 @@
     "git": true,
     "env": {"COLUMNS": "400"},
     "masks": ["\"uv\": (?:true|false)", "Decide whether to use Spec Kit (?:for the detail of features \\(asked once\\)|\\(needs uv: https://docs\\.astral\\.sh/uv/\\))", "no decision recorded(?:; uv is not installed)?", "\"file\": \"[^\"]*\""],
-    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify[\\\\/]memory[\\\\/]constitution[.a-z-]*md"]
+    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify(?:\\\\\\\\|[\\\\/])memory(?:\\\\\\\\|[\\\\/])constitution[.a-z-]*md"]
   },
   {
     "name": "onboard-code-write",
@@ -1292,7 +1292,7 @@
     "git": true,
     "env": {"COLUMNS": "400"},
     "masks": ["\"uv\": (?:true|false)", "Decide whether to use Spec Kit (?:for the detail of features \\(asked once\\)|\\(needs uv: https://docs\\.astral\\.sh/uv/\\))", "no decision recorded(?:; uv is not installed)?"],
-    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify[\\\\/]memory[\\\\/]constitution[.a-z-]*md"]
+    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify(?:\\\\\\\\|[\\\\/])memory(?:\\\\\\\\|[\\\\/])constitution[.a-z-]*md"]
   },
   {
     "name": "onboard-code-write-array",
@@ -1303,7 +1303,7 @@
     "git": true,
     "env": {"COLUMNS": "400"},
     "masks": ["\"uv\": (?:true|false)", "Decide whether to use Spec Kit (?:for the detail of features \\(asked once\\)|\\(needs uv: https://docs\\.astral\\.sh/uv/\\))", "no decision recorded(?:; uv is not installed)?"],
-    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify[\\\\/]memory[\\\\/]constitution[.a-z-]*md"]
+    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify(?:\\\\\\\\|[\\\\/])memory(?:\\\\\\\\|[\\\\/])constitution[.a-z-]*md"]
   },
   {
     "name": "onboard-code-write-broken",
@@ -1314,7 +1314,7 @@
     "git": true,
     "env": {"COLUMNS": "400"},
     "masks": ["\"uv\": (?:true|false)", "Decide whether to use Spec Kit (?:for the detail of features \\(asked once\\)|\\(needs uv: https://docs\\.astral\\.sh/uv/\\))", "no decision recorded(?:; uv is not installed)?"],
-    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify[\\\\/]memory[\\\\/]constitution[.a-z-]*md"]
+    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify(?:\\\\\\\\|[\\\\/])memory(?:\\\\\\\\|[\\\\/])constitution[.a-z-]*md"]
   },
   {
     "name": "onboard-code-write-missing",
@@ -1325,7 +1325,7 @@
     "git": true,
     "env": {"COLUMNS": "400"},
     "masks": ["\"uv\": (?:true|false)", "Decide whether to use Spec Kit (?:for the detail of features \\(asked once\\)|\\(needs uv: https://docs\\.astral\\.sh/uv/\\))", "no decision recorded(?:; uv is not installed)?"],
-    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify[\\\\/]memory[\\\\/]constitution[.a-z-]*md"]
+    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify(?:\\\\\\\\|[\\\\/])memory(?:\\\\\\\\|[\\\\/])constitution[.a-z-]*md"]
   },
   {
     "name": "onboard-code-create-branch",
@@ -1336,7 +1336,7 @@
     "git": true,
     "env": {"COLUMNS": "400"},
     "masks": ["\"uv\": (?:true|false)", "Decide whether to use Spec Kit (?:for the detail of features \\(asked once\\)|\\(needs uv: https://docs\\.astral\\.sh/uv/\\))", "no decision recorded(?:; uv is not installed)?"],
-    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify[\\\\/]memory[\\\\/]constitution[.a-z-]*md"]
+    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify(?:\\\\\\\\|[\\\\/])memory(?:\\\\\\\\|[\\\\/])constitution[.a-z-]*md"]
   },
   {
     "name": "onboard-code-set-attribution",
@@ -1347,7 +1347,7 @@
     "git": true,
     "env": {"COLUMNS": "400"},
     "masks": ["\"uv\": (?:true|false)", "Decide whether to use Spec Kit (?:for the detail of features \\(asked once\\)|\\(needs uv: https://docs\\.astral\\.sh/uv/\\))", "no decision recorded(?:; uv is not installed)?"],
-    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify[\\\\/]memory[\\\\/]constitution[.a-z-]*md"]
+    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify(?:\\\\\\\\|[\\\\/])memory(?:\\\\\\\\|[\\\\/])constitution[.a-z-]*md"]
   },
   {
     "name": "onboard-code-without-git",
@@ -1357,7 +1357,7 @@
     "fixture": "onboard-code",
     "env": {"COLUMNS": "400"},
     "masks": ["\"uv\": (?:true|false)", "Decide whether to use Spec Kit (?:for the detail of features \\(asked once\\)|\\(needs uv: https://docs\\.astral\\.sh/uv/\\))", "no decision recorded(?:; uv is not installed)?"],
-    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify[\\\\/]memory[\\\\/]constitution[.a-z-]*md"]
+    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify(?:\\\\\\\\|[\\\\/])memory(?:\\\\\\\\|[\\\\/])constitution[.a-z-]*md"]
   },
   {
     "name": "onboard-code-without-git-create-branch",
@@ -1367,7 +1367,7 @@
     "fixture": "onboard-code",
     "env": {"COLUMNS": "400"},
     "masks": ["\"uv\": (?:true|false)", "Decide whether to use Spec Kit (?:for the detail of features \\(asked once\\)|\\(needs uv: https://docs\\.astral\\.sh/uv/\\))", "no decision recorded(?:; uv is not installed)?"],
-    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify[\\\\/]memory[\\\\/]constitution[.a-z-]*md"]
+    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify(?:\\\\\\\\|[\\\\/])memory(?:\\\\\\\\|[\\\\/])constitution[.a-z-]*md"]
   },
   {
     "name": "onboard-configured-json",
@@ -1378,7 +1378,7 @@
     "git": true,
     "env": {"COLUMNS": "400"},
     "masks": ["\"uv\": (?:true|false)", "Decide whether to use Spec Kit (?:for the detail of features \\(asked once\\)|\\(needs uv: https://docs\\.astral\\.sh/uv/\\))", "no decision recorded(?:; uv is not installed)?"],
-    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify[\\\\/]memory[\\\\/]constitution[.a-z-]*md"]
+    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify(?:\\\\\\\\|[\\\\/])memory(?:\\\\\\\\|[\\\\/])constitution[.a-z-]*md"]
   },
   {
     "name": "onboard-configured",
@@ -1389,7 +1389,7 @@
     "git": true,
     "env": {"COLUMNS": "400"},
     "masks": ["\"uv\": (?:true|false)", "Decide whether to use Spec Kit (?:for the detail of features \\(asked once\\)|\\(needs uv: https://docs\\.astral\\.sh/uv/\\))", "no decision recorded(?:; uv is not installed)?"],
-    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify[\\\\/]memory[\\\\/]constitution[.a-z-]*md"]
+    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify(?:\\\\\\\\|[\\\\/])memory(?:\\\\\\\\|[\\\\/])constitution[.a-z-]*md"]
   },
   {
     "name": "onboard-configured-propose",
@@ -1400,7 +1400,7 @@
     "git": true,
     "env": {"COLUMNS": "400"},
     "masks": ["\"uv\": (?:true|false)", "Decide whether to use Spec Kit (?:for the detail of features \\(asked once\\)|\\(needs uv: https://docs\\.astral\\.sh/uv/\\))", "no decision recorded(?:; uv is not installed)?"],
-    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify[\\\\/]memory[\\\\/]constitution[.a-z-]*md"]
+    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify(?:\\\\\\\\|[\\\\/])memory(?:\\\\\\\\|[\\\\/])constitution[.a-z-]*md"]
   },
   {
     "name": "onboard-configured-create-branch",
@@ -1411,7 +1411,7 @@
     "git": true,
     "env": {"COLUMNS": "400"},
     "masks": ["\"uv\": (?:true|false)", "Decide whether to use Spec Kit (?:for the detail of features \\(asked once\\)|\\(needs uv: https://docs\\.astral\\.sh/uv/\\))", "no decision recorded(?:; uv is not installed)?"],
-    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify[\\\\/]memory[\\\\/]constitution[.a-z-]*md"]
+    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify(?:\\\\\\\\|[\\\\/])memory(?:\\\\\\\\|[\\\\/])constitution[.a-z-]*md"]
   },
   {
     "name": "onboard-configured-write-conflict",
@@ -1422,7 +1422,7 @@
     "git": true,
     "env": {"COLUMNS": "400"},
     "masks": ["\"uv\": (?:true|false)", "Decide whether to use Spec Kit (?:for the detail of features \\(asked once\\)|\\(needs uv: https://docs\\.astral\\.sh/uv/\\))", "no decision recorded(?:; uv is not installed)?"],
-    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify[\\\\/]memory[\\\\/]constitution[.a-z-]*md"]
+    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify(?:\\\\\\\\|[\\\\/])memory(?:\\\\\\\\|[\\\\/])constitution[.a-z-]*md"]
   },
   {
     "name": "onboard-configured-write-more",
@@ -1433,7 +1433,7 @@
     "git": true,
     "env": {"COLUMNS": "400"},
     "masks": ["\"uv\": (?:true|false)", "Decide whether to use Spec Kit (?:for the detail of features \\(asked once\\)|\\(needs uv: https://docs\\.astral\\.sh/uv/\\))", "no decision recorded(?:; uv is not installed)?"],
-    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify[\\\\/]memory[\\\\/]constitution[.a-z-]*md"]
+    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify(?:\\\\\\\\|[\\\\/])memory(?:\\\\\\\\|[\\\\/])constitution[.a-z-]*md"]
   },
   {
     "name": "onboard-configured-set-attribution",
@@ -1444,7 +1444,7 @@
     "git": true,
     "env": {"COLUMNS": "400"},
     "masks": ["\"uv\": (?:true|false)", "Decide whether to use Spec Kit (?:for the detail of features \\(asked once\\)|\\(needs uv: https://docs\\.astral\\.sh/uv/\\))", "no decision recorded(?:; uv is not installed)?"],
-    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify[\\\\/]memory[\\\\/]constitution[.a-z-]*md"]
+    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify(?:\\\\\\\\|[\\\\/])memory(?:\\\\\\\\|[\\\\/])constitution[.a-z-]*md"]
   },
   {
     "name": "onboard-full",
@@ -1455,7 +1455,7 @@
     "git": true,
     "env": {"COLUMNS": "400"},
     "masks": ["\"uv\": (?:true|false)", "Decide whether to use Spec Kit (?:for the detail of features \\(asked once\\)|\\(needs uv: https://docs\\.astral\\.sh/uv/\\))", "no decision recorded(?:; uv is not installed)?"],
-    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify[\\\\/]memory[\\\\/]constitution[.a-z-]*md"]
+    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify(?:\\\\\\\\|[\\\\/])memory(?:\\\\\\\\|[\\\\/])constitution[.a-z-]*md"]
   },
   {
     "name": "onboard-full-json",
@@ -1466,7 +1466,7 @@
     "git": true,
     "env": {"COLUMNS": "400"},
     "masks": ["\"uv\": (?:true|false)", "Decide whether to use Spec Kit (?:for the detail of features \\(asked once\\)|\\(needs uv: https://docs\\.astral\\.sh/uv/\\))", "no decision recorded(?:; uv is not installed)?"],
-    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify[\\\\/]memory[\\\\/]constitution[.a-z-]*md"]
+    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify(?:\\\\\\\\|[\\\\/])memory(?:\\\\\\\\|[\\\\/])constitution[.a-z-]*md"]
   },
   {
     "name": "onboard-full-without-git",
@@ -1476,7 +1476,7 @@
     "fixture": "onboard-full",
     "env": {"COLUMNS": "400"},
     "masks": ["\"uv\": (?:true|false)", "Decide whether to use Spec Kit (?:for the detail of features \\(asked once\\)|\\(needs uv: https://docs\\.astral\\.sh/uv/\\))", "no decision recorded(?:; uv is not installed)?"],
-    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify[\\\\/]memory[\\\\/]constitution[.a-z-]*md"]
+    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify(?:\\\\\\\\|[\\\\/])memory(?:\\\\\\\\|[\\\\/])constitution[.a-z-]*md"]
   },
   {
     "name": "onboard-full-propose-json",
@@ -1487,7 +1487,7 @@
     "git": true,
     "env": {"COLUMNS": "400"},
     "masks": ["\"uv\": (?:true|false)", "Decide whether to use Spec Kit (?:for the detail of features \\(asked once\\)|\\(needs uv: https://docs\\.astral\\.sh/uv/\\))", "no decision recorded(?:; uv is not installed)?", "\"file\": \"[^\"]*\""],
-    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify[\\\\/]memory[\\\\/]constitution[.a-z-]*md"]
+    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify(?:\\\\\\\\|[\\\\/])memory(?:\\\\\\\\|[\\\\/])constitution[.a-z-]*md"]
   },
   {
     "name": "onboard-allowlist-json",
@@ -1498,7 +1498,7 @@
     "git": true,
     "env": {"COLUMNS": "400"},
     "masks": ["\"uv\": (?:true|false)", "Decide whether to use Spec Kit (?:for the detail of features \\(asked once\\)|\\(needs uv: https://docs\\.astral\\.sh/uv/\\))", "no decision recorded(?:; uv is not installed)?"],
-    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify[\\\\/]memory[\\\\/]constitution[.a-z-]*md"]
+    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify(?:\\\\\\\\|[\\\\/])memory(?:\\\\\\\\|[\\\\/])constitution[.a-z-]*md"]
   },
   {
     "name": "onboard-allowlist",
@@ -1509,7 +1509,7 @@
     "git": true,
     "env": {"COLUMNS": "400"},
     "masks": ["\"uv\": (?:true|false)", "Decide whether to use Spec Kit (?:for the detail of features \\(asked once\\)|\\(needs uv: https://docs\\.astral\\.sh/uv/\\))", "no decision recorded(?:; uv is not installed)?"],
-    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify[\\\\/]memory[\\\\/]constitution[.a-z-]*md"]
+    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify(?:\\\\\\\\|[\\\\/])memory(?:\\\\\\\\|[\\\\/])constitution[.a-z-]*md"]
   },
   {
     "name": "onboard-allowlist-write",
@@ -1520,7 +1520,7 @@
     "git": true,
     "env": {"COLUMNS": "400"},
     "masks": ["\"uv\": (?:true|false)", "Decide whether to use Spec Kit (?:for the detail of features \\(asked once\\)|\\(needs uv: https://docs\\.astral\\.sh/uv/\\))", "no decision recorded(?:; uv is not installed)?"],
-    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify[\\\\/]memory[\\\\/]constitution[.a-z-]*md"]
+    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify(?:\\\\\\\\|[\\\\/])memory(?:\\\\\\\\|[\\\\/])constitution[.a-z-]*md"]
   },
   {
     "name": "onboard-broken-backlog",
@@ -1531,7 +1531,7 @@
     "git": true,
     "env": {"COLUMNS": "400"},
     "masks": ["\"uv\": (?:true|false)", "Decide whether to use Spec Kit (?:for the detail of features \\(asked once\\)|\\(needs uv: https://docs\\.astral\\.sh/uv/\\))", "no decision recorded(?:; uv is not installed)?"],
-    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify[\\\\/]memory[\\\\/]constitution[.a-z-]*md"]
+    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify(?:\\\\\\\\|[\\\\/])memory(?:\\\\\\\\|[\\\\/])constitution[.a-z-]*md"]
   },
   {
     "name": "onboard-broken-backlog-json",
@@ -1542,7 +1542,7 @@
     "git": true,
     "env": {"COLUMNS": "400"},
     "masks": ["\"uv\": (?:true|false)", "Decide whether to use Spec Kit (?:for the detail of features \\(asked once\\)|\\(needs uv: https://docs\\.astral\\.sh/uv/\\))", "no decision recorded(?:; uv is not installed)?"],
-    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify[\\\\/]memory[\\\\/]constitution[.a-z-]*md"]
+    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify(?:\\\\\\\\|[\\\\/])memory(?:\\\\\\\\|[\\\\/])constitution[.a-z-]*md"]
   },
   {
     "name": "onboard-pr-github",
@@ -1555,7 +1555,7 @@
     "fakes": ["gh"],
     "env": {"COLUMNS": "400"},
     "masks": ["\"uv\": (?:true|false)", "Decide whether to use Spec Kit (?:for the detail of features \\(asked once\\)|\\(needs uv: https://docs\\.astral\\.sh/uv/\\))", "no decision recorded(?:; uv is not installed)?"],
-    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify[\\\\/]memory[\\\\/]constitution[.a-z-]*md"]
+    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify(?:\\\\\\\\|[\\\\/])memory(?:\\\\\\\\|[\\\\/])constitution[.a-z-]*md"]
   },
   {
     "name": "onboard-pr-github-json",
@@ -1568,7 +1568,7 @@
     "fakes": ["gh"],
     "env": {"COLUMNS": "400"},
     "masks": ["\"uv\": (?:true|false)", "Decide whether to use Spec Kit (?:for the detail of features \\(asked once\\)|\\(needs uv: https://docs\\.astral\\.sh/uv/\\))", "no decision recorded(?:; uv is not installed)?"],
-    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify[\\\\/]memory[\\\\/]constitution[.a-z-]*md"]
+    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify(?:\\\\\\\\|[\\\\/])memory(?:\\\\\\\\|[\\\\/])constitution[.a-z-]*md"]
   },
   {
     "name": "onboard-pr-github-none",
@@ -1581,7 +1581,7 @@
     "fakes": ["gh"],
     "env": {"COLUMNS": "400"},
     "masks": ["\"uv\": (?:true|false)", "Decide whether to use Spec Kit (?:for the detail of features \\(asked once\\)|\\(needs uv: https://docs\\.astral\\.sh/uv/\\))", "no decision recorded(?:; uv is not installed)?"],
-    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify[\\\\/]memory[\\\\/]constitution[.a-z-]*md"]
+    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify(?:\\\\\\\\|[\\\\/])memory(?:\\\\\\\\|[\\\\/])constitution[.a-z-]*md"]
   },
   {
     "name": "onboard-pr-gitlab-json",
@@ -1594,7 +1594,7 @@
     "fakes": ["glab"],
     "env": {"COLUMNS": "400"},
     "masks": ["\"uv\": (?:true|false)", "Decide whether to use Spec Kit (?:for the detail of features \\(asked once\\)|\\(needs uv: https://docs\\.astral\\.sh/uv/\\))", "no decision recorded(?:; uv is not installed)?"],
-    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify[\\\\/]memory[\\\\/]constitution[.a-z-]*md"]
+    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify(?:\\\\\\\\|[\\\\/])memory(?:\\\\\\\\|[\\\\/])constitution[.a-z-]*md"]
   },
   {
     "name": "onboard-pr-unknown-platform",
@@ -1605,7 +1605,7 @@
     "git": true,
     "env": {"COLUMNS": "400"},
     "masks": ["\"uv\": (?:true|false)", "Decide whether to use Spec Kit (?:for the detail of features \\(asked once\\)|\\(needs uv: https://docs\\.astral\\.sh/uv/\\))", "no decision recorded(?:; uv is not installed)?"],
-    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify[\\\\/]memory[\\\\/]constitution[.a-z-]*md"]
+    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify(?:\\\\\\\\|[\\\\/])memory(?:\\\\\\\\|[\\\\/])constitution[.a-z-]*md"]
   },
   {
     "name": "onboard-speckit-managed-json",
@@ -1616,7 +1616,7 @@
     "git": true,
     "env": {"COLUMNS": "400"},
     "masks": ["\"uv\": (?:true|false)", "Decide whether to use Spec Kit (?:for the detail of features \\(asked once\\)|\\(needs uv: https://docs\\.astral\\.sh/uv/\\))", "no decision recorded(?:; uv is not installed)?"],
-    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify[\\\\/]memory[\\\\/]constitution[.a-z-]*md"]
+    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify(?:\\\\\\\\|[\\\\/])memory(?:\\\\\\\\|[\\\\/])constitution[.a-z-]*md"]
   },
   {
     "name": "onboard-speckit-drift",
@@ -1627,7 +1627,7 @@
     "git": true,
     "env": {"COLUMNS": "400"},
     "masks": ["\"uv\": (?:true|false)", "Decide whether to use Spec Kit (?:for the detail of features \\(asked once\\)|\\(needs uv: https://docs\\.astral\\.sh/uv/\\))", "no decision recorded(?:; uv is not installed)?"],
-    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify[\\\\/]memory[\\\\/]constitution[.a-z-]*md"]
+    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify(?:\\\\\\\\|[\\\\/])memory(?:\\\\\\\\|[\\\\/])constitution[.a-z-]*md"]
   },
   {
     "name": "onboard-config-problems",
@@ -1638,7 +1638,7 @@
     "git": true,
     "env": {"COLUMNS": "400"},
     "masks": ["\"uv\": (?:true|false)", "Decide whether to use Spec Kit (?:for the detail of features \\(asked once\\)|\\(needs uv: https://docs\\.astral\\.sh/uv/\\))", "no decision recorded(?:; uv is not installed)?"],
-    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify[\\\\/]memory[\\\\/]constitution[.a-z-]*md"]
+    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify(?:\\\\\\\\|[\\\\/])memory(?:\\\\\\\\|[\\\\/])constitution[.a-z-]*md"]
   },
   {
     "name": "onboard-config-legacy",
@@ -1649,6 +1649,6 @@
     "git": true,
     "env": {"COLUMNS": "400"},
     "masks": ["\"uv\": (?:true|false)", "Decide whether to use Spec Kit (?:for the detail of features \\(asked once\\)|\\(needs uv: https://docs\\.astral\\.sh/uv/\\))", "no decision recorded(?:; uv is not installed)?"],
-    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify[\\\\/]memory[\\\\/]constitution[.a-z-]*md"]
+    "seps": ["[\\\\/]\\.dev-cycle\\.json", "[\\\\/]\\.claude[\\\\/]settings\\.json", "\\.specify(?:\\\\\\\\|[\\\\/])memory(?:\\\\\\\\|[\\\\/])constitution[.a-z-]*md"]
   }
 ]
