@@ -265,7 +265,7 @@ How to record a run: in each test of the current run, mark exactly one box of th
   2. Ask for the first feature of the current release and answer the clarification questions.
   3. Approve the plan, let the agent implement it and open the pull request.
 - **Expected**:
-  - Step 1 runs `speckit_setup.py init` (version pinned in `.dev-cycle.json`, preset installed) and `constitution generate` (engine).
+  - Step 1 runs `speckit_setup init` (engine) (version pinned in `.dev-cycle.json`, preset installed) and `constitution generate` (engine).
   - Step 2 creates the branch `feat/001-...` from `dev`, `specs/001-.../spec.md` without `[NEEDS CLARIFICATION]`, then `plan.md` with the "Dev Cycle Protocol" sections, `tasks.md` and the analysis; the plan in `docs/plans` has `spec_dir` and milestones from the task phases.
   - Gate 3 reports the Spec Kit artifacts complete and the constitution current.
   - Implementation follows `tasks.md`; tests, documentation and the pull request follow the protocol as usual.
@@ -275,9 +275,9 @@ How to record a run: in each test of the current run, mark exactly one box of th
 ### MT-SPECKIT-002: An incompatible Spec Kit release falls back to the verified one
 
 - **Covers**: dev-cycle-protocol
-- **Prerequisites**: a release newer than `speckit-preset/compat.json` that fails `speckit_setup.py check` (or a temporary edit making the check fail)
+- **Prerequisites**: a release newer than `speckit-preset/compat.json` that fails `speckit_setup check` (or a temporary edit making the check fail)
 - **Steps**:
-  1. Run `speckit_setup.py init` in a new project.
+  1. Run `speckit_setup init` (engine) in a new project.
 - **Expected**:
   - The project pins the last verified version.
   - `docs/protocol-updates/speckit-<version>.md` is drafted in the skills repository with the failed checks, and the agent offers to capture it in that repository's backlog.

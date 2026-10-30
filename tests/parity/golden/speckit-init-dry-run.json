@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "$ uvx --from git+https://github.com/github/spec-kit.git@v1.2.3 specify init --here --force --integration claude --script sh --extension git --non-interactive --ignore-agent-tools\n$ uvx --from git+https://github.com/github/spec-kit.git@v1.2.3 specify preset add --dev {skills}/dev-cycle-protocol/speckit-preset\n(dry run) would pin speckit.version = v1.2.3 in .dev-cycle.json\n",
+  "stderr": "",
+  "files": {}
+}

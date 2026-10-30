@@ -1,0 +1,6 @@
+{
+  "exit": 2,
+  "stdout": "",
+  "stderr": "usage: speckit_setup.py init [-h] [--dir DIR] [--version VERSION]\n                             [--integration INTEGRATION] [--script {sh,ps,py}]\n                             [--dry-run]\nspeckit_setup.py init: error: argument --script: invalid choice: 'bat' (choose from 'sh', 'ps', 'py')\n",
+  "files": {}
+}

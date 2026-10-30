@@ -141,7 +141,7 @@ Cloud sessions do not see your local folders. For them, this repository is also 
 
 ### dev-cycle
 
-The `/dev-cycle` command, a thin router over `dev-cycle-protocol/onboard.py`: `diagnose` reads the configuration, the branching model and branches, product baseline, plans, the latest release candidate run, blocking bugs, the roadmap and Spec Kit; `propose-config` and `write-config` create or complete `.dev-cycle.json` from what can be detected (adding keys, never overwriting); `create-branch` creates the integration branch (`integration` model). The branching model and Spec Kit are each asked about once per project (the model detected from the branches), and a repository that already uses Spec Kit is adopted (`speckit_setup.py adopt`) with its hand-written constitution moved into the sources before it is replaced. Details: [dev-cycle/SKILL.md](dev-cycle/SKILL.md).
+The `/dev-cycle` command, a thin router over `dev-cycle-protocol/onboard.py`: `diagnose` reads the configuration, the branching model and branches, product baseline, plans, the latest release candidate run, blocking bugs, the roadmap and Spec Kit; `propose-config` and `write-config` create or complete `.dev-cycle.json` from what can be detected (adding keys, never overwriting); `create-branch` creates the integration branch (`integration` model). The branching model and Spec Kit are each asked about once per project (the model detected from the branches), and a repository that already uses Spec Kit is adopted (`speckit_setup adopt` on the engine) with its hand-written constitution moved into the sources before it is replaced. Details: [dev-cycle/SKILL.md](dev-cycle/SKILL.md).
 
 ### dev-cycle-protocol
 
@@ -168,7 +168,7 @@ Scripts:
 python <skills_root>/dev-cycle-protocol/inspect_project.py [--dir .] [--json]
 <skills_root>/dev-cycle-protocol/bin/dev-cycle dev-cycle-protocol project_config [--json] [--validate] [--migrate [--write]]
 python <skills_root>/dev-cycle-protocol/verify_gate.py --gate 0|3|rc|8 [--run vX.Y.Z-rc.N] [--dir .]
-python <skills_root>/dev-cycle-protocol/speckit_setup.py status|latest|check|init|upgrade
+<skills_root>/dev-cycle-protocol/bin/dev-cycle dev-cycle-protocol speckit_setup status|latest|check|init|adopt|upgrade
 <skills_root>/dev-cycle-protocol/bin/dev-cycle dev-cycle-protocol constitution generate|check
 ```
 - `inspect_project.py` detects languages, manifests, test runners, documentation files and Git state, and shows the configured architecture style, branching model, releases repository, backlog, current release of the roadmap, product baseline and Spec Kit state.

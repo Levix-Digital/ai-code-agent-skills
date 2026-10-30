@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "{\n  \"enabled\": true,\n  \"pinned\": \"v1.2.3\",\n  \"installed\": \"v1.2.3\",\n  \"integration\": \"claude\",\n  \"script\": \"sh\",\n  \"initialized\": true,\n  \"preset\": true,\n  \"branch_prefix\": \"feat\",\n  \"verified\": \"v1.2.3\",\n  <MASK>,\n  \"problems\": []\n}\n",
+  "stderr": "",
+  "files": {}
+}

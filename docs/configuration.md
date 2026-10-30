@@ -88,7 +88,7 @@ Optional file at a project's root: the project configuration shared by every ski
 | `review.auto_review` | Review every pull request when it opens and after pushes that change code (`code-review`) | `true` |
 | `review.allowed_terms` | Phrases the principle 9 guard accepts because they are the project's subject | `[]` |
 | `speckit.enabled` | Use GitHub Spec Kit for the detail of feature plans (Phases 1, 2 and 4). Written by `/dev-cycle` with the user's answer; an explicit `false` is a decision and is not asked again, while a missing key means it was never asked | `false` |
-| `speckit.version` | Exact Spec Kit release tag the project is pinned to; set by `speckit_setup.py init` and `upgrade` | not set |
+| `speckit.version` | Exact Spec Kit release tag the project is pinned to; set by `speckit_setup init` and `upgrade` (engine) | not set |
 | `speckit.integration` | Coding agent integration passed to `specify init` | `claude` |
 | `speckit.script` | Script type of Spec Kit's commands: `sh`, `ps` or `py` | `sh` (`ps` on Windows) |
 | `speckit.branch_prefix` | Prefix of Spec Kit's feature branches (`<prefix>/NNN-slug`) | `feat` |

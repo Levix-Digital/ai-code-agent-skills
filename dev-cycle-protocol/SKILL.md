@@ -228,7 +228,7 @@ The backlog (`backlog.file` in `.dev-cycle.json`, default `docs/BACKLOG.md`) is 
 
 | Phase | Spec Kit |
 |---|---|
-| 0. Inception | `speckit_setup.py init`, then the constitution is generated (`constitution generate` on the engine) |
+| 0. Inception | `speckit_setup init` (engine), then the constitution is generated (`constitution generate` on the engine) |
 | 1. Discovery | `/speckit-specify` (creates `feat/NNN-slug` and `specs/NNN-slug/spec.md`), `/speckit-clarify` |
 | 2. Plan | `/speckit-plan` (with the protocol sections from the `dev-cycle` preset), `/speckit-tasks`, `/speckit-analyze`; the plan file is the envelope (`--spec-dir`) |
 | 3. Approval | gate 3 checks the spec folder, the branch and the constitution |
@@ -236,9 +236,9 @@ The backlog (`backlog.file` in `.dev-cycle.json`, default `docs/BACKLOG.md`) is 
 | 6–10 | not used |
 
 - **When**: only on the full path, for feature plans. The short path and bug plans (reproduction, root cause, regression test) never use it.
-- **Asked once**: `/dev-cycle` asks whether to use Spec Kit the first time it runs in a project and records the answer (`speckit.enabled: true` or `false`). A repository that already uses Spec Kit without the protocol is adopted with `speckit_setup.py adopt` (its version pinned after the compatibility check); its hand-written constitution is moved into the sources with the user and only then replaced (`constitution generate --replace-hand-written`, a copy is kept).
-- **Setup** (`.dev-cycle.json` section `speckit`): `speckit_setup.py init` installs Spec Kit in the project at an exact version, through `uvx` (requires [uv](https://docs.astral.sh/uv/)), with the agent integration (`speckit.integration`, default `claude`), the script type (`speckit.script`: `sh`, or `ps` on Windows), branches `feat/NNN-slug` (`speckit.branch_prefix`) and the protocol's preset; commit `.specify/`, the agent command files and `.dev-cycle.json`.
-- **Version pinned per project**: `speckit.version` is an exact release tag; the CLI is always called at that version, never through a global install. A new project takes the latest release when it passes the **compatibility check** (`speckit_setup.py check`: init, version, templates, commands, branch naming, preset, feature resolution, constitution check in a temporary repository), and the protocol's verified version (`speckit-preset/compat.json`) moves forward. When the latest release fails the check, the project pins the last verified version and the agent drafts an adaptation document in the skills repository (`docs/protocol-updates/speckit-vX.Y.Z.md`) and captures it in that repository's backlog. Existing projects change versions only when the user asks (`speckit_setup.py upgrade --to vX.Y.Z`, which runs the check first).
+- **Asked once**: `/dev-cycle` asks whether to use Spec Kit the first time it runs in a project and records the answer (`speckit.enabled: true` or `false`). A repository that already uses Spec Kit without the protocol is adopted with `speckit_setup adopt` (engine) (its version pinned after the compatibility check); its hand-written constitution is moved into the sources with the user and only then replaced (`constitution generate --replace-hand-written`, a copy is kept).
+- **Setup** (`.dev-cycle.json` section `speckit`): `speckit_setup init` (engine) installs Spec Kit in the project at an exact version, through `uvx` (requires [uv](https://docs.astral.sh/uv/)), with the agent integration (`speckit.integration`, default `claude`), the script type (`speckit.script`: `sh`, or `ps` on Windows), branches `feat/NNN-slug` (`speckit.branch_prefix`) and the protocol's preset; commit `.specify/`, the agent command files and `.dev-cycle.json`.
+- **Version pinned per project**: `speckit.version` is an exact release tag; the CLI is always called at that version, never through a global install. A new project takes the latest release when it passes the **compatibility check** (`speckit_setup check`: init, version, templates, commands, branch naming, preset, feature resolution, constitution check in a temporary repository), and the protocol's verified version (`speckit-preset/compat.json`) moves forward. When the latest release fails the check, the project pins the last verified version and the agent drafts an adaptation document in the skills repository (`docs/protocol-updates/speckit-vX.Y.Z.md`) and captures it in that repository's backlog. Existing projects change versions only when the user asks (`speckit_setup upgrade --to vX.Y.Z`, which runs the check first).
 - **Constitution**: `.specify/memory/constitution.md` is generated from `software-design` (principles and the project's style guide), the protocol's principles, the technical specification (requirements and constraints) and the accepted ADRs, so Spec Kit's Constitution Check enforces the protocol's rules. It is never edited by hand: change the source, run `constitution generate` (engine) and commit it with the change. Gates 0 and 3 block a stale or hand-edited constitution.
 
 ---
@@ -274,7 +274,7 @@ python "<skills_root>/dev-cycle-protocol/inspect_project.py" [--json]
 "<skills_root>/dev-cycle-protocol/bin/dev-cycle" dev-cycle-protocol project_config [--json] [--validate] [--migrate [--write]]
 python "<skills_root>/dev-cycle-protocol/pr_sync.py" status|open|reply|resolve|comment|review|request-review [...]
 python "<skills_root>/dev-cycle-protocol/onboard.py" diagnose [--request "<text>"] [--json] | propose-config | write-config --file <f> | create-branch
-python "<skills_root>/dev-cycle-protocol/speckit_setup.py" status|latest|check|init|adopt|upgrade [...]
+"<skills_root>/dev-cycle-protocol/bin/dev-cycle" dev-cycle-protocol speckit_setup status|latest|check|init|adopt|upgrade [...]
 "<skills_root>/dev-cycle-protocol/bin/dev-cycle" dev-cycle-protocol constitution generate [--replace-hand-written] | check [--dir <project>]
 ```
 

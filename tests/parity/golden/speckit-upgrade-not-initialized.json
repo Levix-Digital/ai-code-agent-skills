@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ Spec Kit is not initialized in {project}; use 'init'\n",
+  "stderr": "",
+  "files": {}
+}

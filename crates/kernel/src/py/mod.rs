@@ -6,6 +6,7 @@ pub mod fnmatch;
 pub mod json;
 pub mod num;
 pub mod path;
+pub mod subprocess;
 pub mod textwrap;
 pub mod tomllib;
 pub mod unicode;
@@ -303,6 +304,41 @@ pub fn iterate(value: &Value) -> Result<Vec<Value>, Crash> {
             other.tp_name()
         ))),
     }
+}
+
+/// `str.splitlines()`.
+pub fn splitlines(s: &str) -> Vec<&str> {
+    let mut out = Vec::new();
+    let mut start = 0;
+    let mut chars = s.char_indices().peekable();
+    while let Some((i, c)) = chars.next() {
+        let boundary = matches!(
+            c,
+            '\n' | '\r'
+                | '\x0b'
+                | '\x0c'
+                | '\x1c'
+                | '\x1d'
+                | '\x1e'
+                | '\u{85}'
+                | '\u{2028}'
+                | '\u{2029}'
+        );
+        if !boundary {
+            continue;
+        }
+        out.push(&s[start..i]);
+        let mut end = i + c.len_utf8();
+        if c == '\r' && chars.peek().is_some_and(|(_, n)| *n == '\n') {
+            chars.next();
+            end += 1;
+        }
+        start = end;
+    }
+    if start < s.len() {
+        out.push(&s[start..]);
+    }
+    out
 }
 
 #[cfg(test)]

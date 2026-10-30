@@ -45,6 +45,11 @@ const COMMANDS: &[(&str, &str, Command)] = &[
         kernel::project_config::main,
     ),
     (
+        "dev-cycle-protocol",
+        "speckit_setup",
+        dev_cycle_protocol::speckit_setup::main,
+    ),
+    (
         "product-inception",
         "check_product",
         product_inception::check_product::main,

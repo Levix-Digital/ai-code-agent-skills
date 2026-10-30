@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "$ uvx --from git+https://github.com/github/spec-kit.git@v1.3.0 specify integration upgrade claude --script sh\n$ uvx --from git+https://github.com/github/spec-kit.git@v1.3.0 specify extension update\n$ uvx --from git+https://github.com/github/spec-kit.git@v1.3.0 specify preset update dev-cycle --dev {skills}/dev-cycle-protocol/speckit-preset\n",
+  "stderr": "",
+  "files": {}
+}

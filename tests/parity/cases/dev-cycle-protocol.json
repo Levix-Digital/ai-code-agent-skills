@@ -250,5 +250,232 @@
     "args": ["validate"],
     "env": {"COLUMNS": "80"},
     "seps": ["\\.specify[\\\\/]memory[\\\\/]constitution[.a-z-]*md"]
+  },
+  {
+    "name": "speckit-status-no-config",
+    "python": "dev-cycle-protocol/speckit_setup.py",
+    "rust": ["dev-cycle-protocol", "speckit_setup"],
+    "args": ["status", "--dir", "{project}"],
+    "git": true,
+    "masks": ["uv                 : (?:available|missing)", "\"uv\": (?:true|false)"]
+  },
+  {
+    "name": "speckit-status-no-config-json",
+    "python": "dev-cycle-protocol/speckit_setup.py",
+    "rust": ["dev-cycle-protocol", "speckit_setup"],
+    "args": ["status", "--json", "--dir", "{project}"],
+    "git": true,
+    "masks": ["uv                 : (?:available|missing)", "\"uv\": (?:true|false)"]
+  },
+  {
+    "name": "speckit-status-managed",
+    "python": "dev-cycle-protocol/speckit_setup.py",
+    "rust": ["dev-cycle-protocol", "speckit_setup"],
+    "args": ["status", "--dir", "{project}"],
+    "fixture": "speckit-managed",
+    "git": true,
+    "masks": ["uv                 : (?:available|missing)", "\"uv\": (?:true|false)"]
+  },
+  {
+    "name": "speckit-status-managed-json",
+    "python": "dev-cycle-protocol/speckit_setup.py",
+    "rust": ["dev-cycle-protocol", "speckit_setup"],
+    "args": ["status", "--json", "--dir", "{project}"],
+    "fixture": "speckit-managed",
+    "git": true,
+    "masks": ["uv                 : (?:available|missing)", "\"uv\": (?:true|false)"]
+  },
+  {
+    "name": "speckit-status-drift",
+    "python": "dev-cycle-protocol/speckit_setup.py",
+    "rust": ["dev-cycle-protocol", "speckit_setup"],
+    "args": ["status", "--dir", "{project}"],
+    "fixture": "speckit-drift",
+    "git": true,
+    "masks": ["uv                 : (?:available|missing)", "\"uv\": (?:true|false)"]
+  },
+  {
+    "name": "speckit-status-drift-json",
+    "python": "dev-cycle-protocol/speckit_setup.py",
+    "rust": ["dev-cycle-protocol", "speckit_setup"],
+    "args": ["status", "--json", "--dir", "{project}"],
+    "fixture": "speckit-drift",
+    "git": true,
+    "masks": ["uv                 : (?:available|missing)", "\"uv\": (?:true|false)"]
+  },
+  {
+    "name": "speckit-status-enabled-missing",
+    "python": "dev-cycle-protocol/speckit_setup.py",
+    "rust": ["dev-cycle-protocol", "speckit_setup"],
+    "args": ["status", "--dir", "{project}"],
+    "fixture": "speckit-enabled-missing",
+    "git": true,
+    "masks": ["uv                 : (?:available|missing)", "\"uv\": (?:true|false)"]
+  },
+  {
+    "name": "speckit-status-unmanaged-from-cwd",
+    "python": "dev-cycle-protocol/speckit_setup.py",
+    "rust": ["dev-cycle-protocol", "speckit_setup"],
+    "args": ["status", "--json"],
+    "fixture": "speckit-unmanaged",
+    "git": true,
+    "masks": ["uv                 : (?:available|missing)", "\"uv\": (?:true|false)"]
+  },
+  {
+    "name": "speckit-init-dry-run",
+    "python": "dev-cycle-protocol/speckit_setup.py",
+    "rust": ["dev-cycle-protocol", "speckit_setup"],
+    "args": ["init", "--version", "v1.2.3", "--script", "sh", "--dry-run", "--dir", "{project}"],
+    "git": true,
+    "masks": ["uv                 : (?:available|missing)", "\"uv\": (?:true|false)"]
+  },
+  {
+    "name": "speckit-init-dry-run-config",
+    "python": "dev-cycle-protocol/speckit_setup.py",
+    "rust": ["dev-cycle-protocol", "speckit_setup"],
+    "args": ["init", "--dry-run", "--dir", "{project}"],
+    "fixture": "speckit-config-only",
+    "git": true,
+    "masks": ["uv                 : (?:available|missing)", "\"uv\": (?:true|false)"]
+  },
+  {
+    "name": "speckit-init-dry-run-options",
+    "python": "dev-cycle-protocol/speckit_setup.py",
+    "rust": ["dev-cycle-protocol", "speckit_setup"],
+    "args": ["init", "--dry", "--version=v2.0.1", "--integration", "gemini", "--script", "ps", "--dir", "{project}"],
+    "fixture": "speckit-config-only",
+    "git": true,
+    "masks": ["uv                 : (?:available|missing)", "\"uv\": (?:true|false)"]
+  },
+  {
+    "name": "speckit-init-initialized",
+    "python": "dev-cycle-protocol/speckit_setup.py",
+    "rust": ["dev-cycle-protocol", "speckit_setup"],
+    "args": ["init", "--dry-run", "--dir", "{project}"],
+    "fixture": "speckit-managed",
+    "git": true,
+    "masks": ["uv                 : (?:available|missing)", "\"uv\": (?:true|false)"]
+  },
+  {
+    "name": "speckit-init-bad-version",
+    "python": "dev-cycle-protocol/speckit_setup.py",
+    "rust": ["dev-cycle-protocol", "speckit_setup"],
+    "args": ["init", "--version", "latest", "--dry-run", "--dir", "{project}"],
+    "fixture": "speckit-config-only",
+    "git": true,
+    "masks": ["uv                 : (?:available|missing)", "\"uv\": (?:true|false)"]
+  },
+  {
+    "name": "speckit-adopt-without-spec-kit",
+    "python": "dev-cycle-protocol/speckit_setup.py",
+    "rust": ["dev-cycle-protocol", "speckit_setup"],
+    "args": ["adopt", "--dry-run", "--dir", "{project}"],
+    "git": true,
+    "masks": ["uv                 : (?:available|missing)", "\"uv\": (?:true|false)"]
+  },
+  {
+    "name": "speckit-adopt-managed",
+    "python": "dev-cycle-protocol/speckit_setup.py",
+    "rust": ["dev-cycle-protocol", "speckit_setup"],
+    "args": ["adopt", "--dir", "{project}"],
+    "fixture": "speckit-managed",
+    "git": true,
+    "masks": ["uv                 : (?:available|missing)", "\"uv\": (?:true|false)"]
+  },
+  {
+    "name": "speckit-adopt-dry-run",
+    "python": "dev-cycle-protocol/speckit_setup.py",
+    "rust": ["dev-cycle-protocol", "speckit_setup"],
+    "args": ["adopt", "--dry-run", "--dir", "{project}"],
+    "fixture": "speckit-unmanaged",
+    "git": true,
+    "masks": ["uv                 : (?:available|missing)", "\"uv\": (?:true|false)"]
+  },
+  {
+    "name": "speckit-adopt-unknown-version",
+    "python": "dev-cycle-protocol/speckit_setup.py",
+    "rust": ["dev-cycle-protocol", "speckit_setup"],
+    "args": ["adopt", "--dry-run", "--dir", "{project}"],
+    "fixture": "speckit-unknown",
+    "git": true,
+    "masks": ["uv                 : (?:available|missing)", "\"uv\": (?:true|false)"]
+  },
+  {
+    "name": "speckit-upgrade-older",
+    "python": "dev-cycle-protocol/speckit_setup.py",
+    "rust": ["dev-cycle-protocol", "speckit_setup"],
+    "args": ["upgrade", "--to", "v1.2.0", "--dir", "{project}"],
+    "fixture": "speckit-managed",
+    "git": true,
+    "masks": ["uv                 : (?:available|missing)", "\"uv\": (?:true|false)"]
+  },
+  {
+    "name": "speckit-upgrade-same",
+    "python": "dev-cycle-protocol/speckit_setup.py",
+    "rust": ["dev-cycle-protocol", "speckit_setup"],
+    "args": ["upgrade", "--to", "v1.2.3", "--dry-run", "--dir", "{project}"],
+    "fixture": "speckit-managed",
+    "git": true,
+    "masks": ["uv                 : (?:available|missing)", "\"uv\": (?:true|false)"]
+  },
+  {
+    "name": "speckit-upgrade-dry-run",
+    "python": "dev-cycle-protocol/speckit_setup.py",
+    "rust": ["dev-cycle-protocol", "speckit_setup"],
+    "args": ["upgrade", "--to", "v1.3.0", "--dry-run", "--dir", "{project}"],
+    "fixture": "speckit-managed",
+    "git": true,
+    "masks": ["uv                 : (?:available|missing)", "\"uv\": (?:true|false)"]
+  },
+  {
+    "name": "speckit-upgrade-bad-tag",
+    "python": "dev-cycle-protocol/speckit_setup.py",
+    "rust": ["dev-cycle-protocol", "speckit_setup"],
+    "args": ["upgrade", "--to", "main", "--dry-run", "--dir", "{project}"],
+    "fixture": "speckit-managed",
+    "git": true,
+    "masks": ["uv                 : (?:available|missing)", "\"uv\": (?:true|false)"]
+  },
+  {
+    "name": "speckit-upgrade-unpinned-dry-run",
+    "python": "dev-cycle-protocol/speckit_setup.py",
+    "rust": ["dev-cycle-protocol", "speckit_setup"],
+    "args": ["upgrade", "--to", "v1.4.0", "--dry-run", "--dir", "{project}"],
+    "fixture": "speckit-unknown",
+    "git": true,
+    "masks": ["uv                 : (?:available|missing)", "\"uv\": (?:true|false)"]
+  },
+  {
+    "name": "speckit-upgrade-not-initialized",
+    "python": "dev-cycle-protocol/speckit_setup.py",
+    "rust": ["dev-cycle-protocol", "speckit_setup"],
+    "args": ["upgrade", "--to", "v1.3.0", "--dir", "{project}"],
+    "fixture": "speckit-config-only",
+    "git": true,
+    "masks": ["uv                 : (?:available|missing)", "\"uv\": (?:true|false)"]
+  },
+  {
+    "name": "speckit-upgrade-without-to",
+    "python": "dev-cycle-protocol/speckit_setup.py",
+    "rust": ["dev-cycle-protocol", "speckit_setup"],
+    "args": ["upgrade", "--dir", "{project}"]
+  },
+  {
+    "name": "speckit-status-help",
+    "python": "dev-cycle-protocol/speckit_setup.py",
+    "rust": ["dev-cycle-protocol", "speckit_setup"],
+    "args": ["status", "-h"]
+  },
+  {
+    "name": "speckit-check-help",
+    "python": "dev-cycle-protocol/speckit_setup.py",
+    "rust": ["dev-cycle-protocol", "speckit_setup"],
+    "args": ["check", "--help"]
+  },
+  {
+    "name": "speckit-init-bad-script",
+    "python": "dev-cycle-protocol/speckit_setup.py",
+    "rust": ["dev-cycle-protocol", "speckit_setup"],
+    "args": ["init", "--script", "bat"]
   }
 ]
