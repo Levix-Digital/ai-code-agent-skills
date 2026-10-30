@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "{\n  \"active\": false,\n  \"reason\": \"the project does not use Gedo yet (gedo.enabled is false in .dev-cycle.json)\",\n  \"dir\": \"{project}/docs/gedo-feedback\",\n  \"repo\": \"Levix-Digital/gedo\",\n  \"counts\": {\n    \"open\": 0,\n    \"reported\": 0,\n    \"closed\": 0\n  }\n}\n",
+  "stderr": "",
+  "files": {}
+}

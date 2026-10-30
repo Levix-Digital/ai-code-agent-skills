@@ -1,0 +1,8 @@
+{
+  "exit": 0,
+  "stdout": "✅ <MASK>-daemon-exits-on-save closed: not a Gedo problem\n",
+  "stderr": "",
+  "files": {
+    "project/docs/gedo-feedback/<MASK>-daemon-exits-on-save.md": "# Daemon exits on save\n\n- **Id**: <MASK>-daemon-exits-on-save\n- **Kind**: crash\n- **Severity**: medium\n- **Status**: closed\n- **Command**: gedo daemon\n- **Recorded**: <MASK>\n- **Closed**: <MASK>: not a Gedo problem\n\n## Scenario\n\nSaving a file\n\n## Expected\n\nIngest\n\n## Actual\n\nCrash, as Claude found\n"
+  }
+}

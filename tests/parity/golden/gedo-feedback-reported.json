@@ -1,0 +1,8 @@
+{
+  "exit": 0,
+  "stdout": "✅ 2026-01-05-radar-missed-an-edit-of-the reported: https://github.com/Levix-Digital/gedo/issues/12\n",
+  "stderr": "",
+  "files": {
+    "project/docs/gedo-feedback/2026-01-05-radar-missed-an-edit-of-the.md": "# Radar missed an edit of the same function\n\n- **Id**: 2026-01-05-radar-missed-an-edit-of-the\n- **Kind**: missed-collision\n- **Severity**: high\n- **Status**: reported\n- **Gedo version**: 0.4.0\n- **Found**: feat/007-private-thing\n- **Related**: G3, FEAT-074\n- **Issue**: https://github.com/Levix-Digital/gedo/issues/12\n- **Recorded**: 2026-01-05\n\n## Scenario\n\nTwo threads edited parse_rust in separate worktrees\n\n## Expected\n\ngedo radar reports the collision\n\n## Actual\n\nNothing reported until the merge\n"
+  }
+}

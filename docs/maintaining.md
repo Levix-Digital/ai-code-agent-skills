@@ -9,7 +9,7 @@
 
 **Run the tests**
 ```bash
-python -m pytest plan-memory/tests dev-cycle-protocol/tests product-inception/tests software-design/tests user-docs/tests quality-assurance/tests devops-release/tests gedo-feedback/tests
+python -m pytest plan-memory/tests dev-cycle-protocol/tests quality-assurance/tests devops-release/tests
 SPECKIT_ONLINE_TESTS=1 python -m pytest dev-cycle-protocol/tests/test_speckit_setup.py   # real Spec Kit compatibility check (network)
 cargo test                       # the Rust workspace (crates/)
 cargo build && cargo run -p parity -- run   # Python scripts and their Rust translations give the same results

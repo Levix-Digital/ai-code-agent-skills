@@ -1,0 +1,8 @@
+{
+  "exit": 0,
+  "stdout": "✅ <MASK>-ran-git-merge-by-hand-radar: Ran git merge by hand: radar was down (workaround, medium)\n   notes/gedo/<MASK>-ran-git-merge-by-hand-radar.md\n",
+  "stderr": "",
+  "files": {
+    "project/notes/gedo/<MASK>-ran-git-merge-by-hand-radar.md": "# Ran git merge by hand: radar was down\n\n- **Id**: <MASK>-ran-git-merge-by-hand-radar\n- **Kind**: workaround\n- **Severity**: medium\n- **Status**: open\n- **Recorded**: <MASK>\n\n## Scenario\n\nTwo threads, one on the parser\n\n## Expected\n\ngedo merge\n\n## Actual\n\nThe daemon was not running\n\n## Diagnostics\n\ngedo doctor: the gedo command was not found on PATH.\n"
+  }
+}

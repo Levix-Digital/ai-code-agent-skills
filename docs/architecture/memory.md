@@ -16,7 +16,7 @@ Owns the support skills: each developer's session memory per project, retrieval 
 
 - `session-memory/`: saves and recovers session context in a local ChromaDB, namespaced by project.
 - `folder-sync/scripts/`: incremental indexing (`sync.py`), questions (`query.py`), stats and cleanup over a folder, with text, `.docx` and `.pdf` extractors.
-- `gedo-feedback/gedo_feedback.py`: one Markdown file per Gedo problem in `docs/gedo-feedback/`, off until `gedo.enabled`.
+- `crates/gedo-feedback/src/gedo_feedback.rs` (engine command `gedo-feedback gedo_feedback`): one Markdown file per Gedo problem in `docs/gedo-feedback/`, off until `gedo.enabled`.
 
 ## Behavior
 

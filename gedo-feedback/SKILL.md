@@ -46,15 +46,16 @@ Severity: `critical` (data loss, corruption, Git blocked), `high` (a main featur
 
 ## Steps
 
-1. **Record it when it happens**, before working around it, so nothing is lost:
-   ```powershell
-   python "<skills_root>/gedo-feedback/gedo_feedback.py" add --kind <kind> --title "<short title>" --severity <s> `
-     --scenario "<what was being done and how the work was split between threads>" `
-     --expected "<what Gedo should have done>" --actual "<what it did>" `
-     [--reproduction "<minimal steps>"] [--workaround "<what was done instead>"] [--command "<gedo or git command>"] `
-     [--gedo-version <v>] [--found-in "<branch, pull request>"] [--related "<Gedo proposal or backlog id>"] `
+1. **Record it when it happens**, before working around it, so nothing is lost. `gedo_feedback` runs on the native engine. In sh shells (Linux, macOS, Git Bash):
+   ```sh
+   "<skills_root>/dev-cycle-protocol/bin/dev-cycle" gedo-feedback gedo_feedback add --kind <kind> --title "<short title>" --severity <s> \
+     --scenario "<what was being done and how the work was split between threads>" \
+     --expected "<what Gedo should have done>" --actual "<what it did>" \
+     [--reproduction "<minimal steps>"] [--workaround "<what was done instead>"] [--command "<gedo or git command>"] \
+     [--gedo-version <v>] [--found-in "<branch, pull request>"] [--related "<Gedo proposal or backlog id>"] \
      [--diagnostics-file <log excerpt>] [--doctor]
    ```
+   In PowerShell, run `& "<skills_root>/dev-cycle-protocol/bin/dev-cycle.ps1" gedo-feedback gedo_feedback add [arguments]` instead (continue lines with a backtick).
    `--doctor` attaches `gedo doctor --json`; `--diagnostics-file` attaches the last 200 lines of a log (Gedo's own logs are in `.git/gedo/logs/`). An open entry with the same kind and title is refused: add to it instead (edit its file), unless it is really a different case (`--allow-duplicate`).
 2. **Write in English**, faithfully, without guessing causes inside Gedo. `--related` points to Gedo's backlog items (`FEAT-074`) or to the proposals Levix sent to Gedo (`G1` to `G12`) when one clearly applies.
 3. **Keep proprietary code out**: the reproduction is minimal and synthetic; never paste the project's code, secrets, customer data or internal URLs. The issue never carries the `Found` field (branch or pull request of this project).
@@ -65,12 +66,13 @@ Severity: `critical` (data loss, corruption, Git blocked), `high` (a main featur
 
 Issues leave the project, so **ask the user first** (once, for the list of entries to report):
 
-```powershell
-python "<skills_root>/gedo-feedback/gedo_feedback.py" list
-python "<skills_root>/gedo-feedback/gedo_feedback.py" issue <ID> --body-file <tmp>/issue.md
+```sh
+"<skills_root>/dev-cycle-protocol/bin/dev-cycle" gedo-feedback gedo_feedback list
+"<skills_root>/dev-cycle-protocol/bin/dev-cycle" gedo-feedback gedo_feedback issue <ID> --body-file <tmp>/issue.md
 gh issue create --repo Levix-Digital/gedo --title "<title it printed>" --body-file <tmp>/issue.md
-python "<skills_root>/gedo-feedback/gedo_feedback.py" reported <ID> --issue <issue URL>
+"<skills_root>/dev-cycle-protocol/bin/dev-cycle" gedo-feedback gedo_feedback reported <ID> --issue <issue URL>
 ```
+In PowerShell, run `& "<skills_root>/dev-cycle-protocol/bin/dev-cycle.ps1" gedo-feedback gedo_feedback [arguments]` instead.
 
 `issue` refuses text that attributes work to an AI (protocol principle 9). Without `gh`, create the issue with the platform's API or ask the user to. When Gedo fixes it, or it turns out not to be a Gedo problem: `close <ID> --reason "<fixed in vX.Y.Z | not a Gedo problem: ...>"`.
 

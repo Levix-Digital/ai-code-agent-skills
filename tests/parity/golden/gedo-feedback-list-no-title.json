@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ {project}/docs/gedo-feedback/2026-01-03-x.md: missing '# <title>' line\n",
+  "stderr": "",
+  "files": {}
+}

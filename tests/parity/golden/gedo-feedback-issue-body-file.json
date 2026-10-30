@@ -1,0 +1,8 @@
+{
+  "exit": 0,
+  "stdout": "Repository: Levix-Digital/gedo\nTitle: [missed-collision] Radar missed an edit of the same function\nBody: body.md\nCreate it: gh issue create --repo Levix-Digital/gedo --title \"[missed-collision] Radar missed an edit of the same function\" --body-file \"body.md\"\n",
+  "stderr": "",
+  "files": {
+    "project/body.md": "Found while using Gedo on real work.\n\n- **Kind**: missed-collision (A collision between parallel work that Gedo did not report)\n- **Severity**: high\n- **Gedo version**: 0.4.0\n- **Related**: G3, FEAT-074\n- **Recorded**: 2026-01-05\n\n## Scenario\n\nTwo threads edited parse_rust in separate worktrees\n\n## Expected\n\ngedo radar reports the collision\n\n## Actual\n\nNothing reported until the merge\n"
+  }
+}

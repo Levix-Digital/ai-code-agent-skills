@@ -7,7 +7,7 @@ version: v2.10.0
 status: in_progress
 author: Levi Silveira
 created_at: '2026-10-27T18:17:46'
-updated_at: '2026-10-30T13:47:57'
+updated_at: '2026-10-30T14:17:10'
 session_id: null
 tags:
 - rust
@@ -113,7 +113,9 @@ milestones:
   done_at: '2026-10-30'
   by: Levi Silveira
 - name: M24 gedo_feedback
-  done: false
+  done: true
+  done_at: '2026-10-30'
+  by: Levi Silveira
 - name: M25 onboard
   done: false
 - name: M26 verify_gate
@@ -236,6 +238,9 @@ status_log:
 - at: '2026-10-30T13:47:57'
   by: Levi Silveira
   note: 'Milestone ''M23 pr_sync'' completed: pr_sync and its modules (_pr_model, _pr_providers) and the _no_ai guard run on the engine (0.22.0): kernel::no_ai and the engine command _no_ai, kernel py::re with Python''s re semantics; parity cases fake gh and glab (answers per fixture, every call logged); 57 new cases; fuzz 0 differences (pr_sync 2,500 runs on 3.13 and 800 on 3.10, _no_ai 4,000); pr_sync.py, _pr_model.py, _pr_providers.py and _no_ai.py stay for their importers'
+- at: '2026-10-30T14:17:10'
+  by: Levi Silveira
+  note: Milestone 'M24 gedo_feedback' completed
 ---
 
 # Translate the scripts to Rust with identical behavior

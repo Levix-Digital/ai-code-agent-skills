@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "Repository: acme/gedo\nTitle: [setup] Claude Code plugin hooks break\n\nFound while using Gedo on real work.\n\n- **Kind**: setup (Installation, gedo init, hooks or environment problems)\n- **Severity**: medium\n- **Recorded**: 2026-02-01\n\n## Scenario\n\nInstalling the hooks in a project built with Claude Code\n\n## Expected\n\nThe hooks run\n\n## Actual\n\nThe hooks are skipped\n",
+  "stderr": "",
+  "files": {}
+}

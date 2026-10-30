@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ An open entry with the same kind and title exists: 2026-01-05-radar-missed-an-edit-of-the. Add to it instead, or pass --allow-duplicate.\n",
+  "stderr": "",
+  "files": {}
+}

@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "🧪 Gedo feedback: off (the project does not use Gedo yet (gedo.enabled is false in .dev-cycle.json))\n   Entries: docs/gedo-feedback (0 open, 0 reported, 0 closed)\n   Issues go to: Levix-Digital/gedo\n",
+  "stderr": "",
+  "files": {}
+}
