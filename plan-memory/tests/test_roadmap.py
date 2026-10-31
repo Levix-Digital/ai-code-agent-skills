@@ -11,7 +11,7 @@ sys.path.insert(0, SKILL)
 
 from _backlog import Backlog, BacklogError  # noqa: E402
 from _roadmap import Roadmap, RoadmapError  # noqa: E402
-import backlog as backlog_cli  # noqa: E402
+import _backlog_cli as backlog_cli  # noqa: E402
 import roadmap as cli  # noqa: E402
 
 TEMPLATE = os.path.join(SKILL, "templates", "ROADMAP_TEMPLATE.md")

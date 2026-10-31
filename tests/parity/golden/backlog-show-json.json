@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "{\n  \"id\": \"BUG-001\",\n  \"type\": \"bug\",\n  \"title\": \"Crash on start\",\n  \"section\": \"Bugs\",\n  \"severity\": \"high\",\n  \"priority\": null,\n  \"epic\": null,\n  \"status\": \"open\",\n  \"found\": \"<MASK>\",\n  \"plan\": null,\n  \"closed\": null,\n  \"description\": \"The app crashes when it starts offline.\"\n}\n",
+  "stderr": "",
+  "files": {}
+}

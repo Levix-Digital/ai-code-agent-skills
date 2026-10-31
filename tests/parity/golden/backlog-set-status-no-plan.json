@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ BUG-001 has no plan; an item is 'planned' only once it is promoted into a plan\n",
+  "stderr": "",
+  "files": {}
+}

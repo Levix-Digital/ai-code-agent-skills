@@ -81,8 +81,8 @@ For a cumulative file that grew by appending scenarios:
    ```
    Each `Fail` or `Blocked` test, with its notes, becomes a fix in the candidate's branch (`devops-release`: `dev`, `main` or `release/X.Y`, by branching model; with a regression test when it can be automated), followed by a new candidate and a new run (`rc.2`) containing at least the failed tests.
    When the user decides to release without fixing a failure now, capture it in the backlog instead, so it is not lost:
-   ```powershell
-   python "<skills_root>/plan-memory/backlog.py" add --from-failed --run v1.4.0-rc.1 [--severity medium]
+   ```sh
+   "<skills_root>/dev-cycle-protocol/bin/dev-cycle" plan-memory backlog add --from-failed --run v1.4.0-rc.1 [--severity medium]
    ```
 4. The candidate passes the acceptance gate when every test of the run is `Pass`:
    ```sh
@@ -93,14 +93,14 @@ For a cumulative file that grew by appending scenarios:
 
 ## 🐞 Bugs
 
-Bugs live in the project backlog (`plan-memory/backlog.py`, default `docs/BACKLOG.md`) until they are planned and fixed.
+Bugs live in the project backlog (`plan-memory backlog` on the engine, default `docs/BACKLOG.md`) until they are planned and fixed.
 
 - **Captured bug** (backlog item `BUG-NNN`): a title that names the wrong behavior, the severity, where it was found (version, pull request, manual test) and a description with the symptom: what happens and what should happen. No hypothesis is required at capture time.
 - **Severity**: `critical` (data loss, security, nothing works), `high` (a main feature fails, no workaround), `medium` (a feature fails with a workaround), `low` (cosmetic or rare). Open `critical`, `high` and `medium` bugs come before other work (`backlog.blocking_severities`); a `low` bug goes into the next release at the latest (`backlog.bug_deadline`).
 - **Triage first**: a bug plan starts by judging whether the report is really a bug: expected vs. actual behavior and where the expectation is defined, a verdict (bug, works as designed, misuse or configuration, environment, feature request, duplicate), the suspected code paths and the severity confirmed. A report that is not a bug is not fixed: the user decides how to close or convert the item.
-- **Planned bug** (bug plan from `backlog.py promote`): exact reproduction steps, the real log lines, the confirmed root cause, the fix design and the **regression test that fails before the fix and passes after it**. The plan is not ready for approval while the root cause is still a hypothesis.
-- **Fixed**: the regression test is in the suite and green in CI, the affected manual tests are curated, and the item is closed by the plan's completion or `backlog.py close <ID> --ref "PR #N"`.
-- **Bugs found while doing something else**: fix them in the same change only when they are in scope and small; otherwise capture them (`backlog.py add --type bug ...`) and report the id to the user.
+- **Planned bug** (bug plan from `backlog promote`): exact reproduction steps, the real log lines, the confirmed root cause, the fix design and the **regression test that fails before the fix and passes after it**. The plan is not ready for approval while the root cause is still a hypothesis.
+- **Fixed**: the regression test is in the suite and green in CI, the affected manual tests are curated, and the item is closed by the plan's completion or `backlog close <ID> --ref "PR #N"`.
+- **Bugs found while doing something else**: fix them in the same change only when they are in scope and small; otherwise capture them (`backlog add --type bug ...`) and report the id to the user.
 
 ---
 

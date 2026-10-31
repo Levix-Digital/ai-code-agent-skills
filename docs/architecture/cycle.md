@@ -18,7 +18,7 @@ Owns the cycle itself: the single entry command, the phases 0 to 10 with the rol
 - `dev-cycle-protocol/SKILL.md`: phases, roles, principles, gates and the rules of each path.
 - `onboard` (engine, `crates/dev-cycle-protocol/src/onboard.rs`): reads the repository (configuration, branching model, branches, product baseline, plans, release candidate, bugs, roadmap, Spec Kit, pull requests, protocol files the ignore rules hide) and writes only after the user confirms (`write-config`, `create-branch`, `set-attribution`).
 - `crates/dev-cycle-protocol/src/onboard_rules.rs`: pure rules that turn that state into the ordered options and the recommendation.
-- `verify_gate` (engine, `crates/dev-cycle-protocol/src/verify_gate.rs`): gates `0`, `3`, `rc` and `8`, each running the role skills' checkers (on the engine; `backlog.py` on Python until it is translated).
+- `verify_gate` (engine, `crates/dev-cycle-protocol/src/verify_gate.rs`): gates `0`, `3`, `rc` and `8`, each running the role skills' checkers (on the engine).
 - `inspect_project` (engine, `crates/dev-cycle-protocol`): detects stack, build tools, test runners and surfaces.
 
 ## Behavior

@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "{\"types\": {\"bug\": {\"open\": 0, \"planned\": 0, \"in_progress\": 0}, \"feature\": {\"open\": 0, \"planned\": 0, \"in_progress\": 0}, \"improvement\": {\"open\": 0, \"planned\": 0, \"in_progress\": 0}, \"adjustment\": {\"open\": 0, \"planned\": 0, \"in_progress\": 0}, \"epic\": {\"open\": 0, \"planned\": 0, \"in_progress\": 0}}, \"blocking_severities\": [\"critical\", \"high\", \"medium\"], \"blocking_bugs\": [], \"untriaged_bugs\": [], \"closed\": 0}\n",
+  "stderr": "",
+  "files": {}
+}

@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ BUG-001 is a bug; use a severity\n",
+  "stderr": "",
+  "files": {}
+}

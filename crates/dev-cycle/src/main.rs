@@ -106,6 +106,7 @@ const COMMANDS: &[(&str, &str, Command)] = &[
         "branching",
         devops_release::branching::main,
     ),
+    ("plan-memory", "backlog", plan_memory::backlog_cli::main),
     (
         "plan-memory",
         "check_milestone",

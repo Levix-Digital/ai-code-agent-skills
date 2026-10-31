@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ a bug needs a severity: critical, high, medium, low\n",
+  "stderr": "",
+  "files": {}
+}

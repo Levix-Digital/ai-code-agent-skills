@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "usage: backlog.py add [-h] [--dir DIR]\n                      [--type {bug,feature,improvement,adjustment,epic}]\n                      [--title TITLE] [--description DESCRIPTION]\n                      [--severity {critical,high,medium,low}]\n                      [--priority {high,medium,low}] [--epic EPIC]\n                      [--found-in FOUND_IN] [--from-failed] [--run RUN]\n\noptions:\n  -h, --help            show this help message and exit\n  --dir DIR             Project directory (default: current; the Git root is\n                        used)\n  --type {bug,feature,improvement,adjustment,epic}\n  --title TITLE\n  --description DESCRIPTION\n  --severity {critical,high,medium,low}\n                        Required for bugs\n  --priority {high,medium,low}\n                        Other types (default: medium)\n  --epic EPIC           Epic the item belongs to (EPIC-NNN)\n  --found-in FOUND_IN   Where it was found: version, pull request, test\n  --from-failed         Capture the manual tests marked Fail in --run as bugs\n  --run RUN             Release candidate run, with --from-failed\n",
+  "stderr": "",
+  "files": {}
+}

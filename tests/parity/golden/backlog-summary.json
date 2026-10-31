@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "📋 Backlog: docs/BACKLOG.md\n   Bugs         : 4 (3 open, 1 planned)\n   Features     : 2 (2 open)\n   Improvements : 1 (1 open)\n   Adjustments  : 0\n   Epics        : 2 (2 open)\n   Closed       : 2\n\n🐞 Open bugs that come before new work (critical, high):\n   BUG-001   [open] (high) Crash on start\n\n🏷️ Open bugs not triaged yet (they also come before new work):\n   BUG-002   [planned] (low) Wrong label  → open_plan  - not scheduled; it goes into v1.1.0 at the latest\n   BUG-004   [open] (low) Odd colors  - not scheduled; it goes into v1.1.0 at the latest\n\nBugs:\n   BUG-003   [open] (medium) Slow sync\n\nFeatures:\n   FEAT-002  [open] (high) Share links  [EPIC-001]\n   FEAT-001  [open] (medium) Export answers  [EPIC-001]\n\nImprovements:\n   IMP-002   [open] (low) Faster search  [EPIC-002]\n\nEpics:\n   EPIC-001  [open] (high) Sharing  (0/2 items closed)\n   EPIC-003  [open] (low) Done things  (1/1 items closed)\n",
+  "stderr": "",
+  "files": {}
+}

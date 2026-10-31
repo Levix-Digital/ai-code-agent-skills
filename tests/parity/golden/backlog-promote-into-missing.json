@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ plan 'nope' not found in {project}/docs/plans\n",
+  "stderr": "",
+  "files": {}
+}

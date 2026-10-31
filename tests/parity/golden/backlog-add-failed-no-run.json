@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ --from-failed needs --run <rc>\n",
+  "stderr": "",
+  "files": {}
+}

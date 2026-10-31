@@ -1,0 +1,4 @@
+{
+  "project_name": "parity",
+  "backlog": {"blocking_severities": ["critical", "high"]}
+}

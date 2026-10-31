@@ -1,25 +1,8 @@
 """
-Backlog - plan-memory Skill
+Backlog - plan-memory Skill (module)
 The first level of planning: capture bugs, features, improvements and adjustments in the
-project backlog (default: docs/BACKLOG.md) without discovery, group them under epics, list
-and triage them, and close them. Writes the file; never commits.
-
-Usage:
-    python backlog.py add --type bug|feature|improvement|adjustment|epic --title T --description D
-                          [--severity S] [--priority P] [--epic EPIC-NNN] [--found-in "v1.2.0, PR #12"]
-    python backlog.py add --from-failed --run <rc> [--severity S]    (failed manual tests deferred as bugs)
-    python backlog.py list [--type T] [--status S] [--epic EPIC-NNN] [--all] [--json]
-    python backlog.py summary [--json]
-    python backlog.py show <ID> [--json]
-    python backlog.py set <ID> [--title T] [--description D] [--severity S] [--priority P] [--status S] [--plan ID] [--epic ID|-]
-    python backlog.py close <ID> [--ref "PR #12"]
-    python backlog.py drop <ID> --reason R
-    python backlog.py duplicate <ID> --of <ID>
-    python backlog.py supersede <ID> --by <ID>[,<ID>...]    (replaced by different, better defined items)
-    python backlog.py reopen <ID>
-    python backlog.py promote <ID> [<ID> ...] [--title T] [--id PLAN_ID] [--version V] | --into <PLAN_ID>
-    python backlog.py validate
-All commands accept --dir <project> (default: current directory; the Git root is used).
+project backlog (default: docs/BACKLOG.md). The command is the engine's `plan-memory backlog`;
+this module keeps its functions for the Python tests that drive them.
 """
 import argparse
 import json
@@ -399,6 +382,3 @@ def main(argv: list = None) -> int:
         print(f"❌ {e}")
         return 1
 
-
-if __name__ == "__main__":
-    sys.exit(main())

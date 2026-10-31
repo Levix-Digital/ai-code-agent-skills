@@ -77,10 +77,10 @@ How to record a run: in each test of the current run, mark exactly one box of th
   2. Ask for a new feature.
   3. Ask the agent to plan the open bug.
 - **Expected**:
-  - The unrelated bug is captured with `backlog.py add` and its id is reported; the pull request links it instead of listing loose points to decide.
+  - The unrelated bug is captured with `backlog add` and its id is reported; the pull request links it instead of listing loose points to decide.
   - At discovery the agent shows the backlog and asks what to do; it promotes, drops or re-prioritizes nothing on its own.
   - The feature plan does not pass gate 3 while the high bug is open, unless you accept the risk and the reason is recorded in the plan.
-  - Planning the bug runs `backlog.py promote` and produces a bug plan with reproduction, root cause and a regression test; the item becomes `planned`.
+  - Planning the bug runs `backlog promote` and produces a bug plan with reproduction, root cause and a regression test; the item becomes `planned`.
 - **Result**: [ ] Pass [ ] Fail [ ] Blocked
 - **Notes**:
 

@@ -10,6 +10,7 @@ publish.workspace = true
 [dependencies]
 architecture-docs.workspace = true
 kernel.workspace = true
+quality-assurance.workspace = true
 vector-store.workspace = true
 
 [lints]

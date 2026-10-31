@@ -166,7 +166,7 @@ In PowerShell, run `& "<skills_root>/dev-cycle-protocol/bin/dev-cycle.ps1" plan-
 
 ---
 
-## 📥 Backlog (`backlog.py`)
+## 📥 Backlog (`backlog`)
 
 The first level of planning: one Markdown file (`backlog.file` in `.dev-cycle.json`, default `docs/BACKLOG.md`), created by the first `add` from `templates/BACKLOG_TEMPLATE.md`.
 
@@ -183,16 +183,18 @@ The first level of planning: one Markdown file (`backlog.file` in `.dev-cycle.js
 
 Features (`FEAT-NNN`), improvements (`IMP-NNN`) and adjustments (`ADJ-NNN`) have `Priority` (high, medium, low) instead of `Severity`. Any item but an epic may have `- **Epic**: EPIC-NNN`. **Epics** (`EPIC-NNN`, section `## Epics`) group the items of the complete product; they have `Priority`, `Status` (`open` until closed), `Found` and `Description`, no `Plan`, and are never promoted: their items are. `validate` warns about an open epic whose items are all closed. Ids are never reused: closed items stay under `## Closed` with a `- **Closed**:` note (date and pull request, reason, `duplicate of <ID>`, or `superseded by <ID>[, <ID>...]`). An item is **superseded** when it is replaced by different, better defined items (an idea split or reshaped after inception); a **duplicate** is the same request captured twice.
 
+`backlog` runs on the native engine: `"<skills_root>/dev-cycle-protocol/bin/dev-cycle" plan-memory backlog <command> [arguments]` in sh shells (Linux, macOS, Git Bash). In PowerShell, run `& "<skills_root>/dev-cycle-protocol/bin/dev-cycle.ps1" plan-memory backlog [arguments]` instead.
+
 | Task | Command |
 |---|---|
-| Capture | `backlog.py add --type bug\|feature\|improvement\|adjustment\|epic --title "<t>" --description "<d>" [--severity S] [--priority P] [--epic EPIC-NNN] [--found-in "v1.2.0, PR #12"]` |
-| Capture failed manual tests | `backlog.py add --from-failed --run vX.Y.Z-rc.N [--severity S]` |
-| Summary (bugs before new work first) | `backlog.py summary [--json]` |
-| List, show | `backlog.py list [--type T] [--status S] [--epic EPIC-NNN] [--all] [--json]`, `backlog.py show <ID>` |
-| Change | `backlog.py set <ID> [--title] [--description] [--severity] [--priority] [--status] [--plan] [--epic ID\|-]` |
-| Promote into a plan | `backlog.py promote <ID> [<ID> ...] [--title T] [--id PLAN_ID] [--version V]` or `--into <PLAN_ID>` |
-| Close | `backlog.py close <ID> [--ref "PR #12"]`, `drop <ID> --reason R`, `duplicate <ID> --of <ID>`, `supersede <ID> --by <ID>[,<ID>...]`, `reopen <ID>` |
-| Validate | `backlog.py validate` |
+| Capture | `backlog add --type bug\|feature\|improvement\|adjustment\|epic --title "<t>" --description "<d>" [--severity S] [--priority P] [--epic EPIC-NNN] [--found-in "v1.2.0, PR #12"]` |
+| Capture failed manual tests | `backlog add --from-failed --run vX.Y.Z-rc.N [--severity S]` |
+| Summary (bugs before new work first) | `backlog summary [--json]` |
+| List, show | `backlog list [--type T] [--status S] [--epic EPIC-NNN] [--all] [--json]`, `backlog show <ID>` |
+| Change | `backlog set <ID> [--title] [--description] [--severity] [--priority] [--status] [--plan] [--epic ID\|-]` |
+| Promote into a plan | `backlog promote <ID> [<ID> ...] [--title T] [--id PLAN_ID] [--version V]` or `--into <PLAN_ID>` |
+| Close | `backlog close <ID> [--ref "PR #12"]`, `drop <ID> --reason R`, `duplicate <ID> --of <ID>`, `supersede <ID> --by <ID>[,<ID>...]`, `reopen <ID>` |
+| Validate | `backlog validate` |
 
 - **Capture** costs nothing: no discovery, no plan. The user does it with the [`/backlog`](../backlog/SKILL.md) command; the agent does it for bugs it finds outside the current scope.
 - **Promotion** creates a `draft` plan from `templates/BUG_PLAN_TEMPLATE.md` (every item a bug: reproduction, evidence and root cause, fix design, regression test) or `templates/FEATURE_PLAN_TEMPLATE.md`, with the items copied into its `Backlog items` section, and links both ways. The discovery is written in that plan; it is saved again as `active`, with milestones, for approval.
@@ -256,9 +258,9 @@ When the project uses Spec Kit (`speckit.enabled`, see `dev-cycle-protocol`), th
 
 The whole development lifecycle follows 👉 **[`dev-cycle-protocol`](../dev-cycle-protocol/SKILL.md)**:
 - **Phase 0 (Product inception)**: the product backlog as epics and their items, and the roadmap from the MVP (`product-inception`).
-- **Phase 1 (Discovery)**: check `list_plans` (engine), `check_milestone --list` (engine) or `search_plans` (engine) for real progress and agreed guidelines, `backlog.py summary` for open bugs and captured ideas and `roadmap current` (engine) for the items of the current release; promote the items the user chooses.
+- **Phase 1 (Discovery)**: check `list_plans` (engine), `check_milestone --list` (engine) or `search_plans` (engine) for real progress and agreed guidelines, `backlog summary` for open bugs and captured ideas and `roadmap current` (engine) for the items of the current release; promote the items the user chooses.
 - **Phase 2 (Plan)**: save the full plan with `save_plan` (engine, with `--supersedes` when it replaces one, `--spec-dir` with Spec Kit) and run `detect_drift.py`. The plan follows the orchestrator's template, with a section from each role.
-- **Phase 3 (Plan approval)**: `verify_gate --gate 3` (engine) checks there is an active plan, warns if its file is not committed, and blocks a non-bug plan while open blocking bugs (default `critical`, `high`, `medium`) or bugs not triaged are outside it (bugs first). A bug is triaged when it has a valid severity and, when its severity does not block, it is in the next release of the roadmap (`backlog.bug_deadline`). `backlog.py summary` lists the bugs not triaged; `backlog.py add` of a bug says where it goes.
+- **Phase 3 (Plan approval)**: `verify_gate --gate 3` (engine) checks there is an active plan, warns if its file is not committed, and blocks a non-bug plan while open blocking bugs (default `critical`, `high`, `medium`) or bugs not triaged are outside it (bugs first). A bug is triaged when it has a valid severity and, when its severity does not block, it is in the next release of the roadmap (`backlog.bug_deadline`). `backlog summary` lists the bugs not triaged; `backlog add` of a bug says where it goes.
 - **Phase 4 (Implementation)**: mark milestones with `check_milestone` (engine) as they are completed.
 - **Phase 10 (Release)**: close the remaining milestones or finish the plan with `update_plan_status` (engine), and mark the release released (`roadmap set-release vX.Y.Z --status released` on the engine).
 

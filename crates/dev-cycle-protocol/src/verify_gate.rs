@@ -54,7 +54,7 @@ const SAFE_MARKERS: [&str; 4] = [".example", ".sample", ".template", ".dist"];
 
 /// Checkers already translated to the native engine (IMP-005): they run as
 /// `dev-cycle <skill> <script>` instead of `python <skill>/<script>.py`.
-const ENGINE_CHECKERS: [(&str, &str); 12] = [
+const ENGINE_CHECKERS: [(&str, &str); 13] = [
     ("architecture-docs", "check_docs.py"),
     ("product-inception", "check_product.py"),
     ("software-design", "check_design.py"),
@@ -63,6 +63,7 @@ const ENGINE_CHECKERS: [(&str, &str); 12] = [
     ("devops-release", "check_ci_policy.py"),
     ("devops-release", "release_status.py"),
     ("devops-release", "branching.py"),
+    ("plan-memory", "backlog.py"),
     ("plan-memory", "list_plans.py"),
     ("plan-memory", "roadmap.py"),
     ("dev-cycle-protocol", "constitution.py"),

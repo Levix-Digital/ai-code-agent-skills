@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "{\n  \"types\": {\n    \"bug\": {\n      \"open\": 3,\n      \"planned\": 1,\n      \"in_progress\": 0\n    },\n    \"feature\": {\n      \"open\": 2,\n      \"planned\": 0,\n      \"in_progress\": 0\n    },\n    \"improvement\": {\n      \"open\": 1,\n      \"planned\": 0,\n      \"in_progress\": 0\n    },\n    \"adjustment\": {\n      \"open\": 0,\n      \"planned\": 0,\n      \"in_progress\": 0\n    },\n    \"epic\": {\n      \"open\": 2,\n      \"planned\": 0,\n      \"in_progress\": 0\n    }\n  },\n  \"blocking_severities\": [\n    \"critical\",\n    \"high\"\n  ],\n  \"blocking_bugs\": [\n    \"BUG-001\"\n  ],\n  \"untriaged_bugs\": [\n    {\n      \"id\": \"BUG-002\",\n      \"reason\": \"not scheduled; it goes into v1.1.0 at the latest\"\n    },\n    {\n      \"id\": \"BUG-004\",\n      \"reason\": \"not scheduled; it goes into v1.1.0 at the latest\"\n    }\n  ],\n  \"closed\": 2\n}\n",
+  "stderr": "",
+  "files": {}
+}

@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "⚠️ EPIC-003: every item is closed; close the epic (backlog.py close EPIC-003)\n⚠️ IMP-002 is open under the closed epic EPIC-002\n\n✅ backlog: 11 item(s), 0 problem(s).\n",
+  "stderr": "",
+  "files": {}
+}

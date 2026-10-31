@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "usage: backlog.py [-h]\n                  {add,list,summary,show,set,close,drop,duplicate,supersede,reopen,promote,validate} ...\n\nCapture, list and close items of the project backlog\n\npositional arguments:\n  {add,list,summary,show,set,close,drop,duplicate,supersede,reopen,promote,validate}\n    add                 Capture a new item\n    list                List items (open ones by default)\n    summary             Counts per type and the bugs that come before new work\n    show                Show one item\n    set                 Change fields of an open item\n    close               Close an item as done\n    drop                Close an item that will not be done\n    duplicate           Close an item as a duplicate of another\n    supersede           Close an item replaced by different, better defined\n                        items\n    reopen              Move a closed item back to its section as open\n    promote             Create a draft plan for open items (or add them to an\n                        open plan)\n    validate            Check the backlog format\n\noptions:\n  -h, --help            show this help message and exit\n",
+  "stderr": "",
+  "files": {}
+}
