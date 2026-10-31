@@ -31,7 +31,7 @@ from _backlog import (CLOSED_STATUSES, OPEN_STATUSES, PRIORITIES, SEVERITIES, TY
                       Backlog, BacklogError)
 from _backlog_store import BacklogFile, sync_plan_items
 from _store import PlanStore, now_iso, setup_stdout, today
-from save_plan import save_plan
+from _save_plan import save_plan
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 PLAN_TEMPLATES = {

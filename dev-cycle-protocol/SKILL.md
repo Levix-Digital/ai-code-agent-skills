@@ -136,7 +136,7 @@ Write the complete plan with this template, collecting each role's section:
 Check for drift and save the plan in full:
 ```powershell
 python "<skills_root>/plan-memory/detect_drift.py" --proposal "<proposal summary>"
-python "<skills_root>/plan-memory/save_plan.py" --title "<title>" --file "<plan.md>" --version "<target version>" --milestones "<m1,m2,...>" [--spec-dir specs/NNN-slug] [--supersedes "<old_plan_id>"]
+"<skills_root>/dev-cycle-protocol/bin/dev-cycle" plan-memory save_plan --title "<title>" --file "<plan.md>" --version "<target version>" --milestones "<m1,m2,...>" [--spec-dir specs/NNN-slug] [--supersedes "<old_plan_id>"]
 ```
 End with (in the user's language): *"This is the complete plan. Would you like to adjust anything, or do you approve the start of implementation?"*
 

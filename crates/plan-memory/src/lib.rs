@@ -7,5 +7,6 @@ pub mod index;
 pub mod list_plans;
 pub mod rebuild_index;
 pub mod roadmap;
+pub mod save_plan;
 pub mod search_plans;
 pub mod store;

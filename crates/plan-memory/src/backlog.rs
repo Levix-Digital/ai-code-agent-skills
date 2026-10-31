@@ -244,8 +244,16 @@ impl Item {
 }
 
 pub struct Backlog {
+    /// `\r\n` when the file uses it, else `\n`.
+    pub newline: &'static str,
+    /// Lines before the first section.
+    pub header: Vec<String>,
     /// The items of each section, in `SECTIONS` order.
     pub sections: Vec<Vec<Item>>,
+    /// Text between each section's heading and its first item, in `SECTIONS` order.
+    pub section_notes: Vec<Vec<String>>,
+    /// The known sections the file has.
+    pub seen_sections: Vec<bool>,
     /// Structural problems found while parsing, with their line.
     pub errors: Vec<String>,
     /// (0-based line, name) of the `## ` headings that are not a known section.
@@ -254,7 +262,11 @@ pub struct Backlog {
 
 impl Backlog {
     pub fn parse(text: &str) -> Self {
+        let newline = if text.contains("\r\n") { "\r\n" } else { "\n" };
+        let mut header = Vec::new();
         let mut sections: Vec<Vec<Item>> = SECTIONS.iter().map(|_| Vec::new()).collect();
+        let mut section_notes: Vec<Vec<String>> = SECTIONS.iter().map(|_| Vec::new()).collect();
+        let mut seen_sections = vec![false; SECTIONS.len()];
         let mut errors = Vec::new();
         let mut unknown_sections = Vec::new();
         let mut section: Option<usize> = None;
@@ -267,12 +279,16 @@ impl Backlog {
                 item = false;
                 field = None;
                 section = SECTIONS.iter().position(|s| *s == name);
-                if section.is_none() {
-                    unknown_sections.push((i, name.to_string()));
+                match section {
+                    Some(s) => seen_sections[s] = true,
+                    None => unknown_sections.push((i, name.to_string())),
                 }
                 continue;
             }
             let Some(s) = section else {
+                if unknown_sections.is_empty() {
+                    header.push(line.to_string());
+                }
                 continue;
             };
             if line.starts_with("###") {
@@ -296,6 +312,7 @@ impl Backlog {
                 continue;
             }
             if !item {
+                section_notes[s].push(line.to_string());
                 continue;
             }
             let Some(it) = sections[s].last_mut() else {
@@ -330,7 +347,11 @@ impl Backlog {
             }
         }
         Backlog {
+            newline,
+            header,
             sections,
+            section_notes,
+            seen_sections,
             errors,
             unknown_sections,
         }
@@ -724,4 +745,283 @@ pub fn triage<'a>(
         deadline_checked: roadmap.is_some(),
         next_release: current.map(|c| c.version.clone()),
     })
+}
+
+/// Plan status -> status of its open backlog items. `completed` closes them; `superseded`
+/// leaves them.
+const PLAN_TO_ITEM_STATUS: [(&str, &str); 4] = [
+    ("draft", "planned"),
+    ("planned", "planned"),
+    ("active", "planned"),
+    ("in_progress", "in_progress"),
+];
+const FIELD_ORDER: [&str; 8] = [
+    "Severity",
+    "Priority",
+    "Epic",
+    "Status",
+    "Found",
+    "Plan",
+    "Closed",
+    "Description",
+];
+
+impl Item {
+    /// `set(name, value)`: the first line stripped, continuation lines indented.
+    fn set(&mut self, name: &str, value: &str) {
+        let value = value.replace("\r\n", "\n");
+        let mut parts = value.split('\n');
+        let mut lines = vec![strip(parts.next().unwrap_or_default()).to_string()];
+        for line in parts {
+            let l = strip(line);
+            lines.push(if l.is_empty() {
+                String::new()
+            } else {
+                format!("  {l}")
+            });
+        }
+        match self.fields.iter_mut().find(|(n, _)| n == name) {
+            Some((_, old)) => *old = lines,
+            None => self.fields.push((name.to_string(), lines)),
+        }
+    }
+}
+
+fn strip(s: &str) -> &str {
+    kernel::py::num::strip(s)
+}
+
+impl Backlog {
+    /// Where `find(item_id)` is: section and position.
+    fn locate(&self, item_id: &str) -> Result<(usize, usize), BacklogError> {
+        let want = upper(item_id);
+        for (s, items) in self.sections.iter().enumerate() {
+            if let Some(i) = items.iter().position(|i| i.id == want) {
+                return Ok((s, i));
+            }
+        }
+        Err(BacklogError(format!("{item_id}: no such backlog item")))
+    }
+
+    /// `update(item_id, plan=plan, status=status)`.
+    pub fn link(&mut self, item_id: &str, plan: &str, status: &str) -> Result<(), BacklogError> {
+        let (s, i) = self.locate(item_id)?;
+        let item = &mut self.sections[s][i];
+        if item.kind() == Some("epic") {
+            return Err(BacklogError(format!(
+                "{} is an epic; its items are promoted, not the epic",
+                item.id
+            )));
+        }
+        if item.closed() {
+            return Err(BacklogError(format!(
+                "{} is closed; reopen it first",
+                item.id
+            )));
+        }
+        let plan = strip(plan);
+        item.set("Plan", if plan.is_empty() { NO_PLAN } else { plan });
+        if !OPEN_STATUSES.contains(&status) {
+            return Err(BacklogError(format!(
+                "status '{status}' is not one of: {} (use close, drop or duplicate to close an item)",
+                OPEN_STATUSES.join(", ")
+            )));
+        }
+        if status != "open" && item.plan().is_none() {
+            return Err(BacklogError(format!(
+                "{} has no plan; an item is '{status}' only once it is promoted into a plan",
+                item.id
+            )));
+        }
+        item.set("Status", status);
+        Ok(())
+    }
+
+    /// `close(item_id, status, closed)`: moves the item to the Closed section.
+    pub fn close(&mut self, item_id: &str, status: &str, closed: &str) -> Result<(), BacklogError> {
+        if !CLOSED_STATUSES.contains(&status) {
+            return Err(BacklogError(format!(
+                "status '{status}' is not one of: {}",
+                CLOSED_STATUSES.join(", ")
+            )));
+        }
+        let (s, i) = self.locate(item_id)?;
+        if self.sections[s][i].closed() {
+            let item = &self.sections[s][i];
+            return Err(BacklogError(format!(
+                "{} is already closed ({})",
+                item.id,
+                item.status()
+            )));
+        }
+        let mut item = self.sections[s].remove(i);
+        item.section = CLOSED_SECTION.to_string();
+        item.set("Status", status);
+        item.set("Closed", closed);
+        self.sections[SECTIONS.len() - 1].push(item);
+        Ok(())
+    }
+
+    /// `render()`: the file text.
+    pub fn render(&self) -> String {
+        let mut out: Vec<String> = self.header.clone();
+        while out.last().is_some_and(|l| strip(l).is_empty()) {
+            out.pop();
+        }
+        for (n, name) in SECTIONS.iter().enumerate() {
+            if *name == "Epics" && !self.seen_sections[n] && self.sections[n].is_empty() {
+                continue; // backlogs written before epics existed stay byte-identical
+            }
+            out.push(String::new());
+            out.push(format!("## {name}"));
+            let mut notes: &[String] = &self.section_notes[n];
+            while notes.first().is_some_and(|l| strip(l).is_empty()) {
+                notes = &notes[1..];
+            }
+            while notes.last().is_some_and(|l| strip(l).is_empty()) {
+                notes = &notes[..notes.len() - 1];
+            }
+            if !notes.is_empty() {
+                out.push(String::new());
+                out.extend(notes.iter().cloned());
+            }
+            for item in &self.sections[n] {
+                out.push(String::new());
+                out.push(format!("### {}: {}", item.id, item.title));
+                let mut names: Vec<&str> = FIELD_ORDER
+                    .iter()
+                    .copied()
+                    .filter(|f| item.fields.iter().any(|(n, _)| n == f))
+                    .collect();
+                for (n, _) in &item.fields {
+                    if !FIELD_ORDER.contains(&n.as_str()) {
+                        names.push(n);
+                    }
+                }
+                for field in names {
+                    let Some((_, lines)) = item.fields.iter().find(|(n, _)| n == field) else {
+                        continue;
+                    };
+                    let mut lines: &[String] = lines;
+                    while lines.len() > 1 && lines.last().is_some_and(|l| strip(l).is_empty()) {
+                        lines = &lines[..lines.len() - 1];
+                    }
+                    let first = &lines[0];
+                    out.push(if first.is_empty() {
+                        format!("- **{field}**:")
+                    } else {
+                        format!("- **{field}**: {first}")
+                    });
+                    out.extend(lines[1..].iter().cloned());
+                }
+            }
+        }
+        format!("{}{}", out.join(self.newline), self.newline)
+    }
+}
+
+impl BacklogFile {
+    /// Atomic write; refuses a file whose structure it could not read, so nothing is lost.
+    pub fn save(&self, backlog: &Backlog) -> Result<(), RoadmapError> {
+        let mut structural = backlog.errors.clone();
+        for (_, name) in &backlog.unknown_sections {
+            structural.push(format!("unknown section '## {name}'"));
+        }
+        if !structural.is_empty() {
+            return Err(RoadmapError::Error(format!(
+                "{} has structural problems; fix them by hand first:\n  - {}",
+                self.rel()?,
+                structural.join("\n  - ")
+            )));
+        }
+        kernel::py::path::makedirs(&kernel::py::path::dirname(&self.path))?;
+        let tmp = format!("{}.tmp", self.path);
+        kernel::py::write_text(std::path::Path::new(&tmp), &backlog.render())?;
+        std::fs::rename(&tmp, &self.path).map_err(|e| {
+            let c = kernel::py::io_crash(&e, std::path::Path::new(&tmp));
+            Crash::new(format!("{} -> {}", c.0, kernel::py::repr_str(&self.path)))
+        })?;
+        Ok(())
+    }
+}
+
+/// `sync_plan_items(start_dir, plan)`: brings the plan's backlog items in line with its
+/// status. Returns the messages; never fails on the backlog's content.
+pub fn sync_plan_items(
+    start_dir: &str,
+    plan_id: &str,
+    status: &Value,
+    items: &[String],
+) -> Result<Vec<String>, Crash> {
+    if items.is_empty() {
+        return Ok(Vec::new());
+    }
+    let bf = BacklogFile::new(Some(start_dir))?;
+    if !bf.exists() {
+        return Ok(vec![format!(
+            "⚠️ Plan '{plan_id}' lists backlog items but there is no backlog at {}.",
+            bf.rel()?
+        )]);
+    }
+    let mut messages = Vec::new();
+    let mut changed = false;
+    let result = (|| -> Result<(), RoadmapError> {
+        let mut backlog = bf.load()?;
+        for item_id in items {
+            let item = match backlog.find(item_id) {
+                Ok(i) => i,
+                Err(_) => {
+                    messages.push(format!(
+                        "⚠️ {item_id} (plan '{plan_id}') is not in {}.",
+                        bf.rel()?
+                    ));
+                    continue;
+                }
+            };
+            if item.closed() {
+                continue;
+            }
+            let id = item.id.clone();
+            if let Some(other) = item.plan()
+                && other != plan_id
+            {
+                messages.push(format!(
+                    "⚠️ {id} belongs to plan '{other}', not '{plan_id}'; left unchanged."
+                ));
+                continue;
+            }
+            if status.as_str() == Some("completed") {
+                backlog.close(
+                    &id,
+                    "done",
+                    &format!("{}, plan {plan_id}", kernel::py::today()),
+                )?;
+                messages.push(format!("✅ Backlog: {id} closed as done (plan completed)."));
+                changed = true;
+            } else if let Some((_, target)) = PLAN_TO_ITEM_STATUS
+                .iter()
+                .find(|(s, _)| status.is_hashable() && status.as_str() == Some(*s))
+            {
+                let item = backlog.find(&id)?;
+                if item.plan().as_deref() != Some(plan_id) || item.status() != *target {
+                    backlog.link(&id, plan_id, target)?;
+                    messages.push(format!("🔗 Backlog: {id} is {target} (plan '{plan_id}')."));
+                    changed = true;
+                }
+            }
+        }
+        if changed {
+            bf.save(&backlog)?;
+            messages.push(format!("👉 Commit {} with the plan file.", bf.rel()?));
+        }
+        Ok(())
+    })();
+    match result {
+        Ok(()) => Ok(messages),
+        Err(RoadmapError::Error(e)) => {
+            messages.push(format!("⚠️ Backlog not updated: {e}"));
+            Ok(messages)
+        }
+        Err(RoadmapError::Crash(c)) => Err(c),
+    }
 }

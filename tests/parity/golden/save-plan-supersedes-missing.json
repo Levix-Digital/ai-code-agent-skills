@@ -1,0 +1,8 @@
+{
+  "exit": 0,
+  "stdout": "✅ Plan created: {project}/docs/plans/project_new_plan.md\n   • Plan ID    : project_new_plan\n   • Project    : project\n   • Title      : New plan\n   • Kind       : feature\n   • Author     : Parity\n   • Version    : -\n   • Status     : ACTIVE\n   • Size       : 1 characters (100% uncompressed)\n   • Supersedes : nothing_here\n   👉 Commit the plan file with the change it describes (dev-cycle-protocol Phase 3).\n\n",
+  "stderr": "⚠️ Warning: plan to supersede 'nothing_here' not found in {project}/docs/plans.\n🔄 Plan index synced from {project}/docs/plans: 2 updated, 0 removed, 2 plan(s).\n",
+  "files": {
+    "project/docs/plans/project_new_plan.md": "---\nplan_id: project_new_plan\nproject: project\ntitle: New plan\nversion: null\nstatus: active\nauthor: Parity\ncreated_at: '<MASK>'\nupdated_at: '<MASK>'\nsession_id: null\ntags: []\nsupersedes: nothing_here\nsuperseded_by: null\nparent_plan_id: null\nspec_dir: null\nmilestones: []\nstatus_log:\n- at: '<MASK>'\n  by: Parity\n  status: active\n  note: Plan created\n---\n\nx\n"
+  }
+}

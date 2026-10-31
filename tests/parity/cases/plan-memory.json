@@ -821,5 +821,153 @@
     "env": {"PLAN_MEMORY_DB": "{home}/db"},
     "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"],
     "ignore": ["home/db", "home/.cache"]
+  },
+  {
+    "name": "save-plan-help",
+    "python": "plan-memory/save_plan.py",
+    "rust": ["plan-memory", "save_plan"],
+    "args": ["--help"],
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "save-plan-no-title",
+    "python": "plan-memory/save_plan.py",
+    "rust": ["plan-memory", "save_plan"],
+    "args": ["--content", "x"],
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "save-plan-bad-status",
+    "python": "plan-memory/save_plan.py",
+    "rust": ["plan-memory", "save_plan"],
+    "args": ["--title", "T", "--content", "x", "--status", "done"],
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "save-plan-bad-kind",
+    "python": "plan-memory/save_plan.py",
+    "rust": ["plan-memory", "save_plan"],
+    "args": ["--title", "T", "--content", "x", "--kind", "epic"],
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "save-plan-no-content",
+    "python": "plan-memory/save_plan.py",
+    "rust": ["plan-memory", "save_plan"],
+    "args": ["--title", "Nothing"],
+    "fixture": "save-plan",
+    "git": true,
+    "env": {"PLAN_MEMORY_DB": "{home}/db"},
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"],
+    "ignore": ["home/db", "home/.cache"],
+    "masks": ["\\d{4}-\\d{2}-\\d{2}(?:T\\d{2}:\\d{2}:\\d{2})?"]
+  },
+  {
+    "name": "save-plan-empty-content",
+    "python": "plan-memory/save_plan.py",
+    "rust": ["plan-memory", "save_plan"],
+    "args": ["--title", "Nothing", "--content", ""],
+    "fixture": "save-plan",
+    "git": true,
+    "env": {"PLAN_MEMORY_DB": "{home}/db"},
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"],
+    "ignore": ["home/db", "home/.cache"],
+    "masks": ["\\d{4}-\\d{2}-\\d{2}(?:T\\d{2}:\\d{2}:\\d{2})?"]
+  },
+  {
+    "name": "save-plan-create",
+    "python": "plan-memory/save_plan.py",
+    "rust": ["plan-memory", "save_plan"],
+    "args": ["--title", "Export Answers: v2!", "--content", "# Export\n\nPlan body.\n", "--version", "v0.2.0", "--tags", "export, md,,", "--milestones", "Design, Build ,Ship", "--kind", "bug", "--backlog-items", "bug-001,BUG-002,feat-001,EPIC-001,IMP-001,IMP-999", "--spec-dir", "specs/001-export/", "--session-id", "s-1", "--parent-id", "root"],
+    "fixture": "save-plan",
+    "git": true,
+    "env": {"PLAN_MEMORY_DB": "{home}/db"},
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"],
+    "ignore": ["home/db", "home/.cache"],
+    "masks": ["\\d{4}-\\d{2}-\\d{2}(?:T\\d{2}:\\d{2}:\\d{2})?"]
+  },
+  {
+    "name": "save-plan-update",
+    "python": "plan-memory/save_plan.py",
+    "rust": ["plan-memory", "save_plan"],
+    "args": ["--title", "Old plan, revised", "--id", "old", "--content", "# Old plan\n\nRevised.", "--milestones", "Second,First,Third", "--status", "in_progress", "--backlog-items", "BUG-001"],
+    "fixture": "save-plan",
+    "git": true,
+    "env": {"PLAN_MEMORY_DB": "{home}/db"},
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"],
+    "ignore": ["home/db", "home/.cache"],
+    "masks": ["\\d{4}-\\d{2}-\\d{2}(?:T\\d{2}:\\d{2}:\\d{2})?"]
+  },
+  {
+    "name": "save-plan-complete",
+    "python": "plan-memory/save_plan.py",
+    "rust": ["plan-memory", "save_plan"],
+    "args": ["--title", "Old plan", "--id", "old", "--content", "Done.", "--status", "completed", "--backlog-items", "BUG-001,FEAT-001"],
+    "fixture": "save-plan",
+    "git": true,
+    "env": {"PLAN_MEMORY_DB": "{home}/db"},
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"],
+    "ignore": ["home/db", "home/.cache"],
+    "masks": ["\\d{4}-\\d{2}-\\d{2}(?:T\\d{2}:\\d{2}:\\d{2})?"]
+  },
+  {
+    "name": "save-plan-supersedes",
+    "python": "plan-memory/save_plan.py",
+    "rust": ["plan-memory", "save_plan"],
+    "args": ["--title", "New plan", "--id", "new", "--file", "plan-body.md", "--supersedes", "old", "--spec-dir", "specs/missing", "--tags", ""],
+    "fixture": "save-plan",
+    "git": true,
+    "env": {"PLAN_MEMORY_DB": "{home}/db"},
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"],
+    "ignore": ["home/db", "home/.cache"],
+    "masks": ["\\d{4}-\\d{2}-\\d{2}(?:T\\d{2}:\\d{2}:\\d{2})?"]
+  },
+  {
+    "name": "save-plan-supersedes-missing",
+    "python": "plan-memory/save_plan.py",
+    "rust": ["plan-memory", "save_plan"],
+    "args": ["--title", "New plan", "--content", "x", "--supersedes", "nothing_here", "--spec-dir", "  "],
+    "fixture": "save-plan",
+    "git": true,
+    "env": {"PLAN_MEMORY_DB": "{home}/db"},
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"],
+    "ignore": ["home/db", "home/.cache"],
+    "masks": ["\\d{4}-\\d{2}-\\d{2}(?:T\\d{2}:\\d{2}:\\d{2})?"]
+  },
+  {
+    "name": "save-plan-draft",
+    "python": "plan-memory/save_plan.py",
+    "rust": ["plan-memory", "save_plan"],
+    "args": ["--title", "Draft", "--content", "x", "--status", "draft", "--backlog-items", "FEAT-001", "--project", "My App"],
+    "fixture": "save-plan",
+    "git": true,
+    "env": {"PLAN_MEMORY_DB": "{home}/db"},
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"],
+    "ignore": ["home/db", "home/.cache"],
+    "masks": ["\\d{4}-\\d{2}-\\d{2}(?:T\\d{2}:\\d{2}:\\d{2})?"]
+  },
+  {
+    "name": "save-plan-no-backlog",
+    "python": "plan-memory/save_plan.py",
+    "rust": ["plan-memory", "save_plan"],
+    "args": ["--title", "Plan", "--content", "x", "--backlog-items", "BUG-001"],
+    "fixture": "plans-list",
+    "git": true,
+    "env": {"PLAN_MEMORY_DB": "{home}/db"},
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"],
+    "ignore": ["home/db", "home/.cache"],
+    "masks": ["\\d{4}-\\d{2}-\\d{2}(?:T\\d{2}:\\d{2}:\\d{2})?"]
+  },
+  {
+    "name": "save-plan-bad-backlog",
+    "python": "plan-memory/save_plan.py",
+    "rust": ["plan-memory", "save_plan"],
+    "args": ["--title", "Plan", "--content", "x", "--backlog-items", "BUG-001"],
+    "fixture": "backlog-with-problems",
+    "git": true,
+    "env": {"PLAN_MEMORY_DB": "{home}/db"},
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"],
+    "ignore": ["home/db", "home/.cache"],
+    "masks": ["\\d{4}-\\d{2}-\\d{2}(?:T\\d{2}:\\d{2}:\\d{2})?"]
   }
 ]

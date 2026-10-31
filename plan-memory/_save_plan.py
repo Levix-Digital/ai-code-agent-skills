@@ -1,16 +1,17 @@
 """
-Save Plan Utility - plan-memory Skill
+Save plan - plan-memory Skill (shared module)
 Saves an uncompressed, comprehensive architectural plan or roadmap as
 <repo>/docs/plans/<plan_id>.md (YAML frontmatter + Markdown body) and indexes it.
 Supports plan lineage via --supersedes to automatically deprecate older plans.
 Saving an existing plan ID updates it, keeping its author, creation date and milestone progress.
+The command is the engine's `plan-memory save_plan` (IMP-005); this module stays for backlog.py,
+which promotes items with save_plan(), until backlog is translated (M32).
 """
-import argparse
 import os
 import sys
 
 from _backlog_store import sync_plan_items
-from _store import KINDS, Plan, PlanStore, STATUSES, now_iso, setup_stdout, slugify_id, split_csv
+from _store import KINDS, Plan, PlanStore, now_iso, setup_stdout, slugify_id, split_csv
 
 
 def save_plan(
@@ -123,49 +124,3 @@ def save_plan(
     print("   👉 Commit the plan file with the change it describes (dev-cycle-protocol Phase 3).\n")
     return plan
 
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Save an uncompressed architecture plan or roadmap to docs/plans")
-    parser.add_argument("--title", type=str, required=True, help="Plan title / headline")
-    parser.add_argument("--content", type=str, default=None, help="Inline markdown content")
-    parser.add_argument("--file", type=str, default=None, help="Path to markdown/text file containing the plan")
-    parser.add_argument("--project", type=str, default=None, help="Project name (default: .dev-cycle.json project_name or repository folder name)")
-    parser.add_argument("--dir", type=str, default=None, help="Project directory (default: current; the Git root is used)")
-    parser.add_argument("--id", type=str, default=None, help="Explicit unique Plan ID (auto-generated if omitted)")
-    parser.add_argument("--session-id", type=str, default=None, help="Conversation ID where the plan was conceived")
-    parser.add_argument("--version", type=str, default=None, help="Target software version (e.g. v0.30.37)")
-    parser.add_argument("--tags", type=str, default=None, help="Comma-separated keywords/tags")
-    parser.add_argument("--milestones", type=str, default=None, help="Comma-separated milestone targets")
-    parser.add_argument("--status", type=str, default="active", choices=STATUSES, help="Plan status")
-    parser.add_argument("--parent-id", type=str, default=None, help="Parent plan ID for hierarchical breakdown")
-    parser.add_argument("--supersedes", type=str, default=None, help="Older Plan ID that this new plan supersedes")
-    parser.add_argument("--kind", type=str, default=None, choices=KINDS, help="Plan kind (default: feature)")
-    parser.add_argument("--backlog-items", type=str, default=None, help="Comma-separated backlog item ids the plan delivers")
-    parser.add_argument("--spec-dir", type=str, default=None, help="Spec Kit folder with the plan's detail (e.g. specs/001-photo-upload)")
-    args = parser.parse_args()
-
-    if args.file:
-        with open(args.file, "r", encoding="utf-8") as f:
-            plan_content = f.read()
-    elif args.content:
-        plan_content = args.content
-    else:
-        print("❌ Error: You must supply either --file <path> or --content <text>", file=sys.stderr)
-        sys.exit(1)
-
-    save_plan(
-        store=PlanStore(args.dir, args.project),
-        title=args.title,
-        content=plan_content,
-        plan_id=args.id,
-        session_id=args.session_id,
-        version=args.version,
-        tags=args.tags,
-        milestones=args.milestones,
-        status=args.status,
-        parent_plan_id=args.parent_id,
-        supersedes=args.supersedes,
-        kind=args.kind,
-        backlog_items=args.backlog_items,
-        spec_dir=args.spec_dir,
-    )
