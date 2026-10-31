@@ -969,5 +969,98 @@
     "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"],
     "ignore": ["home/db", "home/.cache"],
     "masks": ["\\d{4}-\\d{2}-\\d{2}(?:T\\d{2}:\\d{2}:\\d{2})?"]
+  },
+  {
+    "name": "update-plan-status-help",
+    "python": "plan-memory/update_plan_status.py",
+    "rust": ["plan-memory", "update_plan_status"],
+    "args": ["--help"],
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "update-plan-status-no-id",
+    "python": "plan-memory/update_plan_status.py",
+    "rust": ["plan-memory", "update_plan_status"],
+    "args": ["--status", "active"],
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "update-plan-status-bad-status",
+    "python": "plan-memory/update_plan_status.py",
+    "rust": ["plan-memory", "update_plan_status"],
+    "args": ["--id", "x", "--status", "done"],
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "update-plan-status-missing",
+    "python": "plan-memory/update_plan_status.py",
+    "rust": ["plan-memory", "update_plan_status"],
+    "args": ["--id", "nothing", "--status", "completed"],
+    "fixture": "update-plan-status",
+    "git": true,
+    "env": {"PLAN_MEMORY_DB": "{home}/db"},
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"],
+    "ignore": ["home/db", "home/.cache"],
+    "masks": ["\\d{4}-\\d{2}-\\d{2}(?:T\\d{2}:\\d{2}:\\d{2})?"]
+  },
+  {
+    "name": "update-plan-status-in-progress",
+    "python": "plan-memory/update_plan_status.py",
+    "rust": ["plan-memory", "update_plan_status"],
+    "args": ["--id", "linked", "--status", "in_progress"],
+    "fixture": "update-plan-status",
+    "git": true,
+    "env": {"PLAN_MEMORY_DB": "{home}/db"},
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"],
+    "ignore": ["home/db", "home/.cache"],
+    "masks": ["\\d{4}-\\d{2}-\\d{2}(?:T\\d{2}:\\d{2}:\\d{2})?"]
+  },
+  {
+    "name": "update-plan-status-completed",
+    "python": "plan-memory/update_plan_status.py",
+    "rust": ["plan-memory", "update_plan_status"],
+    "args": ["--id", "linked", "--status", "completed", "--notes", "Shipped in v0.2.0."],
+    "fixture": "update-plan-status",
+    "git": true,
+    "env": {"PLAN_MEMORY_DB": "{home}/db"},
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"],
+    "ignore": ["home/db", "home/.cache"],
+    "masks": ["\\d{4}-\\d{2}-\\d{2}(?:T\\d{2}:\\d{2}:\\d{2})?"]
+  },
+  {
+    "name": "update-plan-status-draft-empty-notes",
+    "python": "plan-memory/update_plan_status.py",
+    "rust": ["plan-memory", "update_plan_status"],
+    "args": ["--id", "linked", "--status", "draft", "--notes", ""],
+    "fixture": "update-plan-status",
+    "git": true,
+    "env": {"PLAN_MEMORY_DB": "{home}/db"},
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"],
+    "ignore": ["home/db", "home/.cache"],
+    "masks": ["\\d{4}-\\d{2}-\\d{2}(?:T\\d{2}:\\d{2}:\\d{2})?"]
+  },
+  {
+    "name": "update-plan-status-bare",
+    "python": "plan-memory/update_plan_status.py",
+    "rust": ["plan-memory", "update_plan_status"],
+    "args": ["--id", "bare", "--status", "completed", "--project", "My App"],
+    "fixture": "update-plan-status",
+    "git": true,
+    "env": {"PLAN_MEMORY_DB": "{home}/db"},
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"],
+    "ignore": ["home/db", "home/.cache"],
+    "masks": ["\\d{4}-\\d{2}-\\d{2}(?:T\\d{2}:\\d{2}:\\d{2})?"]
+  },
+  {
+    "name": "update-plan-status-no-backlog",
+    "python": "plan-memory/update_plan_status.py",
+    "rust": ["plan-memory", "update_plan_status"],
+    "args": ["--id", "alpha", "--status", "completed"],
+    "fixture": "plans-list",
+    "git": true,
+    "env": {"PLAN_MEMORY_DB": "{home}/db"},
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"],
+    "ignore": ["home/db", "home/.cache"],
+    "masks": ["\\d{4}-\\d{2}-\\d{2}(?:T\\d{2}:\\d{2}:\\d{2})?"]
   }
 ]

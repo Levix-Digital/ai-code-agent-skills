@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "usage: update_plan_status.py [-h] --id ID\n                             --status {draft,planned,active,in_progress,completed,superseded}\n                             [--notes NOTES] [--project PROJECT] [--dir DIR]\n\nUpdate a plan's lifecycle status\n\noptions:\n  -h, --help            show this help message and exit\n  --id ID               Plan ID to update\n  --status {draft,planned,active,in_progress,completed,superseded}\n                        New status\n  --notes NOTES         Optional progress notes / rationale\n  --project PROJECT     Project name (default: from the repository)\n  --dir DIR             Project directory (default: current)\n",
+  "stderr": "",
+  "files": {}
+}

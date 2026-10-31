@@ -10,3 +10,4 @@ pub mod roadmap;
 pub mod save_plan;
 pub mod search_plans;
 pub mod store;
+pub mod update_plan_status;

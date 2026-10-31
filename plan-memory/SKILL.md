@@ -141,10 +141,12 @@ In PowerShell, run `& "<skills_root>/dev-cycle-protocol/bin/dev-cycle.ps1" plan-
 ```
 In PowerShell, run `& "<skills_root>/dev-cycle-protocol/bin/dev-cycle.ps1" plan-memory search_plans [arguments]` instead.
 
-### 7. Update Lifecycle Status (`update_plan_status.py`)
-```powershell
-python "<skills_root>/plan-memory/update_plan_status.py" --id "<plan_id>" --status "completed" --notes "Priority 1 and 2 delivered."
+### 7. Update Lifecycle Status (`update_plan_status`)
+Sets the plan's status, records it in the status log and brings the linked backlog items along. `update_plan_status` runs on the native engine. In sh shells (Linux, macOS, Git Bash):
+```bash
+"<skills_root>/dev-cycle-protocol/bin/dev-cycle" plan-memory update_plan_status --id "<plan_id>" --status "completed" --notes "Priority 1 and 2 delivered."
 ```
+In PowerShell, run `& "<skills_root>/dev-cycle-protocol/bin/dev-cycle.ps1" plan-memory update_plan_status [arguments]` instead.
 
 ### 8. Export (`export_plan`)
 Copies a plan elsewhere, as JSON or Markdown with or without frontmatter. `export_plan` runs on the native engine. In sh shells (Linux, macOS, Git Bash):
@@ -192,7 +194,7 @@ Features (`FEAT-NNN`), improvements (`IMP-NNN`) and adjustments (`ADJ-NNN`) have
 
 - **Capture** costs nothing: no discovery, no plan. The user does it with the [`/backlog`](../backlog/SKILL.md) command; the agent does it for bugs it finds outside the current scope.
 - **Promotion** creates a `draft` plan from `templates/BUG_PLAN_TEMPLATE.md` (every item a bug: reproduction, evidence and root cause, fix design, regression test) or `templates/FEATURE_PLAN_TEMPLATE.md`, with the items copied into its `Backlog items` section, and links both ways. The discovery is written in that plan; it is saved again as `active`, with milestones, for approval.
-- **Linked items follow their plan**: `planned` while the plan is draft or active, `in_progress` when it is in progress, closed as `done` when it is completed (`check_milestone.py`, `update_plan_status.py`).
+- **Linked items follow their plan**: `planned` while the plan is draft or active, `in_progress` when it is in progress, closed as `done` when it is completed (`check_milestone.py`, `update_plan_status` on the engine).
 - **Triage is the user's decision**: the agent never promotes, drops or re-prioritizes on its own.
 - The script never commits and refuses to rewrite a file whose structure it cannot read, so hand edits are never lost.
 
@@ -256,7 +258,7 @@ The whole development lifecycle follows 👉 **[`dev-cycle-protocol`](../dev-cyc
 - **Phase 2 (Plan)**: save the full plan with `save_plan` (engine, with `--supersedes` when it replaces one, `--spec-dir` with Spec Kit) and run `detect_drift.py`. The plan follows the orchestrator's template, with a section from each role.
 - **Phase 3 (Plan approval)**: `verify_gate --gate 3` (engine) checks there is an active plan, warns if its file is not committed, and blocks a non-bug plan while open blocking bugs (default `critical`, `high`, `medium`) or bugs not triaged are outside it (bugs first). A bug is triaged when it has a valid severity and, when its severity does not block, it is in the next release of the roadmap (`backlog.bug_deadline`). `backlog.py summary` lists the bugs not triaged; `backlog.py add` of a bug says where it goes.
 - **Phase 4 (Implementation)**: mark milestones with `check_milestone.py` as they are completed.
-- **Phase 10 (Release)**: close the remaining milestones or finish the plan with `update_plan_status.py`, and mark the release released (`roadmap set-release vX.Y.Z --status released` on the engine).
+- **Phase 10 (Release)**: close the remaining milestones or finish the plan with `update_plan_status` (engine), and mark the release released (`roadmap set-release vX.Y.Z --status released` on the engine).
 
 ---
 

@@ -1,0 +1,8 @@
+{
+  "exit": 0,
+  "stdout": "✅ Plan status updated successfully!\n   • Plan ID    : alpha\n   • Project    : demo\n   • Title      : Alpha feature\n   • Status     : IN_PROGRESS -> COMPLETED\n   • File       : {project}/docs/plans/alpha.md\n   ⚠️ Plan 'alpha' lists backlog items but there is no backlog at docs/BACKLOG.md.\n   👉 Commit the updated plan file.\n",
+  "stderr": "🔄 Plan index synced from {project}/docs/plans: 7 updated, 0 removed, 7 plan(s).\n",
+  "files": {
+    "project/docs/plans/alpha.md": "---\nplan_id: alpha\nproject: demo\ntitle: Alpha feature\nversion: 1.2.0\nstatus: completed\nauthor: Ana\ncreated_at: '<MASK>'\nupdated_at: '<MASK>'\nbacklog_items:\n- FEAT-001\n- 7\nmilestones:\n- name: M1 Design\n  done: true\n- name: M2 Build\n  done: false\n- name: M3 Ship\n  done: false\nstatus_log:\n- at: '<MASK>'\n  by: Parity\n  status: completed\n  note: Status in_progress -> completed\n---\n\n# Alpha\n\nBody with ünïcode.\n"
+  }
+}
