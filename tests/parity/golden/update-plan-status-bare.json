@@ -1,0 +1,8 @@
+{
+  "exit": 0,
+  "stdout": "✅ Plan status updated successfully!\n   • Plan ID    : bare\n   • Project    : my-app\n   • Title      : Bare plan\n   • Status     : ACTIVE -> COMPLETED\n   • File       : {project}/docs/plans/bare.md\n   👉 Commit the updated plan file.\n",
+  "stderr": "🔄 Plan index synced from {project}/docs/plans: 2 updated, 0 removed, 2 plan(s).\n",
+  "files": {
+    "project/docs/plans/bare.md": "---\nplan_id: bare\ntitle: Bare plan\nstatus: completed\nupdated_at: '<MASK>'\nmilestones: []\nstatus_log:\n- at: '<MASK>'\n  by: Parity\n  status: completed\n  note: Status active -> completed\n---\n\nA plan with almost no frontmatter.\n"
+  }
+}

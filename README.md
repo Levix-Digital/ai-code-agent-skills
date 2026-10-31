@@ -205,7 +205,7 @@ Keeps the project's planning in its repository: the **backlog**, where work is c
 | Read a plan in full | `<skills_root>/dev-cycle-protocol/bin/dev-cycle plan-memory get_plan --id <plan_id>` or without `--id` (latest active; `bin/dev-cycle.ps1` in PowerShell) |
 | Semantic search | `<skills_root>/dev-cycle-protocol/bin/dev-cycle plan-memory search_plans --query "<text>" [--limit 5] [--all-projects]` (`bin/dev-cycle.ps1` in PowerShell) |
 | Milestones | `check_milestone.py --list` / `--milestone "A" [--notes "..."]` / `--milestone "A" --uncheck` |
-| Change status | `update_plan_status.py --id <plan_id> --status completed [--notes "..."]` |
+| Change status | `<skills_root>/dev-cycle-protocol/bin/dev-cycle plan-memory update_plan_status --id <plan_id> --status completed [--notes "..."]` (`bin/dev-cycle.ps1` in PowerShell) |
 | Check a proposal for drift | `detect_drift.py --proposal "<text>"` or `--file proposal.md [--strict]` |
 | Export (JSON or copy) | `<skills_root>/dev-cycle-protocol/bin/dev-cycle plan-memory export_plan --id <plan_id> --format json --output-dir out/` (`bin/dev-cycle.ps1` in PowerShell) |
 | Rebuild the search index | `<skills_root>/dev-cycle-protocol/bin/dev-cycle plan-memory rebuild_index` (`bin/dev-cycle.ps1` in PowerShell) |

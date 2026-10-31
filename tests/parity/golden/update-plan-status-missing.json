@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "",
+  "stderr": "❌ Error: Plan ID 'nothing' not found in {project}/docs/plans.\n",
+  "files": {}
+}

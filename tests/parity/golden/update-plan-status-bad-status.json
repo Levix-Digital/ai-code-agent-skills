@@ -1,0 +1,6 @@
+{
+  "exit": 2,
+  "stdout": "",
+  "stderr": "usage: update_plan_status.py [-h] --id ID\n                             --status {draft,planned,active,in_progress,completed,superseded}\n                             [--notes NOTES] [--project PROJECT] [--dir DIR]\nupdate_plan_status.py: error: argument --status: invalid choice: 'done' (choose from 'draft', 'planned', 'active', 'in_progress', 'completed', 'superseded')\n",
+  "files": {}
+}

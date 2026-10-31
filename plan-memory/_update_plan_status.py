@@ -1,12 +1,13 @@
 """
-Update Plan Status Utility - plan-memory Skill
+Update Plan Status - plan-memory Skill
 Updates the lifecycle status of a plan file (e.g. active -> completed, in_progress, superseded).
+The command is the engine's `plan-memory update_plan_status`; this module keeps the function
+for the Python callers that remain.
 """
-import argparse
 import sys
 
 from _backlog_store import sync_plan_items
-from _store import PlanStore, STATUSES, now_iso, setup_stdout
+from _store import PlanStore, now_iso, setup_stdout
 
 
 def update_plan_status(store: PlanStore, plan_id: str, new_status: str, notes: str = None):
@@ -37,14 +38,3 @@ def update_plan_status(store: PlanStore, plan_id: str, new_status: str, notes: s
         print(f"   {message}")
     print("   👉 Commit the updated plan file.")
 
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Update a plan's lifecycle status")
-    parser.add_argument("--id", type=str, required=True, help="Plan ID to update")
-    parser.add_argument("--status", type=str, required=True, choices=STATUSES, help="New status")
-    parser.add_argument("--notes", type=str, default=None, help="Optional progress notes / rationale")
-    parser.add_argument("--project", type=str, default=None, help="Project name (default: from the repository)")
-    parser.add_argument("--dir", type=str, default=None, help="Project directory (default: current)")
-    args = parser.parse_args()
-
-    update_plan_status(PlanStore(args.dir, args.project), plan_id=args.id, new_status=args.status, notes=args.notes)
