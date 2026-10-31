@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "usage: migrate_legacy.py [-h] [--source SOURCE] [--project PROJECT]\n                         [--dir DIR] [--orphan-status ORPHAN_STATUS]\n                         [--threshold THRESHOLD] [--dry-run]\n\nMigrate plans from the old plan-memory database to docs/plans files\n\noptions:\n  -h, --help            show this help message and exit\n  --source SOURCE       Legacy ChromaDB folder (default: the plan-memory\n                        database path)\n  --project PROJECT     Project name (default: from the repository)\n  --dir DIR             Project directory (default: current)\n  --orphan-status ORPHAN_STATUS\n                        Status for plan files with no database entry\n  --threshold THRESHOLD\n                        Content similarity needed to pair a file with a plan\n                        under another ID\n  --dry-run             Only show what would be done\n",
+  "stderr": "",
+  "files": {}
+}

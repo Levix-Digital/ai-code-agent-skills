@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "Source DB: 0 plan(s) for project 'nobody' | Target: {project}/docs/plans\nExisting plan files: 5\n\n(dry-run) orphan  beta_plan.md -> status 'completed'\n(dry-run) orphan  delta_old.md -> status 'completed'\n(dry-run) orphan  gamma_plan.md -> status 'completed'\n(dry-run) orphan  loose.md -> status 'completed'\n(dry-run) orphan  orphan_note.md -> status 'completed'\n\n(dry-run) 0 plan(s) from the database, 5 orphan file(s): 5 plan files.\n",
+  "stderr": "",
+  "files": {}
+}

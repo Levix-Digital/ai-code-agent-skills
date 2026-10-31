@@ -122,6 +122,11 @@ const COMMANDS: &[(&str, &str, Command)] = &[
     ("plan-memory", "list_plans", plan_memory::list_plans::main),
     (
         "plan-memory",
+        "migrate_legacy",
+        plan_memory::migrate_legacy::main,
+    ),
+    (
+        "plan-memory",
         "rebuild_index",
         plan_memory::rebuild_index::main,
     ),

@@ -2265,5 +2265,105 @@
     "env": {"PLAN_MEMORY_DB": "{home}/db"},
     "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"],
     "ignore": ["home/db", "home/.cache"]
+  },
+  {
+    "name": "migrate-legacy-help",
+    "python": "plan-memory/migrate_legacy.py",
+    "rust": ["plan-memory", "migrate_legacy"],
+    "args": ["--help"],
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "migrate-legacy-bad-threshold",
+    "python": "plan-memory/migrate_legacy.py",
+    "rust": ["plan-memory", "migrate_legacy"],
+    "args": ["--threshold", "abc"],
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "migrate-legacy-dry-run",
+    "python": "plan-memory/migrate_legacy.py",
+    "rust": ["plan-memory", "migrate_legacy"],
+    "args": ["--source", "{project}/legacy", "--dry-run"],
+    "fixture": "migrate-legacy",
+    "git": true,
+    "ignore": ["project/legacy"]
+  },
+  {
+    "name": "migrate-legacy-low-threshold-dry-run",
+    "python": "plan-memory/migrate_legacy.py",
+    "rust": ["plan-memory", "migrate_legacy"],
+    "args": ["--source", "{project}/legacy", "--threshold", "0.3", "--dry-run"],
+    "fixture": "migrate-legacy",
+    "git": true,
+    "ignore": ["project/legacy"]
+  },
+  {
+    "name": "migrate-legacy-empty-project",
+    "python": "plan-memory/migrate_legacy.py",
+    "rust": ["plan-memory", "migrate_legacy"],
+    "args": ["--source", "{project}/legacy", "--project", "nobody", "--dry-run"],
+    "fixture": "migrate-legacy",
+    "git": true,
+    "ignore": ["project/legacy"]
+  },
+  {
+    "name": "migrate-legacy-run",
+    "python": "plan-memory/migrate_legacy.py",
+    "rust": ["plan-memory", "migrate_legacy"],
+    "args": ["--source", "{project}/legacy"],
+    "fixture": "migrate-legacy",
+    "git": true,
+    "env": {"PLAN_MEMORY_DB": "{home}/db"},
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"],
+    "ignore": ["home/db", "home/.cache", "project/legacy"],
+    "masks": ["at: '\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}'\\n *by:"]
+  },
+  {
+    "name": "migrate-legacy-no-rename",
+    "python": "plan-memory/migrate_legacy.py",
+    "rust": ["plan-memory", "migrate_legacy"],
+    "args": ["--source", "{project}/legacy", "--threshold", "1.5", "--orphan-status", "draft"],
+    "fixture": "migrate-legacy",
+    "git": true,
+    "env": {"PLAN_MEMORY_DB": "{home}/db"},
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"],
+    "ignore": ["home/db", "home/.cache", "project/legacy"],
+    "masks": ["at: '\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}'\\n *by:"]
+  },
+  {
+    "name": "migrate-legacy-renames",
+    "python": "plan-memory/migrate_legacy.py",
+    "rust": ["plan-memory", "migrate_legacy"],
+    "args": ["--source", "{project}/legacy", "--threshold", "0.2"],
+    "fixture": "migrate-legacy",
+    "git": true,
+    "env": {"PLAN_MEMORY_DB": "{home}/db"},
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"],
+    "ignore": ["home/db", "home/.cache", "project/legacy"],
+    "masks": ["at: '\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}'\\n *by:"]
+  },
+  {
+    "name": "migrate-legacy-no-git",
+    "python": "plan-memory/migrate_legacy.py",
+    "rust": ["plan-memory", "migrate_legacy"],
+    "args": ["--source", "{project}/legacy", "--threshold", "2"],
+    "fixture": "migrate-legacy",
+    "env": {"PLAN_MEMORY_DB": "{home}/db"},
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"],
+    "ignore": ["home/db", "home/.cache", "project/legacy"],
+    "masks": ["at: '\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}'\\n *by:"]
+  },
+  {
+    "name": "migrate-legacy-other-project",
+    "python": "plan-memory/migrate_legacy.py",
+    "rust": ["plan-memory", "migrate_legacy"],
+    "args": ["--source", "{project}/legacy", "--project", "Other", "--dir", "{project}"],
+    "fixture": "migrate-legacy",
+    "git": true,
+    "env": {"PLAN_MEMORY_DB": "{home}/db"},
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"],
+    "ignore": ["home/db", "home/.cache", "project/legacy"],
+    "masks": ["at: '\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}'\\n *by:"]
   }
 ]

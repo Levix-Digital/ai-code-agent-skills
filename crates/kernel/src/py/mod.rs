@@ -2,6 +2,8 @@
 //! read their input must not change when a script is translated (IMP-005).
 
 pub mod argparse;
+pub mod datetime;
+pub mod difflib;
 pub mod fnmatch;
 pub mod json;
 pub mod num;

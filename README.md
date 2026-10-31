@@ -209,7 +209,7 @@ Keeps the project's planning in its repository: the **backlog**, where work is c
 | Check a proposal for drift | `<skills_root>/dev-cycle-protocol/bin/dev-cycle plan-memory detect_drift --proposal "<text>"` or `--file proposal.md [--strict]` (`bin/dev-cycle.ps1` in PowerShell) |
 | Export (JSON or copy) | `<skills_root>/dev-cycle-protocol/bin/dev-cycle plan-memory export_plan --id <plan_id> --format json --output-dir out/` (`bin/dev-cycle.ps1` in PowerShell) |
 | Rebuild the search index | `<skills_root>/dev-cycle-protocol/bin/dev-cycle plan-memory rebuild_index` (`bin/dev-cycle.ps1` in PowerShell) |
-| Migrate from the old database | `migrate_legacy.py [--source <old_db>] [--dry-run]` |
+| Migrate from the old database | `<skills_root>/dev-cycle-protocol/bin/dev-cycle plan-memory migrate_legacy [--source <old_db>] [--dry-run]` (`bin/dev-cycle.ps1` in PowerShell) |
 
 All scripts are in `<skills_root>/plan-memory/`. They work on the Git repository of the current directory; use `--dir` for another one and `--project` to override the project name.
 
