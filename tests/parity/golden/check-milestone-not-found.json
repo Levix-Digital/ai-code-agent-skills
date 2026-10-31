@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "   Available milestones: M1 Design, M2 Build, M3 Build docs, M4 Ship\n",
+  "stderr": "❌ Milestone 'Deploy' not found in plan 'tracker'.\n",
+  "files": {}
+}

@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "usage: check_milestone.py [-h] [--id ID] [--project PROJECT] [--dir DIR]\n                          [--milestone MILESTONE] [--uncheck] [--notes NOTES]\n                          [--list] [--auto-complete]\n\nTrack granular milestone progress in plan files\n\noptions:\n  -h, --help            show this help message and exit\n  --id ID               Target Plan ID (default: the project's latest active\n                        plan)\n  --project PROJECT     Project name (default: from the repository)\n  --dir DIR             Project directory (default: current)\n  --milestone MILESTONE\n                        Milestone name to mark as completed\n  --uncheck             Revert milestone to pending\n  --notes NOTES         Notes or rationale for milestone update\n  --list                List milestones and progress without modifying\n  --auto-complete       Automatically set plan status to completed if all\n                        milestones are done\n",
+  "stderr": "",
+  "files": {}
+}

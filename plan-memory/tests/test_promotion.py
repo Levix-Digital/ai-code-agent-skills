@@ -12,7 +12,7 @@ import backlog as cli  # noqa: E402
 from _backlog import Backlog, BacklogError  # noqa: E402
 from _backlog_store import BacklogFile  # noqa: E402
 from _store import PlanStore, slugify_id  # noqa: E402
-from check_milestone import check_milestone  # noqa: E402
+from _check_milestone import check_milestone  # noqa: E402
 from _save_plan import save_plan  # noqa: E402
 from _update_plan_status import update_plan_status  # noqa: E402
 sys.path.append(os.path.join(SKILL, "..", "dev-cycle-protocol", "tests"))

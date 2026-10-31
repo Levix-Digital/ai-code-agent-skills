@@ -481,7 +481,11 @@ pub fn read_plan(path: &str, name: &str) -> Result<Plan, Crash> {
 
 /// `progress_bar(done, total)`.
 pub fn progress_bar(done: usize, total: usize) -> String {
-    let width = 16;
+    progress_bar_width(done, total, 16)
+}
+
+/// `progress_bar(done, total, width)`.
+pub fn progress_bar_width(done: usize, total: usize, width: usize) -> String {
     let ratio = if total == 0 {
         0.0
     } else {

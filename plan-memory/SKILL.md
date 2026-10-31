@@ -83,17 +83,19 @@ Writes `docs/plans/<plan_id>.md` with the full plan, without cuts or summaries. 
 In PowerShell, run `& "<skills_root>/dev-cycle-protocol/bin/dev-cycle.ps1" plan-memory save_plan [arguments]` instead.
 Options: `--id` (default: `<project>_<title>` slug), `--parent-id`, `--content` instead of `--file`, `--kind feature|bug`, `--backlog-items "BUG-001,FEAT-002"` (links the items, which become `planned`), `--spec-dir specs/NNN-slug` (the plan is the envelope of that Spec Kit folder).
 
-### 2. Milestone & Progress Tracker (`check_milestone.py`)
-```powershell
+### 2. Milestone & Progress Tracker (`check_milestone`)
+`check_milestone` runs on the native engine. In sh shells (Linux, macOS, Git Bash):
+```bash
 # Progress and checklist of the latest active plan (or --id <plan_id>):
-python "<skills_root>/plan-memory/check_milestone.py" --list
+"<skills_root>/dev-cycle-protocol/bin/dev-cycle" plan-memory check_milestone --list
 
 # Mark a milestone as completed (records date and author):
-python "<skills_root>/plan-memory/check_milestone.py" --milestone "Priority 1" --notes "Completed via PR #319"
+"<skills_root>/dev-cycle-protocol/bin/dev-cycle" plan-memory check_milestone --milestone "Priority 1" --notes "Completed via PR #319"
 
 # Revert a milestone to pending:
-python "<skills_root>/plan-memory/check_milestone.py" --milestone "Priority 1" --uncheck
+"<skills_root>/dev-cycle-protocol/bin/dev-cycle" plan-memory check_milestone --milestone "Priority 1" --uncheck
 ```
+In PowerShell, run `& "<skills_root>/dev-cycle-protocol/bin/dev-cycle.ps1" plan-memory check_milestone [arguments]` instead.
 The first completed milestone moves an `active` plan to `in_progress`; the last one moves it to `completed`.
 
 ### 3. Architectural Drift Detector (`detect_drift.py`)
@@ -194,7 +196,7 @@ Features (`FEAT-NNN`), improvements (`IMP-NNN`) and adjustments (`ADJ-NNN`) have
 
 - **Capture** costs nothing: no discovery, no plan. The user does it with the [`/backlog`](../backlog/SKILL.md) command; the agent does it for bugs it finds outside the current scope.
 - **Promotion** creates a `draft` plan from `templates/BUG_PLAN_TEMPLATE.md` (every item a bug: reproduction, evidence and root cause, fix design, regression test) or `templates/FEATURE_PLAN_TEMPLATE.md`, with the items copied into its `Backlog items` section, and links both ways. The discovery is written in that plan; it is saved again as `active`, with milestones, for approval.
-- **Linked items follow their plan**: `planned` while the plan is draft or active, `in_progress` when it is in progress, closed as `done` when it is completed (`check_milestone.py`, `update_plan_status` on the engine).
+- **Linked items follow their plan**: `planned` while the plan is draft or active, `in_progress` when it is in progress, closed as `done` when it is completed (`check_milestone` and `update_plan_status` on the engine).
 - **Triage is the user's decision**: the agent never promotes, drops or re-prioritizes on its own.
 - The script never commits and refuses to rewrite a file whose structure it cannot read, so hand edits are never lost.
 
@@ -254,10 +256,10 @@ When the project uses Spec Kit (`speckit.enabled`, see `dev-cycle-protocol`), th
 
 The whole development lifecycle follows 👉 **[`dev-cycle-protocol`](../dev-cycle-protocol/SKILL.md)**:
 - **Phase 0 (Product inception)**: the product backlog as epics and their items, and the roadmap from the MVP (`product-inception`).
-- **Phase 1 (Discovery)**: check `list_plans` (engine), `check_milestone.py --list` or `search_plans` (engine) for real progress and agreed guidelines, `backlog.py summary` for open bugs and captured ideas and `roadmap current` (engine) for the items of the current release; promote the items the user chooses.
+- **Phase 1 (Discovery)**: check `list_plans` (engine), `check_milestone --list` (engine) or `search_plans` (engine) for real progress and agreed guidelines, `backlog.py summary` for open bugs and captured ideas and `roadmap current` (engine) for the items of the current release; promote the items the user chooses.
 - **Phase 2 (Plan)**: save the full plan with `save_plan` (engine, with `--supersedes` when it replaces one, `--spec-dir` with Spec Kit) and run `detect_drift.py`. The plan follows the orchestrator's template, with a section from each role.
 - **Phase 3 (Plan approval)**: `verify_gate --gate 3` (engine) checks there is an active plan, warns if its file is not committed, and blocks a non-bug plan while open blocking bugs (default `critical`, `high`, `medium`) or bugs not triaged are outside it (bugs first). A bug is triaged when it has a valid severity and, when its severity does not block, it is in the next release of the roadmap (`backlog.bug_deadline`). `backlog.py summary` lists the bugs not triaged; `backlog.py add` of a bug says where it goes.
-- **Phase 4 (Implementation)**: mark milestones with `check_milestone.py` as they are completed.
+- **Phase 4 (Implementation)**: mark milestones with `check_milestone` (engine) as they are completed.
 - **Phase 10 (Release)**: close the remaining milestones or finish the plan with `update_plan_status` (engine), and mark the release released (`roadmap set-release vX.Y.Z --status released` on the engine).
 
 ---
