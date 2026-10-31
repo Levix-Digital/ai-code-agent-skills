@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "=====================================================================================\n🛡️ PLAN DRIFT DETECTOR: [parity] Old plan\n   • Baseline Plan ID : old (Version: -)\n   • Drift Status     : 🟢 ALIGNED WITH MASTER PLAN\n   • Alignment Score  : 61% (Similarity: 0.37)\n   • Verdict          : APPROVED FOR IMPLEMENTATION\n   • Drift Rules      : 3 from {project}/.dev-cycle.json\n-------------------------------------------------------------------------------------\n🎯 MILESTONE ALIGNMENT:\n   ✅ Addressed: Only one\n=====================================================================================\n\n",
+  "stderr": "🔄 Plan index synced from {project}/docs/plans: 3 updated, 0 removed, 3 plan(s).\n",
+  "files": {}
+}

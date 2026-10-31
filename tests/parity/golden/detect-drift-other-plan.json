@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "=====================================================================================\n🛡️ PLAN DRIFT DETECTOR: [parity] Cache plan\n   • Baseline Plan ID : other (Version: -)\n   • Drift Status     : 🚨 DRIFT CONFLICT DETECTED\n   • Alignment Score  : 7% (Similarity: 0.55)\n   • Verdict          : REJECT / REALIGN\n   • Drift Rules      : 3 from {project}/.dev-cycle.json\n-------------------------------------------------------------------------------------\n🎯 MILESTONE ALIGNMENT:\n   ⚠️ No specific milestones from the baseline plan were detected in this proposal.\n-------------------------------------------------------------------------------------\n⚠️ DETECTED WARNINGS & CONFLICTS:\n   🚨 CONFLICT: Redis is out of the design.\n=====================================================================================\n\n",
+  "stderr": "🔄 Plan index synced from {project}/docs/plans: 3 updated, 0 removed, 3 plan(s).\n",
+  "files": {}
+}

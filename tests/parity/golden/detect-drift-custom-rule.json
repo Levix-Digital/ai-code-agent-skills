@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "=====================================================================================\n🛡️ PLAN DRIFT DETECTOR: [parity] Sync engine\n   • Baseline Plan ID : drift (Version: v2.0.0)\n   • Drift Status     : 🚨 DRIFT CONFLICT DETECTED\n   • Alignment Score  : 32% (Similarity: 0.46)\n   • Verdict          : REJECT / REALIGN\n   • Drift Rules      : 3 from {project}/.dev-cycle.json\n-------------------------------------------------------------------------------------\n🎯 MILESTONE ALIGNMENT:\n   ✅ Addressed: M2 Build sync engine\n   ⏳ Unaddressed milestones: M1 Design API, M3 Ship\n-------------------------------------------------------------------------------------\n⚠️ DETECTED WARNINGS & CONFLICTS:\n   🚨 CONFLICT: Redis is out of the design.\n=====================================================================================\n\n",
+  "stderr": "🔄 Plan index synced from {project}/docs/plans: 3 updated, 0 removed, 3 plan(s).\n",
+  "files": {}
+}

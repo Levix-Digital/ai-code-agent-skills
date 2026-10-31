@@ -112,6 +112,11 @@ const COMMANDS: &[(&str, &str, Command)] = &[
         "check_milestone",
         plan_memory::check_milestone::main,
     ),
+    (
+        "plan-memory",
+        "detect_drift",
+        plan_memory::detect_drift::main,
+    ),
     ("plan-memory", "export_plan", plan_memory::export_plan::main),
     ("plan-memory", "get_plan", plan_memory::get_plan::main),
     ("plan-memory", "list_plans", plan_memory::list_plans::main),

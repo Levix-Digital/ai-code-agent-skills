@@ -3,6 +3,7 @@
 pub mod backlog;
 pub mod backlog_cli;
 pub mod check_milestone;
+pub mod detect_drift;
 pub mod export_plan;
 pub mod get_plan;
 pub mod index;

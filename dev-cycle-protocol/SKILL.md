@@ -134,8 +134,8 @@ Write the complete plan with this template, collecting each role's section:
 **Spec Kit**: run `/speckit-plan` (its plan carries the protocol sections above through the `dev-cycle` preset: tests, documentation, CI and release, security and rollback), `/speckit-tasks` and `/speckit-analyze`, and fix what the analysis reports. The plan file in `docs/plans` becomes the **envelope**: goal and decisions, backlog items, a link to the spec folder (`--spec-dir`) and milestones taken from the phases of `tasks.md`; the detail is not copied (search and drift detection read the spec folder with it).
 
 Check for drift and save the plan in full:
-```powershell
-python "<skills_root>/plan-memory/detect_drift.py" --proposal "<proposal summary>"
+```bash
+"<skills_root>/dev-cycle-protocol/bin/dev-cycle" plan-memory detect_drift --proposal "<proposal summary>"
 "<skills_root>/dev-cycle-protocol/bin/dev-cycle" plan-memory save_plan --title "<title>" --file "<plan.md>" --version "<target version>" --milestones "<m1,m2,...>" [--spec-dir specs/NNN-slug] [--supersedes "<old_plan_id>"]
 ```
 End with (in the user's language): *"This is the complete plan. Would you like to adjust anything, or do you approve the start of implementation?"*

@@ -2071,5 +2071,199 @@
     "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"],
     "ignore": ["home/db", "home/.cache"],
     "masks": ["\\d{4}-\\d{2}-\\d{2}(?:T\\d{2}:\\d{2}:\\d{2})?"]
+  },
+  {
+    "name": "detect-drift-help",
+    "python": "plan-memory/detect_drift.py",
+    "rust": ["plan-memory", "detect_drift"],
+    "args": ["--help"],
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "detect-drift-no-proposal",
+    "python": "plan-memory/detect_drift.py",
+    "rust": ["plan-memory", "detect_drift"],
+    "args": ["--dir", "{project}"],
+    "fixture": "drift",
+    "git": true,
+    "env": {"PLAN_MEMORY_DB": "{home}/db"},
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"],
+    "ignore": ["home/db", "home/.cache"]
+  },
+  {
+    "name": "detect-drift-empty-proposal",
+    "python": "plan-memory/detect_drift.py",
+    "rust": ["plan-memory", "detect_drift"],
+    "args": ["--proposal", "", "--dir", "{project}"],
+    "fixture": "drift",
+    "git": true,
+    "env": {"PLAN_MEMORY_DB": "{home}/db"},
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"],
+    "ignore": ["home/db", "home/.cache"]
+  },
+  {
+    "name": "detect-drift-missing-plan",
+    "python": "plan-memory/detect_drift.py",
+    "rust": ["plan-memory", "detect_drift"],
+    "args": ["--id", "nope", "--proposal", "x", "--dir", "{project}"],
+    "fixture": "drift",
+    "git": true,
+    "env": {"PLAN_MEMORY_DB": "{home}/db"},
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"],
+    "ignore": ["home/db", "home/.cache"]
+  },
+  {
+    "name": "detect-drift-no-plans",
+    "python": "plan-memory/detect_drift.py",
+    "rust": ["plan-memory", "detect_drift"],
+    "args": ["--proposal", "x", "--dir", "{project}"],
+    "fixture": "docs-none",
+    "git": true,
+    "env": {"PLAN_MEMORY_DB": "{home}/db"},
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"],
+    "ignore": ["home/db", "home/.cache"]
+  },
+  {
+    "name": "detect-drift-aligned",
+    "python": "plan-memory/detect_drift.py",
+    "rust": ["plan-memory", "detect_drift"],
+    "args": ["--proposal", "M2: build the sync engine in Rust", "--dir", "{project}"],
+    "fixture": "drift",
+    "git": true,
+    "env": {"PLAN_MEMORY_DB": "{home}/db"},
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"],
+    "ignore": ["home/db", "home/.cache"]
+  },
+  {
+    "name": "detect-drift-out-of-order",
+    "python": "plan-memory/detect_drift.py",
+    "rust": ["plan-memory", "detect_drift"],
+    "args": ["--proposal", "M3: ship it to users", "--dir", "{project}"],
+    "fixture": "drift",
+    "git": true,
+    "env": {"PLAN_MEMORY_DB": "{home}/db"},
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"],
+    "ignore": ["home/db", "home/.cache"]
+  },
+  {
+    "name": "detect-drift-conflict",
+    "python": "plan-memory/detect_drift.py",
+    "rust": ["plan-memory", "detect_drift"],
+    "args": ["--proposal", "Use LangGraph for the agent loop", "--dir", "{project}"],
+    "fixture": "drift",
+    "git": true,
+    "env": {"PLAN_MEMORY_DB": "{home}/db"},
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"],
+    "ignore": ["home/db", "home/.cache"]
+  },
+  {
+    "name": "detect-drift-conflict-strict",
+    "python": "plan-memory/detect_drift.py",
+    "rust": ["plan-memory", "detect_drift"],
+    "args": ["--proposal", "Use LangGraph for the agent loop", "--strict", "--dir", "{project}"],
+    "fixture": "drift",
+    "git": true,
+    "env": {"PLAN_MEMORY_DB": "{home}/db"},
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"],
+    "ignore": ["home/db", "home/.cache"]
+  },
+  {
+    "name": "detect-drift-allowed",
+    "python": "plan-memory/detect_drift.py",
+    "rust": ["plan-memory", "detect_drift"],
+    "args": ["--proposal", "Replace LangGraph with a Rust loop", "--strict", "--dir", "{project}"],
+    "fixture": "drift",
+    "git": true,
+    "env": {"PLAN_MEMORY_DB": "{home}/db"},
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"],
+    "ignore": ["home/db", "home/.cache"]
+  },
+  {
+    "name": "detect-drift-custom-rule",
+    "python": "plan-memory/detect_drift.py",
+    "rust": ["plan-memory", "detect_drift"],
+    "args": ["--file", "{project}/proposal.md", "--dir", "{project}"],
+    "fixture": "drift",
+    "git": true,
+    "env": {"PLAN_MEMORY_DB": "{home}/db"},
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"],
+    "ignore": ["home/db", "home/.cache"]
+  },
+  {
+    "name": "detect-drift-kafka-allowed",
+    "python": "plan-memory/detect_drift.py",
+    "rust": ["plan-memory", "detect_drift"],
+    "args": ["--proposal", "Write a Kafka adapter", "--dir", "{project}"],
+    "fixture": "drift",
+    "git": true,
+    "env": {"PLAN_MEMORY_DB": "{home}/db"},
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"],
+    "ignore": ["home/db", "home/.cache"]
+  },
+  {
+    "name": "detect-drift-kafka-default",
+    "python": "plan-memory/detect_drift.py",
+    "rust": ["plan-memory", "detect_drift"],
+    "args": ["--proposal", "Move events to kafka", "--dir", "{project}"],
+    "fixture": "drift",
+    "git": true,
+    "env": {"PLAN_MEMORY_DB": "{home}/db"},
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"],
+    "ignore": ["home/db", "home/.cache"]
+  },
+  {
+    "name": "detect-drift-walk-up",
+    "python": "plan-memory/detect_drift.py",
+    "rust": ["plan-memory", "detect_drift"],
+    "args": ["--proposal", "Unrelated cooking recipes", "--strict", "--dir", "{project}/sub"],
+    "fixture": "drift",
+    "git": true,
+    "env": {"PLAN_MEMORY_DB": "{home}/db"},
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"],
+    "ignore": ["home/db", "home/.cache"]
+  },
+  {
+    "name": "detect-drift-broken-rules",
+    "python": "plan-memory/detect_drift.py",
+    "rust": ["plan-memory", "detect_drift"],
+    "args": ["--proposal", "x", "--dir", "{project}/broken"],
+    "fixture": "drift",
+    "git": true,
+    "env": {"PLAN_MEMORY_DB": "{home}/db"},
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"],
+    "ignore": ["home/db", "home/.cache"]
+  },
+  {
+    "name": "detect-drift-other-plan",
+    "python": "plan-memory/detect_drift.py",
+    "rust": ["plan-memory", "detect_drift"],
+    "args": ["--id", "other", "--proposal", "Use Redis", "--dir", "{project}"],
+    "fixture": "drift",
+    "git": true,
+    "env": {"PLAN_MEMORY_DB": "{home}/db"},
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"],
+    "ignore": ["home/db", "home/.cache"]
+  },
+  {
+    "name": "detect-drift-old-plan",
+    "python": "plan-memory/detect_drift.py",
+    "rust": ["plan-memory", "detect_drift"],
+    "args": ["--id", "old", "--proposal", "only ONE", "--dir", "{project}"],
+    "fixture": "drift",
+    "git": true,
+    "env": {"PLAN_MEMORY_DB": "{home}/db"},
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"],
+    "ignore": ["home/db", "home/.cache"]
+  },
+  {
+    "name": "detect-drift-no-rules",
+    "python": "plan-memory/detect_drift.py",
+    "rust": ["plan-memory", "detect_drift"],
+    "args": ["--proposal", "Alpha plan work", "--dir", "{project}"],
+    "fixture": "plans-list",
+    "git": true,
+    "env": {"PLAN_MEMORY_DB": "{home}/db"},
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"],
+    "ignore": ["home/db", "home/.cache"]
   }
 ]

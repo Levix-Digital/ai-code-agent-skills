@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "=====================================================================================\n🛡️ PLAN DRIFT DETECTOR: [demo] Alpha feature\n   • Baseline Plan ID : alpha (Version: 1.2.0)\n   • Drift Status     : ⚠️ POTENTIAL DRIFT\n   • Alignment Score  : 37% (Similarity: 0.46)\n   • Verdict          : CAUTION / REVIEW\n   • Drift Rules      : none (add `drift_rules` to the project's .dev-cycle.json)\n-------------------------------------------------------------------------------------\n🎯 MILESTONE ALIGNMENT:\n   ⚠️ No specific milestones from the baseline plan were detected in this proposal.\n   ⏳ Unaddressed milestones: M1 Design, M2 Build, M3 Ship\n=====================================================================================\n\n",
+  "stderr": "🔄 Plan index synced from {project}/docs/plans: 7 updated, 0 removed, 7 plan(s).\n",
+  "files": {}
+}

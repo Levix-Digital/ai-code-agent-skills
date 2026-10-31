@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "",
+  "stderr": "❌ Error: Active baseline plan not found for plan_id='nope' in {project}/docs/plans\n",
+  "files": {}
+}

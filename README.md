@@ -206,7 +206,7 @@ Keeps the project's planning in its repository: the **backlog**, where work is c
 | Semantic search | `<skills_root>/dev-cycle-protocol/bin/dev-cycle plan-memory search_plans --query "<text>" [--limit 5] [--all-projects]` (`bin/dev-cycle.ps1` in PowerShell) |
 | Milestones | `<skills_root>/dev-cycle-protocol/bin/dev-cycle plan-memory check_milestone --list` / `--milestone "A" [--notes "..."]` / `--milestone "A" --uncheck` (`bin/dev-cycle.ps1` in PowerShell) |
 | Change status | `<skills_root>/dev-cycle-protocol/bin/dev-cycle plan-memory update_plan_status --id <plan_id> --status completed [--notes "..."]` (`bin/dev-cycle.ps1` in PowerShell) |
-| Check a proposal for drift | `detect_drift.py --proposal "<text>"` or `--file proposal.md [--strict]` |
+| Check a proposal for drift | `<skills_root>/dev-cycle-protocol/bin/dev-cycle plan-memory detect_drift --proposal "<text>"` or `--file proposal.md [--strict]` (`bin/dev-cycle.ps1` in PowerShell) |
 | Export (JSON or copy) | `<skills_root>/dev-cycle-protocol/bin/dev-cycle plan-memory export_plan --id <plan_id> --format json --output-dir out/` (`bin/dev-cycle.ps1` in PowerShell) |
 | Rebuild the search index | `<skills_root>/dev-cycle-protocol/bin/dev-cycle plan-memory rebuild_index` (`bin/dev-cycle.ps1` in PowerShell) |
 | Migrate from the old database | `migrate_legacy.py [--source <old_db>] [--dry-run]` |
@@ -389,7 +389,7 @@ Adding a skill, running the tests, conventions, personal skills and updating oth
 | `plan-memory` lists no plans | Run it inside the project repository (or pass `--dir`); plans are read from `docs/plans` (or `plans.dir`). |
 | A memory script finds nothing for a project | Run `read_memory.py --list-projects` or `list_plans` (engine); the project may be stored under another name. Names are normalized (`AnyContext` = `any-context`), but `anycontext` cannot be split. |
 | `check_docs` reports many errors after `extract_adrs` | Expected: they are the migration work list (translate and restructure ADRs, rewrite the index and subsystem pages). |
-| `detect_drift.py` reports `Drift Rules: none` | Run it from the project folder (or pass `--dir`) and add `drift_rules` to `.dev-cycle.json`. |
+| `detect_drift` reports `Drift Rules: none` | Run it from the project folder (or pass `--dir`) and add `drift_rules` to `.dev-cycle.json`. |
 | Cloud session has no `dev-skills:*` skills | `claude plugin list`. A session that starts outside the repository (Claude Projects, several repositories) never reads the project's `.claude/settings.json`: install with the environment's Setup script ([docs/cloud-sessions.md](docs/cloud-sessions.md)). Otherwise check the branch has `.claude/settings.json`, the GitHub app can access this repository, and `/plugin` for load errors. |
 
 ---

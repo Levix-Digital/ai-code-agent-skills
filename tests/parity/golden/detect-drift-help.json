@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "usage: detect_drift.py [-h] [--project PROJECT] [--dir DIR] [--id ID]\n                       [--proposal PROPOSAL] [--file FILE] [--strict]\n\nDetect architectural drift against baseline plans in ChromaDB\n\noptions:\n  -h, --help           show this help message and exit\n  --project PROJECT    Project name (default: from the repository)\n  --dir DIR            Project directory (default: current); plans and .dev-\n                       cycle.json are read from its repository\n  --id ID              Specific Plan ID to validate against\n  --proposal PROPOSAL  Inline text of proposed task/change\n  --file FILE          Path to markdown/text file containing the proposal\n  --strict             Exit with non-zero code if conflicts or low score\n",
+  "stderr": "",
+  "files": {}
+}

@@ -98,12 +98,13 @@ Options: `--id` (default: `<project>_<title>` slug), `--parent-id`, `--content` 
 In PowerShell, run `& "<skills_root>/dev-cycle-protocol/bin/dev-cycle.ps1" plan-memory check_milestone [arguments]` instead.
 The first completed milestone moves an `active` plan to `in_progress`; the last one moves it to `completed`.
 
-### 3. Architectural Drift Detector (`detect_drift.py`)
-Compares any implementation proposal, issue or new prompt against the active plan: semantic similarity, milestone coverage and order, and the project's own anti-pattern rules.
-```powershell
-python "<skills_root>/plan-memory/detect_drift.py" --proposal "Priority 1: build the native ReAct orchestrator in Rust, replacing the Python LangGraph"
-python "<skills_root>/plan-memory/detect_drift.py" --file "path/to/proposal.md" --strict   # exit code != 0 on conflict
+### 3. Architectural Drift Detector (`detect_drift`)
+Compares any implementation proposal, issue or new prompt against the active plan: semantic similarity, milestone coverage and order, and the project's own anti-pattern rules. `detect_drift` runs on the native engine. In sh shells (Linux, macOS, Git Bash):
+```bash
+"<skills_root>/dev-cycle-protocol/bin/dev-cycle" plan-memory detect_drift --proposal "Priority 1: build the native ReAct orchestrator in Rust, replacing the Python LangGraph"
+"<skills_root>/dev-cycle-protocol/bin/dev-cycle" plan-memory detect_drift --file "path/to/proposal.md" --strict   # exit code != 0 on conflict
 ```
+In PowerShell, run `& "<skills_root>/dev-cycle-protocol/bin/dev-cycle.ps1" plan-memory detect_drift [arguments]` instead.
 
 Anti-pattern rules live in the `drift_rules` key of the project's `.dev-cycle.json` (looked up from `--dir` upwards). Without rules, only similarity and milestones are checked.
 ```json
@@ -240,7 +241,7 @@ In PowerShell, run `& "<skills_root>/dev-cycle-protocol/bin/dev-cycle.ps1" plan-
 
 ## 🧩 Plans with Spec Kit
 
-When the project uses Spec Kit (`speckit.enabled`, see `dev-cycle-protocol`), the detail of a feature lives in Spec Kit's folder (`specs/NNN-slug/`: `spec.md`, `plan.md`, `research.md`, `data-model.md`, `quickstart.md`, `contracts/`, `tasks.md`). The plan file is its **envelope**: frontmatter (status, milestones, lineage, backlog items, `spec_dir`) and a short body (goal and decisions, link to the folder). Nothing is copied or summarized: `get_plan` prints the artifacts after the body (and `--output` writes both), and the search index and `detect_drift.py` read the plan and its artifacts as one document, re-indexed when any of them changes.
+When the project uses Spec Kit (`speckit.enabled`, see `dev-cycle-protocol`), the detail of a feature lives in Spec Kit's folder (`specs/NNN-slug/`: `spec.md`, `plan.md`, `research.md`, `data-model.md`, `quickstart.md`, `contracts/`, `tasks.md`). The plan file is its **envelope**: frontmatter (status, milestones, lineage, backlog items, `spec_dir`) and a short body (goal and decisions, link to the folder). Nothing is copied or summarized: `get_plan` prints the artifacts after the body (and `--output` writes both), and the search index and `detect_drift` read the plan and its artifacts as one document, re-indexed when any of them changes.
 
 ---
 
@@ -259,7 +260,7 @@ When the project uses Spec Kit (`speckit.enabled`, see `dev-cycle-protocol`), th
 The whole development lifecycle follows 👉 **[`dev-cycle-protocol`](../dev-cycle-protocol/SKILL.md)**:
 - **Phase 0 (Product inception)**: the product backlog as epics and their items, and the roadmap from the MVP (`product-inception`).
 - **Phase 1 (Discovery)**: check `list_plans` (engine), `check_milestone --list` (engine) or `search_plans` (engine) for real progress and agreed guidelines, `backlog summary` for open bugs and captured ideas and `roadmap current` (engine) for the items of the current release; promote the items the user chooses.
-- **Phase 2 (Plan)**: save the full plan with `save_plan` (engine, with `--supersedes` when it replaces one, `--spec-dir` with Spec Kit) and run `detect_drift.py`. The plan follows the orchestrator's template, with a section from each role.
+- **Phase 2 (Plan)**: save the full plan with `save_plan` (engine, with `--supersedes` when it replaces one, `--spec-dir` with Spec Kit) and run `detect_drift` (engine). The plan follows the orchestrator's template, with a section from each role.
 - **Phase 3 (Plan approval)**: `verify_gate --gate 3` (engine) checks there is an active plan, warns if its file is not committed, and blocks a non-bug plan while open blocking bugs (default `critical`, `high`, `medium`) or bugs not triaged are outside it (bugs first). A bug is triaged when it has a valid severity and, when its severity does not block, it is in the next release of the roadmap (`backlog.bug_deadline`). `backlog summary` lists the bugs not triaged; `backlog add` of a bug says where it goes.
 - **Phase 4 (Implementation)**: mark milestones with `check_milestone` (engine) as they are completed.
 - **Phase 10 (Release)**: close the remaining milestones or finish the plan with `update_plan_status` (engine), and mark the release released (`roadmap set-release vX.Y.Z --status released` on the engine).
