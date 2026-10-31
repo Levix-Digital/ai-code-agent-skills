@@ -78,7 +78,7 @@ dev-cycle-protocol/bin/    # launchers and engine-version
 4. Compare gates 0, 3, 8 and rc with main on every fixture (worktree of main, `DEV_CYCLE_BIN`).
 5. Swap the `SKILL.md` lines, README, MANUAL_TESTS, architecture docs and callers; add the command to `ENGINE_CHECKERS` when `verify_gate.py` or a pytest case runs it.
 6. Delete the script when nothing imports it; move its pytest cases to `run_checker` or to parity cases.
-7. Raise the engine version, run fmt, clippy, tests, parity and pytest, mark the milestone (`check_milestone.py`) and the task below, and open the pull request.
+7. Raise the engine version, run fmt, clippy, tests, parity and pytest, mark the milestone (`check_milestone`) and the task below, and open the pull request.
 
 ## Complexity Tracking
 

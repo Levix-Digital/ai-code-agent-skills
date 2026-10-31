@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "⚠️ Plan 'empty' does not have any milestones defined in its frontmatter.\n",
+  "stderr": "",
+  "files": {}
+}

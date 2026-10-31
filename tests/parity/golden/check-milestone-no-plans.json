@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "",
+  "stderr": "❌ Error: Plan not found for project='parity' in {project}/docs/plans\n",
+  "files": {}
+}

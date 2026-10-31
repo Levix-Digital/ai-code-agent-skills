@@ -1,9 +1,9 @@
 """
-Check Milestone Utility - plan-memory Skill
+Check Milestone - plan-memory Skill
 Tracks granular milestone completion in the plan file's frontmatter (docs/plans/<plan_id>.md).
-Displays visual progress bars, checklist states, and milestone notes.
+The command is the engine's `plan-memory check_milestone`; this module keeps the function
+for the Python callers that remain.
 """
-import argparse
 import sys
 
 from _backlog_store import sync_plan_items
@@ -105,25 +105,3 @@ def check_milestone(
     if modified:
         print("👉 Commit the updated plan file.\n")
 
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Track granular milestone progress in plan files")
-    parser.add_argument("--id", type=str, default=None, help="Target Plan ID (default: the project's latest active plan)")
-    parser.add_argument("--project", type=str, default=None, help="Project name (default: from the repository)")
-    parser.add_argument("--dir", type=str, default=None, help="Project directory (default: current)")
-    parser.add_argument("--milestone", type=str, default=None, help="Milestone name to mark as completed")
-    parser.add_argument("--uncheck", action="store_true", help="Revert milestone to pending")
-    parser.add_argument("--notes", type=str, default=None, help="Notes or rationale for milestone update")
-    parser.add_argument("--list", action="store_true", help="List milestones and progress without modifying")
-    parser.add_argument("--auto-complete", action="store_true", help="Automatically set plan status to completed if all milestones are done")
-    args = parser.parse_args()
-
-    check_milestone(
-        store=PlanStore(args.dir, args.project),
-        plan_id=args.id,
-        milestone_name=args.milestone,
-        uncheck=args.uncheck,
-        notes=args.notes,
-        list_only=args.list,
-        auto_complete=args.auto_complete,
-    )

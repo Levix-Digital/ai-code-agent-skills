@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "================================================================================\n📊 MILESTONE TRACKER: [project] Tracker plan\n   • Plan ID : tracker | Status: ACTIVE | Version: v0.3.0\n   • Progress: [██████░░░░░░░░░░░░░░░░░░] 25.0% (1/4 Milestones)\n   • File    : {project}/docs/plans/tracker.md\n--------------------------------------------------------------------------------\n📋 MILESTONE CHECKLIST:\n   ✅ [X] 1. M1 Design  (<MASK>, Someone)\n   ⏳ [ ] 2. M2 Build\n   ⏳ [ ] 3. M3 Build docs\n   ⏳ [ ] 4. M4 Ship\n================================================================================\n\n",
+  "stderr": "",
+  "files": {}
+}
