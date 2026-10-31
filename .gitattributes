@@ -1,2 +1,3 @@
 * text=auto eol=lf
 *.ps1 text eol=crlf
+tests/parity/fixtures/drift/proposal.md -text
