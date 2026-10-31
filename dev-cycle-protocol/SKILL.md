@@ -113,7 +113,7 @@ A project without a baseline that is already under way can adopt it (adoption mo
   "<skills_root>/dev-cycle-protocol/bin/dev-cycle" dev-cycle-protocol project_config --validate
   ```
 - **Logs first**: for any reported error, read the real logs before forming hypotheses.
-- Read the active plans (`list_plans` on the engine: `"<skills_root>/dev-cycle-protocol/bin/dev-cycle" plan-memory list_plans`; `check_milestone.py --list`) and the architecture style and structure (`software-design`).
+- Read the active plans (`list_plans` on the engine: `"<skills_root>/dev-cycle-protocol/bin/dev-cycle" plan-memory list_plans`; `plan-memory check_milestone --list`) and the architecture style and structure (`software-design`).
 - Read the backlog and the roadmap (`plan-memory/backlog.py summary`, `roadmap current` on the engine: `"<skills_root>/dev-cycle-protocol/bin/dev-cycle" plan-memory roadmap current`; `inspect_project` shows both). Show the user the open bugs that come before new work, then the open items of the current release and the items related to the request; the user decides what to promote, re-prioritize, move or drop (see "Backlog and Roadmap").
 - To plan backlog items, promote them (`backlog.py promote <ID> ...`): the draft plan (a bug plan for bugs) is where the discovery is written.
 - **Spec Kit**: check out the work base, then run `/speckit-specify` with the items' description: it creates the work branch `feat/NNN-slug` and `specs/NNN-slug/spec.md`. Run `/speckit-clarify` until no `[NEEDS CLARIFICATION]` marker is left; the user answers its questions. The promoted plan is the envelope; the discovery lives in the spec.
@@ -152,7 +152,7 @@ End with (in the user's language): *"This is the complete plan. Would you like t
 - Create the branch from the work base (`devops-release` naming: `feat/`, `fix/`, `docs/`, ...). With Spec Kit the branch already exists (`feat/NNN-slug`, from Phase 1).
 - Follow `software-design`: core and domain first, then storage, then the adapters of each affected surface; one responsibility per unit; explicit errors.
 - **Spec Kit**: run `/speckit-implement`, which executes `tasks.md` in order. The protocol's rules still hold: a regression test per bug, never move on with a failing test, the plan's milestones marked as the phases of `tasks.md` complete.
-- Mark plan milestones as they are completed (`plan-memory/check_milestone.py`).
+- Mark plan milestones as they are completed (`plan-memory check_milestone` on the engine).
 
 ### 5. 🧪 Automated Tests
 - Run `test_commands` (or the stack's runner) and follow `quality-assurance`. Every bug fix has a regression test. **Never move on with a failing test.**

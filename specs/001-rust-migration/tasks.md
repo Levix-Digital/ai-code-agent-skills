@@ -11,7 +11,7 @@ description: "Tasks of the Rust migration, one per milestone of the envelope pla
 
 **Tests**: every task carries its own proof: parity cases, a differential fuzz with 0 differences and the gate comparison with main (plan.md, "Per-milestone procedure").
 
-**Organization**: one task per milestone, in the plan's order. A task is one pull request; tasks run one after the other (no parallel work without Gedo). The pull request that finishes a task checks it here and marks its milestone with `check_milestone.py`.
+**Organization**: one task per milestone, in the plan's order. A task is one pull request; tasks run one after the other (no parallel work without Gedo). The pull request that finishes a task checks it here and marks its milestone with `check_milestone`.
 
 ## Format: `[ID] [Story] Description`
 
@@ -86,7 +86,7 @@ description: "Tasks of the Rust migration, one per milestone of the envelope pla
 - [x] T028 [US1] M28: translate `search_plans` and swap its callers
 - [x] T029 [US1] M29: translate `save_plan` and swap its callers
 - [x] T030 [US1] M30: translate `update_plan_status` and swap its callers
-- [ ] T031 [US1] M31: translate `check_milestone` and swap its callers
+- [x] T031 [US1] M31: translate `check_milestone` and swap its callers
 - [ ] T032 [US1] M32: translate `backlog` and swap its callers
 - [ ] T033 [US1] M33: translate `detect_drift` and swap its callers
 - [ ] T034 [US1] M34: translate `plan-memory migrate_legacy` and swap its callers
