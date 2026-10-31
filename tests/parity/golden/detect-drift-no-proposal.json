@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "",
+  "stderr": "❌ Error: You must supply either --proposal <text> or --file <path>\n",
+  "files": {}
+}

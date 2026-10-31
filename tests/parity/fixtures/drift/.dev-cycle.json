@@ -1,0 +1,8 @@
+{
+  "project_name": "parity",
+  "drift_rules": [
+    {"tech": "LangGraph"},
+    {"tech": "Redis", "negative_markers": ["No Redis"], "conflict_msg": "Redis is out of the design."},
+    {"tech": "Kafka", "proposal_allow": ["Kafka adapter"]}
+  ]
+}

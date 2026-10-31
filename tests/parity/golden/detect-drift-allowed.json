@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "=====================================================================================\n🛡️ PLAN DRIFT DETECTOR: [parity] Sync engine\n   • Baseline Plan ID : drift (Version: v2.0.0)\n   • Drift Status     : ⚠️ POTENTIAL DRIFT\n   • Alignment Score  : 36% (Similarity: 0.44)\n   • Verdict          : CAUTION / REVIEW\n   • Drift Rules      : 3 from {project}/.dev-cycle.json\n-------------------------------------------------------------------------------------\n🎯 MILESTONE ALIGNMENT:\n   ⚠️ No specific milestones from the baseline plan were detected in this proposal.\n   ⏳ Unaddressed milestones: M1 Design API, M2 Build sync engine, M3 Ship\n=====================================================================================\n\n",
+  "stderr": "🔄 Plan index synced from {project}/docs/plans: 3 updated, 0 removed, 3 plan(s).\n",
+  "files": {}
+}

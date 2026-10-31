@@ -313,6 +313,7 @@ impl PlanStore {
     }
 }
 
+#[derive(Clone)]
 pub struct Plan {
     pub meta: Dict,
     pub body: String,
