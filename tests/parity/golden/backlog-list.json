@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "BUG-001   [open] (high) Crash on start\nBUG-003   [open] (medium) Slow sync\nBUG-002   [planned] (low) Wrong label  → open_plan\nBUG-004   [open] (low) Odd colors\nFEAT-002  [open] (high) Share links  [EPIC-001]\nFEAT-001  [open] (medium) Export answers  [EPIC-001]\nIMP-002   [open] (low) Faster search  [EPIC-002]\nEPIC-001  [open] (high) Sharing\nEPIC-003  [open] (low) Done things\n",
+  "stderr": "",
+  "files": {}
+}

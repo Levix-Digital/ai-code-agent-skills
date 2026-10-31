@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ BUG-999: no such backlog item\n",
+  "stderr": "",
+  "files": {}
+}

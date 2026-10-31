@@ -82,8 +82,8 @@ The constitution is generated from `software-design`, the protocol's principles,
 
 ### 7. 📥 Product Backlog
 The backlog of the **complete (ideal) product**, not only the first release:
-- One **epic** per capability area of the Scope section (`backlog.py add --type epic --priority <p>`).
-- Under each epic, its **features** (and improvements or adjustments when the project already exists), one line each, captured without discovery (`backlog.py add --type feature --epic EPIC-NNN ...`).
+- One **epic** per capability area of the Scope section (`backlog add --type epic --priority <p>`).
+- Under each epic, its **features** (and improvements or adjustments when the project already exists), one line each, captured without discovery (`backlog add --type feature --epic EPIC-NNN ...`).
 - Priorities come from the vision (value, risk, dependencies); show the list to the user, who decides.
 
 ### 8. 🗺️ Roadmap

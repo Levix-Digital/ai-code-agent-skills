@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ BUG-002 is already promoted into plan 'open_plan'\n",
+  "stderr": "",
+  "files": {}
+}

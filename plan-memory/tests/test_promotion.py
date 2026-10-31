@@ -8,7 +8,7 @@ SKILL = os.path.dirname(HERE)
 sys.path.insert(0, SKILL)
 sys.path.append(os.path.join(SKILL, "..", "dev-cycle-protocol"))
 
-import backlog as cli  # noqa: E402
+import _backlog_cli as cli  # noqa: E402
 from _backlog import Backlog, BacklogError  # noqa: E402
 from _backlog_store import BacklogFile  # noqa: E402
 from _store import PlanStore, slugify_id  # noqa: E402

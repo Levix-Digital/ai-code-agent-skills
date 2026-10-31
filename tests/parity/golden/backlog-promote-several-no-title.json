@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ promoting several items needs --title\n",
+  "stderr": "",
+  "files": {}
+}

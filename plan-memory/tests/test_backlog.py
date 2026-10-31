@@ -1,6 +1,5 @@
 import json
 import os
-import subprocess
 import sys
 
 import pytest
@@ -10,7 +9,9 @@ SKILL = os.path.dirname(HERE)
 sys.path.insert(0, SKILL)
 
 from _backlog import Backlog, BacklogError  # noqa: E402
-import backlog as cli  # noqa: E402
+import _backlog_cli as cli  # noqa: E402
+sys.path.append(os.path.join(SKILL, "..", "dev-cycle-protocol", "tests"))
+from _engine import run_engine  # noqa: E402
 
 TEMPLATE = os.path.join(SKILL, "templates", "BACKLOG_TEMPLATE.md")
 
@@ -262,10 +263,8 @@ def test_cli_refuses_to_rewrite_an_unreadable_file(tmp_path, capsys):
     assert (tmp_path / "docs" / "BACKLOG.md").read_text(encoding="utf-8") == original
 
 
-def test_script_runs_standalone(tmp_path):
-    script = os.path.join(SKILL, "backlog.py")
-    res = subprocess.run([sys.executable, script, "summary", "--dir", str(tmp_path)],
-                         capture_output=True, text=True, encoding="utf-8")
+def test_engine_command_runs_standalone(tmp_path):
+    res = run_engine("plan-memory", "backlog", ["summary", "--dir", str(tmp_path)])
     assert res.returncode == 0 and "No backlog" in res.stdout
 
 

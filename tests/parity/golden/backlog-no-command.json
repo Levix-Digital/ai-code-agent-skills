@@ -1,0 +1,6 @@
+{
+  "exit": 2,
+  "stdout": "",
+  "stderr": "usage: backlog.py [-h]\n                  {add,list,summary,show,set,close,drop,duplicate,supersede,reopen,promote,validate} ...\nbacklog.py: error: the following arguments are required: command\n",
+  "files": {}
+}

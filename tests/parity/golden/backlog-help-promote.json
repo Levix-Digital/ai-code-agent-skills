@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "usage: backlog.py promote [-h] [--dir DIR] [--title TITLE] [--id ID]\n                          [--version VERSION] [--into INTO]\n                          ids [ids ...]\n\npositional arguments:\n  ids\n\noptions:\n  -h, --help         show this help message and exit\n  --dir DIR          Project directory (default: current; the Git root is\n                     used)\n  --title TITLE      Plan title (default: the item's title; required for\n                     several items)\n  --id ID            Plan id (default: generated from the title)\n  --version VERSION  Target version\n  --into INTO        Add the items to this existing plan instead\n",
+  "stderr": "",
+  "files": {}
+}

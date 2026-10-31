@@ -7,7 +7,7 @@ use kernel::project_config::{ConfigError, load_project_config};
 use kernel::py::num::{decimal_value, is_space};
 use kernel::py::path::{isfile, join};
 use kernel::py::unicode::{ignorecase_eq, upper};
-use kernel::py::{Crash, Value};
+use kernel::py::{Crash, Dict, Value};
 
 use crate::roadmap::{RoadmapError, field_line, read_exact, section_heading};
 
@@ -31,6 +31,7 @@ pub const SECTIONS: [&str; 6] = [
 pub const SEVERITIES: [&str; 4] = ["critical", "high", "medium", "low"];
 pub const PRIORITIES: [&str; 3] = ["high", "medium", "low"];
 pub const NO_PLAN: &str = "-";
+const BACKLOG_TEMPLATE: &str = include_str!("../../../plan-memory/templates/BACKLOG_TEMPLATE.md");
 const PREFIXES: [&str; 5] = ["BUG", "FEAT", "IMP", "ADJ", "EPIC"];
 
 /// `BacklogError`: what the scripts print after `❌`.
@@ -390,8 +391,8 @@ impl Backlog {
     }
 }
 
-const OPEN_STATUSES: [&str; 3] = ["open", "planned", "in_progress"];
-const CLOSED_STATUSES: [&str; 4] = ["done", "dropped", "duplicate", "superseded"];
+pub const OPEN_STATUSES: [&str; 3] = ["open", "planned", "in_progress"];
+pub const CLOSED_STATUSES: [&str; 4] = ["done", "dropped", "duplicate", "superseded"];
 
 impl Backlog {
     /// `validate()`: the problems of the file, structural ones first.
@@ -558,7 +559,7 @@ impl From<BacklogError> for RoadmapError {
 }
 
 /// `value in container`, for a value from the project configuration.
-fn contains(container: &Value, item: &str) -> Result<bool, Crash> {
+pub(crate) fn contains(container: &Value, item: &str) -> Result<bool, Crash> {
     match container {
         Value::Str(s) => Ok(s.contains(item)),
         Value::List(v) | Value::Tuple(v) | Value::Set(v) => {
@@ -595,7 +596,7 @@ impl Backlog {
 
 /// `BacklogFile(start_dir)`: the backlog file of one project and its triage settings.
 pub struct BacklogFile {
-    root: String,
+    pub root: String,
     pub path: String,
     pub blocking_severities: Value,
     pub bug_deadline: Value,
@@ -631,6 +632,14 @@ impl BacklogFile {
 
     pub fn rel(&self) -> Result<String, Crash> {
         Ok(kernel::py::path::relpath(&self.path, &self.root)?.replace('\\', "/"))
+    }
+
+    /// `load(create=True)`: the backlog template when the file does not exist yet.
+    pub fn load_or_template(&self) -> Result<Backlog, RoadmapError> {
+        if self.exists() {
+            return self.load();
+        }
+        Ok(Backlog::parse(BACKLOG_TEMPLATE))
     }
 
     pub fn load(&self) -> Result<Backlog, RoadmapError> {
@@ -768,7 +777,7 @@ const FIELD_ORDER: [&str; 8] = [
 
 impl Item {
     /// `set(name, value)`: the first line stripped, continuation lines indented.
-    fn set(&mut self, name: &str, value: &str) {
+    pub fn set(&mut self, name: &str, value: &str) {
         let value = value.replace("\r\n", "\n");
         let mut parts = value.split('\n');
         let mut lines = vec![strip(parts.next().unwrap_or_default()).to_string()];
@@ -1023,5 +1032,372 @@ pub fn sync_plan_items(
             Ok(messages)
         }
         Err(RoadmapError::Crash(c)) => Err(c),
+    }
+}
+
+impl Item {
+    /// `to_dict()`.
+    pub fn to_dict(&self) -> Dict {
+        let or_none = |v: String| {
+            if v.is_empty() {
+                Value::Null
+            } else {
+                Value::Str(v)
+            }
+        };
+        let opt = |v: Option<String>| v.map_or(Value::Null, Value::Str);
+        let mut d = Dict::new();
+        d.insert("id", Value::str(&self.id));
+        d.insert("type", opt(self.kind().map(str::to_string)));
+        d.insert("title", Value::str(&self.title));
+        d.insert("section", Value::str(&self.section));
+        d.insert("severity", or_none(self.get("Severity")));
+        d.insert("priority", or_none(self.get("Priority")));
+        d.insert("epic", opt(self.epic()));
+        d.insert("status", Value::Str(self.status()));
+        d.insert("found", Value::Str(self.get("Found")));
+        d.insert("plan", opt(self.plan()));
+        d.insert("closed", or_none(self.get("Closed")));
+        d.insert("description", Value::Str(self.get("Description")));
+        d
+    }
+
+    fn remove_field(&mut self, name: &str) {
+        self.fields.retain(|(n, _)| n != name);
+    }
+}
+
+/// The section index of a heading.
+fn section_index(heading: &str) -> usize {
+    SECTIONS.iter().position(|s| *s == heading).unwrap_or(0)
+}
+
+/// `TYPES[item_type]`: id prefix and section heading.
+fn type_of(item_type: &str) -> Option<(&'static str, &'static str)> {
+    TYPES.iter().find(|t| t.0 == item_type).map(|t| (t.1, t.2))
+}
+
+/// Decimal digits plus one.
+fn increment(digits: &str) -> String {
+    let mut out: Vec<u8> = digits.bytes().collect();
+    let mut i = out.len();
+    loop {
+        if i == 0 {
+            out.insert(0, b'1');
+            break;
+        }
+        i -= 1;
+        if out[i] == b'9' {
+            out[i] = b'0';
+        } else {
+            out[i] += 1;
+            break;
+        }
+    }
+    String::from_utf8(out).unwrap_or_default()
+}
+
+impl Backlog {
+    /// `next_id(item_type)`: the type's highest number plus one, at least three digits.
+    pub fn next_id(&self, prefix: &str) -> String {
+        let start = format!("{prefix}-");
+        let highest = self
+            .items()
+            .filter(|i| i.id.starts_with(&start))
+            .map(Item::number)
+            .max()
+            .map(|(_, d)| d)
+            .unwrap_or_default();
+        let next = increment(if highest.is_empty() { "0" } else { &highest });
+        format!("{prefix}-{next:0>3}")
+    }
+
+    fn check_epic(&self, epic_id: &str) -> Result<String, BacklogError> {
+        let epic = self.find(epic_id)?;
+        if epic.kind() != Some("epic") {
+            return Err(BacklogError(format!("{} is not an epic", epic.id)));
+        }
+        if epic.closed() {
+            return Err(BacklogError(format!(
+                "{} is closed ({})",
+                epic.id,
+                epic.status()
+            )));
+        }
+        Ok(epic.id.clone())
+    }
+
+    fn item_mut(&mut self, item_id: &str) -> Result<&mut Item, BacklogError> {
+        let (s, i) = self.locate(item_id)?;
+        Ok(&mut self.sections[s][i])
+    }
+
+    /// `add(...)`: a new open item at the end of its section. Returns its id.
+    #[allow(clippy::too_many_arguments)]
+    pub fn add(
+        &mut self,
+        item_type: &str,
+        title: &str,
+        description: &str,
+        found: &str,
+        severity: Option<&str>,
+        priority: Option<&str>,
+        epic: Option<&str>,
+    ) -> Result<String, BacklogError> {
+        let Some((prefix, heading)) = type_of(item_type) else {
+            let names: Vec<&str> = TYPES.iter().map(|t| t.0).collect();
+            return Err(BacklogError(format!(
+                "type '{item_type}' is not one of: {}",
+                names.join(", ")
+            )));
+        };
+        if strip(title).is_empty() {
+            return Err(BacklogError("the title must not be empty".into()));
+        }
+        if strip(description).is_empty() {
+            return Err(BacklogError("the description must not be empty".into()));
+        }
+        let epic = epic.filter(|e| !e.is_empty());
+        if epic.is_some() && item_type == "epic" {
+            return Err(BacklogError("an epic cannot belong to another epic".into()));
+        }
+        let epic_id = match epic {
+            Some(e) => Some(self.check_epic(e)?),
+            None => None,
+        };
+        let mut item = Item {
+            id: self.next_id(prefix),
+            title: strip(title).to_string(),
+            section: heading.to_string(),
+            line: None,
+            fields: Vec::new(),
+        };
+        if item_type == "bug" {
+            match severity.filter(|s| SEVERITIES.contains(s)) {
+                Some(s) => item.set("Severity", s),
+                None => {
+                    return Err(BacklogError(format!(
+                        "a bug needs a severity: {}",
+                        SEVERITIES.join(", ")
+                    )));
+                }
+            }
+        } else {
+            let priority = priority.filter(|p| !p.is_empty()).unwrap_or("medium");
+            if !PRIORITIES.contains(&priority) {
+                return Err(BacklogError(format!(
+                    "priority '{priority}' is not one of: {}",
+                    PRIORITIES.join(", ")
+                )));
+            }
+            item.set("Priority", priority);
+        }
+        if let Some(e) = &epic_id {
+            item.set("Epic", e);
+        }
+        item.set("Status", "open");
+        item.set("Found", found);
+        if item_type != "epic" {
+            item.set("Plan", NO_PLAN);
+        }
+        item.set("Description", strip(description));
+        let id = item.id.clone();
+        self.sections[section_index(heading)].push(item);
+        Ok(id)
+    }
+
+    /// `update(...)`: changes fields of an item. Returns its id.
+    #[allow(clippy::too_many_arguments)]
+    pub fn update(
+        &mut self,
+        item_id: &str,
+        title: Option<&str>,
+        description: Option<&str>,
+        severity: Option<&str>,
+        priority: Option<&str>,
+        status: Option<&str>,
+        plan: Option<&str>,
+        epic: Option<&str>,
+    ) -> Result<String, BacklogError> {
+        let epic_id = match epic.map(strip) {
+            Some(e) if !e.is_empty() && e != NO_PLAN => Some(e.to_string()),
+            _ => None,
+        };
+        let item = self.find(item_id)?;
+        let kind = item.kind();
+        if kind == Some("epic") && (plan.is_some() || status.is_some_and(|s| s != "open")) {
+            return Err(BacklogError(format!(
+                "{} is an epic; its items are promoted, not the epic",
+                item.id
+            )));
+        }
+        if item.closed()
+            && (status.is_some_and(|s| !s.is_empty()) || plan.is_some_and(|p| !p.is_empty()))
+        {
+            return Err(BacklogError(format!(
+                "{} is closed; reopen it first",
+                item.id
+            )));
+        }
+        // `_check_epic` runs in the middle of the changes; its errors leave the earlier ones
+        // in memory only, and nothing is saved after an error.
+        let id = item.id.clone();
+        if let Some(t) = title {
+            if strip(t).is_empty() {
+                return Err(BacklogError("the title must not be empty".into()));
+            }
+            self.item_mut(&id)?.title = strip(t).to_string();
+        }
+        if let Some(d) = description {
+            self.item_mut(&id)?.set("Description", strip(d));
+        }
+        if let Some(s) = severity {
+            if kind != Some("bug") {
+                return Err(BacklogError(format!("{id} is not a bug; use a priority")));
+            }
+            if !SEVERITIES.contains(&s) {
+                return Err(BacklogError(format!(
+                    "severity '{s}' is not one of: {}",
+                    SEVERITIES.join(", ")
+                )));
+            }
+            self.item_mut(&id)?.set("Severity", s);
+        }
+        if let Some(p) = priority {
+            if kind == Some("bug") {
+                return Err(BacklogError(format!("{id} is a bug; use a severity")));
+            }
+            if !PRIORITIES.contains(&p) {
+                return Err(BacklogError(format!(
+                    "priority '{p}' is not one of: {}",
+                    PRIORITIES.join(", ")
+                )));
+            }
+            self.item_mut(&id)?.set("Priority", p);
+        }
+        if epic.is_some() {
+            if kind == Some("epic") {
+                return Err(BacklogError("an epic cannot belong to another epic".into()));
+            }
+            match epic_id {
+                None => self.item_mut(&id)?.remove_field("Epic"),
+                Some(e) => {
+                    let e = self.check_epic(&e)?;
+                    self.item_mut(&id)?.set("Epic", &e);
+                }
+            }
+        }
+        if let Some(p) = plan {
+            let p = strip(p);
+            self.item_mut(&id)?
+                .set("Plan", if p.is_empty() { NO_PLAN } else { p });
+        }
+        if let Some(s) = status {
+            if !OPEN_STATUSES.contains(&s) {
+                return Err(BacklogError(format!(
+                    "status '{s}' is not one of: {} (use close, drop or duplicate to close an item)",
+                    OPEN_STATUSES.join(", ")
+                )));
+            }
+            let item = self.item_mut(&id)?;
+            if s != "open" && item.plan().is_none() {
+                return Err(BacklogError(format!(
+                    "{id} has no plan; an item is '{s}' only once it is promoted into a plan"
+                )));
+            }
+            item.set("Status", s);
+        }
+        Ok(id)
+    }
+
+    /// `supersede(item_id, by, on)`: closes an item replaced by other open items.
+    pub fn supersede(
+        &mut self,
+        item_id: &str,
+        by: &[String],
+        on: &str,
+    ) -> Result<String, BacklogError> {
+        let item = self.find(item_id)?;
+        let (id, is_epic) = (item.id.clone(), item.kind() == Some("epic"));
+        let mut replacements: Vec<String> = Vec::new();
+        for other_id in by {
+            let other = self.find(other_id)?;
+            if other.id == id {
+                return Err(BacklogError("an item cannot supersede itself".into()));
+            }
+            if other.closed() {
+                return Err(BacklogError(format!(
+                    "{} is closed ({}); an item is superseded by open items",
+                    other.id,
+                    other.status()
+                )));
+            }
+            if (other.kind() == Some("epic")) != is_epic {
+                return Err(BacklogError(format!(
+                    "{}: an epic is superseded by epics, an item by items",
+                    other.id
+                )));
+            }
+            if !replacements.contains(&other.id) {
+                replacements.push(other.id.clone());
+            }
+        }
+        if replacements.is_empty() {
+            return Err(BacklogError("name the items that replace it (--by)".into()));
+        }
+        self.close(
+            &id,
+            "superseded",
+            &format!("{on}, superseded by {}", replacements.join(", ")),
+        )?;
+        Ok(id)
+    }
+
+    /// `reopen(item_id)`: moves a closed item back to its section as open.
+    pub fn reopen(&mut self, item_id: &str) -> Result<String, BacklogError> {
+        let (s, i) = self.locate(item_id)?;
+        let item = &self.sections[s][i];
+        if !item.closed() {
+            return Err(BacklogError(format!("{} is not closed", item.id)));
+        }
+        let Some((_, heading)) = item.kind().and_then(type_of) else {
+            return Err(BacklogError(format!("{}: unknown id prefix", item.id)));
+        };
+        let mut item = self.sections[s].remove(i);
+        item.section = heading.to_string();
+        item.remove_field("Closed");
+        item.set("Status", "open");
+        if item.kind() != Some("epic") {
+            item.set("Plan", NO_PLAN);
+        }
+        let id = item.id.clone();
+        self.sections[section_index(heading)].push(item);
+        Ok(id)
+    }
+
+    /// `warnings()`: things worth a look that do not make the file invalid.
+    pub fn warnings(&self) -> Vec<String> {
+        let mut notes = Vec::new();
+        for epic in self.open_items_of("epic") {
+            let items = self.epic_items(&epic.id, true);
+            if !items.is_empty() && items.iter().all(|i| i.closed()) {
+                notes.push(format!(
+                    "{}: every item is closed; close the epic (backlog.py close {})",
+                    epic.id, epic.id
+                ));
+            }
+        }
+        for item in self.open_items() {
+            if let Some(e) = item.epic()
+                && let Ok(epic) = self.find(&e)
+                && epic.closed()
+            {
+                notes.push(format!(
+                    "{} is open under the closed epic {}",
+                    item.id, epic.id
+                ));
+            }
+        }
+        notes
     }
 }

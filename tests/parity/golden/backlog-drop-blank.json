@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ dropping an item needs a reason\n",
+  "stderr": "",
+  "files": {}
+}

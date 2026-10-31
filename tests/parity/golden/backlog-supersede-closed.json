@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "❌ IMP-001 is closed (done); an item is superseded by open items\n",
+  "stderr": "",
+  "files": {}
+}
