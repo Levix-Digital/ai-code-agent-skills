@@ -232,5 +232,117 @@
     "env": {"SESSION_MEMORY_DB": "{home}/sdb"},
     "ignore": ["home/sdb", "home/.cache"],
     "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"]
+  },
+  {
+    "name": "read-memory-help",
+    "python": "session-memory/read_memory.py",
+    "rust": ["session-memory", "read_memory"],
+    "args": ["--help"],
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "read-memory-bad-option",
+    "python": "session-memory/read_memory.py",
+    "rust": ["session-memory", "read_memory"],
+    "args": ["--all"],
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "read-memory-project",
+    "python": "session-memory/read_memory.py",
+    "rust": ["session-memory", "read_memory"],
+    "args": [],
+    "fixture": "session-read",
+    "env": {"SESSION_MEMORY_DB": "{project}/sdb"},
+    "ignore": ["project/sdb", "home/.cache"],
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"]
+  },
+  {
+    "name": "read-memory-list-projects",
+    "python": "session-memory/read_memory.py",
+    "rust": ["session-memory", "read_memory"],
+    "args": ["--list-projects"],
+    "fixture": "session-read",
+    "env": {"SESSION_MEMORY_DB": "{project}/sdb"},
+    "ignore": ["project/sdb", "home/.cache"],
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"]
+  },
+  {
+    "name": "read-memory-chunks-only",
+    "python": "session-memory/read_memory.py",
+    "rust": ["session-memory", "read_memory"],
+    "args": ["--project", "ChunksOnly"],
+    "fixture": "session-read",
+    "env": {"SESSION_MEMORY_DB": "{project}/sdb"},
+    "ignore": ["project/sdb", "home/.cache"],
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"]
+  },
+  {
+    "name": "read-memory-master-only",
+    "python": "session-memory/read_memory.py",
+    "rust": ["session-memory", "read_memory"],
+    "args": ["--project", "Zeta"],
+    "fixture": "session-read",
+    "env": {"SESSION_MEMORY_DB": "{project}/sdb"},
+    "ignore": ["project/sdb", "home/.cache"],
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"]
+  },
+  {
+    "name": "read-memory-unknown-project",
+    "python": "session-memory/read_memory.py",
+    "rust": ["session-memory", "read_memory"],
+    "args": ["--project", "nothing-here"],
+    "fixture": "session-read",
+    "env": {"SESSION_MEMORY_DB": "{project}/sdb"},
+    "ignore": ["project/sdb", "home/.cache"],
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"]
+  },
+  {
+    "name": "read-memory-empty-store",
+    "python": "session-memory/read_memory.py",
+    "rust": ["session-memory", "read_memory"],
+    "args": ["--project", "x"],
+    "env": {"SESSION_MEMORY_DB": "{home}/sdb"},
+    "ignore": ["home/sdb", "home/.cache"],
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"]
+  },
+  {
+    "name": "read-memory-empty-store-list",
+    "python": "session-memory/read_memory.py",
+    "rust": ["session-memory", "read_memory"],
+    "args": ["--list-projects"],
+    "env": {"SESSION_MEMORY_DB": "{home}/sdb"},
+    "ignore": ["home/sdb", "home/.cache"],
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"]
+  },
+  {
+    "name": "read-memory-bad-project",
+    "python": "session-memory/read_memory.py",
+    "rust": ["session-memory", "read_memory"],
+    "args": ["--project", "%%%"],
+    "env": {"SESSION_MEMORY_DB": "{home}/sdb"},
+    "ignore": ["home/sdb", "home/.cache"],
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"]
+  },
+  {
+    "name": "read-memory-git-project",
+    "python": "session-memory/read_memory.py",
+    "rust": ["session-memory", "read_memory"],
+    "args": [],
+    "fixture": "session-read",
+    "git": true,
+    "env": {"SESSION_MEMORY_DB": "{project}/sdb"},
+    "ignore": ["project/sdb", "home/.cache"],
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"]
+  },
+  {
+    "name": "read-memory-env-project",
+    "python": "session-memory/read_memory.py",
+    "rust": ["session-memory", "read_memory"],
+    "args": [],
+    "fixture": "session-read",
+    "env": {"SESSION_MEMORY_DB": "{project}/sdb", "SESSION_MEMORY_PROJECT": "Alpha"},
+    "ignore": ["project/sdb", "home/.cache"],
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"]
   }
 ]

@@ -33,7 +33,7 @@ Rules for the agent:
 1. **At the start of the session**, determine the project (usually the name of the Git repository root you are working in) and **always pass `--project <name>` explicitly** in every command. Do not rely on the shell's current directory, which may change during the session.
 2. Never read, write, consolidate or delete memory of **another** project unless the user asks. If the session switches projects, finalize the current project before moving to the next.
 3. A project's Master Summary contains **only** facts about that project. Do not mix content across projects.
-4. If `read_memory.py` finds nothing for the project, run `--list-projects`: the project may be stored under another name. Ask the user before assuming it is a new project.
+4. If `read_memory` finds nothing for the project, run `--list-projects`: the project may be stored under another name. Ask the user before assuming it is a new project.
 
 ---
 
@@ -62,11 +62,13 @@ Rules for the agent:
 
 ## ⚙️ Commands
 
-### 1. Recover context (start of session) — `read_memory.py`
+### 1. Recover context (start of session) — `read_memory`
+`read_memory` runs on the native engine. In sh shells (Linux, macOS, Git Bash):
 ```bash
-python "<skill_dir>/read_memory.py" --project <project>
-python "<skill_dir>/read_memory.py" --list-projects
+"<skills_root>/dev-cycle-protocol/bin/dev-cycle" session-memory read_memory --project <project>
+"<skills_root>/dev-cycle-protocol/bin/dev-cycle" session-memory read_memory --list-projects
 ```
+In PowerShell, run `& "<skills_root>/dev-cycle-protocol/bin/dev-cycle.ps1" session-memory read_memory [arguments]` instead.
 If there are turn checkpoints without an updated Master Summary (a previous session that was not finalized), consolidate them first with `finalize_session`.
 
 ### 2. Checkpoint every 20 turns — `save_incremental_turns`

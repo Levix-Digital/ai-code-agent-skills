@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "usage: read_memory.py [-h] [--project PROJECT] [--list-projects]\n\nRead a project's session memory from ChromaDB\n\noptions:\n  -h, --help         show this help message and exit\n  --project PROJECT  Project name (default: git repository root name)\n  --list-projects    List projects stored in the database\n",
+  "stderr": "",
+  "files": {}
+}
