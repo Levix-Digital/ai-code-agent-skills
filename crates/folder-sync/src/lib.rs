@@ -2,6 +2,7 @@
 
 pub mod clean;
 pub mod extractors;
+pub mod query;
 pub mod sqlite;
 pub mod stats;
 pub mod sync;

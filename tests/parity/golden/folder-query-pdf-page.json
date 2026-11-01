@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "\n🧠 **Semantic Search Results in Folder:** `project`\n🔍 **Query/Topic:** *buy railway tickets at the station*\n\n### 🧩 Specific Passages Found (Micro View)\n**[1] [trains.pdf](file:////srv/notes/guides/trains.pdf) > Page 2 (p. 2)** *(Relevance: 49.06%)*\n```text\n[guides/trains.pdf > Page 2 (p. 2)]\nRailway stations sell tickets online and at the counter.\n```\n\n**[2] [trains.pdf](file:////srv/notes/guides/trains.pdf) > Page 1 (p. 1)** *(Relevance: -28.23%)*\n```text\n[guides/trains.pdf > Page 1 (p. 1)]\nHigh speed trains connect the major cities at three hundred kilometers per hour.\n```\n\n",
+  "stderr": "",
+  "files": {}
+}

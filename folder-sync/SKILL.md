@@ -29,11 +29,11 @@ When the user types `/sync` or asks to sync/index the current folder:
 
 ### 2. `/folder` (Activate and Query the Folder Context)
 When the user types `/folder` (or asks questions about the folder's content after indexing it):
-1. Run the semantic search on the folder's ChromaDB:
+1. Run the semantic search on the folder's ChromaDB (native engine; in PowerShell, `& "<skills_root>/dev-cycle-protocol/bin/dev-cycle.ps1" folder-sync query --dir "." --query "<user question or topic>" --top-k 6`):
    ```bash
-   python "<skills_root>/folder-sync/scripts/query.py" --dir "." --query "<user question or topic>" --top-k 6
+   "<skills_root>/dev-cycle-protocol/bin/dev-cycle" folder-sync query --dir "." --query "<user question or topic>" --top-k 6
    ```
-2. The script returns:
+2. The search returns:
    - **Macro View**: Summary of the relevant documents found.
    - **Micro Passages (Chunks)**: Exact paragraphs with file paths, page/section number and similarity score.
 3. Use the returned passages to answer with maximum precision, citing files as clickable markdown links (`[file_name](file:///absolute_path)`).
@@ -58,6 +58,6 @@ When the user types `/folder` (or asks questions about the folder's content afte
 
 ## Skill Layout
 - `sync` (engine command `folder-sync sync`, code in `crates/folder-sync`): Incremental indexing and hierarchical chunking, with an extractor for each file format (.docx, .pdf, .txt, .md, code).
-- `scripts/query.py`: Semantic search engine with ranking and formatting.
+- `query` (engine command `folder-sync query`, code in `crates/folder-sync`): Semantic search with ranking and formatting.
 - `stats` (engine command `folder-sync stats`, code in `crates/folder-sync`): Statistics inspector for the folder's index.
 - `clean` (engine command `folder-sync clean`, code in `crates/folder-sync`): Removes the folder's `.folder_brain` index.

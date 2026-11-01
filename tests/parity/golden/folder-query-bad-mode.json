@@ -1,0 +1,6 @@
+{
+  "exit": 2,
+  "stdout": "",
+  "stderr": "usage: query.py [-h] [--dir DIR] --query QUERY [--top-k TOP_K]\n                [--mode {hybrid,macro,micro}] [--json]\nquery.py: error: argument --mode: invalid choice: 'both' (choose from 'hybrid', 'macro', 'micro')\n",
+  "files": {}
+}
