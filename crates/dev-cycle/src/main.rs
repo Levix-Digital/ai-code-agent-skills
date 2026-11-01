@@ -149,6 +149,11 @@ const COMMANDS: &[(&str, &str, Command)] = &[
     ),
     (
         "session-memory",
+        "migrate_legacy",
+        session_memory::migrate_legacy::main,
+    ),
+    (
+        "session-memory",
         "read_memory",
         session_memory::read_memory::main,
     ),

@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "usage: migrate_legacy.py [-h] --source SOURCE --project PROJECT [--dry-run]\n\nMigrate legacy single-project session memory into the multi-project database\n\noptions:\n  -h, --help         show this help message and exit\n  --source SOURCE    Path to the legacy ChromaDB directory\n  --project PROJECT  Project the legacy records belong to\n  --dry-run          Only show what would be migrated\n",
+  "stderr": "",
+  "files": {}
+}

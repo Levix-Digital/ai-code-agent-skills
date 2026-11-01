@@ -9,7 +9,7 @@ A **shared local ChromaDB** vector database that stores, **per project**, the co
 
 - **ChromaDB**: `~/.ai-code-agent-memory/session-memory/db` (override with the `SESSION_MEMORY_DB` variable). It lives outside the skill folder, so the skill can be versioned and copied without carrying data.
 - **Collection**: `session_history`
-- **Scripts**: in the same folder as this `SKILL.md` (below, `<skill_dir>`). Requires `pip install chromadb`.
+- **Commands**: run on the native engine, `<skills_root>/dev-cycle-protocol/bin/dev-cycle` (`<skills_root>` is the folder that contains this skill's folder). Use the real absolute path.
 
 > [!CAUTION]
 > **CRITICAL SYSTEM SAFETY RULE**:
@@ -87,10 +87,12 @@ Prefer `--file` (a temporary file) over `--content` for long texts or texts with
 In PowerShell, run `& "<skills_root>/dev-cycle-protocol/bin/dev-cycle.ps1" session-memory finalize_session [arguments]` instead.
 The new summary **replaces** the previous one: it must contain everything still valid from the old summary plus what was done in the session. Read the current summary before writing the new one.
 
-### 4. Migrate a legacy database (no project) — `migrate_legacy.py`
+### 4. Migrate a legacy database (no project) — `migrate_legacy`
+`migrate_legacy` runs on the native engine. In sh shells (Linux, macOS, Git Bash):
 ```bash
-python "<skill_dir>/migrate_legacy.py" --source <legacy_chromadb_folder> --project <project> [--dry-run]
+"<skills_root>/dev-cycle-protocol/bin/dev-cycle" session-memory migrate_legacy --source <legacy_chromadb_folder> --project <project> [--dry-run]
 ```
+In PowerShell, run `& "<skills_root>/dev-cycle-protocol/bin/dev-cycle.ps1" session-memory migrate_legacy [arguments]` instead.
 Copies records without `project` into the shared database, assigning them to the given project. The source database is not changed.
 
 ---

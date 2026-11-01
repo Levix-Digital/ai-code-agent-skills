@@ -344,5 +344,110 @@
     "env": {"SESSION_MEMORY_DB": "{project}/sdb", "SESSION_MEMORY_PROJECT": "Alpha"},
     "ignore": ["project/sdb", "home/.cache"],
     "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"]
+  },
+  {
+    "name": "session-migrate-help",
+    "python": "session-memory/migrate_legacy.py",
+    "rust": ["session-memory", "migrate_legacy"],
+    "args": ["--help"],
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "session-migrate-missing-args",
+    "python": "session-memory/migrate_legacy.py",
+    "rust": ["session-memory", "migrate_legacy"],
+    "args": ["--source", "legacy"],
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "session-migrate-dry-run",
+    "python": "session-memory/migrate_legacy.py",
+    "rust": ["session-memory", "migrate_legacy"],
+    "args": ["--source", "legacy", "--project", "Acme", "--dry-run"],
+    "fixture": "session-legacy",
+    "env": {"SESSION_MEMORY_DB": "{project}/sdb"},
+    "ignore": ["project/sdb", "project/legacy", "home/.cache"],
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"]
+  },
+  {
+    "name": "session-migrate",
+    "python": "session-memory/migrate_legacy.py",
+    "rust": ["session-memory", "migrate_legacy"],
+    "args": ["--source", "legacy", "--project", "acme"],
+    "fixture": "session-legacy",
+    "env": {"SESSION_MEMORY_DB": "{project}/sdb"},
+    "ignore": ["project/sdb", "project/legacy", "home/.cache"],
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"]
+  },
+  {
+    "name": "session-migrate-fresh-db",
+    "python": "session-memory/migrate_legacy.py",
+    "rust": ["session-memory", "migrate_legacy"],
+    "args": ["--source", "legacy", "--project", "New Project"],
+    "fixture": "session-legacy",
+    "env": {"SESSION_MEMORY_DB": "{home}/sdb"},
+    "ignore": ["home/sdb", "project/legacy", "home/.cache"],
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"]
+  },
+  {
+    "name": "session-migrate-new-source",
+    "python": "session-memory/migrate_legacy.py",
+    "rust": ["session-memory", "migrate_legacy"],
+    "args": ["--source", "nowhere", "--project", "acme"],
+    "fixture": "session-legacy",
+    "env": {"SESSION_MEMORY_DB": "{project}/sdb"},
+    "ignore": ["project/sdb", "project/legacy", "home/.cache", "project/nowhere"],
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"]
+  },
+  {
+    "name": "session-migrate-env-project",
+    "python": "session-memory/migrate_legacy.py",
+    "rust": ["session-memory", "migrate_legacy"],
+    "args": ["--source", "legacy", "--project", ""],
+    "fixture": "session-legacy",
+    "env": {"SESSION_MEMORY_DB": "{project}/sdb", "SESSION_MEMORY_PROJECT": "EnvName"},
+    "ignore": ["project/sdb", "project/legacy", "home/.cache"],
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"]
+  },
+  {
+    "name": "session-migrate-git-project",
+    "python": "session-memory/migrate_legacy.py",
+    "rust": ["session-memory", "migrate_legacy"],
+    "args": ["--source", "legacy", "--project", ""],
+    "fixture": "session-legacy",
+    "git": true,
+    "env": {"SESSION_MEMORY_DB": "{project}/sdb"},
+    "ignore": ["project/sdb", "project/legacy", "home/.cache"],
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"]
+  },
+  {
+    "name": "session-migrate-bad-project",
+    "python": "session-memory/migrate_legacy.py",
+    "rust": ["session-memory", "migrate_legacy"],
+    "args": ["--source", "legacy", "--project", "!!!"],
+    "fixture": "session-legacy",
+    "env": {"SESSION_MEMORY_DB": "{project}/sdb"},
+    "ignore": ["project/sdb", "project/legacy", "home/.cache"],
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"]
+  },
+  {
+    "name": "session-migrate-same-db",
+    "python": "session-memory/migrate_legacy.py",
+    "rust": ["session-memory", "migrate_legacy"],
+    "args": ["--source", "sdb", "--project", "acme"],
+    "fixture": "session-legacy",
+    "env": {"SESSION_MEMORY_DB": "{project}/sdb"},
+    "ignore": ["project/sdb", "project/legacy", "home/.cache"],
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"]
+  },
+  {
+    "name": "session-migrate-same-db-dry-run",
+    "python": "session-memory/migrate_legacy.py",
+    "rust": ["session-memory", "migrate_legacy"],
+    "args": ["--source", "sdb", "--project", "other", "--dry-run"],
+    "fixture": "session-legacy",
+    "env": {"SESSION_MEMORY_DB": "{project}/sdb"},
+    "ignore": ["project/sdb", "project/legacy", "home/.cache"],
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"]
   }
 ]

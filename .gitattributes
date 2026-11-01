@@ -5,3 +5,5 @@ tests/parity/fixtures/migrate-legacy/legacy/** binary
 tests/parity/fixtures/session-db/sdb/** binary
 tests/parity/fixtures/session-db/turns.md -text
 tests/parity/fixtures/session-read/sdb/** binary
+tests/parity/fixtures/session-legacy/legacy/** binary
+tests/parity/fixtures/session-legacy/sdb/** binary
