@@ -167,6 +167,22 @@ Each item: `### <ID>: <title>` with the fields `Severity` (bugs: critical, high,
 - **Plan**: -
 - **Description**: Aurora Dev Suite shows each registered project's cycle state and reads it only through the dcp binary (Aurora ADR-0003 and ADR-0006). The engine offers: (1) version --json (schema dcp.version, schema_version 1.x): the field version and capabilities as a list of {name, schema_major}, listing diagnose with schema_major 1; later items (FEAT-017 config and metrics) add their capabilities to it. (2) diagnose --json --dir <root>: exit code 0 and one JSON reply on standard output; any other exit code is a failure explained on standard error; warnings may go to standard error with exit 0. (3) The reply follows schema dcp.diagnose, schema_version 1.x (MINOR adds optional fields only, MAJOR breaks, readers ignore unknown fields), as agreed with Aurora (specs/002-dcp-adapter/contracts/dcp-diagnose.schema.json in aurora-dev-suite). Required fields: schema, schema_version, root (absolute repository root), summary (one line); next {ask, recommended (option key or null), options [{key, title, reason?}]} with the diagnosis keys (plan:<id>, pr:<number>, rc:<run>, bugs, triage, release, request); release {version, name, open_items [item]} or null (the current roadmap release); plans [{id, title, status, milestones_done, milestones_total}] (active or in progress); release_candidate {run, version, not_run, failed, released} or null (latest run); pull_requests [{number, title, summary, needs_action, threads_for_user}] (empty plus a finding when the platform cannot be read); bugs {blocking [item], untriaged [item and reason]}; findings [string] (what could not be read and why, never blocking for the reader); item = {id, rank (priority or severity, or null), title}. It is the data the diagnosis already collects, as typed fields instead of preformatted strings; the agent's diagnosis keeps its current text. Setup-only data (configuration problems, ignored files, Spec Kit, agent attribution) stays out of version 1 and can come later as optional fields. Acceptance: the reply validates against the agreed JSON Schema on sample projects, including one without a platform connection. Built after the Rust migration (IMP-005), on the dcp binary of ADJ-001. When talking to Aurora, cite this item as DCP FEAT-019.
 
+### FEAT-020: Security assessment: the product attacked at the release candidate
+- **Priority**: high
+- **Epic**: EPIC-009
+- **Status**: open
+- **Found**: 2026-11-01, 2026-11-01, security step in the cycle discussion
+- **Plan**: -
+- **Description**: A new role skill, security-assessment, attacks the running product and writes a vulnerability report that the next cycle starts from. FEAT-011 (dependencies), FEAT-012 (static analysis), FEAT-010 (infrastructure) and secret scanning check the code; this item checks the deployed product. (1) When: at the release candidate (Phase 8), against the candidate deployed to staging, and on a schedule, since new vulnerabilities appear without code changes. Never production. Targets come only from an allowlist in .dev-cycle.json, enforced at the network level (sandbox), not only in instructions; the attacker never receives real credentials. (2) Scope, with free command line tools that run locally and on the main CI providers: dynamic scanning (OWASP ZAP, Nuclei), API fuzzing from the project's OpenAPI description (Schemathesis) and the container image scan (Trivy). On top of them, a pentest run by an agent following the OWASP Web Security Testing Guide, which tests the threats of the threat model (FEAT-021); a finding of it counts only with a reproducible proof (request and response). (3) Model-agnostic attacker: by default the coding agent the project already uses; optionally a local open model through an OpenAI-compatible endpoint (Ollama, vLLM, llama.cpp), so target data and findings never leave the machine. No model or framework is fixed by the protocol. The first step of the implementation is an evaluation of candidate models and open pentest frameworks against intentionally vulnerable applications (OWASP Juice Shop, DVWA), comparing real findings, false positives, time and cost; its result sets the documented recommendation. (4) Report in docs/security/ (a Markdown summary and SARIF per run). Each finding becomes a backlog bug with its severity taken from its CVSS score, so bugs first applies and the next discovery starts from them; findings are deduplicated by fingerprint, and an accepted risk is recorded with a reason and an expiry date. (5) Gate 8 fails while a critical or high finding of the release is open, unless the user explicitly accepts the risk with a reason, as with --accept-open-bugs. Deterministic tools carry the gate; the model only adds hypotheses and proof. (6) A product with nothing to attack (a library or a command line tool) sets the step off. Built after the Rust migration (IMP-005).
+
+### FEAT-021: Light threat model in the plan
+- **Priority**: medium
+- **Epic**: EPIC-009
+- **Status**: open
+- **Found**: 2026-11-01, 2026-11-01, security step in the cycle discussion
+- **Plan**: -
+- **Description**: In Phase 2, a plan whose change touches the attack surface (authentication, permissions, user input, sensitive data, external integrations) carries a short STRIDE threat model: who could abuse the change and how. The product's threat model lives in docs/security/threat-model.md and is updated by each such plan; short-path fixes and documentation changes skip it. Every threat listed becomes an acceptance criterion, a test or a control in the plan, or it is not listed, so the model does not turn into paperwork. Code review (Phase 7) checks that the promised controls are in the code, and the security assessment (FEAT-020) tests the threats as hypotheses; each finding of the report says whether its threat was foreseen or missed by the model. Gate 3 checks that a plan touching the attack surface has the section. It finds logic flaws that scanners cannot, such as access to another user's data or an endpoint without a permission check, while fixing them is still cheap.
+
 ## Improvements
 
 ### IMP-002: Adopt the protocol in this repository (dogfooding)
@@ -276,6 +292,12 @@ Each item: `### <ID>: <title>` with the fields `Severity` (bugs: critical, high,
 - **Status**: open
 - **Found**: 2026-10-28, 2026-10-28, gaps of the cycle with coding agents discussion
 - **Description**: Deterministic checks against the failure modes of code written by agents: invented or vulnerable dependencies, misleading tests, changes outside the plan, insecure code and performance regressions.
+
+### EPIC-009: Product security
+- **Priority**: high
+- **Status**: open
+- **Found**: 2026-11-01, 2026-11-01, security step in the cycle discussion
+- **Description**: The running product is attacked at the release candidate and on a schedule, the threats of each change are modeled in its plan, and every finding comes back as a triaged bug that the next cycle starts from.
 
 ## Closed
 
