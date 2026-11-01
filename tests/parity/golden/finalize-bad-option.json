@@ -1,0 +1,6 @@
+{
+  "exit": 2,
+  "stdout": "",
+  "stderr": "usage: finalize_session.py [-h] [--project PROJECT] [--summary SUMMARY]\n                           [--file FILE] [--version VERSION] [--keep-legacy]\nfinalize_session.py: error: unrecognized arguments: --force\n",
+  "files": {}
+}

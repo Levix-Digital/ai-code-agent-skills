@@ -127,5 +127,110 @@
     "env": {"SESSION_MEMORY_DB": "{home}/sdb"},
     "ignore": ["home/sdb", "home/.cache"],
     "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"]
+  },
+  {
+    "name": "finalize-help",
+    "python": "session-memory/finalize_session.py",
+    "rust": ["session-memory", "finalize_session"],
+    "args": ["--help"],
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "finalize-bad-option",
+    "python": "session-memory/finalize_session.py",
+    "rust": ["session-memory", "finalize_session"],
+    "args": ["--force"],
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "finalize-no-summary",
+    "python": "session-memory/finalize_session.py",
+    "rust": ["session-memory", "finalize_session"],
+    "args": []
+  },
+  {
+    "name": "finalize-missing-file-no-summary",
+    "python": "session-memory/finalize_session.py",
+    "rust": ["session-memory", "finalize_session"],
+    "args": ["--file", "nope.md", "--summary", ""]
+  },
+  {
+    "name": "finalize-summary",
+    "python": "session-memory/finalize_session.py",
+    "rust": ["session-memory", "finalize_session"],
+    "args": ["--summary", "Consolidated: all good."],
+    "fixture": "session-db",
+    "env": {"SESSION_MEMORY_DB": "{project}/sdb"},
+    "ignore": ["project/sdb", "home/.cache"],
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"]
+  },
+  {
+    "name": "finalize-keep-legacy",
+    "python": "session-memory/finalize_session.py",
+    "rust": ["session-memory", "finalize_session"],
+    "args": ["--summary", "S", "--version", "2.10.0", "--keep-legacy"],
+    "fixture": "session-db",
+    "env": {"SESSION_MEMORY_DB": "{project}/sdb"},
+    "ignore": ["project/sdb", "home/.cache"],
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"]
+  },
+  {
+    "name": "finalize-file",
+    "python": "session-memory/finalize_session.py",
+    "rust": ["session-memory", "finalize_session"],
+    "args": ["--file", "summary.md", "--version", ""],
+    "fixture": "session-db",
+    "env": {"SESSION_MEMORY_DB": "{project}/sdb"},
+    "ignore": ["project/sdb", "home/.cache"],
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"]
+  },
+  {
+    "name": "finalize-missing-file-summary",
+    "python": "session-memory/finalize_session.py",
+    "rust": ["session-memory", "finalize_session"],
+    "args": ["--file", "nope.md", "--summary", "From the option"],
+    "fixture": "session-db",
+    "env": {"SESSION_MEMORY_DB": "{project}/sdb"},
+    "ignore": ["project/sdb", "home/.cache"],
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"]
+  },
+  {
+    "name": "finalize-other-project",
+    "python": "session-memory/finalize_session.py",
+    "rust": ["session-memory", "finalize_session"],
+    "args": ["--project", "Other", "--summary", "Other summary"],
+    "fixture": "session-db",
+    "env": {"SESSION_MEMORY_DB": "{project}/sdb"},
+    "ignore": ["project/sdb", "home/.cache"],
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"]
+  },
+  {
+    "name": "finalize-fresh-store",
+    "python": "session-memory/finalize_session.py",
+    "rust": ["session-memory", "finalize_session"],
+    "args": ["--summary", "First"],
+    "env": {"SESSION_MEMORY_DB": "{home}/sdb"},
+    "ignore": ["home/sdb", "home/.cache"],
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"]
+  },
+  {
+    "name": "finalize-git-project",
+    "python": "session-memory/finalize_session.py",
+    "rust": ["session-memory", "finalize_session"],
+    "args": ["--summary", "G"],
+    "fixture": "session-db",
+    "git": true,
+    "env": {"SESSION_MEMORY_DB": "{project}/sdb"},
+    "ignore": ["project/sdb", "home/.cache"],
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"]
+  },
+  {
+    "name": "finalize-bad-project",
+    "python": "session-memory/finalize_session.py",
+    "rust": ["session-memory", "finalize_session"],
+    "args": ["--project", "!!!", "--summary", "x"],
+    "env": {"SESSION_MEMORY_DB": "{home}/sdb"},
+    "ignore": ["home/sdb", "home/.cache"],
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"]
   }
 ]

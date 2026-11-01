@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "✅ [project] Master Summary consolidated and updated in ChromaDB (Doc ID: 'project::master_summary')!\n🧹 [project] Cleaned up 1 temporary session turn chunk(s) (now consolidated into master summary).\nEntries for project 'project': 1 | Total entries: 2\n",
+  "stderr": "",
+  "files": {}
+}

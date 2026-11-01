@@ -67,7 +67,7 @@ Rules for the agent:
 python "<skill_dir>/read_memory.py" --project <project>
 python "<skill_dir>/read_memory.py" --list-projects
 ```
-If there are turn checkpoints without an updated Master Summary (a previous session that was not finalized), consolidate them first with `finalize_session.py`.
+If there are turn checkpoints without an updated Master Summary (a previous session that was not finalized), consolidate them first with `finalize_session`.
 
 ### 2. Checkpoint every 20 turns — `save_incremental_turns`
 `save_incremental_turns` runs on the native engine. In sh shells (Linux, macOS, Git Bash):
@@ -77,10 +77,12 @@ If there are turn checkpoints without an updated Master Summary (a previous sess
 In PowerShell, run `& "<skills_root>/dev-cycle-protocol/bin/dev-cycle.ps1" session-memory save_incremental_turns [arguments]` instead.
 Prefer `--file` (a temporary file) over `--content` for long texts or texts with quotes. `--session-id` is optional (default: today's date).
 
-### 3. End the session and consolidate the Master Summary — `finalize_session.py`
+### 3. End the session and consolidate the Master Summary — `finalize_session`
+`finalize_session` runs on the native engine. In sh shells (Linux, macOS, Git Bash):
 ```bash
-python "<skill_dir>/finalize_session.py" --project <project> --file <master_summary.md> [--version <x.y.z>]
+"<skills_root>/dev-cycle-protocol/bin/dev-cycle" session-memory finalize_session --project <project> --file <master_summary.md> [--version <x.y.z>]
 ```
+In PowerShell, run `& "<skills_root>/dev-cycle-protocol/bin/dev-cycle.ps1" session-memory finalize_session [arguments]` instead.
 The new summary **replaces** the previous one: it must contain everything still valid from the old summary plus what was done in the session. Read the current summary before writing the new one.
 
 ### 4. Migrate a legacy database (no project) — `migrate_legacy.py`

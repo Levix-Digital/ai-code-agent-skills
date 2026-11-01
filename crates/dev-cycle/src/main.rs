@@ -144,6 +144,11 @@ const COMMANDS: &[(&str, &str, Command)] = &[
     ),
     (
         "session-memory",
+        "finalize_session",
+        session_memory::finalize_session::main,
+    ),
+    (
+        "session-memory",
         "save_incremental_turns",
         session_memory::save_incremental_turns::main,
     ),
