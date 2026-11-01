@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "usage: finalize_session.py [-h] [--project PROJECT] [--summary SUMMARY]\n                           [--file FILE] [--version VERSION] [--keep-legacy]\n\nFinalize session and update the project's consolidated master summary in\nChromaDB\n\noptions:\n  -h, --help         show this help message and exit\n  --project PROJECT  Project name (default: git repository root name)\n  --summary SUMMARY  Full consolidated master summary text\n  --file FILE        Path to text/markdown file containing master summary\n  --version VERSION  Optional project version the summary refers to\n  --keep-legacy      Do not delete raw turn chunks\n",
+  "stderr": "",
+  "files": {}
+}

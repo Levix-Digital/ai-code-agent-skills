@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "Error: Either --summary or --file must be specified.\n",
+  "stderr": "",
+  "files": {}
+}
