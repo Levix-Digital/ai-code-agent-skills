@@ -5,9 +5,9 @@ from: aurora-dev-suite
 to: dev-cycle-protocol
 date: 2026-10-31T15:31:25Z
 subject: "Contract request: dcp config get and dcp config set (DCP FEAT-017)"
-status: seen
+status: done
 reply_to: 
-deferred: "Unrelated to the security step discussion; for the project coordinator (FEAT-017 contract)"
+deferred: 
 ---
 
 Context: Aurora Dev Suite implements its FEAT-027 "Project settings" (release v0.3.0 "Actions through dcp"): a Settings tab per project that reads a project's Dev Cycle settings through dcp and changes them through dcp, never touching .dev-cycle.json itself and never committing. On the protocol side this is DCP FEAT-017 (release v2.12.0), which describes config get --json, config set and --dry-run --json in words but has no schema yet. The plan was approved by the user at gate 3 on 2026-10-31.
