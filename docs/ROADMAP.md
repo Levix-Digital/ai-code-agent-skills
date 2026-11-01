@@ -12,7 +12,7 @@ Each release: `## vX.Y.Z: <name>` with the fields `Status` (planned, in_progress
 ## v2.10.0: Native engine
 - **Status**: planned
 - **Goal**: Every script runs as a command of one Rust binary with exactly the same behavior, and the protocol needs no Python
-- **Items**: IMP-005
+- **Items**: IMP-005, BUG-005
 
 ## v2.11.0: Guardrails for agent-written code
 - **Status**: planned

@@ -251,6 +251,13 @@ Each item: `### <ID>: <title>` with the fields `Severity` (bugs: critical, high,
 - **Plan**: -
 - **Description**: The engine's binary and launchers are called dcp (the name Aurora Dev Suite and the Levix products use) instead of dev-cycle: the binary, bin/dcp and bin/dcp.ps1, the release assets, and every SKILL.md and doc that calls the engine. The /dev-cycle command keeps its name. Done right after the migration (IMP-005 stays a pure translation), before the first release of the versioned JSON contract that Aurora reads; projects already using the protocol keep working through the launcher.
 
+### ADJ-002: folder-sync stats output still in Portuguese
+- **Priority**: low
+- **Status**: open
+- **Found**: 2026-11-01, BUG-005 plan
+- **Plan**: -
+- **Description**: stats.py prints 'Volume total de dados', 'Nunca' and 'Maiores documentos indexados' while every other message of the skill is in English. Translate them (after the Rust migration, which keeps the output identical).
+
 ## Epics
 
 ### EPIC-001: Cycle and gates
@@ -349,3 +356,11 @@ Each item: `### <ID>: <title>` with the fields `Severity` (bugs: critical, high,
 - **Plan**: -
 - **Closed**: 2026-10-27, superseded by IMP-005
 - **Description**: Run the skills' scripts through uv (PEP 723 inline metadata or one wrapper) so dependencies install themselves, and add a standard-library SQLite FTS5 (BM25) search backend for plan-memory and session-memory, used when chromadb is missing or memory_backend is sqlite.
+
+### BUG-005: folder-sync stats fails on any synced index
+- **Severity**: medium
+- **Status**: done
+- **Found**: 2026-11-01, Rust migration M40 review of stats.py
+- **Plan**: ai_code_agent_skills_folder_sync_stats_fails_on_any_synced_index
+- **Closed**: 2026-11-01, plan ai_code_agent_skills_folder_sync_stats_fails_on_any_synced_index
+- **Description**: stats.py formats the last sync time with datetime.fromtimestamp, but never imports datetime. Every index that has synced at least one file has a last sync time, so /folder-stats stops with NameError instead of showing the statistics. Only an empty or missing index works.
