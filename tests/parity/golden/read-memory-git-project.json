@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "Project: project | DB: {project}/sdb\n\n================================================================================\n📜 CONSOLIDATED MASTER SUMMARY [project] (All Prior Sessions Unified)\n================================================================================\n# Master\n\nEverything so far. ✅\n\n================================================================================\n\n--- Entry: project::turns::nosid [None] ---\nno session id\n\n--- Entry: project::turns::s1::001_to_020 [current_session_turns_1_20] ---\nturns s1 1-20\n\n--- Entry: project::turns::s1::021_to_040 [current_session_turns_21_40] ---\nturns s1 21-40\n\n--- Entry: project::turns::s2::021_to_040 [current_session_turns_21_40] ---\nturns s2 21-40\n\n",
+  "stderr": "",
+  "files": {}
+}

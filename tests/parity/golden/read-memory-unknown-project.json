@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "Project: nothing-here | DB: {project}/sdb\n\nNo memory entries found for project 'nothing-here'. Existing projects:\n- <no project> (1 entry)\n- alpha (2 entries)\n- chunks-only (1 entry)\n- project (5 entries)\n- zeta (1 entry)\n",
+  "stderr": "",
+  "files": {}
+}

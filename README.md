@@ -227,7 +227,7 @@ Lets a new session pick up where the last one stopped. Per project, it keeps:
 
 | When | Command |
 |---|---|
-| Start of a session | `read_memory.py --project <p>` (or `--list-projects`) |
+| Start of a session | `<skills_root>/dev-cycle-protocol/bin/dev-cycle session-memory read_memory --project <p>` (or `--list-projects`; `bin/dev-cycle.ps1` in PowerShell) |
 | Every 20 turns | `<skills_root>/dev-cycle-protocol/bin/dev-cycle session-memory save_incremental_turns --project <p> --start 1 --end 20 --file turns.md` (`bin/dev-cycle.ps1` in PowerShell) |
 | End of a session | `<skills_root>/dev-cycle-protocol/bin/dev-cycle session-memory finalize_session --project <p> --file summary.md [--version x.y.z]` (`bin/dev-cycle.ps1` in PowerShell) |
 | Migrate an old database | `migrate_legacy.py --source <old_db> --project <p> [--dry-run]` |
@@ -387,7 +387,7 @@ Adding a skill, running the tests, conventions, personal skills and updating oth
 | `! <skill>: ... already exists` | Something else has that name in the agent's folder. Remove or rename it, then rerun. |
 | `ModuleNotFoundError: chromadb` / `docx` / `pypdf` | `pip install -r requirements.txt` with the same Python the agent uses. |
 | `plan-memory` lists no plans | Run it inside the project repository (or pass `--dir`); plans are read from `docs/plans` (or `plans.dir`). |
-| A memory script finds nothing for a project | Run `read_memory.py --list-projects` or `list_plans` (engine); the project may be stored under another name. Names are normalized (`AnyContext` = `any-context`), but `anycontext` cannot be split. |
+| A memory script finds nothing for a project | Run `read_memory --list-projects` (engine) or `list_plans` (engine); the project may be stored under another name. Names are normalized (`AnyContext` = `any-context`), but `anycontext` cannot be split. |
 | `check_docs` reports many errors after `extract_adrs` | Expected: they are the migration work list (translate and restructure ADRs, rewrite the index and subsystem pages). |
 | `detect_drift` reports `Drift Rules: none` | Run it from the project folder (or pass `--dir`) and add `drift_rules` to `.dev-cycle.json`. |
 | Cloud session has no `dev-skills:*` skills | `claude plugin list`. A session that starts outside the repository (Claude Projects, several repositories) never reads the project's `.claude/settings.json`: install with the environment's Setup script ([docs/cloud-sessions.md](docs/cloud-sessions.md)). Otherwise check the branch has `.claude/settings.json`, the GitHub app can access this repository, and `/plugin` for load errors. |

@@ -81,7 +81,7 @@ fn run(argv: &[String]) -> Result<u8, Crash> {
 }
 
 /// A metadata value as chromadb returns it to Python.
-fn value_of(v: &MetaValue) -> Value {
+pub fn value_of(v: &MetaValue) -> Value {
     let list = |items: Vec<Value>| Value::List(items);
     match v {
         MetaValue::Str(s) => Value::str(s.clone()),

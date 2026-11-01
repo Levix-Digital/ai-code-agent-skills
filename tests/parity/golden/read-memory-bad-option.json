@@ -1,0 +1,6 @@
+{
+  "exit": 2,
+  "stdout": "",
+  "stderr": "usage: read_memory.py [-h] [--project PROJECT] [--list-projects]\nread_memory.py: error: unrecognized arguments: --all\n",
+  "files": {}
+}
