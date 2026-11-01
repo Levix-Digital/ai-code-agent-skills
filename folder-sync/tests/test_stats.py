@@ -20,7 +20,7 @@ def run_stats(folder):
 
 
 def write_state(brain, rows):
-    """The `file_hashes` table as sync.py creates and fills it."""
+    """The `file_hashes` table as the sync creates and fills it."""
     conn = sqlite3.connect(brain / "sync_state.sqlite")
     conn.execute("""
         CREATE TABLE file_hashes (

@@ -13,11 +13,11 @@ This skill lets the agent recursively index any local folder into a local **Chro
 
 ### 1. `/sync` (Incremental Sync of the Current Directory)
 When the user types `/sync` or asks to sync/index the current folder:
-1. Run the sync script:
+1. Run the sync (native engine; in PowerShell, `& "<skills_root>/dev-cycle-protocol/bin/dev-cycle.ps1" folder-sync sync --dir "."`):
    ```bash
-   python "<skills_root>/folder-sync/scripts/sync.py" --dir "."
+   "<skills_root>/dev-cycle-protocol/bin/dev-cycle" folder-sync sync --dir "."
    ```
-2. The script will:
+2. The sync will:
    - Recursively scan every supported file (`.docx`, `.pdf`, `.md`, `.txt`, `.json`, `.csv`, `.py`, `.ts`, etc.).
    - Automatically ignore `.git`, `node_modules`, `.venv`, `.folder_brain` and non-text binaries.
    - Check each file's SHA-256 hash against the local cache. If the file has not changed, **it is skipped in milliseconds**.
@@ -45,9 +45,9 @@ When the user types `/folder` (or asks questions about the folder's content afte
   ```bash
   "<skills_root>/dev-cycle-protocol/bin/dev-cycle" folder-sync stats --dir "."
   ```
-- **Reset / reindex from scratch:**
+- **Reset / reindex from scratch** (native engine; in PowerShell, `& "<skills_root>/dev-cycle-protocol/bin/dev-cycle.ps1" folder-sync sync --dir "." --force`):
   ```bash
-  python "<skills_root>/folder-sync/scripts/sync.py" --dir "." --force
+  "<skills_root>/dev-cycle-protocol/bin/dev-cycle" folder-sync sync --dir "." --force
   ```
 - **Remove the folder's index** (native engine; in PowerShell, `& "<skills_root>/dev-cycle-protocol/bin/dev-cycle.ps1" folder-sync clean --dir "."`):
   ```bash
@@ -57,8 +57,7 @@ When the user types `/folder` (or asks questions about the folder's content afte
 ---
 
 ## Skill Layout
-- `scripts/sync.py`: Incremental indexing engine and hierarchical chunking.
+- `sync` (engine command `folder-sync sync`, code in `crates/folder-sync`): Incremental indexing and hierarchical chunking, with an extractor for each file format (.docx, .pdf, .txt, .md, code).
 - `scripts/query.py`: Semantic search engine with ranking and formatting.
 - `stats` (engine command `folder-sync stats`, code in `crates/folder-sync`): Statistics inspector for the folder's index.
 - `clean` (engine command `folder-sync clean`, code in `crates/folder-sync`): Removes the folder's `.folder_brain` index.
-- `scripts/extractors.py`: Specialized extractors for each file format (.docx, .pdf, .txt, .md, code).

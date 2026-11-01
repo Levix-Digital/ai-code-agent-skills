@@ -14,6 +14,7 @@ serde_json = { workspace = true }
 serde-pickle = "=1.2.0"
 uuid = { version = "1", features = ["v4"] }
 tract-onnx = "=0.23.7"
+tract-linalg = { version = "=0.23.7", features = ["multithread-mm"] }
 tokenizers = { version = "=0.23.2", default-features = false, features = ["fancy-regex"] }
 ureq = "=3.4.2"
 flate2 = "1"

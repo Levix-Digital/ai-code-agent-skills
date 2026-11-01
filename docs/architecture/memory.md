@@ -16,8 +16,8 @@ Owns the support skills: each developer's session memory per project, retrieval 
 
 - `session-memory/`: saves and recovers session context in a local ChromaDB, namespaced by project.
 - `crates/session-memory` (engine): `read_memory`, `save_incremental_turns`, `finalize_session`, `migrate_legacy` and the helpers of `session-memory/_common.py` it needs (project name, store path, collection), over `crates/vector-store`.
-- `folder-sync/scripts/`: incremental indexing (`sync.py`) and questions (`query.py`) over a folder, with text, `.docx` and `.pdf` extractors.
-- `crates/folder-sync` (engine): `stats`, the statistics of a folder's index, and `clean`, which removes it.
+- `folder-sync/scripts/`: questions (`query.py`) over a folder's index.
+- `crates/folder-sync` (engine): `sync`, the incremental indexing of a folder, with text, `.docx` and `.pdf` extractors; `stats`, the statistics of its index; and `clean`, which removes it.
 - `crates/gedo-feedback/src/gedo_feedback.rs` (engine command `gedo-feedback gedo_feedback`): one Markdown file per Gedo problem in `docs/gedo-feedback/`, off until `gedo.enabled`.
 
 ## Behavior

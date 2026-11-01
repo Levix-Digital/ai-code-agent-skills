@@ -179,6 +179,32 @@ impl Client {
         metadata::count(&self.conn, &c.metadata_segment)
     }
 
+    /// `add(ids, documents, metadatas)`, embedding the documents; an id already in the
+    /// collection keeps its record.
+    pub fn add(
+        &mut self,
+        col: &Collection,
+        ids: &[String],
+        documents: &[String],
+        metadatas: &[Metadata],
+    ) -> Result<(), StoreError> {
+        unique(ids)?;
+        let embeddings = self.embed(documents)?;
+        self.check_dimension(col, &embeddings)?;
+        let records = ids
+            .iter()
+            .enumerate()
+            .map(|(i, id)| Record {
+                id: id.clone(),
+                op: Op::Add,
+                embedding: Some(embeddings[i].clone()),
+                metadata: metadatas.get(i).cloned(),
+                document: documents.get(i).cloned(),
+            })
+            .collect();
+        self.push(col, records)
+    }
+
     /// `upsert(ids, documents, metadatas)`, embedding the documents.
     pub fn upsert(
         &mut self,

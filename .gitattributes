@@ -8,3 +8,5 @@ tests/parity/fixtures/session-read/sdb/** binary
 tests/parity/fixtures/session-legacy/legacy/** binary
 tests/parity/fixtures/session-legacy/sdb/** binary
 tests/parity/fixtures/folder-stats/**/*.sqlite binary
+tests/parity/fixtures/folder-docs/** binary
+tests/parity/fixtures/folder-sync-state/.folder_brain/** binary

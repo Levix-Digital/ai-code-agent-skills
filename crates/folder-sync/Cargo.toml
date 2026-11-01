@@ -11,6 +11,10 @@ publish.workspace = true
 kernel.workspace = true
 chrono.workspace = true
 rusqlite = { version = "=0.40.2", features = ["bundled"] }
+vector-store.workspace = true
+zip = { version = "9.2", default-features = false, features = ["deflate"] }
+roxmltree = "0.21"
+pdf-extract = "0.12"
 
 [lints]
 workspace = true

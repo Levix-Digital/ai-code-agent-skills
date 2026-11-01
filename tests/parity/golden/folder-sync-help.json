@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "usage: sync.py [-h] [--dir DIR] [--force]\n\nIncremental folder sync into ChromaDB\n\noptions:\n  -h, --help  show this help message and exit\n  --dir DIR   Directory to sync (default: current)\n  --force     Force a full reindex, ignoring the cache\n",
+  "stderr": "",
+  "files": {}
+}

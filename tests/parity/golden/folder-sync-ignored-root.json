@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "\n🧠 [Folder Brain] Starting incremental sync in:\n📂 {project}/venv\n💾 ChromaDB local: {project}/venv/.folder_brain/chroma_db\n\n  ⚡ [New] pkg/index.js\n\n============================================================\n✨ Sync completed successfully!\n⏱️  <MASK>\n📄 New files indexed: 1\n📝 Modified files: 0\n⚡ Unchanged files (cached): 0\n🧩 Total chunks in the index: 1\n============================================================\n",
+  "stderr": "",
+  "files": {}
+}

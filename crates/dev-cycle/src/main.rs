@@ -72,6 +72,7 @@ const COMMANDS: &[(&str, &str, Command)] = &[
     ),
     ("folder-sync", "clean", folder_sync::clean::main),
     ("folder-sync", "stats", folder_sync::stats::main),
+    ("folder-sync", "sync", folder_sync::sync::main),
     (
         "gedo-feedback",
         "gedo_feedback",

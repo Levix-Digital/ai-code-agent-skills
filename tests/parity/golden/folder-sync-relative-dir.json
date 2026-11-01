@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "\n🧠 [Folder Brain] Starting incremental sync in:\n📂 {project}/d1/d2/d3\n💾 ChromaDB local: {project}/d1/d2/d3/.folder_brain/chroma_db\n\n  ⚡ [New] code.py\n  ⚡ [New] d4/data.csv\n  ⚡ [New] d4/d5/empty.txt\n  ⚡ [New] d4/d5/d6/blank-lines.txt\n  ⚡ [New] d4/d5/d6/d7/crlf.txt\n  ⚡ [New] d4/d5/d6/d7/d8/latin1.txt\n  ⚡ [New] d4/d5/d6/d7/d8/d9/bom.md\n  ⚡ [New] d4/d5/d6/d7/d8/d9/d10/unicode.md\n  ⚡ [New] d4/d5/d6/d7/d8/d9/d10/d11/UPPER.MD\n  ⚡ [New] d4/d5/d6/d7/d8/d9/d10/d11/venv2/ok.md\n  ⚡ [New] d4/d5/d6/d7/d8/d9/d10/d11/venv2/docs/report.docx\n  ⚡ [New] d4/d5/d6/d7/d8/d9/d10/d11/venv2/docs/e1/empty.docx\n  ⚡ [New] d4/d5/d6/d7/d8/d9/d10/d11/venv2/docs/e1/e2/paper.pdf\n  ⚡ [New] d4/d5/d6/d7/d8/d9/d10/d11/venv2/docs/e1/e2/e3/broken.docx\n\n============================================================\n✨ Sync completed successfully!\n⏱️  <MASK>\n📄 New files indexed: 13\n📝 Modified files: 0\n⚡ Unchanged files (cached): 0\n🧩 Total chunks in the index: 21\n============================================================\n",
+  "stderr": "",
+  "files": {}
+}
