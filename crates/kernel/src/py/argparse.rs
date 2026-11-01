@@ -36,6 +36,8 @@ pub struct Arg {
     pub choices: Vec<String>,
     /// `type=int`: the value must be what `int()` reads.
     pub int: bool,
+    /// `type=float`.
+    pub float: bool,
     /// The subcommands of a `Commands` argument: name and help.
     pub commands: Vec<(String, String)>,
     /// `metavar=...`: the value's name in the usage and help.
@@ -189,6 +191,7 @@ impl Parser {
                 required: false,
                 choices: Vec::new(),
                 int: false,
+                float: false,
                 commands: Vec::new(),
                 metavar: None,
             }],
@@ -205,6 +208,7 @@ impl Parser {
             required,
             choices: Vec::new(),
             int: false,
+            float: false,
             commands: Vec::new(),
             metavar: None,
         });
@@ -270,6 +274,7 @@ impl Parser {
             required: true,
             choices: choices.iter().map(|c| c.to_string()).collect(),
             int: false,
+            float: false,
             commands: Vec::new(),
             metavar: None,
         });
@@ -313,6 +318,15 @@ impl Parser {
         self = self.add(flag, Kind::Store, help, false);
         if let Some(arg) = self.args.last_mut() {
             arg.int = true;
+        }
+        self
+    }
+
+    /// `add_argument(flag, type=float)`: the value is kept as given; `float()` reads it.
+    pub fn float_option(mut self, flag: &str, help: &str) -> Self {
+        self = self.add(flag, Kind::Store, help, false);
+        if let Some(arg) = self.args.last_mut() {
+            arg.float = true;
         }
         self
     }
@@ -611,6 +625,13 @@ impl Parser {
                                 if arg.int && super::num::int(&value, 10).is_err() {
                                     return Err(self.error(&format!(
                                         "argument {}: invalid int value: {}",
+                                        arg.name(),
+                                        repr_str(&value)
+                                    )));
+                                }
+                                if arg.float && super::num::float(&value).is_err() {
+                                    return Err(self.error(&format!(
+                                        "argument {}: invalid float value: {}",
                                         arg.name(),
                                         repr_str(&value)
                                     )));

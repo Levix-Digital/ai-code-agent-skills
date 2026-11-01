@@ -89,7 +89,7 @@ description: "Tasks of the Rust migration, one per milestone of the envelope pla
 - [x] T031 [US1] M31: translate `check_milestone` and swap its callers
 - [x] T032 [US1] M32: translate `backlog` and swap its callers
 - [x] T033 [US1] M33: translate `detect_drift` and swap its callers
-- [ ] T034 [US1] M34: translate `plan-memory migrate_legacy` and swap its callers
+- [x] T034 [US1] M34: translate `plan-memory migrate_legacy` and swap its callers
 
 ---
 

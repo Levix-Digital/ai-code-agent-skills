@@ -267,12 +267,13 @@ The whole development lifecycle follows 👉 **[`dev-cycle-protocol`](../dev-cyc
 
 ---
 
-## 🔁 Migrating from the Old Database (`migrate_legacy.py`)
+## 🔁 Migrating from the Old Database (`migrate_legacy`)
 
-One-time migration from the old ChromaDB-only storage (collection `project_plans`) into `docs/plans`, reconciling plan files that already exist there:
-```powershell
-python "<skills_root>/plan-memory/migrate_legacy.py" [--source "<old_chromadb_folder>"] [--orphan-status completed] [--dry-run]
+One-time migration from the old ChromaDB-only storage (collection `project_plans`) into `docs/plans`, reconciling plan files that already exist there. `migrate_legacy` runs on the native engine. In sh shells (Linux, macOS, Git Bash):
+```bash
+"<skills_root>/dev-cycle-protocol/bin/dev-cycle" plan-memory migrate_legacy [--source "<old_chromadb_folder>"] [--orphan-status completed] [--dry-run]
 ```
+In PowerShell, run `& "<skills_root>/dev-cycle-protocol/bin/dev-cycle.ps1" plan-memory migrate_legacy [arguments]` instead.
 - Database plans become files; a file with the same ID keeps the newer body (last commit vs. database `updated_at`).
 - A file matching a plan's content under another ID is renamed (`git mv`) to the database ID, which lineage references use.
 - Files with no database entry keep their ID with minimal metadata.

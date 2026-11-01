@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "Source DB: 5 plan(s) for project 'project' | Target: {project}/docs/plans\nExisting plan files: 5\n\n(dry-run) rename  delta_old.md -> delta_plan.md  (content match 0.99)\n(dry-run) body    beta_plan: differs, keeping file (last commit 2026-01-01)\n(dry-run) body    gamma_plan: differs, keeping database (updated 2026-06-01)\n(dry-run) body    delta_plan: differs, keeping file (last commit 2026-01-01)\n(dry-run) orphan  loose.md -> status 'completed'\n(dry-run) orphan  orphan_note.md -> status 'completed'\n\n(dry-run) 5 plan(s) from the database, 2 orphan file(s): 7 plan files.\n",
+  "stderr": "",
+  "files": {}
+}

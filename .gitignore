@@ -44,3 +44,5 @@ node_modules/
 target/
 .env
 *.sqlite3
+# Parity fixture: a legacy plan-memory database the migration reads
+!tests/parity/fixtures/migrate-legacy/legacy/chroma.sqlite3

@@ -38,6 +38,9 @@ enum Node {
     Class(Class),
     Start,
     End,
+    /// `\A` and `\Z`: the very start and end of the text.
+    TextStart,
+    TextEnd,
     Boundary(bool),
     Group(Box<Node>, Option<usize>),
     Concat(Vec<Node>),
@@ -388,6 +391,14 @@ impl Parser<'_> {
                     self.i += 1;
                     Node::Boundary(false)
                 }
+                Some('A') => {
+                    self.i += 1;
+                    Node::TextStart
+                }
+                Some('Z') => {
+                    self.i += 1;
+                    Node::TextEnd
+                }
                 _ => match self.escape(false)? {
                     Item::Char(x) => Node::Char(x),
                     item => Node::Class(Class {
@@ -406,7 +417,12 @@ impl Parser<'_> {
 fn fixed_width(node: &Node) -> Option<usize> {
     match node {
         Node::Char(_) | Node::Any | Node::Class(_) => Some(1),
-        Node::Start | Node::End | Node::Boundary(_) | Node::Look { .. } => Some(0),
+        Node::Start
+        | Node::End
+        | Node::TextStart
+        | Node::TextEnd
+        | Node::Boundary(_)
+        | Node::Look { .. } => Some(0),
         Node::Group(n, _) => fixed_width(n),
         Node::Concat(items) => items.iter().map(fixed_width).sum(),
         Node::Alt(alts) => {
@@ -466,6 +482,8 @@ impl Matcher<'_> {
                     pos == len || (self.t[pos] == '\n' && (self.flags.multiline || pos + 1 == len));
                 at_end && k(pos, caps)
             }
+            Node::TextStart => pos == 0 && k(pos, caps),
+            Node::TextEnd => pos == len && k(pos, caps),
             Node::Boundary(want) => {
                 let before = pos > 0 && is_word(self.t[pos - 1]);
                 let after = pos < len && is_word(self.t[pos]);
