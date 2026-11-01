@@ -2,5 +2,6 @@
 
 pub mod common;
 pub mod finalize_session;
+pub mod migrate_legacy;
 pub mod read_memory;
 pub mod save_incremental_turns;

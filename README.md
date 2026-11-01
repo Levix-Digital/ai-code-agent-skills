@@ -230,9 +230,7 @@ Lets a new session pick up where the last one stopped. Per project, it keeps:
 | Start of a session | `<skills_root>/dev-cycle-protocol/bin/dev-cycle session-memory read_memory --project <p>` (or `--list-projects`; `bin/dev-cycle.ps1` in PowerShell) |
 | Every 20 turns | `<skills_root>/dev-cycle-protocol/bin/dev-cycle session-memory save_incremental_turns --project <p> --start 1 --end 20 --file turns.md` (`bin/dev-cycle.ps1` in PowerShell) |
 | End of a session | `<skills_root>/dev-cycle-protocol/bin/dev-cycle session-memory finalize_session --project <p> --file summary.md [--version x.y.z]` (`bin/dev-cycle.ps1` in PowerShell) |
-| Migrate an old database | `migrate_legacy.py --source <old_db> --project <p> [--dry-run]` |
-
-The other scripts are in `<skills_root>/session-memory/`.
+| Migrate an old database | `<skills_root>/dev-cycle-protocol/bin/dev-cycle session-memory migrate_legacy --source <old_db> --project <p> [--dry-run]` (`bin/dev-cycle.ps1` in PowerShell) |
 
 - `finalize_session` **replaces** the Master Summary: the new text must keep everything still valid from the old one.
 - `finalize_session` deletes only that project's turn checkpoints.

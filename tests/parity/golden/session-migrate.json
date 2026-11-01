@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "master_summary -> acme::master_summary\nturns_s1_001_020 -> acme::turns::s1::001_to_020\nturns_nosid -> acme::turns::legacy::000_to_000\nturns_odd -> acme::turns::7::-03_to_001\nnote-a -> acme::note-a\n↷ tagged: already has project 'other-project', skipped\n↷ tagged-int: already has project '5', skipped\nempty-project -> acme::empty-project\nold-master -> acme::master_summary\nbig -> acme::turns::s2::1000_to_12345\nno-meta -> acme::no-meta\nDestination DB: {project}/sdb | Total entries: 8\n",
+  "stderr": "",
+  "files": {}
+}

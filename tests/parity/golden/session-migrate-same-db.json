@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "↷ acme::master_summary: already has project 'acme', skipped\nDestination DB: {project}/sdb | Total entries: 1\n",
+  "stderr": "",
+  "files": {}
+}

@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "(dry-run) master_summary -> acme::master_summary\n(dry-run) turns_s1_001_020 -> acme::turns::s1::001_to_020\n(dry-run) turns_nosid -> acme::turns::legacy::000_to_000\n(dry-run) turns_odd -> acme::turns::7::-03_to_001\n(dry-run) note-a -> acme::note-a\n↷ tagged: already has project 'other-project', skipped\n↷ tagged-int: already has project '5', skipped\n(dry-run) empty-project -> acme::empty-project\n(dry-run) old-master -> acme::master_summary\n(dry-run) big -> acme::turns::s2::1000_to_12345\n(dry-run) no-meta -> acme::no-meta\nDestination DB: {project}/sdb | Total entries: 1\n",
+  "stderr": "",
+  "files": {}
+}

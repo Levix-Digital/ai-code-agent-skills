@@ -1,0 +1,6 @@
+{
+  "exit": 1,
+  "stdout": "Error: could not resolve a project name. Pass --project <name>.\n",
+  "stderr": "",
+  "files": {}
+}
