@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "usage: clean.py [-h] [--dir DIR]\n\nLimpeza do Folder Brain\n\noptions:\n  -h, --help  show this help message and exit\n  --dir DIR   Target directory (default: current)\n",
+  "stderr": "",
+  "files": {}
+}

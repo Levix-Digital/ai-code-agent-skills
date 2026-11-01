@@ -108,7 +108,7 @@ description: "Tasks of the Rust migration, one per milestone of the envelope pla
 
 **Purpose**: PDF text is the one accepted exception.
 
-- [ ] T039 [US1] M39: translate `clean` and swap its callers
+- [x] T039 [US1] M39: translate `clean` and swap its callers
 - [ ] T040 [US1] M40: translate `stats` and swap its callers
 - [ ] T041 [US1] M41: translate `sync` and swap its callers
 - [ ] T042 [US1] M42: translate `query` and swap its callers

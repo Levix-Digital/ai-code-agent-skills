@@ -3,7 +3,7 @@ resolver = "3"
 members = ["crates/*"]
 
 [workspace.package]
-version = "0.37.0"
+version = "0.38.0"
 edition = "2024"
 rust-version = "1.97"
 license = "UNLICENSED"
@@ -25,6 +25,7 @@ quality-assurance = { path = "crates/quality-assurance" }
 devops-release = { path = "crates/devops-release" }
 plan-memory = { path = "crates/plan-memory" }
 session-memory = { path = "crates/session-memory" }
+folder-sync = { path = "crates/folder-sync" }
 dev-cycle-protocol = { path = "crates/dev-cycle-protocol" }
 gedo-feedback = { path = "crates/gedo-feedback" }
 vector-store = { path = "crates/vector-store" }

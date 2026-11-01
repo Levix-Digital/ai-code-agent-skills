@@ -339,9 +339,9 @@ Turns any folder into a searchable knowledge base without loading its files into
 | `/sync` — index the folder (incremental, SHA-256) | `sync.py --dir .` (`--force` to reindex everything) |
 | `/folder` — ask about the folder | `query.py --dir . --query "<question>" [--top-k 6] [--json]` |
 | `/folder-stats` | `stats.py --dir .` |
-| `/folder-clean` — delete the index | `clean.py --dir .` |
+| `/folder-clean` — delete the index | `<skills_root>/dev-cycle-protocol/bin/dev-cycle folder-sync clean --dir .` (`bin/dev-cycle.ps1` in PowerShell) |
 
-All scripts are in `<skills_root>/folder-sync/scripts/`.
+The other scripts are in `<skills_root>/folder-sync/scripts/`.
 
 - **Supported files**: `.docx`, `.pdf`, `.md`, `.txt`, `.json`, `.csv` and source code.
 - **Ignored**: `.git`, `node_modules`, `.venv` and binaries.

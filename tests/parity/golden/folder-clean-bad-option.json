@@ -1,0 +1,6 @@
+{
+  "exit": 2,
+  "stdout": "",
+  "stderr": "usage: clean.py [-h] [--dir DIR]\nclean.py: error: unrecognized arguments: --force\n",
+  "files": {}
+}

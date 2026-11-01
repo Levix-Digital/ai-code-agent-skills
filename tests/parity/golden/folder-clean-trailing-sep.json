@@ -1,0 +1,8 @@
+{
+  "exit": 0,
+  "stdout": "🧹 `.folder_brain` index removed from 'docs'.\n",
+  "stderr": "",
+  "files": {
+    "project/docs/.folder_brain/hashes.json": null
+  }
+}

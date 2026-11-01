@@ -265,6 +265,109 @@ pub fn normpath_posix(p: &str) -> String {
     if out.is_empty() { ".".into() } else { out }
 }
 
+/// `os.path.realpath(p)` (not strict): absolute, with the symbolic links of the existing
+/// part resolved and the missing rest kept as written.
+pub fn realpath(p: &str) -> String {
+    if cfg!(windows) {
+        realpath_nt(p)
+    } else {
+        realpath_posix(p)
+    }
+}
+
+/// `posixpath.realpath(p)`, step by step as CPython 3.13 walks it.
+fn realpath_posix(p: &str) -> String {
+    use std::collections::HashMap;
+    // `None` marks a resolved symlink target: the symlink path follows it on the stack.
+    let mut rest: Vec<Option<String>> = p.split('/').rev().map(|s| Some(s.to_string())).collect();
+    let mut part_count = rest.len();
+    let mut path = if p.starts_with('/') {
+        "/".to_string()
+    } else {
+        std::env::current_dir()
+            .map(|c| c.to_string_lossy().into_owned())
+            .unwrap_or_default()
+    };
+    let mut seen: HashMap<String, Option<String>> = HashMap::new();
+    while part_count > 0 {
+        let Some(name) = rest.pop().expect("a part is left") else {
+            let link = rest.pop().flatten().unwrap_or_default();
+            seen.insert(link, Some(path.clone()));
+            continue;
+        };
+        part_count -= 1;
+        if name.is_empty() || name == "." {
+            continue;
+        }
+        if name == ".." {
+            path = match path.rfind('/') {
+                Some(0) | None => "/".to_string(),
+                Some(i) => path[..i].to_string(),
+            };
+            continue;
+        }
+        let newpath = if path == "/" {
+            format!("/{name}")
+        } else {
+            format!("{path}/{name}")
+        };
+        let is_link = std::fs::symlink_metadata(&newpath).map(|m| m.file_type().is_symlink());
+        match is_link {
+            Ok(true) => {}
+            _ => {
+                path = newpath;
+                continue;
+            }
+        }
+        if let Some(cached) = seen.get(&newpath) {
+            path = cached.clone().unwrap_or(newpath);
+            continue;
+        }
+        let Ok(target) = std::fs::read_link(&newpath) else {
+            path = newpath;
+            continue;
+        };
+        let target = target.to_string_lossy().into_owned();
+        if target.starts_with('/') {
+            path = "/".to_string();
+        }
+        seen.insert(newpath.clone(), None);
+        rest.push(Some(newpath));
+        rest.push(None);
+        let parts: Vec<Option<String>> = target
+            .split('/')
+            .rev()
+            .map(|s| Some(s.to_string()))
+            .collect();
+        part_count += parts.len();
+        rest.extend(parts);
+    }
+    path
+}
+
+/// `ntpath.realpath(p)`: the longest existing prefix resolved, the rest appended.
+fn realpath_nt(p: &str) -> String {
+    let full = abspath(p).to_string_lossy().into_owned();
+    let mut head = full.clone();
+    let mut tail: Vec<String> = Vec::new();
+    loop {
+        if let Ok(real) = std::fs::canonicalize(&head) {
+            let real = real.to_string_lossy().into_owned();
+            let real = match real.strip_prefix(r"\\?\UNC\") {
+                Some(unc) => format!(r"\\{unc}"),
+                None => real.strip_prefix(r"\\?\").unwrap_or(&real).to_string(),
+            };
+            return tail.iter().rev().fold(real, |acc, part| join(&acc, part));
+        }
+        let (parent, name) = split(&head);
+        if name.is_empty() || parent == head {
+            return full;
+        }
+        tail.push(name);
+        head = parent;
+    }
+}
+
 /// `os.path.basename(p)`.
 pub fn basename(p: &Path) -> String {
     let s = p.to_string_lossy();
