@@ -7,7 +7,7 @@ version: v2.10.0
 status: in_progress
 author: Levi Silveira
 created_at: '2026-10-27T18:17:46'
-updated_at: '2026-11-01T15:40:09'
+updated_at: '2026-11-01T16:29:28'
 session_id: null
 tags:
 - rust
@@ -177,7 +177,9 @@ milestones:
   done_at: '2026-11-01'
   by: Levi Silveira
 - name: M40 stats
-  done: false
+  done: true
+  done_at: '2026-11-01'
+  by: Levi Silveira
 - name: M41 sync
   done: false
 - name: M42 query
@@ -316,6 +318,9 @@ status_log:
 - at: '2026-11-01T15:40:09'
   by: Levi Silveira
   note: Milestone 'M39 clean' completed
+- at: '2026-11-01T16:29:28'
+  by: Levi Silveira
+  note: Milestone 'M40 stats' completed
 ---
 
 # Translate the scripts to Rust with identical behavior

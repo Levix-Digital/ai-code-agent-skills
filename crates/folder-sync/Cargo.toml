@@ -9,6 +9,8 @@ publish.workspace = true
 
 [dependencies]
 kernel.workspace = true
+chrono.workspace = true
+rusqlite = { version = "=0.40.2", features = ["bundled"] }
 
 [lints]
 workspace = true

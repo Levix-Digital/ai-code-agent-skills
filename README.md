@@ -338,7 +338,7 @@ Turns any folder into a searchable knowledge base without loading its files into
 |---|---|
 | `/sync` — index the folder (incremental, SHA-256) | `sync.py --dir .` (`--force` to reindex everything) |
 | `/folder` — ask about the folder | `query.py --dir . --query "<question>" [--top-k 6] [--json]` |
-| `/folder-stats` | `stats.py --dir .` |
+| `/folder-stats` | `<skills_root>/dev-cycle-protocol/bin/dev-cycle folder-sync stats --dir .` (`bin/dev-cycle.ps1` in PowerShell) |
 | `/folder-clean` — delete the index | `<skills_root>/dev-cycle-protocol/bin/dev-cycle folder-sync clean --dir .` (`bin/dev-cycle.ps1` in PowerShell) |
 
 The other scripts are in `<skills_root>/folder-sync/scripts/`.

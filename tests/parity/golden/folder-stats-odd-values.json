@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "\n📊 **Folder Brain Statistics:** `odd`\n📁 Path: `{project}/odd`\n📄 Total indexed files: 3\n🧩 Total vector chunks: 6.5\n💾 Volume total de dados: 0.0 MB\n🕒 Last sync: 14/11/2023 22:13:21\n\n🔝 **Maiores documentos indexados:**\n- `c.md` (4 chunks)\n- `None` (2.5 chunks)\n- `a.txt` (None chunks)\n",
+  "stderr": "",
+  "files": {}
+}

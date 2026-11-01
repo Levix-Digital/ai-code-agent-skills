@@ -71,6 +71,7 @@ const COMMANDS: &[(&str, &str, Command)] = &[
         dev_cycle_protocol::verify_gate::main,
     ),
     ("folder-sync", "clean", folder_sync::clean::main),
+    ("folder-sync", "stats", folder_sync::stats::main),
     (
         "gedo-feedback",
         "gedo_feedback",

@@ -2,19 +2,21 @@
 index because the last sync time could not be formatted)."""
 import os
 import sqlite3
-import subprocess
 import sys
 from datetime import datetime
 
 import pytest
 
-STATS = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "scripts", "stats.py")
+REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(os.path.join(REPO, "dev-cycle-protocol", "tests"))
+
+from _engine import run_engine  # noqa: E402
+
 SYNCED_AT = 1761998400.0  # 2025-11-01 12:00:00 UTC
 
 
 def run_stats(folder):
-    return subprocess.run([sys.executable, STATS, "--dir", str(folder)], capture_output=True,
-                          text=True, encoding="utf-8", errors="replace")
+    return run_engine("folder-sync", "stats", ["--dir", str(folder)])
 
 
 def write_state(brain, rows):
