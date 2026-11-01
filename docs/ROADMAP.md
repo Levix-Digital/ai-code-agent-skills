@@ -16,13 +16,13 @@ Each release: `## vX.Y.Z: <name>` with the fields `Status` (planned, in_progress
 
 ## v2.11.0: Guardrails for agent-written code
 - **Status**: planned
-- **Goal**: Pull requests are blocked on invented or vulnerable dependencies, weakened tests, changes outside the plan and insecure code, and Aurora Dev Suite reads each project's cycle state through dcp diagnose --json
-- **Items**: ADJ-001, FEAT-019, FEAT-011, IMP-006, IMP-007, FEAT-012
+- **Goal**: Pull requests are blocked on invented or vulnerable dependencies, weakened tests, changes outside the plan and insecure code, and Aurora Dev Suite reads each project's cycle state through dcp diagnose --json and its settings through dcp config
+- **Items**: ADJ-001, FEAT-019, FEAT-017, FEAT-011, IMP-006, IMP-007, FEAT-012
 
 ## v2.12.0: Cycle feedback
 - **Status**: planned
-- **Goal**: Production problems come back as triaged bugs, the user's gates come with a review brief, the cycle measures itself automatically at the end of every phase and offers its metrics and settings to Aurora Dev Suite, providers such as Aurora Dev Suite join the cycle through a generic extension point, performance budgets are enforced, each risky change carries a threat model, and the release candidate is attacked with its findings coming back as triaged bugs
-- **Items**: FEAT-013, FEAT-014, FEAT-015, FEAT-017, FEAT-018, FEAT-016, FEAT-021, FEAT-020
+- **Goal**: Production problems come back as triaged bugs, the user's gates come with a review brief, the cycle measures itself automatically at the end of every phase and offers its metrics to Aurora Dev Suite, providers such as Aurora Dev Suite join the cycle through a generic extension point, performance budgets are enforced, each risky change carries a threat model, and the release candidate is attacked with its findings coming back as triaged bugs
+- **Items**: FEAT-013, FEAT-014, FEAT-015, FEAT-022, FEAT-018, FEAT-016, FEAT-021, FEAT-020
 
 ## v2.13.0: Agents and platforms
 - **Status**: planned
