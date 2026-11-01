@@ -13,6 +13,13 @@ Each item: `### <ID>: <title>` with the fields `Severity` (bugs: critical, high,
 - **Plan**: -
 - **Description**: onboard.py sends the list of protocol files to 'git check-ignore --stdin' in text mode. On Windows each newline becomes CRLF, Git looks for 'path\r' and only the last path matches, so the diagnosis and write-config warn about one ignored file instead of all of them (the BUG-002 protection). Send the input as bytes.
 
+### BUG-005: folder-sync stats fails on any synced index
+- **Severity**: medium
+- **Status**: in_progress
+- **Found**: 2026-11-01, Rust migration M40 review of stats.py
+- **Plan**: ai_code_agent_skills_folder_sync_stats_fails_on_any_synced_index
+- **Description**: stats.py formats the last sync time with datetime.fromtimestamp, but never imports datetime. Every index that has synced at least one file has a last sync time, so /folder-stats stops with NameError instead of showing the statistics. Only an empty or missing index works.
+
 ## Features
 
 ### FEAT-001: Pull request review on Bitbucket, Azure DevOps and Gitea
@@ -250,6 +257,13 @@ Each item: `### <ID>: <title>` with the fields `Severity` (bugs: critical, high,
 - **Found**: 2026-10-28, 2026-10-28, Aurora Dev Suite integration discussion
 - **Plan**: -
 - **Description**: The engine's binary and launchers are called dcp (the name Aurora Dev Suite and the Levix products use) instead of dev-cycle: the binary, bin/dcp and bin/dcp.ps1, the release assets, and every SKILL.md and doc that calls the engine. The /dev-cycle command keeps its name. Done right after the migration (IMP-005 stays a pure translation), before the first release of the versioned JSON contract that Aurora reads; projects already using the protocol keep working through the launcher.
+
+### ADJ-002: folder-sync stats output still in Portuguese
+- **Priority**: low
+- **Status**: open
+- **Found**: 2026-11-01, BUG-005 plan
+- **Plan**: -
+- **Description**: stats.py prints 'Volume total de dados', 'Nunca' and 'Maiores documentos indexados' while every other message of the skill is in English. Translate them (after the Rust migration, which keeps the output identical).
 
 ## Epics
 
