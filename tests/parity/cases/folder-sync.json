@@ -259,5 +259,151 @@
     "python": "folder-sync/scripts/sync.py",
     "rust": ["folder-sync", "sync"],
     "args": ["--nope"]
+  },
+  {
+    "name": "folder-query-hybrid",
+    "python": "folder-sync/scripts/query.py",
+    "rust": ["folder-sync", "query"],
+    "args": ["--dir", "{project}", "--query", "how do I bake bread at home"],
+    "fixture": "folder-query",
+    "ignore": ["project/.folder_brain", "home/.cache"],
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"]
+  },
+  {
+    "name": "folder-query-default-dir",
+    "python": "folder-sync/scripts/query.py",
+    "rust": ["folder-sync", "query"],
+    "args": ["--query", "planets and galaxies"],
+    "fixture": "folder-query",
+    "ignore": ["project/.folder_brain", "home/.cache"],
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"]
+  },
+  {
+    "name": "folder-query-micro",
+    "python": "folder-sync/scripts/query.py",
+    "rust": ["folder-sync", "query"],
+    "args": ["--dir", "{project}", "--query", "telescopes and planets", "--mode", "micro", "--top-k", "3"],
+    "fixture": "folder-query",
+    "ignore": ["project/.folder_brain", "home/.cache"],
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"]
+  },
+  {
+    "name": "folder-query-macro",
+    "python": "folder-sync/scripts/query.py",
+    "rust": ["folder-sync", "query"],
+    "args": ["--dir", "{project}", "--query", "income tax deadline", "--mode", "macro"],
+    "fixture": "folder-query",
+    "ignore": ["project/.folder_brain", "home/.cache"],
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"]
+  },
+  {
+    "name": "folder-query-json",
+    "python": "folder-sync/scripts/query.py",
+    "rust": ["folder-sync", "query"],
+    "args": ["--dir", "{project}", "--query", "high speed trains", "--json"],
+    "fixture": "folder-query",
+    "ignore": ["project/.folder_brain", "home/.cache"],
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"]
+  },
+  {
+    "name": "folder-query-json-micro",
+    "python": "folder-sync/scripts/query.py",
+    "rust": ["folder-sync", "query"],
+    "args": ["--dir", "{project}", "--query", "compost and tomatoes", "--json", "--mode", "micro", "--top-k", "2"],
+    "fixture": "folder-query",
+    "ignore": ["project/.folder_brain", "home/.cache"],
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"]
+  },
+  {
+    "name": "folder-query-pdf-page",
+    "python": "folder-sync/scripts/query.py",
+    "rust": ["folder-sync", "query"],
+    "args": ["--dir", "{project}", "--query", "buy railway tickets at the station", "--mode", "micro", "--top-k", "2"],
+    "fixture": "folder-query",
+    "ignore": ["project/.folder_brain", "home/.cache"],
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"]
+  },
+  {
+    "name": "folder-query-top-k-zero",
+    "python": "folder-sync/scripts/query.py",
+    "rust": ["folder-sync", "query"],
+    "args": ["--dir", "{project}", "--query", "bread", "--top-k", "0"],
+    "fixture": "folder-query",
+    "ignore": ["project/.folder_brain", "home/.cache"],
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"]
+  },
+  {
+    "name": "folder-query-top-k-negative",
+    "python": "folder-sync/scripts/query.py",
+    "rust": ["folder-sync", "query"],
+    "args": ["--dir", "{project}", "--query", "bread", "--top-k", "-2"],
+    "fixture": "folder-query",
+    "ignore": ["project/.folder_brain", "home/.cache"],
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"]
+  },
+  {
+    "name": "folder-query-top-k-large",
+    "python": "folder-sync/scripts/query.py",
+    "rust": ["folder-sync", "query"],
+    "args": ["--dir", "{project}", "--query", "spaghetti", "--top-k", "100", "--mode", "micro"],
+    "fixture": "folder-query",
+    "ignore": ["project/.folder_brain", "home/.cache"],
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"]
+  },
+  {
+    "name": "folder-query-unicode",
+    "python": "folder-sync/scripts/query.py",
+    "rust": ["folder-sync", "query"],
+    "args": ["--dir", "{project}", "--query", "pão e café ☕"],
+    "fixture": "folder-query",
+    "ignore": ["project/.folder_brain", "home/.cache"],
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"]
+  },
+  {
+    "name": "folder-query-empty-index",
+    "python": "folder-sync/scripts/query.py",
+    "rust": ["folder-sync", "query"],
+    "args": ["--dir", "{project}", "--query", "anything"],
+    "fixture": "folder-query-empty",
+    "ignore": ["project/.folder_brain", "home/.cache"],
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"]
+  },
+  {
+    "name": "folder-query-not-synced",
+    "python": "folder-sync/scripts/query.py",
+    "rust": ["folder-sync", "query"],
+    "args": ["--dir", "{project}", "--query", "anything"],
+    "fixture": "folder-docs"
+  },
+  {
+    "name": "folder-query-not-synced-json",
+    "python": "folder-sync/scripts/query.py",
+    "rust": ["folder-sync", "query"],
+    "args": ["--dir", "{project}", "--query", "anything", "--json"],
+    "fixture": "folder-docs"
+  },
+  {
+    "name": "folder-query-help",
+    "python": "folder-sync/scripts/query.py",
+    "rust": ["folder-sync", "query"],
+    "args": ["--help"]
+  },
+  {
+    "name": "folder-query-no-query",
+    "python": "folder-sync/scripts/query.py",
+    "rust": ["folder-sync", "query"],
+    "args": []
+  },
+  {
+    "name": "folder-query-bad-mode",
+    "python": "folder-sync/scripts/query.py",
+    "rust": ["folder-sync", "query"],
+    "args": ["--query", "x", "--mode", "both"]
+  },
+  {
+    "name": "folder-query-bad-top-k",
+    "python": "folder-sync/scripts/query.py",
+    "rust": ["folder-sync", "query"],
+    "args": ["--query", "x", "--top-k", "many"]
   }
 ]

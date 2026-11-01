@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "{\n  \"query\": \"compost and tomatoes\",\n  \"folder\": \"{project}\",\n  \"macro_matches\": [],\n  \"micro_chunks\": [\n    {\n      \"file_name\": \"garden.docx\",\n      \"relative_path\": \"guides/garden.docx\",\n      \"file_path\": \"/srv/notes/guides/garden.docx\",\n      \"heading\": \"Compost\",\n      \"page\": 0,\n      \"distance\": 0.745,\n      \"content\": \"[guides/garden.docx > Compost]\\nCompost\"\n    },\n    {\n      \"file_name\": \"garden.docx\",\n      \"relative_path\": \"guides/garden.docx\",\n      \"file_path\": \"/srv/notes/guides/garden.docx\",\n      \"heading\": \"Compost\",\n      \"page\": 0,\n      \"distance\": 1.0437,\n      \"content\": \"[guides/garden.docx > Compost]\\nTurn the compost pile weekly to speed up decomposition.\"\n    }\n  ]\n}\n",
+  "stderr": "",
+  "files": {}
+}

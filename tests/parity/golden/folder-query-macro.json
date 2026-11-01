@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "\n🧠 **Semantic Search Results in Folder:** `project`\n🔍 **Query/Topic:** *income tax deadline*\n\n### 📚 Relevant Documents (Macro View)\n- **[finance.md](file:////srv/notes/guides/finance.md)** (`guides/finance.md`) | Score: -0.40\n- **[garden.docx](file:////srv/notes/guides/garden.docx)** (`guides/garden.docx`) | Score: -0.80\n- **[recipes.md](file:////srv/notes/recipes.md)** (`recipes.md`) | Score: -0.87\n\nNo relevant passage found for this query.\n",
+  "stderr": "",
+  "files": {}
+}

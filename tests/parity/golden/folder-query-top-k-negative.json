@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "\n🧠 **Semantic Search Results in Folder:** `project`\n🔍 **Query/Topic:** *bread*\n\n### 📚 Relevant Documents (Macro View)\n- **[recipes.md](file:////srv/notes/recipes.md)** (`recipes.md`) | Score: -0.27\n- **[garden.docx](file:////srv/notes/guides/garden.docx)** (`guides/garden.docx`) | Score: -0.63\n- **[astronomy.txt](file:////srv/notes/guides/astronomy.txt)** (`guides/astronomy.txt`) | Score: -0.89\n\nNo relevant passage found for this query.\n",
+  "stderr": "",
+  "files": {}
+}

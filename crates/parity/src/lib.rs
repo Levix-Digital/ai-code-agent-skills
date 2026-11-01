@@ -338,7 +338,8 @@ pub struct Normalizer {
 
 impl Normalizer {
     /// Run paths become `{project}`, `{home}` and `{skills}` (also with forward slashes, as some
-    /// scripts print them on Windows); then the case's masks apply.
+    /// scripts print them on Windows, and with escaped backslashes, as JSON output writes
+    /// them); then the case's masks apply.
     pub fn apply(&self, s: &str) -> String {
         let mut out = s.to_string();
         for (path, label) in [
@@ -347,6 +348,10 @@ impl Normalizer {
             (&self.skills, "{skills}"),
         ] {
             let p = path.to_string_lossy().into_owned();
+            let escaped = p.replace('\\', "\\\\");
+            if escaped != p {
+                out = out.replace(&escaped, label);
+            }
             out = out.replace(&p, label);
             let fwd = p.replace('\\', "/");
             if fwd != p {
@@ -646,6 +651,20 @@ mod tests {
         assert_eq!(
             n.apply("/tmp/run/project/a /tmp/run/home/b /repo/c 2026-10-27"),
             "{project}/a {home}/b {skills}/c <MASK>"
+        );
+    }
+
+    #[test]
+    fn normalizes_json_escaped_windows_paths() {
+        let n = Normalizer {
+            project: PathBuf::from(r"C:\Temp\run\project"),
+            home: PathBuf::from(r"C:\Temp\run\home"),
+            skills: PathBuf::from(r"C:\repo"),
+            masks: Vec::new(),
+        };
+        assert_eq!(
+            n.apply(r#"{"folder": "C:\\Temp\\run\\project", "p": "C:\Temp\run\home\x"}"#),
+            r#"{"folder": "{project}", "p": "{home}\x"}"#
         );
     }
 

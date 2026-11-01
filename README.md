@@ -337,11 +337,9 @@ Turns any folder into a searchable knowledge base without loading its files into
 | Trigger | Command |
 |---|---|
 | `/sync` — index the folder (incremental, SHA-256) | `<skills_root>/dev-cycle-protocol/bin/dev-cycle folder-sync sync --dir .` (`--force` to reindex everything; `bin/dev-cycle.ps1` in PowerShell) |
-| `/folder` — ask about the folder | `query.py --dir . --query "<question>" [--top-k 6] [--json]` |
+| `/folder` — ask about the folder | `<skills_root>/dev-cycle-protocol/bin/dev-cycle folder-sync query --dir . --query "<question>" [--top-k 6] [--json]` (`bin/dev-cycle.ps1` in PowerShell) |
 | `/folder-stats` | `<skills_root>/dev-cycle-protocol/bin/dev-cycle folder-sync stats --dir .` (`bin/dev-cycle.ps1` in PowerShell) |
 | `/folder-clean` — delete the index | `<skills_root>/dev-cycle-protocol/bin/dev-cycle folder-sync clean --dir .` (`bin/dev-cycle.ps1` in PowerShell) |
-
-`query.py` is in `<skills_root>/folder-sync/scripts/`.
 
 - **Supported files**: `.docx`, `.pdf`, `.md`, `.txt`, `.json`, `.csv` and source code.
 - **Ignored**: `.git`, `node_modules`, `.venv` and binaries.

@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "usage: query.py [-h] [--dir DIR] --query QUERY [--top-k TOP_K]\n                [--mode {hybrid,macro,micro}] [--json]\n\nSemantic query over the Folder Brain\n\noptions:\n  -h, --help            show this help message and exit\n  --dir DIR             Target directory (default: current)\n  --query QUERY         Texto da consulta ou pergunta\n  --top-k TOP_K         Number of chunks to return\n  --mode {hybrid,macro,micro}\n  --json                Return output as JSON\n",
+  "stderr": "",
+  "files": {}
+}
