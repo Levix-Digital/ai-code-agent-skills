@@ -18,6 +18,7 @@ dev-cycle-protocol.workspace = true
 gedo-feedback.workspace = true
 plan-memory.workspace = true
 session-memory.workspace = true
+folder-sync.workspace = true
 software-design.workspace = true
 
 [lints]

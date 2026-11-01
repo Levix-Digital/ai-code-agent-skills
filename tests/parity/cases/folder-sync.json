@@ -1,0 +1,93 @@
+[
+  {
+    "name": "folder-clean-help",
+    "python": "folder-sync/scripts/clean.py",
+    "rust": ["folder-sync", "clean"],
+    "args": ["--help"],
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "folder-clean-bad-option",
+    "python": "folder-sync/scripts/clean.py",
+    "rust": ["folder-sync", "clean"],
+    "args": ["--force"],
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "folder-clean",
+    "python": "folder-sync/scripts/clean.py",
+    "rust": ["folder-sync", "clean"],
+    "args": [],
+    "fixture": "folder-brain"
+  },
+  {
+    "name": "folder-clean-dot",
+    "python": "folder-sync/scripts/clean.py",
+    "rust": ["folder-sync", "clean"],
+    "args": ["--dir", "."],
+    "fixture": "folder-brain"
+  },
+  {
+    "name": "folder-clean-subdir",
+    "python": "folder-sync/scripts/clean.py",
+    "rust": ["folder-sync", "clean"],
+    "args": ["--dir", "docs"],
+    "fixture": "folder-brain"
+  },
+  {
+    "name": "folder-clean-dotdot",
+    "python": "folder-sync/scripts/clean.py",
+    "rust": ["folder-sync", "clean"],
+    "args": ["--dir", "docs/.."],
+    "fixture": "folder-brain"
+  },
+  {
+    "name": "folder-clean-trailing-sep",
+    "python": "folder-sync/scripts/clean.py",
+    "rust": ["folder-sync", "clean"],
+    "args": ["--dir", "docs/"],
+    "fixture": "folder-brain"
+  },
+  {
+    "name": "folder-clean-unicode",
+    "python": "folder-sync/scripts/clean.py",
+    "rust": ["folder-sync", "clean"],
+    "args": ["--dir", "Ação"],
+    "fixture": "folder-brain"
+  },
+  {
+    "name": "folder-clean-no-brain",
+    "python": "folder-sync/scripts/clean.py",
+    "rust": ["folder-sync", "clean"],
+    "args": ["--dir", "empty"],
+    "fixture": "folder-brain"
+  },
+  {
+    "name": "folder-clean-missing-dir",
+    "python": "folder-sync/scripts/clean.py",
+    "rust": ["folder-sync", "clean"],
+    "args": ["--dir", "nope"],
+    "fixture": "folder-brain"
+  },
+  {
+    "name": "folder-clean-missing-parent",
+    "python": "folder-sync/scripts/clean.py",
+    "rust": ["folder-sync", "clean"],
+    "args": ["--dir", "nope/../docs"],
+    "fixture": "folder-brain"
+  },
+  {
+    "name": "folder-clean-empty-dir-arg",
+    "python": "folder-sync/scripts/clean.py",
+    "rust": ["folder-sync", "clean"],
+    "args": ["--dir", ""],
+    "fixture": "folder-brain"
+  },
+  {
+    "name": "folder-clean-brain-itself",
+    "python": "folder-sync/scripts/clean.py",
+    "rust": ["folder-sync", "clean"],
+    "args": ["--dir", ".folder_brain"],
+    "fixture": "folder-brain"
+  }
+]

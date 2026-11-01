@@ -49,9 +49,9 @@ When the user types `/folder` (or asks questions about the folder's content afte
   ```bash
   python "<skills_root>/folder-sync/scripts/sync.py" --dir "." --force
   ```
-- **Remove the folder's index:**
+- **Remove the folder's index** (native engine; in PowerShell, `& "<skills_root>/dev-cycle-protocol/bin/dev-cycle.ps1" folder-sync clean --dir "."`):
   ```bash
-  python "<skills_root>/folder-sync/scripts/clean.py" --dir "."
+  "<skills_root>/dev-cycle-protocol/bin/dev-cycle" folder-sync clean --dir "."
   ```
 
 ---
@@ -60,5 +60,5 @@ When the user types `/folder` (or asks questions about the folder's content afte
 - `scripts/sync.py`: Incremental indexing engine and hierarchical chunking.
 - `scripts/query.py`: Semantic search engine with ranking and formatting.
 - `scripts/stats.py`: Statistics inspector for the local ChromaDB.
-- `scripts/clean.py`: Removes the folder's `.folder_brain` index.
+- `clean` (engine command `folder-sync clean`, code in `crates/folder-sync`): Removes the folder's `.folder_brain` index.
 - `scripts/extractors.py`: Specialized extractors for each file format (.docx, .pdf, .txt, .md, code).
