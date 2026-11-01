@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "usage: save_incremental_turns.py [-h] [--project PROJECT] --start START\n                                 --end END [--content CONTENT] [--file FILE]\n                                 [--session-id SESSION_ID]\n\nSave 20-turn incremental block to ChromaDB session memory\n\noptions:\n  -h, --help            show this help message and exit\n  --project PROJECT     Project name (default: git repository root name)\n  --start START         Starting turn index\n  --end END             Ending turn index\n  --content CONTENT     Integral text content of the turns\n  --file FILE           Path to a text/markdown file with the turns\n  --session-id SESSION_ID\n                        Optional session identifier\n",
+  "stderr": "",
+  "files": {}
+}

@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "✅ [my-repo] Incremental turns 1000-1020 saved into ChromaDB! (Doc ID: my-repo::turns::s3::1000_to_1020)\nEntries for project 'my-repo': 1\n",
+  "stderr": "",
+  "files": {}
+}

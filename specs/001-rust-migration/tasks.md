@@ -97,7 +97,7 @@ description: "Tasks of the Rust migration, one per milestone of the envelope pla
 
 **Purpose**: Session memory on the same store.
 
-- [ ] T035 [US1] M35: translate `save_incremental_turns` and swap its callers
+- [x] T035 [US1] M35: translate `save_incremental_turns` and swap its callers
 - [ ] T036 [US1] M36: translate `finalize_session` and swap its callers
 - [ ] T037 [US1] M37: translate `read_memory` and swap its callers
 - [ ] T038 [US1] M38: translate `session-memory migrate_legacy` and swap its callers

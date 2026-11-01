@@ -60,7 +60,7 @@ checksum = "fb5dfbc6d8d2675589ccbe4d0fd61df2419075625f8c1a62325e718e2b0049f9"
 
 [[package]]
 name = "architecture-docs"
-version = "0.33.0"
+version = "0.34.0"
 dependencies = [
  "kernel",
  "regex",
@@ -384,7 +384,7 @@ dependencies = [
 
 [[package]]
 name = "dev-cycle"
-version = "0.33.0"
+version = "0.34.0"
 dependencies = [
  "architecture-docs",
  "dev-cycle-protocol",
@@ -394,13 +394,14 @@ dependencies = [
  "plan-memory",
  "product-inception",
  "quality-assurance",
+ "session-memory",
  "software-design",
  "user-docs",
 ]
 
 [[package]]
 name = "dev-cycle-protocol"
-version = "0.33.0"
+version = "0.34.0"
 dependencies = [
  "architecture-docs",
  "devops-release",
@@ -411,7 +412,7 @@ dependencies = [
 
 [[package]]
 name = "devops-release"
-version = "0.33.0"
+version = "0.34.0"
 dependencies = [
  "kernel",
  "regex",
@@ -580,7 +581,7 @@ dependencies = [
 
 [[package]]
 name = "gedo-feedback"
-version = "0.33.0"
+version = "0.34.0"
 dependencies = [
  "kernel",
 ]
@@ -771,7 +772,7 @@ dependencies = [
 
 [[package]]
 name = "kernel"
-version = "0.33.0"
+version = "0.34.0"
 dependencies = [
  "chrono",
  "regex",
@@ -1029,7 +1030,7 @@ checksum = "9f7c3e4beb33f85d45ae3e3a1792185706c8e16d043238c593331cc7cd313b50"
 
 [[package]]
 name = "parity"
-version = "0.33.0"
+version = "0.34.0"
 dependencies = [
  "regex",
  "serde",
@@ -1091,7 +1092,7 @@ checksum = "f6b464fbc74e149a392436b17d523f769e057cb6877f6a5c4618bc6f11800548"
 
 [[package]]
 name = "plan-memory"
-version = "0.33.0"
+version = "0.34.0"
 dependencies = [
  "architecture-docs",
  "kernel",
@@ -1152,7 +1153,7 @@ dependencies = [
 
 [[package]]
 name = "product-inception"
-version = "0.33.0"
+version = "0.34.0"
 dependencies = [
  "architecture-docs",
  "kernel",
@@ -1184,7 +1185,7 @@ dependencies = [
 
 [[package]]
 name = "quality-assurance"
-version = "0.33.0"
+version = "0.34.0"
 dependencies = [
  "architecture-docs",
  "kernel",
@@ -1550,6 +1551,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "session-memory"
+version = "0.34.0"
+dependencies = [
+ "kernel",
+ "plan-memory",
+ "vector-store",
+]
+
+[[package]]
 name = "shlex"
 version = "2.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1575,7 +1585,7 @@ checksum = "d0d5d4b1981b8bbbb7aed204cae5726d683d5d6ac7e74ec54122ea28f315e7c8"
 
 [[package]]
 name = "software-design"
-version = "0.33.0"
+version = "0.34.0"
 dependencies = [
  "architecture-docs",
  "kernel",
@@ -2081,7 +2091,7 @@ dependencies = [
 
 [[package]]
 name = "user-docs"
-version = "0.33.0"
+version = "0.34.0"
 dependencies = [
  "architecture-docs",
  "kernel",
@@ -2112,7 +2122,7 @@ checksum = "accd4ea62f7bb7a82fe23066fb0957d48ef677f6eeb8215f372f52e48bb32426"
 
 [[package]]
 name = "vector-store"
-version = "0.33.0"
+version = "0.34.0"
 dependencies = [
  "flate2",
  "kernel",
