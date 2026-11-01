@@ -142,6 +142,11 @@ const COMMANDS: &[(&str, &str, Command)] = &[
         "search_plans",
         plan_memory::search_plans::main,
     ),
+    (
+        "session-memory",
+        "save_incremental_turns",
+        session_memory::save_incremental_turns::main,
+    ),
 ];
 
 fn main() -> ExitCode {

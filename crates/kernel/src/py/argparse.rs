@@ -322,6 +322,15 @@ impl Parser {
         self
     }
 
+    /// `add_argument(flag, type=int, required=True)`.
+    pub fn required_int_option(mut self, flag: &str, help: &str) -> Self {
+        self = self.add(flag, Kind::Store, help, true);
+        if let Some(arg) = self.args.last_mut() {
+            arg.int = true;
+        }
+        self
+    }
+
     /// `add_argument(flag, type=float)`: the value is kept as given; `float()` reads it.
     pub fn float_option(mut self, flag: &str, help: &str) -> Self {
         self = self.add(flag, Kind::Store, help, false);

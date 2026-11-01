@@ -1,0 +1,131 @@
+[
+  {
+    "name": "save-turns-help",
+    "python": "session-memory/save_incremental_turns.py",
+    "rust": ["session-memory", "save_incremental_turns"],
+    "args": ["--help"],
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "save-turns-missing-required",
+    "python": "session-memory/save_incremental_turns.py",
+    "rust": ["session-memory", "save_incremental_turns"],
+    "args": [],
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "save-turns-bad-int",
+    "python": "session-memory/save_incremental_turns.py",
+    "rust": ["session-memory", "save_incremental_turns"],
+    "args": ["--start", "x", "--end", "20"],
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "save-turns-no-content",
+    "python": "session-memory/save_incremental_turns.py",
+    "rust": ["session-memory", "save_incremental_turns"],
+    "args": ["--start", "1", "--end", "20"]
+  },
+  {
+    "name": "save-turns-empty-content",
+    "python": "session-memory/save_incremental_turns.py",
+    "rust": ["session-memory", "save_incremental_turns"],
+    "args": ["--start", "1", "--end", "20", "--content", ""]
+  },
+  {
+    "name": "save-turns-missing-file-no-content",
+    "python": "session-memory/save_incremental_turns.py",
+    "rust": ["session-memory", "save_incremental_turns"],
+    "args": ["--start", "1", "--end", "20", "--file", "nope.md"]
+  },
+  {
+    "name": "save-turns-content",
+    "python": "session-memory/save_incremental_turns.py",
+    "rust": ["session-memory", "save_incremental_turns"],
+    "args": ["--start", "1", "--end", "20", "--content", "User: hello\nAssistant: hi"],
+    "env": {"SESSION_MEMORY_DB": "{home}/sdb"},
+    "ignore": ["home/sdb", "home/.cache"],
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"],
+    "masks": ["\\d{4}-\\d{2}-\\d{2}"]
+  },
+  {
+    "name": "save-turns-missing-file-content",
+    "python": "session-memory/save_incremental_turns.py",
+    "rust": ["session-memory", "save_incremental_turns"],
+    "args": ["--start", "21", "--end", "40", "--file", "nope.md", "--content", "turns"],
+    "env": {"SESSION_MEMORY_DB": "{home}/sdb"},
+    "ignore": ["home/sdb", "home/.cache"],
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"],
+    "masks": ["\\d{4}-\\d{2}-\\d{2}"]
+  },
+  {
+    "name": "save-turns-file-upsert",
+    "python": "session-memory/save_incremental_turns.py",
+    "rust": ["session-memory", "save_incremental_turns"],
+    "args": ["--start", "1", "--end", "20", "--file", "turns.md", "--session-id", "s1"],
+    "fixture": "session-db",
+    "env": {"SESSION_MEMORY_DB": "{project}/sdb"},
+    "ignore": ["project/sdb", "home/.cache"],
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"]
+  },
+  {
+    "name": "save-turns-file-new",
+    "python": "session-memory/save_incremental_turns.py",
+    "rust": ["session-memory", "save_incremental_turns"],
+    "args": ["--start", "21", "--end", "40", "--file", "{project}/turns.md", "--session-id", "s1"],
+    "fixture": "session-db",
+    "env": {"SESSION_MEMORY_DB": "{project}/sdb"},
+    "ignore": ["project/sdb", "home/.cache"],
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"]
+  },
+  {
+    "name": "save-turns-project-option",
+    "python": "session-memory/save_incremental_turns.py",
+    "rust": ["session-memory", "save_incremental_turns"],
+    "args": ["--project", "AnyContext Tools", "--start", "5", "--end", "9", "--content", "x", "--session-id", "s2"],
+    "fixture": "session-db",
+    "env": {"SESSION_MEMORY_DB": "{project}/sdb"},
+    "ignore": ["project/sdb", "home/.cache"],
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"]
+  },
+  {
+    "name": "save-turns-project-env",
+    "python": "session-memory/save_incremental_turns.py",
+    "rust": ["session-memory", "save_incremental_turns"],
+    "args": ["--start", "1000", "--end", "1_020", "--content", "x", "--session-id", "s3"],
+    "fixture": "session-db",
+    "env": {"SESSION_MEMORY_DB": "{project}/sdb", "SESSION_MEMORY_PROJECT": "MyRepo"},
+    "ignore": ["project/sdb", "home/.cache"],
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"]
+  },
+  {
+    "name": "save-turns-project-git",
+    "python": "session-memory/save_incremental_turns.py",
+    "rust": ["session-memory", "save_incremental_turns"],
+    "args": ["--start", " 7", "--end", "+8", "--content", "x", "--session-id", ""],
+    "fixture": "session-db",
+    "git": true,
+    "env": {"SESSION_MEMORY_DB": "{project}/sdb"},
+    "ignore": ["project/sdb", "home/.cache"],
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"],
+    "masks": ["\\d{4}-\\d{2}-\\d{2}"]
+  },
+  {
+    "name": "save-turns-bad-project",
+    "python": "session-memory/save_incremental_turns.py",
+    "rust": ["session-memory", "save_incremental_turns"],
+    "args": ["--project", "!!!", "--start", "1", "--end", "2", "--content", "x"],
+    "env": {"SESSION_MEMORY_DB": "{home}/sdb"},
+    "ignore": ["home/sdb", "home/.cache"],
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"]
+  },
+  {
+    "name": "save-turns-negative-turns",
+    "python": "session-memory/save_incremental_turns.py",
+    "rust": ["session-memory", "save_incremental_turns"],
+    "args": ["--start=-3", "--end=-1", "--content", "x", "--session-id", "neg"],
+    "env": {"SESSION_MEMORY_DB": "{home}/sdb"},
+    "ignore": ["home/sdb", "home/.cache"],
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"]
+  }
+]

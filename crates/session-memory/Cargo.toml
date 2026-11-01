@@ -1,0 +1,16 @@
+[package]
+name = "session-memory"
+description = "The session-memory skill's commands: conversation memory in the local store"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+kernel.workspace = true
+plan-memory.workspace = true
+vector-store.workspace = true
+
+[lints]
+workspace = true

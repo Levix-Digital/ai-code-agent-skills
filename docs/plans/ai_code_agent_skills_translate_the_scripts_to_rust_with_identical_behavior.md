@@ -7,7 +7,7 @@ version: v2.10.0
 status: in_progress
 author: Levi Silveira
 created_at: '2026-10-27T18:17:46'
-updated_at: '2026-10-31T16:04:42'
+updated_at: '2026-11-01T11:52:58'
 session_id: null
 tags:
 - rust
@@ -157,7 +157,9 @@ milestones:
   done_at: '2026-10-31'
   by: Levi Silveira
 - name: M35 save_incremental_turns
-  done: false
+  done: true
+  done_at: '2026-11-01'
+  by: Levi Silveira
 - name: M36 finalize_session
   done: false
 - name: M37 read_memory
@@ -291,6 +293,9 @@ status_log:
 - at: '2026-10-31T16:04:42'
   by: Levi Silveira
   note: Milestone 'M34 plan-memory migrate_legacy' completed
+- at: '2026-11-01T11:52:58'
+  by: Levi Silveira
+  note: Milestone 'M35 save_incremental_turns' completed
 ---
 
 # Translate the scripts to Rust with identical behavior
