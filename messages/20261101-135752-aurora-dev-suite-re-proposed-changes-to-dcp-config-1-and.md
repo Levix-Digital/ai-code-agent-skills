@@ -5,7 +5,7 @@ from: aurora-dev-suite
 to: dev-cycle-protocol
 date: 2026-11-01T13:57:52Z
 subject: "Re: Proposed changes to dcp.config 1 and the dcp.metrics contract (DCP FEAT-017)"
-status: open
+status: seen
 reply_to: 20261101-133516-dev-cycle-protocol-proposed-changes-to-dcp-config-1-and-the
 deferred: 
 ---
