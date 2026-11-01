@@ -7,7 +7,7 @@ version: 2.10.0
 status: in_progress
 author: Levi Silveira
 created_at: '2026-11-01T15:59:11'
-updated_at: '2026-11-01T16:17:23'
+updated_at: '2026-11-01T16:18:14'
 session_id: null
 tags: []
 supersedes: null
@@ -17,9 +17,13 @@ backlog_items:
 - BUG-005
 milestones:
 - name: Regression test
-  done: false
+  done: true
+  done_at: '2026-11-01'
+  by: Levi Silveira
 - name: Fix
-  done: false
+  done: true
+  done_at: '2026-11-01'
+  by: Levi Silveira
 - name: Checks and pull request
   done: false
 status_log:
@@ -39,6 +43,12 @@ status_log:
   by: Levi Silveira
   status: in_progress
   note: Plan approved by the user (gate 3)
+- at: '2026-11-01T16:18:10'
+  by: Levi Silveira
+  note: Milestone 'Regression test' completed
+- at: '2026-11-01T16:18:14'
+  by: Levi Silveira
+  note: Milestone 'Fix' completed
 ---
 
 # folder-sync stats fails on any synced index

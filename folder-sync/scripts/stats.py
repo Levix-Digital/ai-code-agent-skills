@@ -2,6 +2,7 @@ import os
 import sys
 import sqlite3
 import argparse
+from datetime import datetime
 from pathlib import Path
 # Ensure UTF-8 stdout on Windows
 if sys.stdout.encoding != 'utf-8':
