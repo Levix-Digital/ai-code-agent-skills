@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "Error: directory '{project}/nope' does not exist or is not a valid folder.\n",
+  "stderr": "",
+  "files": {}
+}

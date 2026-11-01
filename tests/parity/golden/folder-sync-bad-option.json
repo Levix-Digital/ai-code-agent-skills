@@ -1,0 +1,6 @@
+{
+  "exit": 2,
+  "stdout": "",
+  "stderr": "usage: sync.py [-h] [--dir DIR] [--force]\nsync.py: error: unrecognized arguments: --nope\n",
+  "files": {}
+}

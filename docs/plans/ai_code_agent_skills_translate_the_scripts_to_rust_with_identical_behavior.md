@@ -7,7 +7,7 @@ version: v2.10.0
 status: in_progress
 author: Levi Silveira
 created_at: '2026-10-27T18:17:46'
-updated_at: '2026-11-01T16:29:28'
+updated_at: '2026-11-01T19:50:43'
 session_id: null
 tags:
 - rust
@@ -181,7 +181,9 @@ milestones:
   done_at: '2026-11-01'
   by: Levi Silveira
 - name: M41 sync
-  done: false
+  done: true
+  done_at: '2026-11-01'
+  by: Levi Silveira
 - name: M42 query
   done: false
 - name: M43 Remove the Python remnants
@@ -321,6 +323,9 @@ status_log:
 - at: '2026-11-01T16:29:28'
   by: Levi Silveira
   note: Milestone 'M40 stats' completed
+- at: '2026-11-01T19:50:43'
+  by: Levi Silveira
+  note: Milestone 'M41 sync' completed
 ---
 
 # Translate the scripts to Rust with identical behavior

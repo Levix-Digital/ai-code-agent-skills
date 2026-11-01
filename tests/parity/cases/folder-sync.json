@@ -167,5 +167,97 @@
     "args": [],
     "fixture": "folder-stats",
     "env": {"TZ": "UTC"}
+  },
+  {
+    "name": "folder-sync-docs",
+    "python": "folder-sync/scripts/sync.py",
+    "rust": ["folder-sync", "sync"],
+    "args": ["--dir", "{project}"],
+    "fixture": "folder-docs",
+    "ignore": ["project/.folder_brain", "home/.cache"],
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"],
+    "masks": ["Tempo decorrido: [0-9.e-]+s"]
+  },
+  {
+    "name": "folder-sync-force",
+    "python": "folder-sync/scripts/sync.py",
+    "rust": ["folder-sync", "sync"],
+    "args": ["--force", "--dir", "{project}"],
+    "fixture": "folder-docs",
+    "ignore": ["project/.folder_brain", "home/.cache"],
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"],
+    "masks": ["Tempo decorrido: [0-9.e-]+s"]
+  },
+  {
+    "name": "folder-sync-default-dir",
+    "python": "folder-sync/scripts/sync.py",
+    "rust": ["folder-sync", "sync"],
+    "args": [],
+    "fixture": "folder-docs",
+    "ignore": ["project/.folder_brain", "home/.cache"],
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"],
+    "masks": ["Tempo decorrido: [0-9.e-]+s"]
+  },
+  {
+    "name": "folder-sync-ignored-root",
+    "python": "folder-sync/scripts/sync.py",
+    "rust": ["folder-sync", "sync"],
+    "args": ["--dir", "{project}/venv"],
+    "fixture": "folder-docs",
+    "ignore": ["project/venv/.folder_brain", "home/.cache"],
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"],
+    "masks": ["Tempo decorrido: [0-9.e-]+s"]
+  },
+  {
+    "name": "folder-sync-relative-dir",
+    "python": "folder-sync/scripts/sync.py",
+    "rust": ["folder-sync", "sync"],
+    "args": ["--dir", "d1/d2/d3"],
+    "fixture": "folder-docs",
+    "ignore": ["project/d1/d2/d3/.folder_brain", "home/.cache"],
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"],
+    "masks": ["Tempo decorrido: [0-9.e-]+s"]
+  },
+  {
+    "name": "folder-sync-missing-dir",
+    "python": "folder-sync/scripts/sync.py",
+    "rust": ["folder-sync", "sync"],
+    "args": ["--dir", "{project}/nope"],
+    "fixture": "folder-docs",
+    "ignore": ["project/.folder_brain", "home/.cache"],
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"],
+    "masks": ["Tempo decorrido: [0-9.e-]+s"]
+  },
+  {
+    "name": "folder-sync-file-as-dir",
+    "python": "folder-sync/scripts/sync.py",
+    "rust": ["folder-sync", "sync"],
+    "args": ["--dir", "{project}/notes.md"],
+    "fixture": "folder-docs",
+    "ignore": ["project/.folder_brain", "home/.cache"],
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"],
+    "masks": ["Tempo decorrido: [0-9.e-]+s"]
+  },
+  {
+    "name": "folder-sync-state",
+    "python": "folder-sync/scripts/sync.py",
+    "rust": ["folder-sync", "sync"],
+    "args": ["--dir", "{project}"],
+    "fixture": "folder-sync-state",
+    "ignore": ["project/.folder_brain", "home/.cache"],
+    "seed_home": [".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx"],
+    "masks": ["Tempo decorrido: [0-9.e-]+s"]
+  },
+  {
+    "name": "folder-sync-help",
+    "python": "folder-sync/scripts/sync.py",
+    "rust": ["folder-sync", "sync"],
+    "args": ["--help"]
+  },
+  {
+    "name": "folder-sync-bad-option",
+    "python": "folder-sync/scripts/sync.py",
+    "rust": ["folder-sync", "sync"],
+    "args": ["--nope"]
   }
 ]

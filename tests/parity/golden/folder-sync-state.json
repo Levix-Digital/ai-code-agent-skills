@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "\n🧠 [Folder Brain] Starting incremental sync in:\n📂 {project}\n💾 ChromaDB local: {project}/.folder_brain/chroma_db\n\n  ⚡ [New] a.md\n  ⚡ [New] d/b.txt\n  🗑️  [Removido] /gone/old.md\n  🗑️  [Removido] 42\n  🗑️  [Removido] /gone/other notes.txt\n\n============================================================\n✨ Sync completed successfully!\n⏱️  <MASK>\n📄 New files indexed: 2\n📝 Modified files: 0\n⚡ Unchanged files (cached): 0\n🗑️  Files removed from the index: 3\n🧩 Total chunks in the index: 2\n============================================================\n",
+  "stderr": "",
+  "files": {}
+}

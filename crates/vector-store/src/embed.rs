@@ -197,6 +197,14 @@ pub fn ensure_model() -> Result<PathBuf, StoreError> {
 impl Embedder {
     pub fn load() -> Result<Embedder, StoreError> {
         let dir = ensure_model()?;
+        // Matrix products on several threads: each output is still computed by one thread,
+        // so the embeddings are the same as on one.
+        let threads = std::thread::available_parallelism().map_or(1, |n| n.get());
+        if threads > 1 {
+            tract_linalg::multithread::set_default_executor(
+                tract_linalg::multithread::Executor::multithread(threads),
+            );
+        }
         let mut tokenizer = tokenizers::Tokenizer::from_file(dir.join("tokenizer.json"))
             .map_err(|e| StoreError::new(format!("tokenizer: {e}")))?;
         tokenizer
@@ -235,9 +243,17 @@ impl Embedder {
 
     /// `_forward`: the normalised embeddings, in batches of 32.
     pub fn embed(&self, documents: &[String]) -> Result<Vec<Vec<f32>>, StoreError> {
-        let tract_err = |e: TractError| StoreError::new(format!("onnx: {e}"));
         let mut out = Vec::with_capacity(documents.len());
         for batch in documents.chunks(BATCH_SIZE) {
+            out.extend(self.embed_batch(batch)?);
+        }
+        Ok(out)
+    }
+
+    fn embed_batch(&self, batch: &[String]) -> Result<Vec<Vec<f32>>, StoreError> {
+        let tract_err = |e: TractError| StoreError::new(format!("onnx: {e}"));
+        let mut out = Vec::with_capacity(batch.len());
+        {
             let n = batch.len();
             let mut ids = Vec::with_capacity(n * MAX_TOKENS);
             let mut mask = Vec::with_capacity(n * MAX_TOKENS);
