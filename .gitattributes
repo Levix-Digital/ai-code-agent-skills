@@ -7,3 +7,4 @@ tests/parity/fixtures/session-db/turns.md -text
 tests/parity/fixtures/session-read/sdb/** binary
 tests/parity/fixtures/session-legacy/legacy/** binary
 tests/parity/fixtures/session-legacy/sdb/** binary
+tests/parity/fixtures/folder-stats/**/*.sqlite binary

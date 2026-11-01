@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "usage: stats.py [-h] [--dir DIR]\n\nFolder Brain statistics\n\noptions:\n  -h, --help  show this help message and exit\n  --dir DIR   Target directory (default: current)\n",
+  "stderr": "",
+  "files": {}
+}

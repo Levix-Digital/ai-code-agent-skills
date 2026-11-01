@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "\n📊 **Folder Brain Statistics:** `empty-state`\n📁 Path: `{project}/empty-state`\n📄 Total indexed files: 0\n🧩 Total vector chunks: 0\n💾 Volume total de dados: 0.0 MB\n🕒 Last sync: Nunca\n\n",
+  "stderr": "",
+  "files": {}
+}

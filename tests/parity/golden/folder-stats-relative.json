@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "\n📊 **Folder Brain Statistics:** `one`\n📁 Path: `{project}/one`\n📄 Total indexed files: 1\n🧩 Total vector chunks: 1\n💾 Volume total de dados: 5.0 MB\n🕒 Last sync: 01/01/1970 00:00:01\n\n🔝 **Maiores documentos indexados:**\n- `x.md` (1 chunks)\n",
+  "stderr": "",
+  "files": {}
+}

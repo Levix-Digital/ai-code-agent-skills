@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "\n📊 **Folder Brain Statistics:** `synced`\n📁 Path: `{project}/synced`\n📄 Total indexed files: 12\n🧩 Total vector chunks: 57\n💾 Volume total de dados: 0.48 MB\n🕒 Last sync: 01/11/2025 12:00:00\n\n🔝 **Maiores documentos indexados:**\n- `docs/doc5.md` (12 chunks)\n- `docs/doc2.md` (9 chunks)\n- `Relatório 9.pdf` (8 chunks)\n- `Relatório 6.pdf` (7 chunks)\n- `Relatório 0.pdf` (5 chunks)\n- `docs/doc11.md` (4 chunks)\n- `docs/doc1.md` (3 chunks)\n- `Relatório 3.pdf` (3 chunks)\n- `docs/doc7.md` (3 chunks)\n- `docs/doc8.md` (2 chunks)\n",
+  "stderr": "",
+  "files": {}
+}

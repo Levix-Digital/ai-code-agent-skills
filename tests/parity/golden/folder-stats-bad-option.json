@@ -1,0 +1,6 @@
+{
+  "exit": 2,
+  "stdout": "",
+  "stderr": "usage: stats.py [-h] [--dir DIR]\nstats.py: error: unrecognized arguments: --force\n",
+  "files": {}
+}

@@ -89,5 +89,83 @@
     "rust": ["folder-sync", "clean"],
     "args": ["--dir", ".folder_brain"],
     "fixture": "folder-brain"
+  },
+  {
+    "name": "folder-stats-help",
+    "python": "folder-sync/scripts/stats.py",
+    "rust": ["folder-sync", "stats"],
+    "args": ["--help"],
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "folder-stats-bad-option",
+    "python": "folder-sync/scripts/stats.py",
+    "rust": ["folder-sync", "stats"],
+    "args": ["--force"],
+    "env": {"COLUMNS": "80"}
+  },
+  {
+    "name": "folder-stats",
+    "python": "folder-sync/scripts/stats.py",
+    "rust": ["folder-sync", "stats"],
+    "args": ["--dir", "synced"],
+    "fixture": "folder-stats",
+    "env": {"TZ": "UTC"}
+  },
+  {
+    "name": "folder-stats-relative",
+    "python": "folder-sync/scripts/stats.py",
+    "rust": ["folder-sync", "stats"],
+    "args": ["--dir", "synced/../one"],
+    "fixture": "folder-stats",
+    "env": {"TZ": "UTC"}
+  },
+  {
+    "name": "folder-stats-empty-state",
+    "python": "folder-sync/scripts/stats.py",
+    "rust": ["folder-sync", "stats"],
+    "args": ["--dir", "empty-state"],
+    "fixture": "folder-stats",
+    "env": {"TZ": "UTC"}
+  },
+  {
+    "name": "folder-stats-odd-values",
+    "python": "folder-sync/scripts/stats.py",
+    "rust": ["folder-sync", "stats"],
+    "args": ["--dir", "odd"],
+    "fixture": "folder-stats",
+    "env": {"TZ": "UTC"}
+  },
+  {
+    "name": "folder-stats-brain-without-state",
+    "python": "folder-sync/scripts/stats.py",
+    "rust": ["folder-sync", "stats"],
+    "args": ["--dir", "brain-no-db"],
+    "fixture": "folder-stats",
+    "env": {"TZ": "UTC"}
+  },
+  {
+    "name": "folder-stats-no-brain",
+    "python": "folder-sync/scripts/stats.py",
+    "rust": ["folder-sync", "stats"],
+    "args": ["--dir", "no-brain"],
+    "fixture": "folder-stats",
+    "env": {"TZ": "UTC"}
+  },
+  {
+    "name": "folder-stats-missing-dir",
+    "python": "folder-sync/scripts/stats.py",
+    "rust": ["folder-sync", "stats"],
+    "args": ["--dir", "nope"],
+    "fixture": "folder-stats",
+    "env": {"TZ": "UTC"}
+  },
+  {
+    "name": "folder-stats-default-dir",
+    "python": "folder-sync/scripts/stats.py",
+    "rust": ["folder-sync", "stats"],
+    "args": [],
+    "fixture": "folder-stats",
+    "env": {"TZ": "UTC"}
   }
 ]

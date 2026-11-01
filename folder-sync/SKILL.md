@@ -41,9 +41,9 @@ When the user types `/folder` (or asks questions about the folder's content afte
 ---
 
 ### 3. Statistics or Cleanup (`/folder-stats`, `/folder-clean`)
-- **Show index statistics:**
+- **Show index statistics** (native engine; in PowerShell, `& "<skills_root>/dev-cycle-protocol/bin/dev-cycle.ps1" folder-sync stats --dir "."`):
   ```bash
-  python "<skills_root>/folder-sync/scripts/stats.py" --dir "."
+  "<skills_root>/dev-cycle-protocol/bin/dev-cycle" folder-sync stats --dir "."
   ```
 - **Reset / reindex from scratch:**
   ```bash
@@ -59,6 +59,6 @@ When the user types `/folder` (or asks questions about the folder's content afte
 ## Skill Layout
 - `scripts/sync.py`: Incremental indexing engine and hierarchical chunking.
 - `scripts/query.py`: Semantic search engine with ranking and formatting.
-- `scripts/stats.py`: Statistics inspector for the local ChromaDB.
+- `stats` (engine command `folder-sync stats`, code in `crates/folder-sync`): Statistics inspector for the folder's index.
 - `clean` (engine command `folder-sync clean`, code in `crates/folder-sync`): Removes the folder's `.folder_brain` index.
 - `scripts/extractors.py`: Specialized extractors for each file format (.docx, .pdf, .txt, .md, code).
