@@ -4,10 +4,10 @@ project: ai-code-agent-skills
 title: folder-sync stats fails on any synced index
 kind: bug
 version: 2.10.0
-status: in_progress
+status: completed
 author: Levi Silveira
 created_at: '2026-11-01T15:59:11'
-updated_at: '2026-11-01T16:18:14'
+updated_at: '2026-11-01T16:19:52'
 session_id: null
 tags: []
 supersedes: null
@@ -25,7 +25,9 @@ milestones:
   done_at: '2026-11-01'
   by: Levi Silveira
 - name: Checks and pull request
-  done: false
+  done: true
+  done_at: '2026-11-01'
+  by: Levi Silveira
 status_log:
 - at: '2026-11-01T15:59:11'
   by: Levi Silveira
@@ -49,6 +51,13 @@ status_log:
 - at: '2026-11-01T16:18:14'
   by: Levi Silveira
   note: Milestone 'Fix' completed
+- at: '2026-11-01T16:19:52'
+  by: Levi Silveira
+  note: Milestone 'Checks and pull request' completed
+- at: '2026-11-01T16:19:52'
+  by: Levi Silveira
+  status: completed
+  note: All milestones completed
 ---
 
 # folder-sync stats fails on any synced index

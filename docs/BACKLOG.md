@@ -13,13 +13,6 @@ Each item: `### <ID>: <title>` with the fields `Severity` (bugs: critical, high,
 - **Plan**: -
 - **Description**: onboard.py sends the list of protocol files to 'git check-ignore --stdin' in text mode. On Windows each newline becomes CRLF, Git looks for 'path\r' and only the last path matches, so the diagnosis and write-config warn about one ignored file instead of all of them (the BUG-002 protection). Send the input as bytes.
 
-### BUG-005: folder-sync stats fails on any synced index
-- **Severity**: medium
-- **Status**: in_progress
-- **Found**: 2026-11-01, Rust migration M40 review of stats.py
-- **Plan**: ai_code_agent_skills_folder_sync_stats_fails_on_any_synced_index
-- **Description**: stats.py formats the last sync time with datetime.fromtimestamp, but never imports datetime. Every index that has synced at least one file has a last sync time, so /folder-stats stops with NameError instead of showing the statistics. Only an empty or missing index works.
-
 ## Features
 
 ### FEAT-001: Pull request review on Bitbucket, Azure DevOps and Gitea
@@ -363,3 +356,11 @@ Each item: `### <ID>: <title>` with the fields `Severity` (bugs: critical, high,
 - **Plan**: -
 - **Closed**: 2026-10-27, superseded by IMP-005
 - **Description**: Run the skills' scripts through uv (PEP 723 inline metadata or one wrapper) so dependencies install themselves, and add a standard-library SQLite FTS5 (BM25) search backend for plan-memory and session-memory, used when chromadb is missing or memory_backend is sqlite.
+
+### BUG-005: folder-sync stats fails on any synced index
+- **Severity**: medium
+- **Status**: done
+- **Found**: 2026-11-01, Rust migration M40 review of stats.py
+- **Plan**: ai_code_agent_skills_folder_sync_stats_fails_on_any_synced_index
+- **Closed**: 2026-11-01, plan ai_code_agent_skills_folder_sync_stats_fails_on_any_synced_index
+- **Description**: stats.py formats the last sync time with datetime.fromtimestamp, but never imports datetime. Every index that has synced at least one file has a last sync time, so /folder-stats stops with NameError instead of showing the statistics. Only an empty or missing index works.
