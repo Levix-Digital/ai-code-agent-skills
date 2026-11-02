@@ -186,12 +186,15 @@ def test_read_version_from_supported_files(tmp_path):
         "package.json": '{"name": "a", "version": "1.2.3"}',
         "pyproject.toml": '[project]\nname = "a"\nversion = "1.2.3"\n',
         "version.txt": "v1.2.3\n",
+        ".claude-plugin/plugin.json": '{\n  "name": "a",\n  "version": "1.2.3"\n}\n',
+        "composer.json": '{"name": "o/a", "require": {"php": ">=8"}, "version": "1.2.3"}',
+        "manifest.json": '{"name": "a", "details": {"version": "9.9.9"}}',
     }
     for rel, content in files.items():
         (tmp_path / rel).parent.mkdir(parents=True, exist_ok=True)
         (tmp_path / rel).write_text(content, encoding="utf-8")
     for rel in files:
-        expected = None if rel == "root/Cargo.toml" else "1.2.3"
+        expected = None if rel in ("root/Cargo.toml", "manifest.json") else "1.2.3"
         assert read_version_file(str(tmp_path / rel)) == expected, rel
 
 

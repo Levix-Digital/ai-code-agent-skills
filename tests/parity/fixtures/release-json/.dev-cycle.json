@@ -1,0 +1,5 @@
+{
+  "devops": {
+    "version_files": [".claude-plugin/plugin.json", "composer.json", "package.json"]
+  }
+}

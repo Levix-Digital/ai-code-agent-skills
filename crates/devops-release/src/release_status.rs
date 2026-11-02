@@ -65,7 +65,7 @@ pub fn read_version_file(path: &str) -> Result<Option<String>, Crash> {
     match name.as_str() {
         "cargo.toml" => toml_version(&text, &["package", "workspace.package"]),
         "pyproject.toml" => toml_version(&text, &["project", "tool.poetry"]),
-        "package.json" => {
+        _ if name.ends_with(".json") => {
             let data = match json::loads(&text) {
                 Ok(v) => v,
                 Err(LoadError::Decode(e)) => {

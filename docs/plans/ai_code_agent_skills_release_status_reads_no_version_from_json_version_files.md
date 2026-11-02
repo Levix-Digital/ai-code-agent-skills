@@ -4,10 +4,10 @@ project: ai-code-agent-skills
 title: release_status reads no version from JSON version files
 kind: bug
 version: 2.10.0
-status: active
+status: completed
 author: Levi Silveira
 created_at: '2026-11-02T01:23:19'
-updated_at: '2026-11-02T01:24:42'
+updated_at: '2026-11-02T16:43:46'
 session_id: null
 tags: []
 supersedes: null
@@ -17,11 +17,17 @@ backlog_items:
 - BUG-006
 milestones:
 - name: Regression tests
-  done: false
+  done: true
+  done_at: '2026-11-02'
+  by: Levi Silveira
 - name: Fix
-  done: false
+  done: true
+  done_at: '2026-11-02'
+  by: Levi Silveira
 - name: Checks and pull request
-  done: false
+  done: true
+  done_at: '2026-11-02'
+  by: Levi Silveira
 status_log:
 - at: '2026-11-02T01:23:19'
   by: Levi Silveira
@@ -35,6 +41,23 @@ status_log:
   by: Levi Silveira
   status: active
   note: Plan ready for approval
+- at: '2026-11-02T16:25:45'
+  by: Levi Silveira
+  status: in_progress
+  note: Plan approved by the user (gate 3)
+- at: '2026-11-02T16:43:41'
+  by: Levi Silveira
+  note: Milestone 'Regression tests' completed
+- at: '2026-11-02T16:43:43'
+  by: Levi Silveira
+  note: Milestone 'Fix' completed
+- at: '2026-11-02T16:43:46'
+  by: Levi Silveira
+  note: Milestone 'Checks and pull request' completed
+- at: '2026-11-02T16:43:46'
+  by: Levi Silveira
+  status: completed
+  note: All milestones completed
 ---
 
 # release_status reads no version from JSON version files
