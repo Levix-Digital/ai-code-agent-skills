@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "{\"error\": \"\\u274c This folder's knowledge base has not been synced yet.\\n\\ud83d\\udc49 Run `/sync` or `python sync.py` in this folder first.\"}\n",
+  "stderr": "",
+  "files": {}
+}

@@ -48,3 +48,13 @@ Each release: `## vX.Y.Z: <name>` with the fields `Status` (planned, in_progress
 - **Status**: planned
 - **Goal**: With Gedo v0.5.0 enabled (agent streams, local intents and gedo scope: FEAT-129, FEAT-130 and FEAT-133 there), independent milestones and specialists run in parallel on Gedo agent streams after gate 3 confirms their scopes do not overlap
 - **Items**: FEAT-003, FEAT-008
+
+## v3.3.0: Independent verification
+- **Status**: planned
+- **Goal**: Every phase declares whether it runs with full or isolated context, the specification and plan are reviewed before gate 3 by reviewers that never saw the conversation, against testable pass rules, and a reviewer that did not run never counts as zero findings
+- **Items**: FEAT-023, FEAT-024, FEAT-025, IMP-009
+
+## v3.4.0: Living context
+- **Status**: planned
+- **Goal**: Documents that reference code are checked against it through Gedo entity identity, and the cycle's context comes from a curated, reviewed map of the project indexed by AnyContext
+- **Items**: FEAT-026, FEAT-027

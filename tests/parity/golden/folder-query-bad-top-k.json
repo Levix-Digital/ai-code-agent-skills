@@ -1,0 +1,6 @@
+{
+  "exit": 2,
+  "stdout": "",
+  "stderr": "usage: query.py [-h] [--dir DIR] --query QUERY [--top-k TOP_K]\n                [--mode {hybrid,macro,micro}] [--json]\nquery.py: error: argument --top-k: invalid int value: 'many'\n",
+  "files": {}
+}

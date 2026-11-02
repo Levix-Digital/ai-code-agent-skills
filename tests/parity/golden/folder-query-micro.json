@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "\n🧠 **Semantic Search Results in Folder:** `project`\n🔍 **Query/Topic:** *telescopes and planets*\n\n### 🧩 Specific Passages Found (Micro View)\n**[1] [astronomy.txt](file:////srv/notes/guides/astronomy.txt) > Geral** *(Relevance: 25.64%)*\n```text\n[guides/astronomy.txt > Geral]\nThe planets of the solar system orbit the sun. Jupiter is the largest planet and Saturn has bright rings.\nTelescopes help astronomers observe distant galaxies and nebulae.\n```\n\n**[2] [garden.docx](file:////srv/notes/guides/garden.docx) > Garden plan** *(Relevance: -66.02%)*\n```text\n[guides/garden.docx > Garden plan]\nGarden plan\n```\n\n**[3] [garden.docx](file:////srv/notes/guides/garden.docx) > Garden plan** *(Relevance: -67.86%)*\n```text\n[guides/garden.docx > Garden plan]\nPlant tomatoes and peppers in spring, water them every morning.\n```\n\n",
+  "stderr": "",
+  "files": {}
+}

@@ -46,3 +46,4 @@ target/
 *.sqlite3
 # Parity fixtures: local store databases the commands read
 !tests/parity/fixtures/**/*.sqlite3
+!tests/parity/fixtures/folder-query*/**/chroma_db/
