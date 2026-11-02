@@ -191,6 +191,46 @@ Each item: `### <ID>: <title>` with the fields `Severity` (bugs: critical, high,
 - **Plan**: -
 - **Description**: The metrics dashboard lives only in Aurora Dev Suite, which reads the engine only through the dcp binary with versioned JSON (Aurora ADR-0003 and ADR-0006). The engine offers: (1) metrics --json (schema dcp.metrics, with schema_version; the FEAT-015 metrics per project, with an optional --release and the list of releases for trends): each metric has its unit and its origin (recorded event or computed after the fact), the baseline marker and the period it covers come from the engine, and tokens are absent, not zero, when the agent does not report them. The retroactive computation lives in the engine, so it serves the agent and the command line too. (2) The metrics capability in version --json. (3) A static HTML report (report) for users of the engine alone and for CI artifacts. The metric definitions are protocol rules, so the protocol writes the dcp.metrics MAJOR 1 contract together with the FEAT-015 plan and sends it to Aurora for review (agreed with Aurora on 2026-11-01); each reply names its project root and release and gives totals that can be added across projects, for Aurora's portfolio view; the agreed schema and samples run as contract tests in this repository. Built with or after FEAT-015. Aurora's side is FEAT-028 Cycle metrics; when talking to Aurora, cite this item as DCP FEAT-022.
 
+### FEAT-023: Context mode in the phase contracts
+- **Priority**: high
+- **Epic**: EPIC-010
+- **Status**: open
+- **Found**: 2026-11-01, EGM concept analysis
+- **Plan**: -
+- **Description**: Each phase contract of the engine (FEAT-009) declares its context mode: full (the writing agent, with plans, memories, AnyContext and the conversation) or isolated (a fresh context that receives only the artifact under review and the files it references, assembled by the engine, never the conversation). An isolated step that cannot start a fresh context (no sub-agent or role runner, FEAT-005) stops and says so; it never falls back to a review in the same context. Applies to the review of the specification and plan (FEAT-024), to the code review of Phase 7 (always in a fresh context, replacing 'when the agent can start a second session') and to the attacker of FEAT-020. The mode is a property of the system, not an instruction the agent may skip. Needs FEAT-009 and FEAT-005. Acceptance: the engine refuses to record an isolated review produced in the writer's context, and the context package of an isolated step contains only the artifact and its references.
+
+### FEAT-024: Independent review of the specification and plan before gate 3
+- **Priority**: high
+- **Epic**: EPIC-010
+- **Status**: open
+- **Found**: 2026-11-01, EGM concept analysis
+- **Plan**: -
+- **Description**: In Phase 2, after /speckit-analyze, the specification, plan and tasks (the plan alone without Spec Kit) are reviewed by isolated reviewers (FEAT-023) in stages: zoom out (root cause, simplest design, reuse, right placement), comprehension (a reader with no background understands it), design critique (failure modes, scale, security, alternatives), zoom out again over what the earlier stages added, and implementation readiness (paths, signatures and test cases are concrete). Reviewers read the Spec Kit artifacts; there is no second specification format. The report goes to the spec folder (review.md) with each reviewer's status and the findings by level (blocking, suggestion, nit). Gate 3 fails while the report is missing or older than the artifacts, a reviewer did not run, or a blocking finding is open, unless the user accepts the risk with a reason recorded in the plan, as with --accept-open-bugs. The short path skips it. FEAT-002 separates who writes each plan section; this item adds reviewers that never saw the writing. Acceptance: on sample projects, plans seeded with known flaws (a missing failure mode, an undecided schema, a reinvented utility) get them reported as blocking, and the cost of each review is measured with FEAT-015. For Aurora Dev Suite, the review status of the active plan goes as an optional field in a MINOR version of dcp.diagnose with the capability in dcp version --json, proposed to Aurora before it is written (Aurora's preference, 2026-11-01).
+
+### FEAT-025: Testable pass rules for specifications and plans
+- **Priority**: high
+- **Epic**: EPIC-010
+- **Status**: open
+- **Found**: 2026-11-01, EGM concept analysis
+- **Plan**: -
+- **Description**: The plan template says what to cover; these rules say when it is good enough. Each rule has one pass test and is applied by the generated constitution, the Spec Kit preset and the reviewers of FEAT-024: Zero-Decision (the tasks of the milestone leave no design choice to whoever implements them: schema, API path, dependency, edge-case handling), Alternatives (a decision with alternatives lists the rejected ones with their reasons and becomes an ADR), Zoom Out (root cause, simplest design, reuse of existing code, no speculative features) and Self-containment (a reader with no conversation history understands the specification). Checkers verify the deterministic parts (an alternatives section for each ADR-worthy decision, no open clarification marker); reviewers judge the rest. Against over-specification, Zero-Decision applies to the tasks of the current milestone, not to the whole product.
+
+### FEAT-026: Documentation drift against the code by Gedo entity identity
+- **Priority**: medium
+- **Epic**: EPIC-010
+- **Status**: open
+- **Found**: 2026-11-01, EGM concept analysis
+- **Plan**: -
+- **Description**: Specifications, plans and architecture pages reference code entities by qualified path together with their file or unit (Rust paths start with crate:: without the crate name, so a path alone can be ambiguous in a workspace). When a plan is approved, the engine records the approval commit and the Gedo identity of each referenced entity; it does not compare stored hashes, since Gedo's structural hash is versioned (hash_format) and a format change would look like drift. Later the engine asks Gedo for the change since the approval commit (gedo entities --json --since <approval commit>), so both sides are computed with the same format. Drift is a referenced entity that changed after the approval while the document did not, or was deleted; a rename or a move is a stale reference the document should follow, not drift of behavior; a reference that does not resolve (not_found, ambiguous) is a finding. Formatting and comment edits are not changes, since the structural hash ignores trivia; the docs say so. References Gedo cannot check (unsupported_language, parse_error, or a partial answer in a shallow clone, per the freshness field of Gedo FEAT-135) are reported as not checked, never as no drift. The check is deterministic and runs in the diagnosis, in Phase 6 and at gate 8; a model only judges whether the changed entities still match the text. It complements detect_drift (proposal against the active plan, the intent) with document against code (the reality). Gate 8 lists the findings; whether they block is a setting. Without Gedo, only references that do not resolve are reported, by text search. Extends FEAT-004, through Gedo's versioned --json contract, discovered by capability. Gedo's side, agreed on 2026-11-01: Gedo FEAT-137 gedo entities (capability entities, schema gedo.entities v1), target Gedo v0.5.0 for Rust and v0.6.0 for TypeScript and Python; replies before Gedo's feature plan starts can still change its shape. For Aurora Dev Suite, the drift findings go as optional fields in a MINOR version of dcp.diagnose with the capability in dcp version --json, proposed to Aurora before they are written (Aurora's preference, 2026-11-01). When talking to Gedo or Aurora, cite this item as DCP FEAT-026.
+
+### FEAT-027: Curated project context map indexed by AnyContext
+- **Priority**: medium
+- **Epic**: EPIC-011
+- **Status**: open
+- **Found**: 2026-11-01, EGM concept analysis
+- **Plan**: -
+- **Description**: architecture-docs gains a bootstrap that writes, bottom up, one index per module with its purpose, interface, invariants and side effects, reviewed in a pull request like any document. Its quality bar is the Re-implementation rule (a reader can reproduce the observable behavior from the document alone), judged by an isolated reviewer (FEAT-023). AnyContext indexes the map with priority over raw files, and the full-context steps of the cycle query AnyContext through its versioned command line contract, discovered by capability and skipped safely when missing; isolated steps never call it. The context stays reviewable and travels with the repository, and retrieval runs over a curated base instead of raw text only. AnyContext's side, agreed on 2026-11-01: AnyContext FEAT-196, a versioned machine contract to index and query a repository workspace, in AnyContext v1.1.0: a workspace bound to the repository and synced without interaction, retrieval without generation (ranked passages with source path, location, score and text), source priority for the map folder (a boost inside AnyContext's relevance ranking rather than a reserved budget, decided when FEAT-196 is planned) and index freshness in every reply (for example the last indexed commit). Nothing in AnyContext v1.0.0 offers the contract yet. When talking to AnyContext, cite this item as DCP FEAT-027.
+
 ## Improvements
 
 ### IMP-002: Adopt the protocol in this repository (dogfooding)
@@ -240,6 +280,14 @@ Each item: `### <ID>: <title>` with the fields `Severity` (bugs: critical, high,
 - **Found**: 2026-10-29, 2026-10-29, Aurora Dev Suite question on the agent settings folder in the diagnosis
 - **Plan**: -
 - **Description**: The diagnosis checks automatic attribution only for Claude Code: set-attribution writes .claude/settings.json and the protocol keeps that file in the repository, so every clone, including cloud sessions, starts with attribution off. Committing it serves one agent and ties the project to none: other agents ignore the folder. Do the same for the other supported agents (Codex, Gemini, Copilot): find which of them add attribution on their own (commit trailers, author or committer, pull request footers, session links) and have a project-level setting that turns it off; for each one that does, the diagnosis checks it, set-attribution writes it and protocol_files keeps it in the repository, like Claude Code. Agents without such a setting rely on the principle 9 guard and the gate 8 check of commits. A shared project settings file is committed; personal ones (such as .claude/settings.local.json) stay out. Settings folders are kept in the repository on purpose, so a project that excludes them locally gets the diagnosis item until they are committed.
+
+### IMP-009: Review synthesis rules
+- **Priority**: medium
+- **Epic**: EPIC-010
+- **Status**: open
+- **Found**: 2026-11-01, EGM concept analysis
+- **Plan**: -
+- **Description**: Whenever the protocol runs several reviewers (FEAT-024, the FEAT-002 lenses, the Phase 7 code review): a reviewer that fails, times out or returns no report is retried once and then marked not run, never counted as zero findings, and a reviewer not run fails the gate it feeds; findings are deduplicated and normalized to blocking, suggestion and nit; optional duplicate reviewers (two independent runs of the same lens) raise recall, a setting off by default because of its cost.
 
 ## Adjustments
 
@@ -313,6 +361,18 @@ Each item: `### <ID>: <title>` with the fields `Severity` (bugs: critical, high,
 - **Status**: open
 - **Found**: 2026-11-01, 2026-11-01, security step in the cycle discussion
 - **Description**: The running product is attacked at the release candidate and on a schedule, the threats of each change are modeled in its plan, and every finding comes back as a triaged bug that the next cycle starts from.
+
+### EPIC-010: Independent verification
+- **Priority**: high
+- **Status**: open
+- **Found**: 2026-11-01, EGM concept analysis
+- **Description**: Artifacts written with full context are checked by reviewers that start without it, against testable pass rules, with the engine enforcing that the review ran, and specifications stay true to the code. Origin: the concept analysis of Google's Elephant-Goldfish Model (EGM, Apache 2.0) on 2026-11-01: the more context the writer has, the stronger its confirmation bias, so withheld context is a verification tool; the ideas are taken, the tool is not adopted (it competes with Spec Kit's specification format).
+
+### EPIC-011: AnyContext integration
+- **Priority**: medium
+- **Status**: open
+- **Found**: 2026-11-01, EGM concept analysis
+- **Description**: The cycle's full-context steps take their context from AnyContext through its versioned command line contract, over a curated, versioned map of the project, discovered by capability and skipped safely when missing.
 
 ## Closed
 
