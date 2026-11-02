@@ -10,3 +10,5 @@ tests/parity/fixtures/session-legacy/sdb/** binary
 tests/parity/fixtures/folder-stats/**/*.sqlite binary
 tests/parity/fixtures/folder-docs/** binary
 tests/parity/fixtures/folder-sync-state/.folder_brain/** binary
+tests/parity/fixtures/folder-query/** binary
+tests/parity/fixtures/folder-query-empty/.folder_brain/** binary
