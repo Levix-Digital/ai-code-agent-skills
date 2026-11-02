@@ -13,6 +13,13 @@ Each item: `### <ID>: <title>` with the fields `Severity` (bugs: critical, high,
 - **Plan**: -
 - **Description**: onboard.py sends the list of protocol files to 'git check-ignore --stdin' in text mode. On Windows each newline becomes CRLF, Git looks for 'path\r' and only the last path matches, so the diagnosis and write-config warn about one ignored file instead of all of them (the BUG-002 protection). Send the input as bytes.
 
+### BUG-006: release_status reads no version from JSON files other than package.json
+- **Severity**: medium
+- **Status**: planned
+- **Found**: 2026-11-01, Rust migration acceptance test (gate 8 on this repository)
+- **Plan**: ai_code_agent_skills_release_status_reads_no_version_from_json_version_files
+- **Description**: read_version_file parses only package.json as JSON. Any other JSON version file (.claude-plugin/plugin.json, composer.json, manifest.json) falls to the generic pattern version\s*[=:], which never matches "version": because of the closing quote. release_status version and next-rc fail with 'no version found', and gate 8 is blocked. This repository's own v2.10.0 gate 8 fails on .claude-plugin/plugin.json. Same behavior in the Python script and the engine.
+
 ## Features
 
 ### FEAT-001: Pull request review on Bitbucket, Azure DevOps and Gitea
