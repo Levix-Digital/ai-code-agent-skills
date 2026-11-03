@@ -9,7 +9,6 @@
 
 **Run the tests**
 ```bash
-python -m pytest plan-memory/tests   # the last Python tests, until the migration removes Python (M43)
 dev-cycle-protocol/bin/dev-cycle dev-cycle-protocol speckit_setup check --version <verified>   # real Spec Kit compatibility check (network); <verified> from speckit-preset/compat.json
 cargo test                       # the Rust workspace (crates/), with the command tests in crates/dev-cycle/tests
 cargo build && cargo run -p parity -- run   # Python scripts and their Rust translations give the same results
