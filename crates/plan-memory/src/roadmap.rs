@@ -395,18 +395,22 @@ impl Roadmap {
         before: Option<&str>,
         after: Option<&str>,
     ) -> Result<usize, RoadmapError> {
+        let at = self.insert_at(before, after)?;
+        self.releases.insert(at, release);
+        Ok(at)
+    }
+
+    fn insert_at(&self, before: Option<&str>, after: Option<&str>) -> Result<usize, RoadmapError> {
         let before = before.filter(|b| !b.is_empty());
         let after = after.filter(|a| !a.is_empty());
         if before.is_some() && after.is_some() {
             return error("use --before or --after, not both");
         }
-        let at = match (before, after) {
+        Ok(match (before, after) {
             (Some(b), _) => self.find(b)?,
             (_, Some(a)) => self.find(a)? + 1,
             _ => self.releases.len(),
-        };
-        self.releases.insert(at, release);
-        Ok(at)
+        })
     }
 
     fn move_release(
@@ -423,7 +427,14 @@ impl Roadmap {
             return error("a release cannot move relative to itself");
         }
         let release = self.releases.remove(i);
-        self.insert(release, before, after)?;
+        match self.insert_at(before, after) {
+            Ok(at) => self.releases.insert(at, release),
+            // As in Python: on a bad target the release goes back at the end.
+            Err(e) => {
+                self.releases.push(release);
+                return Err(e);
+            }
+        }
         Ok(())
     }
 
@@ -461,7 +472,10 @@ impl Roadmap {
         if let Some(status) = status {
             release.set("Status", status);
             if status == "released" {
-                release.set("Released", &released_on.unwrap_or_default());
+                let Some(on) = released_on.filter(|d| !d.is_empty()) else {
+                    return error("a released release needs its release date");
+                };
+                release.set("Released", &on);
             } else {
                 release.pop("Released");
             }
@@ -1240,3 +1254,7 @@ fn run(argv: &[String]) -> Result<u8, Crash> {
         Err(RoadmapError::Crash(c)) => Err(c),
     }
 }
+
+#[cfg(test)]
+#[path = "roadmap_tests.rs"]
+mod tests;
