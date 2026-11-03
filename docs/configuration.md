@@ -1,6 +1,6 @@
 # Project Configuration: `.dev-cycle.json`
 
-Optional file at a project's root: the project configuration shared by every skill. Each skill owns one section, and every key is optional. `project_config` (`crates/kernel/src/project_config.rs`, and `dev-cycle-protocol/project_config.py` for the Python scripts until they are translated) is the single loader: it fills defaults, accepts the legacy flat keys of older files, and validates the result.
+Optional file at a project's root: the project configuration shared by every skill. Each skill owns one section, and every key is optional. `project_config` (`crates/kernel/src/project_config.rs`) is the single loader: it fills defaults, accepts the legacy flat keys of older files, and validates the result.
 
 ```json
 {

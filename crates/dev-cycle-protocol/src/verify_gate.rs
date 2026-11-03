@@ -18,7 +18,7 @@ use kernel::py::argparse::Parser;
 use kernel::py::num::{decimal_value, strip};
 use kernel::py::path::{abspath, exists, isdir, isfile, join};
 use kernel::py::re::Regex;
-use kernel::py::subprocess::{run_replace, which};
+use kernel::py::subprocess::run_replace;
 use kernel::py::{Crash, Value, read_text, repr_str, splitlines, universal_newlines};
 use plan_memory::backlog::{Backlog, BacklogFile, Item};
 use plan_memory::roadmap::{Roadmap, RoadmapError, RoadmapFile};
@@ -52,8 +52,8 @@ const SECRET_DATA_EXTENSIONS: [&str; 6] =
 const SECRET_WORDS: [&str; 3] = ["secret", "private_key", "private-key"];
 const SAFE_MARKERS: [&str; 4] = [".example", ".sample", ".template", ".dist"];
 
-/// Checkers already translated to the native engine (IMP-005): they run as
-/// `dev-cycle <skill> <script>` instead of `python <skill>/<script>.py`.
+/// The checkers the gates run, as `dev-cycle <skill> <script>` (named by the scripts they were
+/// translated from, IMP-005).
 const ENGINE_CHECKERS: [(&str, &str); 13] = [
     ("architecture-docs", "check_docs.py"),
     ("product-inception", "check_product.py"),
@@ -199,23 +199,11 @@ fn check_secret_hygiene(cwd: &str) -> Vec<String> {
     violations
 }
 
-/// `sys.executable` for the checkers still written in Python: the engine has no interpreter
-/// of its own, so the one on PATH runs them.
-fn python() -> Option<String> {
-    let names = if cfg!(windows) {
-        ["python", "python3"]
-    } else {
-        ["python3", "python"]
-    };
-    names.iter().find_map(|n| which(n))
-}
-
 /// Runs a sibling skill's checker: (exit code, output), or (None, reason) when missing.
 fn run_checker(skill: &str, script: &str, args: &[&str]) -> Result<(Option<i32>, String), Crash> {
     let root = kernel::skills::root()
         .map(|p| p.to_string_lossy().into_owned())
         .unwrap_or_default();
-    let path = join(&join(&root, skill), script);
     let missing = || Ok((None, format!("{skill}/{script} not installed")));
     let mut command = if ENGINE_CHECKERS.contains(&(skill, script)) {
         let launcher = join(
@@ -228,13 +216,6 @@ fn run_checker(skill: &str, script: &str, args: &[&str]) -> Result<(Option<i32>,
         let exe = std::env::current_exe().map_err(|e| Crash::new(format!("OSError: {e}")))?;
         let mut c = Command::new(exe);
         c.args([skill, &script[..script.len() - ".py".len()]]);
-        c
-    } else if isfile(&path) {
-        let Some(python) = python() else {
-            return missing();
-        };
-        let mut c = Command::new(python);
-        c.arg(&path);
         c
     } else {
         return missing();

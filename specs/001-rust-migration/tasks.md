@@ -119,7 +119,7 @@ description: "Tasks of the Rust migration, one per milestone of the envelope pla
 
 **Purpose**: Remove Python and update the docs.
 
-- [ ] T043 [US2] M43: Remove the Python remnants
+- [x] T043 [US2] M43: Remove the Python remnants
 
 ---
 

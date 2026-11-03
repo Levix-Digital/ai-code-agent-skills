@@ -1,7 +1,9 @@
 {
   "project_name": "ai-code-agent-skills",
   "test_commands": [
-    "python -m pytest"
+    "cargo test --workspace",
+    "cargo build -p dev-cycle",
+    "cargo run -p parity -- run"
   ],
   "docs": {
     "user_doc": "README.md"

@@ -47,8 +47,8 @@ Development skills in the open `SKILL.md` format, shared by every coding agent o
 ├── devops-release/  user-docs/  session-memory/  gedo-feedback/  folder-sync/
 ├── docs/plans/                          plans of this repository
 ├── tests/MANUAL_TESTS.md                manual tests of this repository
-├── install.ps1 / install.sh             link the skills into each agent
-└── requirements.txt                     Python dependencies of the scripts
+├── crates/                              the native engine (Rust), one crate per skill
+└── install.ps1 / install.sh             link the skills into each agent
 
 ~/.claude/skills/<skill>        ─┐
 ~/.agents/skills/<skill>         ├─ links (junctions on Windows) to the folders above
@@ -68,14 +68,14 @@ Development skills in the open `SKILL.md` format, shared by every coding agent o
 - **No data in this repository.** It can be versioned, cloned and shipped as a plugin without carrying data.
 - **Shared vs. personal memory.** Plans belong to the project and are shared: they live as files in each project repository and go through review like code. Session memory belongs to each developer and stays in their local `~/.ai-code-agent-memory`.
 - **Allowlist `.gitignore`.** Only the files listed in [`.gitignore`](.gitignore) are versioned; databases, virtual environments and `.env` files never are.
-- **Paths in `SKILL.md`.** Commands are written as `<skills_root>/<skill>/script.py`, where `<skills_root>` is the folder that holds the skill. The agent replaces it with the real path.
+- **Commands in `SKILL.md`.** Commands are written as `"<skills_root>/dev-cycle-protocol/bin/dev-cycle" <skill> <command>` (`dev-cycle.ps1` in PowerShell), where `<skills_root>` is the folder that holds the skills. The agent replaces it with the real path. The launcher runs the native engine of its version: it downloads the binary from the release on first use and checks it against `SHA256SUMS`, or builds it with `cargo` in a checkout.
 
 ---
 
 ## Requirements
 
 - Git and the GitHub CLI (`gh`) for the release helpers
-- Python 3.10 or later with `pip`
+- Network access to GitHub on the first run of each engine version (the launcher downloads the binary), or a Rust toolchain to build it from the checkout. No Python is needed.
 - Optional, for projects that use GitHub Spec Kit: [uv](https://docs.astral.sh/uv/) and network access to GitHub
 - A coding agent that reads `SKILL.md` skills (Claude Code, Codex, Gemini, Copilot or similar)
 
@@ -83,7 +83,6 @@ Development skills in the open `SKILL.md` format, shared by every coding agent o
 
 ```bash
 git clone https://github.com/Levix-Digital/ai-code-agent-skills.git ~/.ai-code-agent-skills
-pip install -r ~/.ai-code-agent-skills/requirements.txt
 ```
 
 Link the skills into the agents.
@@ -381,7 +380,7 @@ Adding a skill, running the tests, conventions, personal skills and updating oth
 |---|---|
 | An agent does not list the skills | Check the folder in the table above has links (`ls ~/.agents/skills`), rerun the install script, restart the agent. |
 | `! <skill>: ... already exists` | Something else has that name in the agent's folder. Remove or rename it, then rerun. |
-| `ModuleNotFoundError: chromadb` / `docx` / `pypdf` | `pip install -r requirements.txt` with the same Python the agent uses. |
+| The launcher cannot download the engine | Allow `github.com` (release `engine-vX.Y.Z` of `dev-cycle-protocol/bin/engine-version`), or install Rust so it builds the engine from the checkout, or point `DEV_CYCLE_BIN` at a binary you built. |
 | `plan-memory` lists no plans | Run it inside the project repository (or pass `--dir`); plans are read from `docs/plans` (or `plans.dir`). |
 | A memory script finds nothing for a project | Run `read_memory --list-projects` (engine) or `list_plans` (engine); the project may be stored under another name. Names are normalized (`AnyContext` = `any-context`), but `anycontext` cannot be split. |
 | `check_docs` reports many errors after `extract_adrs` | Expected: they are the migration work list (translate and restructure ADRs, rewrite the index and subsystem pages). |

@@ -1,13 +1,13 @@
 # Dev Cycle Protocol: Technical Specification
 
-A set of skills in the open `SKILL.md` format, each a module with its instructions and the Python command line scripts that check and change the project's files; agents read the skills and run the scripts. The architecture style is a modular monolith (`architecture.style: modular-monolith`): one repository and one plugin, split into skills by role, each with a small public interface (its `SKILL.md` and its script commands) and a small shared kernel. How each part works is in the technical documentation ([TECDOC.md](../../TECDOC.md)).
+A set of skills in the open `SKILL.md` format, each a module with its instructions and the commands that check and change the project's files, run by one native engine (`dev-cycle`); agents read the skills and run the commands. The architecture style is a modular monolith (`architecture.style: modular-monolith`): one repository and one plugin, split into skills by role, each with a small public interface (its `SKILL.md` and its commands) and a small shared kernel. How each part works is in the technical documentation ([TECDOC.md](../../TECDOC.md)).
 
 ## Platforms and Stack
 
 - **Agents**: any agent that reads `SKILL.md` (Claude Code, Codex, Gemini, Copilot and others), linked from one checkout by `install.sh` / `install.ps1`; Claude Code cloud sessions get the skills through the plugin in `.claude-plugin/`.
 - **Operating systems**: Windows, macOS and Linux; paths and commands work on all three.
-- **Python 3.10 or later** for every script: available wherever agents run, readable by every agent, testable with `pytest`. Scripts use the standard library first.
-- **Third-party Python packages** (`requirements.txt`): `chromadb` for the plan and session search indexes and folder RAG, `pyyaml` for frontmatter and CI files, `python-docx` and `pypdf` for folder extraction. IMP-005 (v2.10.0, ADR-0007) translates every script into one Rust binary with identical behavior, script by script, and then removes Python.
+- **Native engine** (ADR-0007): one Rust binary (`dev-cycle`) built from the Cargo workspace in `crates/`, one crate per skill and a small kernel. It was translated from the Python scripts with identical behavior (IMP-005, v2.10.0), proven by the parity cases in `tests/parity`. The launcher `dev-cycle-protocol/bin/dev-cycle` (`dev-cycle.ps1` in PowerShell) downloads the binary of its version from the release and checks it, or builds it with `cargo` in a checkout. No Python is needed.
+- **Search indexes**: chromadb's local store format (plan and session indexes, folder RAG), read and written by the engine (`crates/vector-store`), with the `all-MiniLM-L6-v2` embedding model downloaded once into `~/.cache/chroma`.
 - **Platform command lines**: `gh` (GitHub, REST API) and `glab` (GitLab) for pull requests; they keep the user's authentication.
 - **GitHub Spec Kit**, optional per project, at a pinned and verified version (v1.2.3 today), run through `uvx`.
 - **Gedo**, optional per project (`gedo.enabled`), through its command line with `--json` only, once it has one (v0.4.0); streams for parallel work from v0.5.0.
@@ -57,7 +57,7 @@ Not applicable as a service: the protocol runs locally. Its state is the project
 
 - **Project files** (versioned): `.dev-cycle.json`, `docs/product/`, `docs/BACKLOG.md`, `docs/ROADMAP.md`, `docs/plans/`, `TECDOC.md`, `docs/architecture/`, `docs/adr/`, `tests/MANUAL_TESTS.md`, `.specify/` and `specs/` with Spec Kit.
 - **Local data** (never versioned): plan search index and session memory under `~/.ai-code-agent-memory/`.
-- **Migrations**: configuration keys are only added, never renamed without a migration (`project_config.py migrate`); file formats stay backward compatible (old plans without milestone dependencies keep working).
+- **Migrations**: configuration keys are only added, never renamed without a migration (`project_config migrate`); file formats stay backward compatible (old plans without milestone dependencies keep working).
 
 ## Constraints
 
