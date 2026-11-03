@@ -74,7 +74,7 @@ Optional file at a project's root: the project configuration shared by every ski
 | `devops.release_branch_prefix` | Prefix of the release branches of the `release-branches` model (`<prefix>/X.Y`) | `release` |
 | `devops.releases_repo` | Repository where releases are published | not set |
 | `devops.release_candidates` | Publish `vX.Y.Z-rc.N` pre-releases for manual acceptance before the final release | `true` |
-| `devops.version_files` | Files that hold the version number | `[]` |
+| `devops.version_files` | Files that hold the version number: `Cargo.toml`, `pyproject.toml`, JSON files with a top-level `version` (`package.json`, `plugin.json`, `composer.json`), `version.txt`, or any file with `version = "..."` | `[]` |
 | `devops.observability` | `cli`, `service`, `library`, `desktop` or `none` | not set |
 | `plans.dir` | Folder of the plan files | `docs/plans` |
 | `backlog.file` | The project backlog | `docs/BACKLOG.md` |

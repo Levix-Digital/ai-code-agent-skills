@@ -138,6 +138,22 @@
     "git": true
   },
   {
+    "name": "release-status-version-json",
+    "python": "devops-release/release_status.py",
+    "rust": ["devops-release", "release_status"],
+    "args": ["version"],
+    "fixture": "release-json",
+    "git": true
+  },
+  {
+    "name": "release-status-next-rc-json",
+    "python": "devops-release/release_status.py",
+    "rust": ["devops-release", "release_status"],
+    "args": ["next-rc"],
+    "fixture": "release-json",
+    "git": true
+  },
+  {
     "name": "release-status-next-rc",
     "python": "devops-release/release_status.py",
     "rust": ["devops-release", "release_status"],

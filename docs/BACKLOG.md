@@ -424,3 +424,11 @@ Each item: `### <ID>: <title>` with the fields `Severity` (bugs: critical, high,
 - **Plan**: ai_code_agent_skills_folder_sync_stats_fails_on_any_synced_index
 - **Closed**: 2026-11-01, plan ai_code_agent_skills_folder_sync_stats_fails_on_any_synced_index
 - **Description**: stats.py formats the last sync time with datetime.fromtimestamp, but never imports datetime. Every index that has synced at least one file has a last sync time, so /folder-stats stops with NameError instead of showing the statistics. Only an empty or missing index works.
+
+### BUG-006: release_status reads no version from JSON files other than package.json
+- **Severity**: medium
+- **Status**: done
+- **Found**: 2026-11-01, Rust migration acceptance test (gate 8 on this repository)
+- **Plan**: ai_code_agent_skills_release_status_reads_no_version_from_json_version_files
+- **Closed**: 2026-11-02, plan ai_code_agent_skills_release_status_reads_no_version_from_json_version_files
+- **Description**: read_version_file parses only package.json as JSON. Any other JSON version file (.claude-plugin/plugin.json, composer.json, manifest.json) falls to the generic pattern version\s*[=:], which never matches "version": because of the closing quote. release_status version and next-rc fail with 'no version found', and gate 8 is blocked. This repository's own v2.10.0 gate 8 fails on .claude-plugin/plugin.json. Same behavior in the Python script and the engine.

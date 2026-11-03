@@ -55,7 +55,7 @@ def read_version_file(path: str):
         return _toml_version(text, ["package", "workspace.package"])
     if name == "pyproject.toml":
         return _toml_version(text, ["project", "tool.poetry"])
-    if name == "package.json":
+    if name.endswith(".json"):
         value = json.loads(text).get("version")
         return value if isinstance(value, str) else None
     if name in ("version.txt", "version"):
