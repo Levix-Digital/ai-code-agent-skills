@@ -93,8 +93,9 @@ fn folder_without_synced_index(brain: bool) {
     let res = p.run("folder-sync", "stats", &["--dir", &root]);
     assert!(res.ok(), "{}", res.stderr);
     let name = p.dir.file_name().unwrap().to_string_lossy();
+    // Windows writes the line ending as \r\n, as Python's print did.
     assert_eq!(
-        res.stdout,
+        res.stdout.replace("\r\n", "\n"),
         format!("ℹ️ Folder '{name}' has no synced `.folder_brain` index yet.\n")
     );
 }
