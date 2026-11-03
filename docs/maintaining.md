@@ -4,14 +4,14 @@
 1. Create `<skill-name>/SKILL.md` with `name` and `description` frontmatter. The description is what makes agents load it, so say when to use it.
 2. Add `!/<skill-name>/` to [`.gitignore`](../.gitignore) (allowlist).
 3. To ship it in the cloud plugin, add `./<skill-name>` to `skills` in [`.claude-plugin/plugin.json`](../.claude-plugin/plugin.json) and bump `version`.
-4. Add tests under `<skill-name>/tests` for every script.
+4. Add tests for every command: unit tests in its crate, command tests in `crates/dev-cycle/tests` and parity cases in `tests/parity`.
 5. Run `install.ps1` / `install.sh` again, then commit and push.
 
 **Run the tests**
 ```bash
-python -m pytest plan-memory/tests dev-cycle-protocol/tests quality-assurance/tests devops-release/tests
+python -m pytest plan-memory/tests   # the last Python tests, until the migration removes Python (M43)
 dev-cycle-protocol/bin/dev-cycle dev-cycle-protocol speckit_setup check --version <verified>   # real Spec Kit compatibility check (network); <verified> from speckit-preset/compat.json
-cargo test                       # the Rust workspace (crates/)
+cargo test                       # the Rust workspace (crates/), with the command tests in crates/dev-cycle/tests
 cargo build && cargo run -p parity -- run   # Python scripts and their Rust translations give the same results
 ```
 

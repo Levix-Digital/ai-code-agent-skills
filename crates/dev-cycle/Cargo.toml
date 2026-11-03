@@ -21,5 +21,9 @@ session-memory.workspace = true
 folder-sync.workspace = true
 software-design.workspace = true
 
+[dev-dependencies]
+chrono.workspace = true
+rusqlite = { version = "=0.40.2", features = ["bundled"] }
+
 [lints]
 workspace = true
