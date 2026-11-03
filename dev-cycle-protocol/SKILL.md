@@ -283,6 +283,6 @@ Secret hygiene flags committed or staged credential files by file name only: exa
 
 ## ⚙️ Project Configuration (`.dev-cycle.json`)
 
-Optional file at the repository root: the project configuration shared by every skill (the branching model is `devops.branching`), with one section per skill (`architecture`, `docs`, `tests`, `devops`, `plans`, `backlog`, `roadmap`, `product`, `speckit`, `architecture_docs`, `drift_rules`) and `test_commands`. Read it through the single loader, which fills defaults, accepts the legacy flat keys of older files and validates the result (`project_config`). The Python scripts of other skills import it from the sibling folder (`from project_config import load_project_config`). The full key reference is in the skills repository README ("Project configuration").
+Optional file at the repository root: the project configuration shared by every skill (the branching model is `devops.branching`), with one section per skill (`architecture`, `docs`, `tests`, `devops`, `plans`, `backlog`, `roadmap`, `product`, `speckit`, `architecture_docs`, `drift_rules`) and `test_commands`. Read it through the single loader, which fills defaults, accepts the legacy flat keys of older files and validates the result (`project_config`). The full key reference is in the skills repository README ("Project configuration").
 
 If the file does not exist, `inspect_project` and `verify_gate` detect the repository's standard stack and use the defaults.

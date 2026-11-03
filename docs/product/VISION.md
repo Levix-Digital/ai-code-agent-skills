@@ -25,7 +25,7 @@ Today each developer copes with prompts, personal checklists and manual review. 
 - Deterministic gates (`0`, `3`, `rc`, `8`) and a merge gate instead of trusting the agent's word.
 - Roles (product, planner, architect, reviewer, QA, DevOps, writers) with their own skill and, from v3.0.0, their own context, so the one who reviews is not the one who wrote.
 - Decisions, plans, backlog and roadmap as files in the repository, shared by every agent and developer.
-- No lock-in: plain Markdown and Python, any agent, any environment, GitHub and GitLab today.
+- No lock-in: plain Markdown and one portable binary, any agent, any environment, GitHub and GitLab today.
 - With Gedo, parallel agents per milestone over entity-level streams; without Gedo, the same cycle runs in sequence.
 
 ## Business Model
@@ -37,7 +37,7 @@ Open-core. The Dev Cycle Protocol and Gedo are the two free engines and stay sep
 - **Lead time**: median time from an approved plan (gate 3) to the merge goes down release after release; baseline measured in v2.9.0.
 - **Rework after gates**: fewer than 1 in 5 pull requests needs a second review round for a blocking finding.
 - **Escaped bugs**: no critical or high bug found after a release that its release candidate should have caught.
-- **Zero-friction install**: every skill runs without Python or `pip install` (target for v2.10.0).
+- **Zero-friction install**: every skill runs without Python or `pip install` (since v2.10.0).
 - **Adoption (after the open source launch)**: number of repositories with a `.dev-cycle.json`.
 
 ## Scope
@@ -66,7 +66,7 @@ Open-core. The Dev Cycle Protocol and Gedo are the two free engines and stay sep
 - **Gedo timing**: parallel work needs Gedo v0.5.0 (local streams and agent checkouts; v0.4.0 brings only the command line) and Gedo support for the project's language (Python in v0.6.0). Mitigation: role isolation in sequence ships first (v3.0.0); nothing in a release depends on an unreleased Gedo version.
 - **Agent and platform drift**: agent command lines and platform APIs change (GraphQL refused in some environments, for example). Mitigation: REST first, provider adapters behind one model, tests with recorded responses.
 - **Process weight**: the full cycle may feel heavy for small changes. Mitigation: the short path, and onboarding in three levels (FEAT-006).
-- **Python environment friction**: users hit missing modules when the agent's Python is not the one with the dependencies. Mitigation: the scripts are translated into one Rust binary with identical behavior (IMP-005, ADR-0007).
+- **Engine distribution**: the launcher needs the engine binary of its version, downloaded from the release (network access to GitHub on first use) or built with `cargo`. Mitigation: a checksum-verified cache per version, `DEV_CYCLE_BIN` for a binary built elsewhere, and the Python environment friction it replaced is gone (IMP-005, ADR-0007).
 - **Assumption**: teams will keep decisions and plans in the repository as files rather than in an external tool.
 
 ## Open Questions

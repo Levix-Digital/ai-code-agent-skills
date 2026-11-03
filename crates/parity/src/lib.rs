@@ -1,9 +1,9 @@
-//! Parity harness: runs a Python script and its Rust translation on the same fixture and
-//! compares everything the user can observe: stdout, stderr, exit code and the files written.
+//! Parity harness: runs an engine command on a fixture and compares everything the user can
+//! observe (stdout, stderr, exit code and the files written) with the golden file recorded from
+//! the Python script it was translated from (`tests/parity/golden/<name>.json`).
 //!
-//! A case (`tests/parity/cases/*.json`) names the Python script, the Rust command once the script
-//! is translated, the arguments and a fixture. While the Python script exists it is the reference;
-//! once it is deleted, the golden file recorded from it (`tests/parity/golden/<name>.json`) is.
+//! A case (`tests/parity/cases/*.json`) names that Python script, the engine command, the
+//! arguments and a fixture.
 
 use regex::Regex;
 use serde::{Deserialize, Serialize};
@@ -89,9 +89,10 @@ const ALWAYS_IGNORED: [&str; 2] = [".git/", "__pycache__/"];
 #[serde(deny_unknown_fields)]
 pub struct Case {
     pub name: String,
-    /// Python script, relative to the repository root.
+    /// The Python script the command was translated from, relative to the repository root (the
+    /// scripts are gone; it names where the golden file came from).
     pub python: String,
-    /// Rust command (`["<skill>", "<script>"]`), once the script is translated.
+    /// Rust command (`["<skill>", "<script>"]`).
     #[serde(default)]
     pub rust: Option<Vec<String>>,
     /// Arguments; `{project}`, `{home}` and `{skills}` are replaced with the run's paths.
@@ -144,7 +145,6 @@ pub struct Outcome {
 
 pub struct Harness {
     pub repo: PathBuf,
-    pub python: String,
     pub rust_bin: PathBuf,
     pub work: PathBuf,
 }
@@ -182,20 +182,6 @@ impl Harness {
             }
         }
         Ok(cases)
-    }
-
-    pub fn python_exists(&self, case: &Case) -> bool {
-        self.repo.join(&case.python).is_file()
-    }
-
-    pub fn run_python(&self, case: &Case) -> Result<Outcome, String> {
-        let script = self.repo.join(&case.python);
-        self.run(
-            case,
-            "py",
-            &self.python,
-            &[script.to_string_lossy().into_owned()],
-        )
     }
 
     pub fn run_rust(&self, case: &Case) -> Result<Outcome, String> {
