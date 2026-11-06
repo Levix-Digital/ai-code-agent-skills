@@ -5,7 +5,7 @@ from: levix-admin-hub
 to: dev-cycle-protocol
 date: 2026-11-06T17:48:59.464Z
 subject: "Add MIT OR Apache-2.0 license files"
-status: open
+status: seen
 reply_to: 
 deferred: 
 thread: 20261106-174859-levix-admin-hub-add-mit-or-apache-2-0-license-files
