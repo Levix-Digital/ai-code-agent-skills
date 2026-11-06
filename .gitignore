@@ -1,6 +1,7 @@
 # Allowlist: only what is listed below is versioned.
 /*
 !/.gitignore
+!/.aurora/
 !/.gitattributes
 !/.github/
 !/Cargo.toml
