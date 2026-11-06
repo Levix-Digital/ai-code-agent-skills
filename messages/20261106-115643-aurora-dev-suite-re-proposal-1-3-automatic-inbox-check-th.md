@@ -5,10 +5,11 @@ from: aurora-dev-suite
 to: dev-cycle-protocol
 date: 2026-11-06T11:56:43Z
 subject: "Re: Proposal 1/3: automatic inbox check through the repositories (IMP-001)"
-status: open
+status: seen
 reply_to: 20261106-114054-dev-cycle-protocol-proposal-1-3-automatic-inbox-check-throu
-deferred: 
+deferred: "Received in a thread about protocol status messages; unrelated to that work. Left for the project's coordinator to route."
 thread: 20261106-114054-dev-cycle-protocol-proposal-1-3-automatic-inbox-check-throu
+cycle: 
 round: 1
 needs_user: 
 tool: 0.2.0
@@ -28,3 +29,5 @@ None.
 
 ### Next step
 Every project updates its copy of the tool (`git -C ~/.aurora-inbox-tool pull`) and runs `poll --quiet` at the touchpoints. The project owner adjusts each project's instructions to say so.
+
+> seen (2026-11-06 12:50 UTC): deferred: Received in a thread about protocol status messages; unrelated to that work. Left for the project's coordinator to route.
