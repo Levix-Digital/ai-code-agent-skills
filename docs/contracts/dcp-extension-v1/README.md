@@ -50,11 +50,11 @@ Every command takes `--json`, prints exactly one JSON document on standard outpu
 - `DCP_PROJECT_ROOT`: absolute path of the project root.
 - `DCP_EXTENSION_CONTRACT`: `1`.
 
-Timeout: 30 seconds per call (`DCP_EXTENSION_TIMEOUT` in seconds overrides it). On timeout the process is killed.
+Timeout: 30 seconds per call by default (`DCP_EXTENSION_TIMEOUT` in seconds overrides the default). A provider may declare a longer limit for a `hook` point in `describe` (`timeouts`); the engine caps every limit at 300 seconds. `describe` and `gate` always use the default. On timeout the process is killed and the call becomes a `timeout` warning, which never blocks.
 
 ### `dcp-<name> describe --json`
 
-Document `dcp.extension-provider` (`fixtures/describe.json`): `name`, `version` (the provider's own), `contract` (`1`), `points[]` (the cycle points it answers) and `gates[]` (`id`, `title`, `before`: the protocol gate it must be decided before, today only `"8"`, and `detail`). The engine calls it for `dcp extensions list` and before running cycle points; a provider is only called at the points it declares.
+Document `dcp.extension-provider` (`fixtures/describe.json`): `name`, `version` (the provider's own), `contract` (`1`), `points[]` (the cycle points it answers) and `gates[]` (`id`, `title`, `before`: the protocol gate it must be decided before, today only `"8"`, and `detail`), and optionally `timeouts`: an object from point to seconds (integer, 1 to 300), for example `{"after-merge": 120}`. The engine calls it for `dcp extensions list` and before running cycle points; a provider is only called at the points it declares.
 
 ### `dcp-<name> hook <point> --json`
 
@@ -102,8 +102,8 @@ Runs every registered, enabled provider that declares `<point>`, in registry ord
 - A provider whose `describe` answers a `contract` MAJOR the engine does not support is listed as `incompatible` and not run.
 - Removing or renaming a field, or changing its meaning, is a new MAJOR.
 
-## Open questions for the draft
+## Decisions on the draft
 
-1. Is `describe` acceptable, or should gates and points live in the registry entry the installer writes? The draft prefers `describe` so the registry stays a list of names and the provider stays the single source.
-2. Is 30 seconds right for `after-merge`, where a provider may call a remote service?
-3. Should `before` accept protocol gates other than `8` in MAJOR 1?
+1. Points and gates are declared only by `describe`. The registry stays a list of names and holds no copy of what `describe` returns.
+2. A provider may declare a longer timeout per `hook` point in `describe`; 30 seconds stays the default and the engine caps every limit at 300 seconds.
+3. `before` accepts only gate `8` in MAJOR 1; other gates may be added in a MINOR when a provider asks for them.
