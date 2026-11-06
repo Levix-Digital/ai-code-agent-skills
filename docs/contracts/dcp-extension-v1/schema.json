@@ -113,6 +113,15 @@
               }
             }
           }
+        },
+        "timeouts": {
+          "type": "object",
+          "description": "Seconds per hook point; the engine caps at 300",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 300
+          }
         }
       }
     },

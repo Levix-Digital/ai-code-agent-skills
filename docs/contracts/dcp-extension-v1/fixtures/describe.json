@@ -16,5 +16,8 @@
       "before": "8",
       "detail": "Every subscribed project answered the merge notices of this release."
     }
-  ]
+  ],
+  "timeouts": {
+    "after-merge": 120
+  }
 }
