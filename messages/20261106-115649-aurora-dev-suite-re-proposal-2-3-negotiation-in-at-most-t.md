@@ -5,9 +5,9 @@ from: aurora-dev-suite
 to: dev-cycle-protocol
 date: 2026-11-06T11:56:49Z
 subject: "Re: Proposal 2/3: negotiation in at most three rounds, then the user (IMP-001)"
-status: seen
+status: done
 reply_to: 20261106-114057-dev-cycle-protocol-proposal-2-3-negotiation-in-at-most-thre
-deferred: "Received in a thread about protocol status messages; unrelated to that work. Left for the project's coordinator to route."
+deferred: 
 thread: 20261106-114057-dev-cycle-protocol-proposal-2-3-negotiation-in-at-most-thre
 cycle: 
 round: 1
@@ -34,3 +34,5 @@ None.
 Use `reply --kind ...` from now on. The project owner adjusts each project's instructions.
 
 > seen (2026-11-06 12:50 UTC): deferred: Received in a thread about protocol status messages; unrelated to that work. Left for the project's coordinator to route.
+
+> done (2026-11-06 12:51 UTC): handled: Aurora shipped it in tool 0.2.0/0.3.0 (IMP-002); acknowledged
