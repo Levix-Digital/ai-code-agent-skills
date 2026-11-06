@@ -1,0 +1,10 @@
+{
+  "schema": "dcp.extensions-registry",
+  "schema_version": "1.0",
+  "providers": [
+    {
+      "name": "integrations",
+      "enabled": true
+    }
+  ]
+}

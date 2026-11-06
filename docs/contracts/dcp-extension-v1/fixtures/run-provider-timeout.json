@@ -1,0 +1,14 @@
+{
+  "schema": "dcp.extensions-run",
+  "schema_version": "1.0",
+  "point": "after-merge",
+  "blocking": false,
+  "items": [],
+  "warnings": [
+    {
+      "provider": "integrations",
+      "kind": "timeout",
+      "detail": "dcp-integrations hook after-merge did not answer within 30 seconds"
+    }
+  ]
+}

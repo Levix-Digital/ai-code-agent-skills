@@ -1,0 +1,20 @@
+{
+  "schema": "dcp.extension-provider",
+  "schema_version": "1.0",
+  "name": "integrations",
+  "version": "0.6.0",
+  "contract": 1,
+  "points": [
+    "discovery",
+    "after-merge",
+    "before-release-gate"
+  ],
+  "gates": [
+    {
+      "id": "integration",
+      "title": "Integration gate: dependent projects agreed to this release",
+      "before": "8",
+      "detail": "Every subscribed project answered the merge notices of this release."
+    }
+  ]
+}

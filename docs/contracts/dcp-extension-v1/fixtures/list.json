@@ -1,0 +1,28 @@
+{
+  "schema": "dcp.extensions",
+  "schema_version": "1.0",
+  "registry": "/home/user/.config/dcp/extensions.json",
+  "providers": [
+    {
+      "name": "integrations",
+      "command": "/home/user/.local/bin/dcp-integrations",
+      "enabled": true,
+      "status": "ok",
+      "version": "0.6.0",
+      "points": [
+        "discovery",
+        "after-merge",
+        "before-release-gate"
+      ],
+      "gates": [
+        {
+          "id": "integration",
+          "title": "Integration gate: dependent projects agreed to this release",
+          "before": "8",
+          "detail": null
+        }
+      ],
+      "warning": null
+    }
+  ]
+}

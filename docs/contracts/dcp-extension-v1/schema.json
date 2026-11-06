@@ -1,0 +1,508 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "dcp.extension.v1",
+  "title": "dcp extension point, contract 1 (draft)",
+  "$defs": {
+    "registry": {
+      "type": "object",
+      "required": [
+        "schema",
+        "schema_version",
+        "providers"
+      ],
+      "properties": {
+        "schema": {
+          "const": "dcp.extensions-registry"
+        },
+        "schema_version": {
+          "type": "string",
+          "pattern": "^1\\.[0-9]+$"
+        },
+        "providers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "name"
+            ],
+            "properties": {
+              "name": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9-]{0,39}$"
+              },
+              "command": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "enabled": {
+                "type": "boolean"
+              }
+            }
+          }
+        }
+      }
+    },
+    "provider": {
+      "type": "object",
+      "required": [
+        "schema",
+        "schema_version",
+        "name",
+        "version",
+        "contract",
+        "points",
+        "gates"
+      ],
+      "properties": {
+        "schema": {
+          "const": "dcp.extension-provider"
+        },
+        "schema_version": {
+          "type": "string",
+          "pattern": "^1\\.[0-9]+$"
+        },
+        "name": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]{0,39}$"
+        },
+        "version": {
+          "type": "string"
+        },
+        "contract": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "points": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "description": "Open enum: discovery, after-merge, before-release-gate in 1.0",
+            "minLength": 1
+          }
+        },
+        "gates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "title",
+              "before"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9-]{0,39}$"
+              },
+              "title": {
+                "type": "string"
+              },
+              "before": {
+                "type": "string",
+                "enum": [
+                  "8"
+                ]
+              },
+              "detail": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "context": {
+      "type": "object",
+      "required": [
+        "schema",
+        "schema_version",
+        "point",
+        "project_root",
+        "release",
+        "phase"
+      ],
+      "properties": {
+        "schema": {
+          "const": "dcp.extension-context"
+        },
+        "schema_version": {
+          "type": "string",
+          "pattern": "^1\\.[0-9]+$"
+        },
+        "point": {
+          "type": "string",
+          "description": "Open enum: discovery, after-merge, before-release-gate in 1.0",
+          "minLength": 1
+        },
+        "project_root": {
+          "type": "string"
+        },
+        "release": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "phase": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "merge": {
+          "type": "object",
+          "required": [
+            "commit",
+            "branch",
+            "base"
+          ],
+          "properties": {
+            "commit": {
+              "type": "string"
+            },
+            "branch": {
+              "type": "string"
+            },
+            "base": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "items": {
+      "type": "object",
+      "required": [
+        "schema",
+        "schema_version",
+        "provider",
+        "point",
+        "items"
+      ],
+      "properties": {
+        "schema": {
+          "const": "dcp.extension"
+        },
+        "schema_version": {
+          "type": "string",
+          "pattern": "^1\\.[0-9]+$"
+        },
+        "provider": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]{0,39}$"
+        },
+        "point": {
+          "type": "string",
+          "description": "Open enum: discovery, after-merge, before-release-gate in 1.0",
+          "minLength": 1
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/item"
+          }
+        }
+      }
+    },
+    "item": {
+      "type": "object",
+      "required": [
+        "id",
+        "title",
+        "needs",
+        "blocking"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9._-]{1,80}$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "needs": {
+          "enum": [
+            "none",
+            "judgment",
+            "user"
+          ]
+        },
+        "blocking": {
+          "type": "boolean"
+        },
+        "detail": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "commands": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "gate": {
+      "type": "object",
+      "required": [
+        "schema",
+        "schema_version",
+        "provider",
+        "gate",
+        "decision",
+        "decided_at",
+        "reason"
+      ],
+      "properties": {
+        "schema": {
+          "const": "dcp.extension-gate"
+        },
+        "schema_version": {
+          "type": "string",
+          "pattern": "^1\\.[0-9]+$"
+        },
+        "provider": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]{0,39}$"
+        },
+        "gate": {
+          "type": "string"
+        },
+        "decision": {
+          "enum": [
+            "pending",
+            "approved",
+            "rejected"
+          ]
+        },
+        "decided_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "reason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "list": {
+      "type": "object",
+      "required": [
+        "schema",
+        "schema_version",
+        "registry",
+        "providers"
+      ],
+      "properties": {
+        "schema": {
+          "const": "dcp.extensions"
+        },
+        "schema_version": {
+          "type": "string",
+          "pattern": "^1\\.[0-9]+$"
+        },
+        "registry": {
+          "type": "string"
+        },
+        "providers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "name",
+              "command",
+              "enabled",
+              "status",
+              "warning"
+            ],
+            "properties": {
+              "name": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9-]{0,39}$"
+              },
+              "command": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "enabled": {
+                "type": "boolean"
+              },
+              "status": {
+                "enum": [
+                  "ok",
+                  "missing",
+                  "failed",
+                  "incompatible"
+                ]
+              },
+              "version": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "points": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "description": "Open enum: discovery, after-merge, before-release-gate in 1.0",
+                  "minLength": 1
+                }
+              },
+              "gates": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "title",
+                    "before"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "pattern": "^[a-z][a-z0-9-]{0,39}$"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "before": {
+                      "type": "string",
+                      "enum": [
+                        "8"
+                      ]
+                    },
+                    "detail": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    }
+                  }
+                }
+              },
+              "warning": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "run": {
+      "type": "object",
+      "required": [
+        "schema",
+        "schema_version",
+        "point",
+        "items",
+        "blocking",
+        "warnings"
+      ],
+      "properties": {
+        "schema": {
+          "const": "dcp.extensions-run"
+        },
+        "schema_version": {
+          "type": "string",
+          "pattern": "^1\\.[0-9]+$"
+        },
+        "point": {
+          "type": "string",
+          "description": "Open enum: discovery, after-merge, before-release-gate in 1.0",
+          "minLength": 1
+        },
+        "blocking": {
+          "type": "boolean"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "allOf": [
+              {
+                "$ref": "#/$defs/item"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "provider"
+                ],
+                "properties": {
+                  "provider": {
+                    "type": "string",
+                    "pattern": "^[a-z][a-z0-9-]{0,39}$"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "warnings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "provider",
+              "kind",
+              "detail"
+            ],
+            "properties": {
+              "provider": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9-]{0,39}$"
+              },
+              "kind": {
+                "type": "string",
+                "description": "Open enum: missing, failed, timeout, invalid_json, incompatible in 1.0"
+              },
+              "detail": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "oneOf": [
+    {
+      "$ref": "#/$defs/registry"
+    },
+    {
+      "$ref": "#/$defs/provider"
+    },
+    {
+      "$ref": "#/$defs/context"
+    },
+    {
+      "$ref": "#/$defs/items"
+    },
+    {
+      "$ref": "#/$defs/gate"
+    },
+    {
+      "$ref": "#/$defs/list"
+    },
+    {
+      "$ref": "#/$defs/run"
+    }
+  ]
+}
