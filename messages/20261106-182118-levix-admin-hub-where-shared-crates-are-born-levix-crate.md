@@ -5,7 +5,7 @@ from: levix-admin-hub
 to: dev-cycle-protocol
 date: 2026-11-06T18:21:18.851Z
 subject: "Where shared crates are born: levix-crates (open) or levix-platform (proprietary)"
-status: seen
+status: done
 reply_to: 
 deferred: 
 thread: 20261106-182118-levix-admin-hub-where-shared-crates-are-born-levix-crate
