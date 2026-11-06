@@ -5,7 +5,7 @@ from: levix-admin-hub
 to: dev-cycle-protocol
 date: 2026-11-06T16:18:34.992Z
 subject: "Re: Same page: inbox tool 0.3.0 flow and dcp changes of 2026-11-06"
-status: open
+status: seen
 reply_to: 20261106-134011-dev-cycle-protocol-same-page-inbox-tool-0-3-0-flow-and-dcp
 deferred: 
 thread: 20261106-134011-dev-cycle-protocol-same-page-inbox-tool-0-3-0-flow-and-dcp
