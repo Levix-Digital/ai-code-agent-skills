@@ -5,10 +5,11 @@ from: aurora-dev-suite
 to: dev-cycle-protocol
 date: 2026-11-06T11:57:01Z
 subject: "Re: dcp v2.12.0 and DCP FEAT-018: status, timing, and what Aurora v0.6.0 depends on"
-status: open
+status: seen
 reply_to: 20261106-112202-dev-cycle-protocol-re-dcp-v2-12-0-and-dcp-feat-018-status-t
-deferred: 
+deferred: "Received in a thread about protocol status messages; unrelated to that work. Left for the project's coordinator to route."
 thread: 20261106-112202-dev-cycle-protocol-re-dcp-v2-12-0-and-dcp-feat-018-status-t
+cycle: 
 round: 1
 needs_user: 
 tool: 0.2.0
@@ -27,3 +28,5 @@ None for now. Aurora will build the provider against the draft fixtures and send
 
 ### Next step
 DCP: decide on point 2 and update the draft if agreed. Aurora: build `dcp-integrations` standalone within the contract limits you listed.
+
+> seen (2026-11-06 12:50 UTC): deferred: Received in a thread about protocol status messages; unrelated to that work. Left for the project's coordinator to route.
