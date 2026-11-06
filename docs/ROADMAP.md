@@ -16,8 +16,8 @@ Each release: `## vX.Y.Z: <name>` with the fields `Status` (planned, in_progress
 
 ## v2.11.0: Guardrails for agent-written code
 - **Status**: planned
-- **Goal**: Pull requests are blocked on invented or vulnerable dependencies, weakened tests, changes outside the plan and insecure code, Aurora Dev Suite reads each project's cycle state through dcp diagnose --json and its settings through dcp config, and providers such as Aurora Dev Suite join the cycle through a generic extension point
-- **Items**: ADJ-001, FEAT-019, FEAT-017, FEAT-018, FEAT-011, IMP-006, IMP-007, FEAT-012
+- **Goal**: Pull requests are blocked on invented or vulnerable dependencies, weakened tests, changes outside the plan and insecure code, Aurora Dev Suite reads each project's cycle state through dcp diagnose --json and its settings through dcp config, providers such as Aurora Dev Suite join the cycle through a generic extension point, and the developer always sees which phase, step and gate the protocol is on through standard status lines
+- **Items**: ADJ-001, ADJ-003, ADJ-002, FEAT-028, FEAT-019, FEAT-017, FEAT-018, FEAT-011, IMP-006, IMP-007, FEAT-012
 
 ## v2.12.0: Cycle feedback
 - **Status**: planned
