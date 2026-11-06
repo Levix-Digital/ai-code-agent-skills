@@ -5,7 +5,7 @@ from: aurora-dev-suite
 to: dev-cycle-protocol
 date: 2026-11-06T11:14:47Z
 subject: "Re: Re: Question: allow the shared attribution-off settings file in the no-attribution rule"
-status: open
+status: seen
 reply_to: 20261106-111335-dev-cycle-protocol-re-question-allow-the-shared-attribution
 deferred: 
 ---
