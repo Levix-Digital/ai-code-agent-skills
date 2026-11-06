@@ -101,15 +101,24 @@ impl Project {
         String::from_utf8_lossy(&out.stdout).into_owned()
     }
 
+    /// The plan search index of the project's commands, beside the folder (so no command
+    /// writes the user's own index).
+    pub fn db(&self) -> PathBuf {
+        let mut name = self.dir.clone().into_os_string();
+        name.push(".db");
+        PathBuf::from(name)
+    }
+
     /// Runs an engine command in the folder.
     pub fn run(&self, skill: &str, command: &str, args: &[&str]) -> Out {
-        run_in(&self.dir, skill, command, args)
+        run_with(&self.dir, skill, command, args, Some(&self.db()))
     }
 }
 
 impl Drop for Project {
     fn drop(&mut self) {
         let _ = std::fs::remove_dir_all(&self.dir);
+        let _ = std::fs::remove_dir_all(self.db());
     }
 }
 
@@ -134,15 +143,22 @@ impl Out {
 
 /// Runs `dev-cycle <skill> <command> <args>` from `cwd`.
 pub fn run_in(cwd: &Path, skill: &str, command: &str, args: &[&str]) -> Out {
-    let out = Command::new(env!("CARGO_BIN_EXE_dev-cycle"))
-        .arg(skill)
+    run_with(cwd, skill, command, args, None)
+}
+
+/// [`run_in`], with the plan search index in `db` when given.
+pub fn run_with(cwd: &Path, skill: &str, command: &str, args: &[&str], db: Option<&Path>) -> Out {
+    let mut cmd = Command::new(env!("CARGO_BIN_EXE_dev-cycle"));
+    cmd.arg(skill)
         .arg(command)
         .args(args)
         .current_dir(cwd)
         .env("DEV_CYCLE_SKILLS_ROOT", skills_root())
-        .env("GIT_CONFIG_NOSYSTEM", "1")
-        .output()
-        .expect("dev-cycle");
+        .env("GIT_CONFIG_NOSYSTEM", "1");
+    if let Some(db) = db {
+        cmd.env("PLAN_MEMORY_DB", db);
+    }
+    let out = cmd.output().expect("dev-cycle");
     Out {
         code: out.status.code().unwrap_or(-1),
         stdout: String::from_utf8_lossy(&out.stdout).into_owned(),
@@ -232,4 +248,141 @@ pub fn gate(p: &Project, args: &[&str]) -> Out {
     let mut all = vec!["--dir", root.as_str()];
     all.extend_from_slice(args);
     p.run("dev-cycle-protocol", "verify_gate", &all)
+}
+
+// The backlogs of the backlog and roadmap command tests.
+
+/// A backlog with bugs, a feature and a closed bug.
+pub const BACKLOG: &str = "# Backlog
+
+Intro.
+
+## Bugs
+
+### BUG-001: Preset selects an outdated model id
+- **Severity**: high
+- **Status**: open
+- **Found**: 2026-10-16, v0.45.0, PR #333
+- **Plan**: -
+- **Description**: `/preset frontier` sets a model id
+  that the provider may reject.
+
+### BUG-002: Search threshold too low
+- **Severity**: low
+- **Status**: planned
+- **Found**: 2026-10-16
+- **Plan**: fix_search_threshold
+- **Description**: min_score 0.02.
+
+## Features
+
+### FEAT-001: Export answers
+- **Priority**: medium
+- **Status**: open
+- **Found**: 2026-10-16
+- **Plan**: -
+- **Description**: Export to Markdown.
+
+## Improvements
+
+## Adjustments
+
+## Closed
+
+### BUG-003: Old crash
+- **Severity**: critical
+- **Status**: done
+- **Found**: 2026-10-01
+- **Plan**: -
+- **Closed**: 2026-10-02, PR #300
+- **Description**: Fixed.
+";
+
+/// A backlog with an epic of two features.
+pub const BACKLOG_EPICS: &str = "# Backlog
+
+## Bugs
+
+### BUG-002: Upload hangs
+- **Severity**: high
+- **Status**: open
+- **Found**: 2026-10-20
+- **Plan**: -
+- **Description**: Hangs.
+
+## Features
+
+### FEAT-002: Albums
+- **Priority**: high
+- **Epic**: EPIC-001
+- **Status**: open
+- **Found**: 2026-10-01
+- **Plan**: -
+- **Description**: Albums.
+
+### FEAT-003: Share albums
+- **Priority**: low
+- **Epic**: EPIC-001
+- **Status**: planned
+- **Found**: 2026-10-01
+- **Plan**: share_albums
+- **Description**: Share.
+
+### FEAT-004: Search
+- **Priority**: medium
+- **Status**: open
+- **Found**: 2026-10-01
+- **Plan**: -
+- **Description**: Search.
+
+## Improvements
+
+## Adjustments
+
+## Epics
+
+### EPIC-001: Photo organization
+- **Priority**: high
+- **Status**: open
+- **Found**: 2026-10-01
+- **Description**: Everything about organizing photos.
+
+## Closed
+
+### FEAT-001: Upload
+- **Priority**: high
+- **Status**: done
+- **Found**: 2026-09-01
+- **Plan**: upload
+- **Closed**: 2026-10-01, PR #1
+- **Description**: Upload.
+
+### BUG-001: Crash
+- **Severity**: critical
+- **Status**: done
+- **Found**: 2026-09-01
+- **Plan**: crash
+- **Closed**: 2026-09-20, PR #2
+- **Description**: Crash.
+";
+
+/// A JSON value printed by a command, read back.
+pub fn json(text: &str) -> kernel::py::Value {
+    kernel::py::json::loads(text).unwrap_or_else(|_| panic!("JSON: {text}"))
+}
+
+/// The `key` of every object in a JSON list, as strings.
+pub fn keys_of(list: &kernel::py::Value, key: &str) -> Vec<String> {
+    list.as_list()
+        .expect("a JSON list")
+        .iter()
+        .map(|v| {
+            v.as_dict()
+                .expect("an object")
+                .get_or_none(key)
+                .as_str()
+                .expect("a string")
+                .to_string()
+        })
+        .collect()
 }

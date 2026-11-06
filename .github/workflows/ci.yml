@@ -1,6 +1,6 @@
 # Tests on every pull request into main and every push to main (trunk model).
-# The Python suites test the skills' scripts; the Rust workspace holds their translations, and the
-# parity harness proves that both give the same results (IMP-005, ADR-0007).
+# The Rust workspace holds the engine and its tests; the parity harness proves that every command
+# still gives the results recorded from the Python scripts it was translated from (IMP-005, ADR-0007).
 name: Tests
 
 on:
@@ -50,28 +50,23 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.10"
       - uses: Swatinem/rust-cache@v2
-      - name: Install the Python dependencies
-        run: python -m pip install -r requirements.txt pytest
+      - name: Build the engine
+        run: cargo build -p dev-cycle
       - name: Fetch the embedding model
-        # The parity cases of the search indexes copy it into each run's home.
-        run: python -c "from chromadb.utils.embedding_functions import DefaultEmbeddingFunction as E; E()(['model'])"
+        # The engine downloads it into ~/.cache/chroma on first use; the parity cases of the
+        # search indexes copy it into each run's home.
+        shell: bash
+        env:
+          PLAN_MEMORY_DB: ${{ runner.temp }}/plan-index
+        run: target/debug/dev-cycle plan-memory rebuild_index
       - name: Run the Rust tests
         run: cargo test --workspace
-      - name: Compare Python and Rust (parity)
-        env:
-          PARITY_PYTHON: python
-        run: |
-          cargo build -p dev-cycle
-          cargo run -p parity -- run
+      - name: Compare with the golden files (parity)
+        run: cargo run -p parity -- run
       - name: Launcher (sh)
         shell: bash
         run: dev-cycle-protocol/bin/dev-cycle --version
       - name: Launcher (PowerShell)
         shell: pwsh
         run: ./dev-cycle-protocol/bin/dev-cycle.ps1 --version
-      - name: Run the Python tests
-        run: python -m pytest

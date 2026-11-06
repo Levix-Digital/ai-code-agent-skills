@@ -45,7 +45,7 @@ Add to the project's `.claude/settings.json` and push it to the branch the cloud
 ## Notes
 
 - In the plugin, skill names are prefixed: `dev-skills:session-memory`.
-- In the cloud, plans come with the project clone (the index is built on first use, which needs `pip install -r requirements.txt` and downloads a small embedding model). Session memory is written to the session's own environment and does not reach your local database.
+- In the cloud, plans come with the project clone (the index is built on first use, which downloads a small embedding model). Session memory is written to the session's own environment and does not reach your local database.
 - When the session starts above the repositories, `/dev-cycle` works from the only repository below it, or asks which one when there are several.
 - Locally, a project with the plugin enabled shows each skill twice (from `~/.claude/skills` and from the plugin). Both read the same files.
-- Projects that use Spec Kit need [uv](https://docs.astral.sh/uv/) (`pip install uv`) and network access to `github.com` in the cloud environment for `speckit_setup init`, `check` and `upgrade` (engine). The Spec Kit commands themselves run from the files committed in the project (`.specify/` and the agent command files), so a session that only specifies, plans or implements needs neither.
+- Projects that use Spec Kit need [uv](https://docs.astral.sh/uv/) and network access to `github.com` in the cloud environment for `speckit_setup init`, `check` and `upgrade` (engine). The Spec Kit commands themselves run from the files committed in the project (`.specify/` and the agent command files), so a session that only specifies, plans or implements needs neither.

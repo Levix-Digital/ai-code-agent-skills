@@ -11,7 +11,7 @@ description: Records what goes wrong with Gedo (the Levix collaboration overlay 
 
 ## When It Is On
 
-Recording needs both keys of the `gedo` section of `.dev-cycle.json` (`dev-cycle-protocol/project_config.py`):
+Recording needs both keys of the `gedo` section of `.dev-cycle.json` (`project_config`, engine):
 
 | Key | Meaning | Default |
 |---|---|---|
