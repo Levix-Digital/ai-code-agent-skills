@@ -1,0 +1,13 @@
+{
+  "schema": "dcp.extension-context",
+  "schema_version": "1.0",
+  "point": "after-merge",
+  "project_root": "/repos/sample",
+  "release": "2.11.0",
+  "phase": "10",
+  "merge": {
+    "commit": "4f2c9a1e0b7d",
+    "branch": "feat/feat-123-export",
+    "base": "main"
+  }
+}

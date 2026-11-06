@@ -1,0 +1,9 @@
+{
+  "schema": "dcp.extension-gate",
+  "schema_version": "1.0",
+  "provider": "integrations",
+  "gate": "integration",
+  "decision": "pending",
+  "decided_at": null,
+  "reason": null
+}

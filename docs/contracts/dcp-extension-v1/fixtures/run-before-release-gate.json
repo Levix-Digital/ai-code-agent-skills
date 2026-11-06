@@ -1,0 +1,19 @@
+{
+  "schema": "dcp.extensions-run",
+  "schema_version": "1.0",
+  "point": "before-release-gate",
+  "blocking": true,
+  "items": [
+    {
+      "provider": "integrations",
+      "id": "notice.gedo.20261106-1",
+      "title": "gedo has not answered the merge notice for feat/feat-123-export",
+      "needs": "user",
+      "blocking": true,
+      "commands": [
+        "dcp integrations notices show 20261106-1"
+      ]
+    }
+  ],
+  "warnings": []
+}

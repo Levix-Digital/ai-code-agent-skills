@@ -1,0 +1,7 @@
+{
+  "schema": "dcp.extension",
+  "schema_version": "1.0",
+  "provider": "integrations",
+  "point": "discovery",
+  "items": []
+}
