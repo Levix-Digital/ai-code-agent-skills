@@ -231,6 +231,14 @@ Each item: `### <ID>: <title>` with the fields `Severity` (bugs: critical, high,
 - **Plan**: -
 - **Description**: architecture-docs gains a bootstrap that writes, bottom up, one index per module with its purpose, interface, invariants and side effects, reviewed in a pull request like any document. Its quality bar is the Re-implementation rule (a reader can reproduce the observable behavior from the document alone), judged by an isolated reviewer (FEAT-023). AnyContext indexes the map with priority over raw files, and the full-context steps of the cycle query AnyContext through its versioned command line contract, discovered by capability and skipped safely when missing; isolated steps never call it. The context stays reviewable and travels with the repository, and retrieval runs over a curated base instead of raw text only. AnyContext's side, agreed on 2026-11-01: AnyContext FEAT-196, a versioned machine contract to index and query a repository workspace, in AnyContext v1.1.0: a workspace bound to the repository and synced without interaction, retrieval without generation (ranked passages with source path, location, score and text), source priority for the map folder (a boost inside AnyContext's relevance ranking rather than a reserved budget, decided when FEAT-196 is planned) and index freshness in every reply (for example the last indexed commit). Nothing in AnyContext v1.0.0 offers the contract yet. When talking to AnyContext, cite this item as DCP FEAT-027.
 
+### FEAT-028: Standard status lines for the current phase, step and gate
+- **Priority**: high
+- **Epic**: EPIC-001
+- **Status**: open
+- **Found**: 2026-11-06, protocol status messages discussion
+- **Plan**: -
+- **Description**: The protocol drives the steps, not the developer (unlike Spec Kit, where the developer types each command), so the developer must always see that the protocol is running and exactly where it is. Today phases exist only in the SKILL text: the engine speaks only at the gates (loose check lines that do not name the gate or the protocol) and in the diagnosis, and each agent announces phases its own way, or not at all. (1) A new engine command, dcp phase enter|exit|wait|pause, prints one line from a fixed template and records the current position (path, phase, milestone or step, gate, what the user is asked for) in the active plan file, so it is versioned and the same locally, in cloud sessions and across agents; verify_gate and the diagnosis print the same header. (2) The template is fixed, in English, identical in every environment and searchable in logs, for example: "[Dev Cycle Protocol] ▶ Started · v2.11.0 · <project> · full path", "[Dev Cycle Protocol] ▶ Phase 4/10 · Implementation · milestone 2/5 \"storage\"", "[Dev Cycle Protocol] ✔ Phase 4/10 · Implementation done · next: Phase 5 · Automated tests", "[Dev Cycle Protocol] 🔒 Gate 3 · Plan approval · ✅ passed (6 checks)", "[Dev Cycle Protocol] ⏸ Waiting for you · Gate 3 · reply \"Approved\" or ask for changes", "[Dev Cycle Protocol] ■ Paused · Phase 7/10 · PR #91 waiting for CI · resume with /dev-cycle". The short path shows its own position (short path 2/5); parallel work on Gedo adds the stream ([Dev Cycle Protocol · <stream>]). (3) Command output does not always reach the developer (cloud sessions, apps), so the skills tell the agent to run the command at every transition and copy its line unchanged as the first line of its message, followed by the explanation in the developer's language. (4) The recorded position is what FEAT-015 writes as phase events and what the FEAT-009 state machine keeps; FEAT-019 diagnose may expose it as an optional field. Done after ADJ-001, since the lines and the commands they name use dcp.
+
 ## Improvements
 
 ### IMP-002: Adopt the protocol in this repository (dogfooding)
@@ -297,6 +305,14 @@ Each item: `### <ID>: <title>` with the fields `Severity` (bugs: critical, high,
 - **Found**: 2026-11-01, BUG-005 plan
 - **Plan**: -
 - **Description**: stats.py prints 'Volume total de dados', 'Nunca' and 'Maiores documentos indexados' while every other message of the skill is in English. Translate them (after the Rust migration, which keeps the output identical).
+
+### ADJ-003: Printed texts and templates still name the Python scripts
+- **Priority**: medium
+- **Epic**: EPIC-006
+- **Status**: open
+- **Found**: 2026-10-31, Rust migration (IMP-005), kept identical by the pure translation
+- **Plan**: -
+- **Description**: Engine messages and project templates still tell the user to run scripts that no longer exist, such as plan-memory/backlog.py validate, roadmap.py add-release, speckit_setup.py init, constitution.py generate and gedo_feedback.py. Replace every script name in printed texts, usage lines and templates (BACKLOG, ROADMAP and bug plan templates included) with the engine command, under the dcp name (ADJ-001), in the same release as FEAT-028 so the output is reworked once.
 
 ## Epics
 
