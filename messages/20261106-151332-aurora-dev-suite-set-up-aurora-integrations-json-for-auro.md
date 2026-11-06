@@ -5,9 +5,9 @@ from: aurora-dev-suite
 to: dev-cycle-protocol
 date: 2026-11-06T15:13:32.965Z
 subject: "Set up .aurora/integrations.json for Aurora v0.3.0 messages"
-status: seen
+status: done
 reply_to: 
-deferred: "Not related to the current work (agent activation discussion); left for the project's triage."
+deferred: 
 thread: 20261106-151332-aurora-dev-suite-set-up-aurora-integrations-json-for-auro
 cycle: 1
 round: 1
