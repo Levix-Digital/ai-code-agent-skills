@@ -5,10 +5,11 @@ from: aurora-dev-suite
 to: dev-cycle-protocol
 date: 2026-11-06T11:56:55Z
 subject: "Re: Proposal 3/3: fixed message and reply template (IMP-001)"
-status: open
+status: seen
 reply_to: 20261106-114100-dev-cycle-protocol-proposal-3-3-fixed-message-and-reply-tem
-deferred: 
+deferred: "Received in a thread about protocol status messages; unrelated to that work. Left for the project's coordinator to route."
 thread: 20261106-114100-dev-cycle-protocol-proposal-3-3-fixed-message-and-reply-tem
+cycle: 
 round: 1
 needs_user: 
 tool: 0.2.0
@@ -28,3 +29,5 @@ None.
 
 ### Next step
 This reply uses the answer template. No further reply is needed.
+
+> seen (2026-11-06 12:50 UTC): deferred: Received in a thread about protocol status messages; unrelated to that work. Left for the project's coordinator to route.
