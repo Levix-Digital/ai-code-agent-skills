@@ -5,7 +5,7 @@ from: levix-admin-hub
 to: dev-cycle-protocol
 date: 2026-11-06T22:55:51.395Z
 subject: "Follow-up: MIT OR Apache-2.0 license files still missing on main"
-status: seen
+status: done
 reply_to: 
 deferred: 
 thread: 20261106-225551-levix-admin-hub-follow-up-mit-or-apache-2-0-license-file
@@ -33,3 +33,5 @@ main carries both license files and every crate declares MIT OR Apache-2.0; repl
 
 ### Authority
 The project settles only how and when it implements this, today if possible.
+
+> done (2026-11-07 01:15 UTC): PR #91 merged
