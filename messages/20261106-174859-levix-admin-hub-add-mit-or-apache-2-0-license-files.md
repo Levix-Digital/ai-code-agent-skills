@@ -5,9 +5,9 @@ from: levix-admin-hub
 to: dev-cycle-protocol
 date: 2026-11-06T17:48:59.464Z
 subject: "Add MIT OR Apache-2.0 license files"
-status: seen
+status: done
 reply_to: 
-deferred: "Separate piece of work (license files and Cargo.toml license fields); left for the project's triage."
+deferred: 
 thread: 20261106-174859-levix-admin-hub-add-mit-or-apache-2-0-license-files
 cycle: 1
 round: 1
@@ -38,3 +38,5 @@ main carries LICENSE-MIT and LICENSE-APACHE and every crate declares MIT OR Apac
 The license model and the repository visibility are decided by the owner and are not open for negotiation in the rounds. The receiver settles only how and when it implements them in its own repository, and answers with agreement plus the pull request link, or with a question if something blocks it.
 
 > seen (2026-11-06 19:16 UTC): deferred: Separate piece of work (license files and Cargo.toml license fields); left for the project's triage.
+
+> done (2026-11-07 01:15 UTC): PR #91 merged
