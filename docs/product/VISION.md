@@ -30,7 +30,7 @@ Today each developer copes with prompts, personal checklists and manual review. 
 
 ## Business Model
 
-Open-core. The Dev Cycle Protocol and Gedo are the two free engines and stay separate repositories. The paid Levix platform (Team Cloud as a service, Enterprise self-hosted) joins them in a visual and cloud layer: managed relay, real-time pull request service, synced memory, the team dashboard Mission Control and compliance reports. The repository is public since 2026-10-27 but unlicensed (all rights reserved) until the open source launch (FEAT-007), which adds a permissive license. Price per developer is a hypothesis of the platform, not of this product.
+Open-core. The Dev Cycle Protocol and Gedo are the two free engines and stay separate repositories. The paid Levix platform (Team Cloud as a service, Enterprise self-hosted) joins them in a visual and cloud layer: managed relay, real-time pull request service, synced memory, the team dashboard Mission Control and compliance reports. The repository is public since 2026-10-27 and open source under MIT OR Apache-2.0 since 2026-11-07 (owner's decision of 2026-11-06); the name's trademark is registered before the public launch (ADJ-004). Price per developer is a hypothesis of the platform, not of this product.
 
 ## Success Metrics
 
@@ -71,5 +71,5 @@ Open-core. The Dev Cycle Protocol and Gedo are the two free engines and stay sep
 
 ## Open Questions
 
-- When the open source launch happens and under which license (MIT, Apache-2.0 or both); planned with Gedo v0.5.0 or v0.6.0.
+- When the public launch happens; planned with Gedo v0.5.0 or v0.6.0. The license is decided: MIT OR Apache-2.0.
 - Whether the native verifiers move to Rust next to Gedo; decided in an ADR once Gedo v0.4.0 exists.

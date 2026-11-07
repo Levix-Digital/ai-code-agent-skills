@@ -7,7 +7,7 @@ preset:
   description: "Adds the dev-cycle-protocol sections (tests, documentation, CI and release, security and rollback) to Spec Kit plans."
   author: "Levi Silveira"
   repository: "https://github.com/Levix-Digital/ai-code-agent-skills"
-  license: "UNLICENSED"
+  license: "MIT OR Apache-2.0"
 
 requires:
   speckit_version: ">=1.2.0"
