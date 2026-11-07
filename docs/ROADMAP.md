@@ -31,8 +31,8 @@ Each release: `## vX.Y.Z: <name>` with the fields `Status` (planned, in_progress
 
 ## v2.14.0: Protocol served by the engine
 - **Status**: planned
-- **Goal**: Agents run the cycle through the dcp engine's local MCP server with no skills, adoption is verifiable and enforced in CI, the signed engine cannot be altered, projects adjust it only through validated settings, and the engine is distributed as a proprietary, signed binary with Levix licenses
-- **Items**: FEAT-009, FEAT-007
+- **Goal**: Agents run the cycle through the dcp engine's local MCP server with no skills, adoption is verifiable and enforced in CI, the signed engine cannot be altered, and projects adjust it only through validated settings
+- **Items**: FEAT-009
 
 ## v3.0.0: Role isolation
 - **Status**: planned

@@ -63,14 +63,6 @@ Each item: `### <ID>: <title>` with the fields `Severity` (bugs: critical, high,
 - **Plan**: -
 - **Description**: Lite (dev-cycle, backlog and pull request review, no Phase 0, release candidates or Spec Kit), Standard (plans, design checks, technical docs, Spec Kit for feature plans) and Full (phases 0 to 10, Spec Kit, release candidates, Gedo when enabled), in the README and as a choice in /dev-cycle. Spec Kit is on by default in Standard and Full (see FEAT-009); bug plans and the short path never use it.
 
-### FEAT-007: Proprietary binary-only distribution with Levix licenses
-- **Priority**: medium
-- **Epic**: EPIC-006
-- **Status**: open
-- **Found**: 2026-10-25, 2026-10-25, platform strategy discussion; redefined 2026-10-28, protocol as a commercial product; decided 2026-10-28, same model as Aurora Dev Suite (its ADR-0005)
-- **Plan**: -
-- **Description**: The protocol follows the decision every Levix product shares (Aurora Dev Suite ADR-0005): proprietary, freemium, distributed only as binaries. The source repository becomes private; the signed dcp binary and installers are published to a separate public releases repository (the AnyContext pattern). Every crate has publish = false and the proprietary license notice; dependencies stay permissive (MIT, Apache-2.0, BSD, ISC, Zlib, Unicode-3.0), checked with cargo-deny. Licenses (one per plan, signed by Levix, verified offline) and the verified download catalog come from the levix-platform components once they exist; until then the engine has no license check. The free tier and paid plans are open, as for the other products. Replaces the open source launch; the license, not hidden instructions, is the protection (FEAT-009). Record the decision as an ADR in this repository when the item is implemented.
-
 ### FEAT-008: Non-overlapping milestone scopes at gate 3 with gedo scope
 - **Priority**: high
 - **Epic**: EPIC-004
@@ -330,6 +322,14 @@ Each item: `### <ID>: <title>` with the fields `Severity` (bugs: critical, high,
 - **Plan**: -
 - **Description**: Engine messages and project templates still tell the user to run scripts that no longer exist, such as plan-memory/backlog.py validate, roadmap.py add-release, speckit_setup.py init, constitution.py generate and gedo_feedback.py. Replace every script name in printed texts, usage lines and templates (BACKLOG, ROADMAP and bug plan templates included) with the engine command, under the dcp name (ADJ-001), in the same release as FEAT-028 so the output is reworked once.
 
+### ADJ-004: Register the Dev Cycle Protocol trademark before the public launch
+- **Priority**: medium
+- **Epic**: EPIC-006
+- **Status**: open
+- **Found**: 2026-11-06, levix-admin-hub license proposal
+- **Plan**: -
+- **Description**: The strategy and distribution document asks the owner to register the trademark of the name Dev Cycle Protocol (and dcp, if the owner decides so) before the public launch, so anyone can fork and reuse the open source code (MIT OR Apache-2.0) while the name stays with Levix Digital. Not a code change: the owner files the registration before the public launch.
+
 ## Epics
 
 ### EPIC-001: Cycle and gates
@@ -366,7 +366,7 @@ Each item: `### <ID>: <title>` with the fields `Severity` (bugs: critical, high,
 - **Priority**: high
 - **Status**: open
 - **Found**: 2026-10-25, 2026-10-25, platform strategy discussion
-- **Description**: Execution without manual installs, standard-library search, onboarding in three levels, the protocol served by the signed engine and its proprietary, binary-only distribution.
+- **Description**: Execution without manual installs, standard-library search, onboarding in three levels, the protocol served by the signed engine and the open source distribution under MIT OR Apache-2.0, with the name's trademark registered before the public launch.
 
 ### EPIC-007: Infrastructure as code
 - **Priority**: medium
@@ -399,6 +399,15 @@ Each item: `### <ID>: <title>` with the fields `Severity` (bugs: critical, high,
 - **Description**: The cycle's full-context steps take their context from AnyContext through its versioned command line contract, over a curated, versioned map of the project, discovered by capability and skipped safely when missing.
 
 ## Closed
+
+### FEAT-007: Proprietary binary-only distribution with Levix licenses
+- **Priority**: medium
+- **Epic**: EPIC-006
+- **Status**: dropped
+- **Found**: 2026-10-25, 2026-10-25, platform strategy discussion; redefined 2026-10-28, protocol as a commercial product; decided 2026-10-28, same model as Aurora Dev Suite (its ADR-0005)
+- **Plan**: -
+- **Closed**: 2026-11-07, dropped by the owner's licensing decision of 2026-11-06 (strategy and distribution document v3): the protocol is open source under MIT OR Apache-2.0 and the repository stays public; license files and the crates' license field added; the trademark of the name is ADJ-004
+- **Description**: The protocol follows the decision every Levix product shares (Aurora Dev Suite ADR-0005): proprietary, freemium, distributed only as binaries. The source repository becomes private; the signed dcp binary and installers are published to a separate public releases repository (the AnyContext pattern). Every crate has publish = false and the proprietary license notice; dependencies stay permissive (MIT, Apache-2.0, BSD, ISC, Zlib, Unicode-3.0), checked with cargo-deny. Licenses (one per plan, signed by Levix, verified offline) and the verified download catalog come from the levix-platform components once they exist; until then the engine has no license check. The free tier and paid plans are open, as for the other products. Replaces the open source launch; the license, not hidden instructions, is the protection (FEAT-009). Record the decision as an ADR in this repository when the item is implemented.
 
 ### BUG-004: AI attribution footers reached pull requests past the principle 9 guard
 - **Severity**: high
