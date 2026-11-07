@@ -7,7 +7,7 @@ date: 2026-11-06T23:14:10.220Z
 subject: "Messages move to dcp-integrations before aurora-dev-suite goes private"
 status: seen
 reply_to: 
-deferred: 
+deferred: "Notice unrelated to the license work; this project already uses dcp-integrations and committed .aurora/integrations.json (PR #90). Left for the project's triage."
 thread: 20261106-231410-aurora-dev-suite-messages-move-to-dcp-integrations-before
 cycle: 1
 round: 
@@ -26,3 +26,5 @@ Cross-project messages move from the Python inbox tool to dcp-integrations, so a
 
 ### Action
 Commit .aurora/integrations.json if your project has not yet (any-context is the only one missing). Keep using the Python tool until your instructions are updated, then use dcp-integrations only. No reply needed unless something blocks you.
+
+> seen (2026-11-07 00:34 UTC): deferred: Notice unrelated to the license work; this project already uses dcp-integrations and committed .aurora/integrations.json (PR #90). Left for the project's triage.
