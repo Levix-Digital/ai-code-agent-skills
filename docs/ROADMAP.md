@@ -21,8 +21,8 @@ Each release: `## vX.Y.Z: <name>` with the fields `Status` (planned, in_progress
 
 ## v2.12.0: Cycle feedback
 - **Status**: planned
-- **Goal**: Production problems come back as triaged bugs, the user's gates come with a review brief, the cycle measures itself automatically at the end of every phase and offers its metrics to Aurora Dev Suite, performance budgets are enforced, each risky change carries a threat model, and the release candidate is attacked with its findings coming back as triaged bugs
-- **Items**: FEAT-013, FEAT-014, FEAT-015, FEAT-022, FEAT-016, FEAT-021, FEAT-020
+- **Goal**: Production problems come back as triaged bugs, the user's gates come with a review brief, the cycle measures itself automatically at the end of every phase and offers its metrics to Aurora Dev Suite, performance budgets are enforced, each risky change carries a threat model, the release candidate is attacked with its findings coming back as triaged bugs, CI failures and new issues come back every night as triaged bugs, and each role keeps the lessons of past cycles in a LanceDB store that can live locally, in remote storage or in the repository
+- **Items**: FEAT-013, FEAT-014, FEAT-015, FEAT-022, IMP-010, FEAT-031, FEAT-016, FEAT-021, FEAT-020
 
 ## v2.13.0: Agents and platforms
 - **Status**: planned
