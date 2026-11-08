@@ -1,8 +1,9 @@
 //! `subprocess.run` and `shutil.which` as the scripts called them: the exception Python raised
 //! when a program could not be started, and the output decoded as text.
 
+use std::io::Write;
 use std::path::Path;
-use std::process::Command;
+use std::process::{Command, Stdio};
 
 use super::path::{abspath, join};
 use super::{Crash, repr_str, universal_newlines};
@@ -47,6 +48,16 @@ pub fn run_replace(
     cmd: &[String],
     cwd: Option<&str>,
 ) -> Result<(i32, String, String), Result<String, Crash>> {
+    run_replace_input(cmd, cwd, None)
+}
+
+/// `run_replace` with `input=`: the text written to the program's standard input, which is
+/// then closed; with `None` the program reads an empty, closed standard input.
+pub fn run_replace_input(
+    cmd: &[String],
+    cwd: Option<&str>,
+    input: Option<&str>,
+) -> Result<(i32, String, String), Result<String, Crash>> {
     let Some((program, args)) = cmd.split_first() else {
         return Err(Err(Crash::new("IndexError: list index out of range")));
     };
@@ -55,7 +66,25 @@ pub fn run_replace(
     if let Some(dir) = cwd {
         command.current_dir(dir);
     }
-    let out = match command.output() {
+    command
+        .stdin(if input.is_some() {
+            Stdio::piped()
+        } else {
+            Stdio::null()
+        })
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped());
+    let spawned = command.spawn().and_then(|mut child| {
+        if let (Some(text), Some(mut stdin)) = (input, child.stdin.take()) {
+            // A program that exits without reading its input closes the pipe: not an error.
+            match stdin.write_all(text.as_bytes()) {
+                Err(e) if e.kind() != std::io::ErrorKind::BrokenPipe => return Err(e),
+                _ => {}
+            }
+        }
+        child.wait_with_output()
+    });
+    let out = match spawned {
         Ok(o) => o,
         Err(e) => {
             let (not_found, msg) = spawn_error(&e, program);

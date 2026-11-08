@@ -9,7 +9,7 @@ A set of skills in the open `SKILL.md` format, each a module with its instructio
 - **Native engine** (ADR-0007): one Rust binary (`dev-cycle`) built from the Cargo workspace in `crates/`, one crate per skill and a small kernel. It was translated from the Python scripts with identical behavior (IMP-005, v2.10.0), proven by the parity cases in `tests/parity`. The launcher `dev-cycle-protocol/bin/dev-cycle` (`dev-cycle.ps1` in PowerShell) downloads the binary of its version from the release and checks it, or builds it with `cargo` in a checkout. No Python is needed.
 - **Search indexes**: chromadb's local store format (plan and session indexes, folder RAG), read and written by the engine (`crates/vector-store`), with the `all-MiniLM-L6-v2` embedding model downloaded once into `~/.cache/chroma`.
 - **Platform command lines**: `gh` (GitHub, REST API) and `glab` (GitLab) for pull requests; they keep the user's authentication.
-- **GitHub Spec Kit**, optional per project, at a pinned and verified version (v1.2.3 today), run through `uvx`.
+- **GitHub Spec Kit**, optional per project, at a pinned and verified version (v1.3.2 today), run through `uvx`.
 - **Gedo**, optional per project (`gedo.enabled`), through its command line with `--json` only, once it has one (v0.4.0); streams for parallel work from v0.5.0.
 
 ## Architecture Overview

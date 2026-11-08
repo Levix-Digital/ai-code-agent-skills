@@ -20,7 +20,7 @@
   },
   "speckit": {
     "enabled": true,
-    "version": "v1.2.3",
+    "version": "v1.3.2",
     "integration": "claude",
     "script": "sh",
     "branch_prefix": "feat"

@@ -17,7 +17,7 @@ use kernel::py::argparse::{Parsed, Parser};
 use kernel::py::json::{self, dumps, dumps_ascii};
 use kernel::py::num::{decimal_value, is_space, strip};
 use kernel::py::path::{abspath, exists, isdir, isfile, join, makedirs};
-use kernel::py::subprocess::{mkdtemp, run_replace, which};
+use kernel::py::subprocess::{mkdtemp, run_replace_input, which};
 use kernel::py::unicode::is_word;
 use kernel::py::{
     Crash, Dict, Value, read_text, repr_str, splitlines, today, utf8_error_text, write_text,
@@ -387,6 +387,15 @@ fn setup_plan_cmd(script: &str) -> Vec<Value> {
 /// `run(cmd, cwd)`: the exit code and the output (stdout then stderr, stripped); 127 when the
 /// program is not found.
 fn run(cmd: &[Value], cwd: Option<&str>) -> Result<(i32, String), Crash> {
+    run_input(cmd, cwd, None)
+}
+
+/// `run` with text written to the program's standard input.
+fn run_input(
+    cmd: &[Value],
+    cwd: Option<&str>,
+    input: Option<&str>,
+) -> Result<(i32, String), Crash> {
     let args: Vec<String> = cmd
         .iter()
         .map(|v| match v {
@@ -397,7 +406,7 @@ fn run(cmd: &[Value], cwd: Option<&str>) -> Result<(i32, String), Crash> {
             ))),
         })
         .collect::<Result<_, _>>()?;
-    match run_replace(&args, cwd) {
+    match run_replace_input(&args, cwd, input) {
         Ok((code, stdout, stderr)) => Ok((code, strip(&(stdout + &stderr)).to_string())),
         Err(Ok(msg)) => Ok((127, format!("{}: not found ({msg})", args[0]))),
         Err(Err(c)) => Err(c),
@@ -1171,12 +1180,29 @@ fn execute(cmds: &[Vec<Value>], root: &str, dry_run: bool) -> Res<()> {
         if dry_run {
             continue;
         }
-        let (code, out) = run(cmd, Some(root))?;
+        let (code, out) = run_input(cmd, Some(root), confirmation(cmd))?;
         if code != 0 {
             return setup(format!("command failed ({code}):\n{}", tail(&out, 1500)));
         }
     }
     Ok(())
+}
+
+/// The answer to the confirmation a command asks for: `specify extension update` lists the
+/// updates and asks "Update these extensions? [y/N]" with no option to skip the question, and
+/// aborts when nobody answers.
+fn confirmation(cmd: &[Value]) -> Option<&'static str> {
+    let words: Vec<&str> = cmd
+        .iter()
+        .filter_map(|v| match v {
+            Value::Str(t) => Some(t.as_str()),
+            _ => None,
+        })
+        .collect();
+    words
+        .windows(2)
+        .any(|w| w == ["extension", "update"])
+        .then_some("y\n")
 }
 
 fn arg(args: &Parsed, dest: &str) -> Value {

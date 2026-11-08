@@ -31,7 +31,7 @@ Optional file at a project's root: the project configuration shared by every ski
   "review": { "provider": "auto", "host": null, "marker": "[review]", "reply_marker": "[reply]", "auto_review": true, "allowed_terms": [] },
   "speckit": {
     "enabled": true,
-    "version": "v1.2.3",
+    "version": "v1.3.2",
     "integration": "claude",
     "script": "sh",
     "branch_prefix": "feat"
