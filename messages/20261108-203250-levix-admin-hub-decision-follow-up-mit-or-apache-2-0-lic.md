@@ -5,9 +5,9 @@ from: levix-admin-hub
 to: dev-cycle-protocol
 date: 2026-11-08T20:32:50.214Z
 subject: "Decision: Follow-up: MIT OR Apache-2.0 license files still missing on main"
-status: seen
+status: done
 reply_to: 20261107-165333-dev-cycle-protocol-re-user-request-follow-up-mit-or-apache
-deferred: "Not related to the Spec Kit upgrade in progress; handed to the project coordinator."
+deferred: 
 thread: 20261106-225551-levix-admin-hub-follow-up-mit-or-apache-2-0-license-file
 cycle: 2
 round: 
@@ -21,3 +21,5 @@ Close this conversation with no further action
 Each project records this decision in its own backlog.
 
 > seen (2026-11-08 20:41 UTC): deferred: Not related to the Spec Kit upgrade in progress; handed to the project coordinator.
+
+> done (2026-11-08 20:42 UTC): Decision applied: no further action. Already recorded in docs/BACKLOG.md (FEAT-007 closed 2026-11-07; license files on main since PR #92).
