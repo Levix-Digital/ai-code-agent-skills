@@ -4,10 +4,10 @@ project: ai-code-agent-skills
 title: Candidate and promote workflows for the skills releases
 kind: feature
 version: 2.10.0
-status: active
+status: completed
 author: LeviGuilherme
 created_at: '2026-11-09T12:27:37'
-updated_at: '2026-11-09T12:32:11'
+updated_at: '2026-11-09T12:56:27'
 session_id: null
 tags: []
 supersedes: null
@@ -18,11 +18,17 @@ backlog_items:
 spec_dir: specs/002-release-workflows
 milestones:
 - name: Workflows
-  done: false
+  done: true
+  done_at: '2026-11-09'
+  by: LeviGuilherme
 - name: Documentation
-  done: false
+  done: true
+  done_at: '2026-11-09'
+  by: LeviGuilherme
 - name: Checks and pull request
-  done: false
+  done: true
+  done_at: '2026-11-09'
+  by: LeviGuilherme
 status_log:
 - at: '2026-11-09T12:27:37'
   by: LeviGuilherme
@@ -36,6 +42,23 @@ status_log:
   by: LeviGuilherme
   status: active
   note: Plan updated
+- at: '2026-11-09T12:55:45'
+  by: LeviGuilherme
+  status: in_progress
+  note: Plan approved by the user (gate 3), with Spec Kit
+- at: '2026-11-09T12:56:15'
+  by: LeviGuilherme
+  note: 'Milestone ''Workflows'' completed: release.yml and promote.yml; check_ci_policy 0 warnings'
+- at: '2026-11-09T12:56:17'
+  by: LeviGuilherme
+  note: 'Milestone ''Documentation'' completed: Release steps in docs/maintaining.md'
+- at: '2026-11-09T12:56:27'
+  by: LeviGuilherme
+  note: 'Milestone ''Checks and pull request'' completed: check_ci_policy clean, release checks exercised locally'
+- at: '2026-11-09T12:56:27'
+  by: LeviGuilherme
+  status: completed
+  note: All milestones completed
 ---
 
 Plan for the backlog items below (`dev-cycle-protocol` Phases 1 and 2). It is the envelope of the Spec Kit feature [`specs/002-release-workflows`](../../specs/002-release-workflows/): the specification, the technical plan with the protocol's sections, research, contract, quickstart and tasks are there.

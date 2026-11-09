@@ -1,0 +1,80 @@
+# Publishes a release of the skills (the product, vX.Y.Z of .claude-plugin/plugin.json).
+# - vX.Y.Z-rc.N tags, pushed on main after the version bump (trunk model), publish a PRE-RELEASE:
+#   the candidate the user installs and accepts.
+# - vX.Y.Z final tags are created by promote.yml, which calls this workflow directly (a tag pushed
+#   with GITHUB_TOKEN would not start it); a final tag pushed by hand is refused.
+# The release is the repository at its tag: users clone the tag and run install.sh or install.ps1.
+# The engine binaries are released apart as engine-vX.Y.Z (engine.yml) and the launchers download
+# the version in dev-cycle-protocol/bin/engine-version, so that release must exist first.
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_call:
+    inputs:
+      tag:
+        description: Tag to publish (vX.Y.Z or vX.Y.Z-rc.N)
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Publish ${{ inputs.tag || github.ref_name }}
+    runs-on: ubuntu-latest
+    env:
+      TAG: ${{ inputs.tag || github.ref_name }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag || github.ref }}
+          fetch-depth: 0
+
+      - name: Check the tag, the version files and the engine release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if ! echo "$TAG" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$'; then
+            echo "::error::'$TAG' is not a release tag like v2.10.0 or v2.10.0-rc.1"; exit 1
+          fi
+          if [ "$GITHUB_EVENT_NAME" = push ] && [[ "$TAG" != *-rc.* ]]; then
+            echo "::error::$TAG is a final tag pushed by hand: only the Promote workflow publishes a final release"; exit 1
+          fi
+          version="${TAG#v}"; version="${version%-rc.*}"
+          plugin="$(jq -r .version .claude-plugin/plugin.json)"
+          if [ "$plugin" != "$version" ]; then
+            echo "::error::.claude-plugin/plugin.json has $plugin, the tag $TAG needs $version: bump it first"; exit 1
+          fi
+          engine="$(tr -d ' \r\n' < dev-cycle-protocol/bin/engine-version)"
+          if ! gh release view "engine-v$engine" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+            echo "::error::engine-v$engine is not published; wait for the Engine workflow of that commit"; exit 1
+          fi
+          echo "ENGINE=$engine" >> "$GITHUB_ENV"
+
+      - name: Release notes
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # Changes since the last final release (vX.Y.Z), the same for every candidate of a version.
+          previous="$(git tag --list 'v*' --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | grep -vx "${TAG%-rc.*}" | head -n 1 || true)"
+          args=(-f tag_name="$TAG" -f target_commitish="$(git rev-parse HEAD)")
+          [ -n "$previous" ] && args+=(-f previous_tag_name="$previous")
+          {
+            echo "Install: \`git clone --branch $TAG https://github.com/$GITHUB_REPOSITORY\`, then run \`install.sh\` (or \`install.ps1\`) from the clone."
+            echo "The engine is \`engine-v$ENGINE\`, downloaded by the launchers on first use."
+            echo
+            gh api "repos/$GITHUB_REPOSITORY/releases/generate-notes" "${args[@]}" --jq .body
+          } > notes.md
+          cat notes.md
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.TAG }}
+          name: ${{ env.TAG }}
+          body_path: notes.md
+          prerelease: ${{ contains(env.TAG, '-rc') }}
+          make_latest: ${{ contains(env.TAG, '-rc') && 'false' || 'true' }}

@@ -19,6 +19,12 @@ cargo build && cargo run -p parity -- run   # every command still gives the resu
 2. Run `cargo run -p parity -- run`: stdout, stderr, exit code and files written must match the golden files. When a behavior change is intended (a decided backlog item), record the new golden files from the engine with `cargo run -p parity -- record <name>` and review their diff in the pull request.
 3. Bump the engine version (`dev-cycle-protocol/bin/engine-version` and `version` in `Cargo.toml`); CI refuses an engine change without it. On merge, the Engine workflow publishes release `engine-vX.Y.Z` with a binary per target.
 
+**Release the skills** (trunk model, `devops-release`): a product release is `vX.Y.Z` of `.claude-plugin/plugin.json`, the repository at its tag.
+1. Bump `version` in `.claude-plugin/plugin.json` by pull request into `main`. When the engine changed, its `engine-vX.Y.Z` release must be published first (the Engine workflow of that merge).
+2. Tag the candidate on `main` (`release_status next-rc` gives the tag) and push it: the Release workflow publishes it as a pre-release, after checking the version file and the engine release.
+3. Start the candidate's manual test run (`manual_tests start-run --run vX.Y.Z-rc.N`), commit it by pull request, and run the tests from a clone of the tag.
+4. After gates `rc` and `8`, the maintainer runs Actions > Promote with the accepted candidate (`gh workflow run promote.yml -f candidate=vX.Y.Z-rc.N`). The `release` environment holds it for the maintainer's approval; it tags the candidate's commit `vX.Y.Z` and publishes the release, marked latest.
+
 **How the skills run the engine**: `"<skills_root>/dev-cycle-protocol/bin/dev-cycle" <skill> <script> [args]` in sh shells (Linux, macOS, Git Bash on Windows) and `& "<skills_root>/dev-cycle-protocol/bin/dev-cycle.ps1" <skill> <script> [args]` in PowerShell. The launcher uses `DEV_CYCLE_BIN` when set, else the binary of its `engine-version` from the cache (`$LOCALAPPDATA`, `$XDG_CACHE_HOME` or `~/.cache`, under `dev-cycle/`), else downloads it from the release and checks it against `SHA256SUMS`, else builds it with `cargo` when it sits in a checkout. It sets `DEV_CYCLE_SKILLS_ROOT` to its skills folder: commands that read other skills' files (the constitution reads the SKILL.md files and the style guides; `speckit_setup` reads the preset and its verified version and drafts adaptation documents) read them there, as the scripts did. Without it, the binary looks for the checkout it was built in.
 
 **Conventions**

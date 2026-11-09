@@ -19,7 +19,7 @@ description: "Tasks of the candidate and promote workflows for the skills releas
 
 ## Phase 1: Setup
 
-- [ ] T001 Run `check_ci_policy` on `main` and record its warning (no promote workflow) as the failing baseline
+- [x] T001 Run `check_ci_policy` on `main` and record its warning (no promote workflow) as the failing baseline
 
 ---
 
@@ -29,9 +29,9 @@ description: "Tasks of the candidate and promote workflows for the skills releas
 
 **Independent Test**: quickstart step 2.
 
-- [ ] T002 [US1] Create `.github/workflows/release.yml` from `devops-release/templates/release.yml`: `v*` tag push and `workflow_call` with `tag` (contracts/workflows.md)
-- [ ] T003 [US1] In `release.yml`, fail before publishing on a bad tag format, a final tag reached by a push instead of the promotion, a `plugin.json` version different from the tag's, and a missing `engine-v<engine-version>` release (FR-002)
-- [ ] T004 [US1] In `release.yml`, build the notes: install line, engine line, generated notes since the last final `vX.Y.Z` (FR-003, research R3); publish as pre-release for `-rc`, latest only for final tags (FR-001, R4)
+- [x] T002 [US1] Create `.github/workflows/release.yml` from `devops-release/templates/release.yml`: `v*` tag push and `workflow_call` with `tag` (contracts/workflows.md)
+- [x] T003 [US1] In `release.yml`, fail before publishing on a bad tag format, a final tag reached by a push instead of the promotion, a `plugin.json` version different from the tag's, and a missing `engine-v<engine-version>` release (FR-002)
+- [x] T004 [US1] In `release.yml`, build the notes: install line, engine line, generated notes since the last final `vX.Y.Z` (FR-003, research R3); publish as pre-release for `-rc`, latest only for final tags (FR-001, R4)
 
 **Checkpoint**: candidates can be published.
 
@@ -43,21 +43,21 @@ description: "Tasks of the candidate and promote workflows for the skills releas
 
 **Independent Test**: quickstart step 4.
 
-- [ ] T005 [US2] Create `.github/workflows/promote.yml` from `devops-release/templates/promote.yml`, with the `release` environment and the version read from `.claude-plugin/plugin.json` when no candidate is given (FR-004)
-- [ ] T006 [US2] Keep the template's refusals before tagging: invalid or missing candidate, existing final tag (FR-005); call `release.yml` with the final tag
-- [ ] T007 [US2] `check_ci_policy` passes with 0 warnings (FR-006)
+- [x] T005 [US2] Create `.github/workflows/promote.yml` from `devops-release/templates/promote.yml`, with the `release` environment and the version read from `.claude-plugin/plugin.json` when no candidate is given (FR-004)
+- [x] T006 [US2] Keep the template's refusals before tagging: invalid or missing candidate, existing final tag (FR-005); call `release.yml` with the final tag
+- [x] T007 [US2] `check_ci_policy` passes with 0 warnings (FR-006)
 
 ---
 
 ## Phase 4: User Story 3 - A maintainer knows how to cut a release (Priority: P2)
 
-- [ ] T008 [P] [US3] Add "Release the skills" to `docs/maintaining.md` (FR-007)
+- [x] T008 [P] [US3] Add "Release the skills" to `docs/maintaining.md` (FR-007)
 
 ---
 
 ## Phase 5: Polish
 
-- [ ] T009 Run the repository checks (`cargo test --workspace`, parity, gate 3) and open the pull request; mark the plan milestones
+- [x] T009 Run the repository checks (`cargo test --workspace`, parity, gate 3) and open the pull request; mark the plan milestones
 - [ ] T010 After merge, run quickstart step 2 with `v2.10.0-rc.1` (part of the v2.10.0 release, Phase 8)
 
 ---
