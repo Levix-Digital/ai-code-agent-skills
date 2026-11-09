@@ -507,3 +507,12 @@ Each item: `### <ID>: <title>` with the fields `Severity` (bugs: critical, high,
 - **Plan**: -
 - **Closed**: 2026-11-09
 - **Description**: onboard.py sends the list of protocol files to 'git check-ignore --stdin' in text mode. On Windows each newline becomes CRLF, Git looks for 'path\r' and only the last path matches, so the diagnosis and write-config warn about one ignored file instead of all of them (the BUG-002 protection). Send the input as bytes.
+
+### IMP-013: Candidate and promote workflows for the skills releases
+- **Priority**: high
+- **Epic**: EPIC-001
+- **Status**: done
+- **Found**: 2026-11-09, v2.10.0 release
+- **Plan**: ai_code_agent_skills_candidate_and_promote_workflows_for_the_skills_releases
+- **Closed**: 2026-11-09, plan ai_code_agent_skills_candidate_and_promote_workflows_for_the_skills_releases
+- **Description**: The repository follows the trunk model but no workflow publishes a product release: a vX.Y.Z-rc.N tag gives no pre-release and there is no promote workflow for the user's release gate (check_ci_policy warns). Add release.yml (pre-release for candidates, release for final tags, checks the version file and the engine release) and promote.yml (the user's promotion of an accepted candidate, held by the release environment).
