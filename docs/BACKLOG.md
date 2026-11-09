@@ -6,13 +6,6 @@ Each item: `### <ID>: <title>` with the fields `Severity` (bugs: critical, high,
 
 ## Bugs
 
-### BUG-003: Ignored protocol files reported only partially on Windows
-- **Severity**: medium
-- **Status**: open
-- **Found**: 2026-10-27, 2026-10-27, first CI run on Windows (PR #22)
-- **Plan**: -
-- **Description**: onboard.py sends the list of protocol files to 'git check-ignore --stdin' in text mode. On Windows each newline becomes CRLF, Git looks for 'path\r' and only the last path matches, so the diagnosis and write-config warn about one ignored file instead of all of them (the BUG-002 protection). Send the input as bytes.
-
 ## Features
 
 ### FEAT-001: Pull request review on Bitbucket, Azure DevOps and Gitea
@@ -506,3 +499,11 @@ Each item: `### <ID>: <title>` with the fields `Severity` (bugs: critical, high,
 - **Plan**: ai_code_agent_skills_translate_the_scripts_to_rust_with_identical_behavior
 - **Closed**: 2026-11-03, plan ai_code_agent_skills_translate_the_scripts_to_rust_with_identical_behavior
 - **Description**: Translate every Python script of the skills into one Rust binary with no change in behavior: same commands, flags, stdout, stderr, exit codes and files written, proven by comparing the Python and Rust outputs on the same fixtures. One script per pull request: when the outputs are identical, the SKILL.md calls the Rust command and the Python script is deleted. When no script is left, the Python requirements and tests are removed.
+
+### BUG-003: Ignored protocol files reported only partially on Windows
+- **Severity**: medium
+- **Status**: done
+- **Found**: 2026-10-27, 2026-10-27, first CI run on Windows (PR #22)
+- **Plan**: -
+- **Closed**: 2026-11-09
+- **Description**: onboard.py sends the list of protocol files to 'git check-ignore --stdin' in text mode. On Windows each newline becomes CRLF, Git looks for 'path\r' and only the last path matches, so the diagnosis and write-config warn about one ignored file instead of all of them (the BUG-002 protection). Send the input as bytes.
