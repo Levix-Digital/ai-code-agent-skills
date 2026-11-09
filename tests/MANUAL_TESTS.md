@@ -18,7 +18,7 @@ How to record a run: in each test of the current run, mark exactly one box of th
   - The first run shows `+` or `=` for `dev-cycle`, `dev-cycle-protocol`, `product-inception`, `plan-memory`, `backlog`, `code-review`, `software-design`, `architecture-docs`, `quality-assurance`, `devops-release`, `user-docs`, `session-memory` and `folder-sync` in every target folder.
   - The second run shows only `=`.
   - The agent lists the ten skills.
-- **Result**: [ ] Pass [ ] Fail [ ] Blocked
+- **Result** (v2.10.0-rc.1): [ ] Pass [ ] Fail [ ] Blocked
 - **Notes**:
 
 ## Orchestrated Cycle
@@ -36,7 +36,7 @@ How to record a run: in each test of the current run, mark exactly one box of th
   - The plan has the eight sections of the orchestrator's template, including design, tests, documentation and CI/release/observability, and is saved in `docs/plans`.
   - After approval the agent works on a `feat/` branch from `dev`, adds tests, updates the README and docs, opens a pull request into `dev` and follows CI to green.
   - The agent does not merge into `main`.
-- **Result**: [ ] Pass [ ] Fail [ ] Blocked
+- **Result** (v2.10.0-rc.1): [ ] Pass [ ] Fail [ ] Blocked
 - **Notes**:
 
 ### MT-CYCLE-002: A small fix takes the short path
@@ -48,7 +48,7 @@ How to record a run: in each test of the current run, mark exactly one box of th
 - **Expected**:
   - No plan file is created and no release candidate is cut.
   - The fix is made on a `fix/` or `docs/` branch with a pull request into `dev`.
-- **Result**: [ ] Pass [ ] Fail [ ] Blocked
+- **Result** (v2.10.0-rc.1): [ ] Pass [ ] Fail [ ] Blocked
 - **Notes**:
 
 ## Backlog
@@ -81,7 +81,7 @@ How to record a run: in each test of the current run, mark exactly one box of th
   - At discovery the agent shows the backlog and asks what to do; it promotes, drops or re-prioritizes nothing on its own.
   - The feature plan does not pass gate 3 while the high bug is open, unless you accept the risk and the reason is recorded in the plan.
   - Planning the bug runs `backlog promote` and produces a bug plan with reproduction, root cause and a regression test; the item becomes `planned`.
-- **Result**: [ ] Pass [ ] Fail [ ] Blocked
+- **Result** (v2.10.0-rc.1): [ ] Pass [ ] Fail [ ] Blocked
 - **Notes**:
 
 ### MT-BACKLOG-004: Medium bugs come first, low bugs go into the next release
@@ -126,7 +126,7 @@ How to record a run: in each test of the current run, mark exactly one box of th
   1. Type `/dev-cycle "quero um app onde famílias guardam fotos"`.
 - **Expected**:
   - One line says the repository is new, and the agent starts product inception with the idea (first interview round), without asking for configuration first.
-- **Result**: [ ] Pass [ ] Fail [ ] Blocked
+- **Result** (v2.10.0-rc.1): [ ] Pass [ ] Fail [ ] Blocked
 - **Notes**:
 
 ### MT-DEVCYCLE-002: A repository that never used the protocol gets one setup list
@@ -141,7 +141,7 @@ How to record a run: in each test of the current run, mark exactly one box of th
   - Step 1 lists, in order: create `.dev-cycle.json`, decide about Spec Kit, adopt a product baseline; nothing is written yet. No `dev` branch is proposed.
   - Step 2 shows the proposed configuration before writing it, with `devops.branching: trunk` detected from the lone `main`, explains the three models with that recommendation, writes it with the changed value and records `speckit.enabled: false`.
   - Step 3 no longer lists the configuration, a branch or the Spec Kit question.
-- **Result**: [ ] Pass [ ] Fail [ ] Blocked
+- **Result** (v2.10.0-rc.1): [ ] Pass [ ] Fail [ ] Blocked
 - **Notes**:
 
 ### MT-DEVCYCLE-003: A request waits for a plan in progress
@@ -182,7 +182,7 @@ How to record a run: in each test of the current run, mark exactly one box of th
 - **Expected**:
   - Step 1: the protocol's review appears on the pull request; every line comment starts with **[review]** and a level; the review does not approve; nothing mentions an AI.
   - Step 3: the nit and the suggestion are fixed in commits on the same branch, answered with **[reply]** and the commit, and resolved; the design question is brought to the user in the chat with options and is not answered on GitHub until the user decides.
-- **Result**: [ ] Pass [ ] Fail [ ] Blocked
+- **Result** (v2.10.0-rc.1): [ ] Pass [ ] Fail [ ] Blocked
 - **Notes**:
 
 ### MT-PR-002: The same flow on a GitLab merge request
@@ -269,7 +269,7 @@ How to record a run: in each test of the current run, mark exactly one box of th
   - Step 2 creates the branch `feat/001-...` from `dev`, `specs/001-.../spec.md` without `[NEEDS CLARIFICATION]`, then `plan.md` with the "Dev Cycle Protocol" sections, `tasks.md` and the analysis; the plan in `docs/plans` has `spec_dir` and milestones from the task phases.
   - Gate 3 reports the Spec Kit artifacts complete and the constitution current.
   - Implementation follows `tasks.md`; tests, documentation and the pull request follow the protocol as usual.
-- **Result**: [ ] Pass [ ] Fail [ ] Blocked
+- **Result** (v2.10.0-rc.1): [ ] Pass [ ] Fail [ ] Blocked
 - **Notes**:
 
 ### MT-SPECKIT-002: An incompatible Spec Kit release falls back to the verified one
@@ -294,7 +294,7 @@ How to record a run: in each test of the current run, mark exactly one box of th
 - **Expected**:
   - Step 1: gate 3 reports the constitution as stale until `constitution generate` (engine) is run; the regenerated file lists the ADR and its version moves to `1.1.0`.
   - Step 2: gate 3 reports the hand edit; regenerating replaces it.
-- **Result**: [ ] Pass [ ] Fail [ ] Blocked
+- **Result** (v2.10.0-rc.1): [ ] Pass [ ] Fail [ ] Blocked
 - **Notes**:
 
 ## Release Candidates
@@ -309,7 +309,7 @@ How to record a run: in each test of the current run, mark exactly one box of th
   - The version is bumped in `dev` through a pull request and `release_status next-rc` gives the tag used.
   - The `-rc` tag publishes a pre-release (not marked latest) and `release_status verify` reports it verified.
   - `manual_tests.py start-run` labels the affected tests with the candidate and the agent explains how to install it and which tests to run.
-- **Result**: [ ] Pass [ ] Fail [ ] Blocked
+- **Result** (v2.10.0-rc.1): [ ] Pass [ ] Fail [ ] Blocked
 - **Notes**:
 
 ### MT-RC-002: A failed manual test goes back to a fix and blocks the release
@@ -351,7 +351,7 @@ How to record a run: in each test of the current run, mark exactly one box of th
   - `check_ci_policy` reports no errors; with `tag-on-merge.yml` added it reports that every merge would release.
   - The agent runs gate 8, which ends with "READY FOR THE PROMOTION", gives the release notes highlights and the promote command, and does not run it.
   - The final tag `vX.Y.Z` points at the candidate's commit, not at the newer head of `main`; the release is published and the agent verifies it with `release_status verify --tag vX.Y.Z`.
-- **Result**: [ ] Pass [ ] Fail [ ] Blocked
+- **Result** (v2.10.0-rc.1): [ ] Pass [ ] Fail [ ] Blocked
 - **Notes**:
 
 ### MT-RC-005: A release branch carries the candidate and its fixes (release-branches model)
