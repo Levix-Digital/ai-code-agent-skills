@@ -313,6 +313,22 @@ Each item: `### <ID>: <title>` with the fields `Severity` (bugs: critical, high,
 - **Plan**: -
 - **Description**: The memory skills (session-memory, plan-memory, folder-sync and the lessons of FEAT-031) use crates/vector-store, a Rust reimplementation of chromadb 1.5's on-disk format kept for compatibility with the old Python scripts, which no longer exist. Replace it with LanceDB: embedded in the dcp binary through its Rust library, no server or separate process, columnar files on disk. One setting, memory.storage, chooses where the store lives: (1) local (default): a folder on the developer's machine, as today; (2) remote: a connection URI to object storage (S3, Azure Blob, Google Cloud Storage or an S3-compatible server such as MinIO inside the customer's network), which keeps the memory in cloud sessions and shares it between the developers of a project; (3) repository (opt-in, off by default, since many customers will not want it in their repository): the records are kept as text (JSONL) in the project and the index is rebuilt locally, because LanceDB's binary files have no useful diff and grow with every commit. A migration command moves existing chromadb stores into LanceDB, read only once and never written again. To check when planned: concurrent writes by several developers in remote mode, the binary size the LanceDB dependencies add, and the default embedding model staying offline. Credentials for remote mode come from the environment or the provider's standard configuration, never from the project's files.
 
+### IMP-011: Spec Kit built into the dcp binary, with no uv or Python
+- **Priority**: high
+- **Epic**: EPIC-006
+- **Status**: open
+- **Found**: 2026-11-08, Spec Kit without Python discussion
+- **Plan**: -
+- **Description**: The engine is pure Rust, but speckit_setup still runs the specify CLI through uvx --from git+https://github.com/github/spec-kit.git@vX.Y.Z (init, preset add and update, integration upgrade, extension update, check) and git ls-remote for the latest tag, so every project that enables Spec Kit needs uv, Python and access to GitHub, which fails on premise and air-gapped. Embedding a Python interpreter in the binary (PyO3, RustPython or a standalone Python) was considered and rejected: tens of MB per platform, fragile with Spec Kit's dependencies, and still Python. Instead each dcp release carries a snapshot of the pinned Spec Kit version: (1) the release CI (the only place uv and Python remain) runs that version's specify init for every supported integration and script type, plus the git extension and the protocol's preset, and captures the generated files and manifests; (2) the snapshot is compressed into the binary, and dcp init writes it natively, offline, the same on Windows, macOS and Linux; (3) upgrades use the sha256 of every file that Spec Kit already writes in .specify/integrations/*.manifest.json: files nobody changed are replaced, files the user edited are kept and reported, and projects installed earlier through uvx upgrade the same way; (4) a parity test in CI compares dcp init and upgrade byte for byte with the real specify of the same version, in the style of IMP-005; (5) a scheduled CI job finds new Spec Kit releases, builds the snapshot, runs the existing compatibility check and opens a pull request that bumps the pinned version, so the protocol keeps up with upstream; (6) the latest version a project can pin is the one in its dcp binary, so an air-gapped customer upgrades Spec Kit by taking a newer dcp from its internal artifact repository; (7) the py script type is removed (sh and ps remain). Spec Kit is MIT: its license and notice ship with the binary and the release assets, compatible with MIT OR Apache-2.0. Out of scope: third-party extensions and presets from Spec Kit's catalog (the protocol uses only the git extension and its own preset). To check when planned: the size the snapshot adds to the binary and how presets resolve templates. Done after the Spec Kit 1.3.2 upgrade and ADJ-001.
+
+### IMP-012: Spec Kit scripts as dcp subcommands, with no bash or PowerShell
+- **Priority**: medium
+- **Epic**: EPIC-006
+- **Status**: open
+- **Found**: 2026-11-08, Spec Kit without Python discussion
+- **Plan**: -
+- **Description**: After IMP-011 the cycle still runs Spec Kit's shell scripts: .specify/scripts (create-new-feature, setup-plan, setup-tasks, check-prerequisites, resolve-template and their common helpers) and the git extension's scripts (create-new-feature-branch, auto-commit, initialize-repo), in bash or, on Windows, in PowerShell 7 (pwsh), which is not installed by default. Each script becomes a dcp subcommand (dcp speckit <script>, names fixed when planned) with exactly the same arguments, JSON output, files written and exit codes as the upstream script of the pinned version, checked by a parity test against both the bash and the PowerShell script; speckit_setup's own calls (branch_script_cmd and setup_plan_cmd) use them too. The snapshot of IMP-011 rewrites the script references in the agent command files to the subcommands, so the agents call dcp and the project needs neither bash nor pwsh, and the scripts are no longer copied into the project; the scheduled upstream job fails the bump when a script changed, until the subcommand follows it. With the subcommands in the engine, FEAT-030 can also record and check them as steps of the cycle. Done after IMP-011.
+
 ## Adjustments
 
 ### ADJ-001: Engine binary renamed to dcp
@@ -382,7 +398,7 @@ Each item: `### <ID>: <title>` with the fields `Severity` (bugs: critical, high,
 - **Priority**: high
 - **Status**: open
 - **Found**: 2026-10-25, 2026-10-25, platform strategy discussion
-- **Description**: Execution without manual installs, standard-library search, onboarding in three levels, the protocol served by the signed engine and the open source distribution under MIT OR Apache-2.0, with the name's trademark registered before the public launch.
+- **Description**: Execution without manual installs, Spec Kit built into the engine with no uv, Python, bash or PowerShell, standard-library search, onboarding in three levels, the protocol served by the signed engine and the open source distribution under MIT OR Apache-2.0, with the name's trademark registered before the public launch.
 
 ### EPIC-007: Infrastructure as code
 - **Priority**: medium
