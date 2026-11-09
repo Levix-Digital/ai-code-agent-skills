@@ -322,6 +322,14 @@ Each item: `### <ID>: <title>` with the fields `Severity` (bugs: critical, high,
 - **Plan**: -
 - **Description**: After IMP-011 the cycle still runs Spec Kit's shell scripts: .specify/scripts (create-new-feature, setup-plan, setup-tasks, check-prerequisites, resolve-template and their common helpers) and the git extension's scripts (create-new-feature-branch, auto-commit, initialize-repo), in bash or, on Windows, in PowerShell 7 (pwsh), which is not installed by default. Each script becomes a dcp subcommand (dcp speckit <script>, names fixed when planned) with exactly the same arguments, JSON output, files written and exit codes as the upstream script of the pinned version, checked by a parity test against both the bash and the PowerShell script; speckit_setup's own calls (branch_script_cmd and setup_plan_cmd) use them too. The snapshot of IMP-011 rewrites the script references in the agent command files to the subcommands, so the agents call dcp and the project needs neither bash nor pwsh, and the scripts are no longer copied into the project; the scheduled upstream job fails the bump when a script changed, until the subcommand follows it. With the subcommands in the engine, FEAT-030 can also record and check them as steps of the cycle. Done after IMP-011.
 
+### IMP-013: Candidate and promote workflows for the skills releases
+- **Priority**: high
+- **Epic**: EPIC-001
+- **Status**: planned
+- **Found**: 2026-11-09, v2.10.0 release
+- **Plan**: ai_code_agent_skills_candidate_and_promote_workflows_for_the_skills_releases
+- **Description**: The repository follows the trunk model but no workflow publishes a product release: a vX.Y.Z-rc.N tag gives no pre-release and there is no promote workflow for the user's release gate (check_ci_policy warns). Add release.yml (pre-release for candidates, release for final tags, checks the version file and the engine release) and promote.yml (the user's promotion of an accepted candidate, held by the release environment).
+
 ## Adjustments
 
 ### ADJ-001: Engine binary renamed to dcp
