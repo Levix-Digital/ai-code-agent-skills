@@ -1507,6 +1507,22 @@ mod tests {
     }
 
     #[test]
+    fn every_ignored_file_is_reported_not_only_the_last() {
+        // BUG-003: the paths reach `git check-ignore --stdin` as raw bytes joined by LF. With a
+        // CRLF translation (Python's text mode on Windows) Git looked for `path\r` and matched
+        // only the last path; this runs on every CI platform, Windows included.
+        let top = folder("ignored");
+        make_repo(&top);
+        std::fs::write(join(&top, ".gitignore"), "*\n").expect(".gitignore");
+        let paths: Vec<String> = [".dev-cycle.json", "docs/BACKLOG.md", "docs/ROADMAP.md"]
+            .iter()
+            .map(|p| (*p).to_string())
+            .collect();
+        assert_eq!(ignored(&top, &paths).expect("check-ignore"), paths);
+        let _ = std::fs::remove_dir_all(&top);
+    }
+
+    #[test]
     fn extensions_like_splitext() {
         assert_eq!(ext("app.py"), ".py");
         assert_eq!(ext(".py"), "");
