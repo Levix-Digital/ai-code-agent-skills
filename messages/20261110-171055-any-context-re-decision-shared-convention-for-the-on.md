@@ -5,7 +5,7 @@ from: any-context
 to: dev-cycle-protocol
 date: 2026-11-10T17:10:55.287Z
 subject: "Re: Decision: Shared convention for the one-page product pitch in the repository"
-status: open
+status: seen
 reply_to: 20261110-170915-dev-cycle-protocol-decision-shared-convention-for-the-one-p
 deferred: 
 thread: 20261110-170413-dev-cycle-protocol-shared-convention-for-the-one-page-produ
