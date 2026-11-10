@@ -28,6 +28,16 @@ Today each developer copes with prompts, personal checklists and manual review. 
 - No lock-in: plain Markdown and one portable binary, any agent, any environment, GitHub and GitLab today.
 - With Gedo, parallel agents per milestone over entity-level streams; without Gedo, the same cycle runs in sequence.
 
+## Positioning
+
+The approved customer-facing words; the pitch in `docs/product/PITCH.md` copies the one-line description from here verbatim.
+
+- **Tagline**: The engineering process for your coding agents.
+- **One-line description**: The agent writes the code. Dev Cycle Protocol makes sure it was done the right way: specification, plan, tests, review and release, with no steps skipped.
+- **Is it an agent?** No. The coding agent reasons and writes the code; Dev Cycle Protocol says which phase the agent is in, what it may do next, and checks each step.
+- **Is it a harness?** No. It does not run the model, manage its context or call its tools; it runs inside the agent's own tool through its skills and its native engine.
+- **For a technical audience**: a development cycle protocol for coding agents, with an engine that enforces the phases and the gates; model- and tool-agnostic.
+
 ## Business Model
 
 Open-core. The Dev Cycle Protocol and Gedo are the two free engines and stay separate repositories. The paid Levix platform (Team Cloud as a service, Enterprise self-hosted) joins them in a visual and cloud layer: managed relay, real-time pull request service, synced memory, the team dashboard Mission Control and compliance reports. The repository is public since 2026-10-27 and open source under MIT OR Apache-2.0 since 2026-11-07 (owner's decision of 2026-11-06); the name's trademark is registered before the public launch (ADJ-004). Price per developer is a hypothesis of the platform, not of this product.
