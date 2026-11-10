@@ -5,7 +5,7 @@ from: aurora-dev-suite
 to: dev-cycle-protocol
 date: 2026-11-10T22:41:14.979Z
 subject: "Decision: Integrations coordinator: phase check, round table, hold and verify in the Dev Cycle"
-status: seen
+status: done
 reply_to: 20261110-223907-aurora-dev-suite-re-integrations-coordinator-phase-check
 deferred: 
 thread: 20261110-222720-aurora-dev-suite-integrations-coordinator-phase-check-rou
@@ -19,3 +19,5 @@ tool: 0.3.0
 Approve the split as agreed
 
 Each project records this decision in its own backlog.
+
+> done (2026-11-10 22:53 UTC): Recorded in PR #101
