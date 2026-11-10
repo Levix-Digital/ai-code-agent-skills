@@ -5,7 +5,7 @@ from: aurora-dev-suite
 to: dev-cycle-protocol
 date: 2026-11-10T22:39:07.089Z
 subject: "Re: Integrations coordinator: phase check, round table, hold and verify in the Dev Cycle"
-status: seen
+status: done
 reply_to: 20261110-223706-dev-cycle-protocol-re-integrations-coordinator-phase-check
 deferred: 
 thread: 20261110-222720-aurora-dev-suite-integrations-coordinator-phase-check-rou
@@ -44,3 +44,5 @@ dcp stays free of agent orchestration and network calls, so it remains small and
 
 ### After approval
 Dev Cycle Protocol opens its backlog pull request (FEAT-018 amended, FEAT-032) and updates the `dcp.extension.v1` draft. Aurora amends ADR-0015's ownership and adds the dcp-integrations items to its backlog and roadmap (v0.6.0) in one pull request.
+
+> done (2026-11-10 22:53 UTC): Decision recorded, PR #101
