@@ -63,10 +63,12 @@ Document `dcp.extension-provider` (`fixtures/describe.json`): `name`, `version` 
 | Point | When |
 | --- | --- |
 | `discovery` | Start of Phase 1 and the `/dev-cycle` diagnosis |
+| `phase-enter` | Every phase of the full and short paths, when it starts (after `dcp phase enter`) |
+| `phase-exit` | Every phase of the full and short paths, before it ends (before `dcp phase exit` passes) |
 | `after-merge` | A pull request merged into the work base or a followed branch (Phase 10) |
 | `before-release-gate` | Before gate 8 |
 
-The engine writes a context document `dcp.extension-context` on standard input (`fixtures/context-after-merge.json`): `point`, `project_root`, `release` (the current release version or `null`), `phase` and, for `after-merge` only, `merge` with `commit`, `branch` and `base`.
+The engine writes a context document `dcp.extension-context` on standard input (`fixtures/context-after-merge.json`): `point`, `project_root`, `release` (the current release version or `null`), `phase`, `plan` (the active plan as `id` and `branch`, or `null` when there is none) and, for `after-merge` only, `merge` with `commit`, `branch` and `base`.
 
 The provider answers `dcp.extension` (the `dcp.extension.v1` items document) (`fixtures/items-before-release-gate.json`): `provider`, `point` and `items[]`. Each item has:
 
@@ -107,3 +109,4 @@ Runs every registered, enabled provider that declares `<point>`, in registry ord
 1. Points and gates are declared only by `describe`. The registry stays a list of names and holds no copy of what `describe` returns.
 2. A provider may declare a longer timeout per `hook` point in `describe`; 30 seconds stays the default and the engine caps every limit at 300 seconds.
 3. `before` accepts only gate `8` in MAJOR 1; other gates may be added in a MINOR when a provider asks for them.
+4. Cycle points `phase-enter` and `phase-exit` run at every phase, with the active plan in the context, so a provider can judge at each phase whether the work may touch another project's contracts (Aurora Dev Suite's phase check, agreed 2026-11-10 with Aurora ADR-0015). The judgment is the provider's; the engine only gives the moment. Gates declared before a phase exit come with FEAT-032 (v2.12.0) as a MINOR of this contract.

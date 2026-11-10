@@ -78,7 +78,7 @@
           "type": "array",
           "items": {
             "type": "string",
-            "description": "Open enum: discovery, after-merge, before-release-gate in 1.0",
+            "description": "Open enum: discovery, phase-enter, phase-exit, after-merge, before-release-gate in 1.0",
             "minLength": 1
           }
         },
@@ -145,7 +145,7 @@
         },
         "point": {
           "type": "string",
-          "description": "Open enum: discovery, after-merge, before-release-gate in 1.0",
+          "description": "Open enum: discovery, phase-enter, phase-exit, after-merge, before-release-gate in 1.0",
           "minLength": 1
         },
         "project_root": {
@@ -162,6 +162,27 @@
             "string",
             "null"
           ]
+        },
+        "plan": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "required": [
+            "id",
+            "branch"
+          ],
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "branch": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
         },
         "merge": {
           "type": "object",
@@ -207,7 +228,7 @@
         },
         "point": {
           "type": "string",
-          "description": "Open enum: discovery, after-merge, before-release-gate in 1.0",
+          "description": "Open enum: discovery, phase-enter, phase-exit, after-merge, before-release-gate in 1.0",
           "minLength": 1
         },
         "items": {
@@ -369,7 +390,7 @@
                 "type": "array",
                 "items": {
                   "type": "string",
-                  "description": "Open enum: discovery, after-merge, before-release-gate in 1.0",
+                  "description": "Open enum: discovery, phase-enter, phase-exit, after-merge, before-release-gate in 1.0",
                   "minLength": 1
                 }
               },
@@ -436,7 +457,7 @@
         },
         "point": {
           "type": "string",
-          "description": "Open enum: discovery, after-merge, before-release-gate in 1.0",
+          "description": "Open enum: discovery, phase-enter, phase-exit, after-merge, before-release-gate in 1.0",
           "minLength": 1
         },
         "blocking": {
