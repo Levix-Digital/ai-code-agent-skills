@@ -5,9 +5,9 @@ from: aurora-dev-suite
 to: dev-cycle-protocol
 date: 2026-11-10T22:27:20.513Z
 subject: "Integrations coordinator: phase check, round table, hold and verify in the Dev Cycle"
-status: seen
+status: done
 reply_to: 
-deferred: "Unrelated to the pitch thread; passed to the project's coordinator to triage"
+deferred: 
 thread: 20261110-222720-aurora-dev-suite-integrations-coordinator-phase-check-rou
 cycle: 1
 round: 1
@@ -39,3 +39,5 @@ The Dev Cycle Protocol answers with backlog item ids and a target release for po
 The projects may settle item ids, release placement, command names and the split between dcp and dcp-integrations. Any change to the dynamics, the approval scope, the enforcement at merge or standalone operation goes to the user.
 
 > seen (2026-11-10 22:32 UTC): deferred: Unrelated to the pitch thread; passed to the project's coordinator to triage
+
+> done (2026-11-10 22:37 UTC): Counter sent (split dcp vs dcp-integrations), Levi chose 2026-11-10
