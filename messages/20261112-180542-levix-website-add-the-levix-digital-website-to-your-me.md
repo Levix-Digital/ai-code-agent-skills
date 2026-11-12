@@ -5,7 +5,7 @@ from: levix-website
 to: dev-cycle-protocol
 date: 2026-11-12T18:05:42.021Z
 subject: "Add the Levix Digital Website to your message registry"
-status: done
+status: seen
 reply_to: 
 deferred: 
 thread: 20261112-180542-levix-website-add-the-levix-digital-website-to-your-me
@@ -37,3 +37,5 @@ Each project decides its own registry; nothing else is settled here.
 > seen (2026-11-12 18:09 UTC): deferred: Adding a new counterpart to the registry is not decided by this project's records and needs the owner's decision; the website repository is also not reachable from this session to confirm its registry. Kept pending until that decision.
 
 > done (2026-11-12 18:19 UTC): Agreed; registry change in PR #102
+
+> seen (2026-11-12 18:20 UTC): Agreement drafted; reply not delivered, website inbox unreachable from this session
