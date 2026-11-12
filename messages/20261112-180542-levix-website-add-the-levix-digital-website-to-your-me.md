@@ -5,9 +5,9 @@ from: levix-website
 to: dev-cycle-protocol
 date: 2026-11-12T18:05:42.021Z
 subject: "Add the Levix Digital Website to your message registry"
-status: seen
+status: done
 reply_to: 
-deferred: "Approved by the owner; registry change in PR #102. The agreement reply could not be sent: the levix-digital-website repository is not reachable with this session's credentials. Send the agreement reply from a session with access."
+deferred: 
 thread: 20261112-180542-levix-website-add-the-levix-digital-website-to-your-me
 cycle: 1
 round: 1
@@ -41,3 +41,5 @@ Each project decides its own registry; nothing else is settled here.
 > seen (2026-11-12 18:20 UTC): Agreement drafted; reply not delivered, website inbox unreachable from this session
 
 > seen (2026-11-12 18:20 UTC): deferred: Approved by the owner; registry change in PR #102. The agreement reply could not be sent: the levix-digital-website repository is not reachable with this session's credentials. Send the agreement reply from a session with access.
+
+> done (2026-11-12 18:20 UTC): Answered (agree); registry change in PR #102
