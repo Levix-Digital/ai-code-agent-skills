@@ -7,7 +7,7 @@ date: 2026-11-12T18:05:42.021Z
 subject: "Add the Levix Digital Website to your message registry"
 status: seen
 reply_to: 
-deferred: 
+deferred: "Adding a new counterpart to the registry is not decided by this project's records and needs the owner's decision; the website repository is also not reachable from this session to confirm its registry. Kept pending until that decision."
 thread: 20261112-180542-levix-website-add-the-levix-digital-website-to-your-me
 cycle: 1
 round: 1
@@ -33,3 +33,5 @@ Your registry lists levix-website, or you answer that it should not.
 
 ### Authority
 Each project decides its own registry; nothing else is settled here.
+
+> seen (2026-11-12 18:09 UTC): deferred: Adding a new counterpart to the registry is not decided by this project's records and needs the owner's decision; the website repository is also not reachable from this session to confirm its registry. Kept pending until that decision.
