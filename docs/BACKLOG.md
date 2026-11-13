@@ -330,6 +330,13 @@ Each item: `### <ID>: <title>` with the fields `Severity` (bugs: critical, high,
 - **Plan**: -
 - **Description**: After IMP-011 the cycle still runs Spec Kit's shell scripts: .specify/scripts (create-new-feature, setup-plan, setup-tasks, check-prerequisites, resolve-template and their common helpers) and the git extension's scripts (create-new-feature-branch, auto-commit, initialize-repo), in bash or, on Windows, in PowerShell 7 (pwsh), which is not installed by default. Each script becomes a dcp subcommand (dcp speckit <script>, names fixed when planned) with exactly the same arguments, JSON output, files written and exit codes as the upstream script of the pinned version, checked by a parity test against both the bash and the PowerShell script; speckit_setup's own calls (branch_script_cmd and setup_plan_cmd) use them too. The snapshot of IMP-011 rewrites the script references in the agent command files to the subcommands, so the agents call dcp and the project needs neither bash nor pwsh, and the scripts are no longer copied into the project; the scheduled upstream job fails the bump when a script changed, until the subcommand follows it. With the subcommands in the engine, FEAT-030 can also record and check them as steps of the cycle. Done after IMP-011.
 
+### IMP-014: Release gate verifies the publishing environments have a required reviewer
+- **Priority**: high
+- **Status**: planned
+- **Found**: 2026-11-13, Mirror releases run (PR #104)
+- **Plan**: dev_cycle_protocol_release_gate_verifies_the_publishing_environments_have_a_required_reviewer
+- **Description**: devops-release asks for the release environment with the user as required reviewer and says the agent never runs promote.yml, but nothing verifies it: check_ci_policy only sees 'environment:' in the workflow file, and on 2026-11-13 the release environment of this repository had no reviewer, so Mirror releases (and a promotion) ran with no approval, started by the agent. (1) A check through the GitHub API (repos/{repo}/environments/{name}) that every environment used by a workflow that publishes a release or creates a release tag has at least one required reviewer; missing or empty is an error at the rc gate and in check_ci_policy when a token is available, a warning otherwise. (2) The rule that the agent never runs promote.yml covers every workflow that publishes a release, including mirror-releases.yml: the agent hands the user the command.
+
 ## Adjustments
 
 ### ADJ-001: Engine binary renamed to dcp

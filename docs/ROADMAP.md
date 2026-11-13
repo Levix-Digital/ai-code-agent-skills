@@ -9,6 +9,11 @@ Each release: `## vX.Y.Z: <name>` with the fields `Status` (planned, in_progress
 - **Goal**: Every script runs as a command of one Rust binary with exactly the same behavior, and the protocol needs no Python
 - **Items**: IMP-005, BUG-005, BUG-006, BUG-003, IMP-013
 
+## v2.10.1: Release approval enforced
+- **Status**: planned
+- **Goal**: No release is published without the user's approval: every publishing environment has a required reviewer, checked at the release gate, and the agent never runs a publishing workflow
+- **Items**: IMP-014
+
 ## v2.11.0: Guardrails for agent-written code
 - **Status**: planned
 - **Goal**: Pull requests are blocked on invented or vulnerable dependencies, weakened tests, changes outside the plan and insecure code, Aurora Dev Suite reads each project's cycle state through dcp diagnose --json and its settings through dcp config, providers such as Aurora Dev Suite join the cycle through a generic extension point, the developer always sees which phase, step and gate the protocol is on through standard status lines, and every agent opening a project follows the protocol on its own, phase by phase, with the order enforced by the engine, Git and agent hooks and a required CI check, and Spec Kit comes inside the dcp binary, offline, with no uv, Python, bash or PowerShell in the project
