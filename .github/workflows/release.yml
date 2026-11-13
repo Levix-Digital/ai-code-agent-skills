@@ -3,9 +3,13 @@
 #   the candidate the user installs and accepts.
 # - vX.Y.Z final tags are created by promote.yml, which calls this workflow directly (a tag pushed
 #   with GITHUB_TOKEN would not start it); a final tag pushed by hand is refused.
-# The release is the repository at its tag: users clone the tag and run install.sh or install.ps1.
+# The release is the repository at its tag: users clone the tag, or download the source archives
+# attached to the release, and run install.sh or install.ps1.
 # The engine binaries are released apart as engine-vX.Y.Z (engine.yml) and the launchers download
 # the version in dev-cycle-protocol/bin/engine-version, so that release must exist first.
+# Releases go to the public releases repository named in the RELEASES_REPOSITORY variable, with the
+# RELEASES_TOKEN secret (contents: write on that repository), and to this repository while the
+# variable is not set.
 name: Release
 
 on:
@@ -27,6 +31,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       TAG: ${{ inputs.tag || github.ref_name }}
+      RELEASES_REPOSITORY: ${{ vars.RELEASES_REPOSITORY }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -35,8 +40,16 @@ jobs:
 
       - name: Check the tag, the version files and the engine release
         env:
-          GH_TOKEN: ${{ github.token }}
+          RELEASES_TOKEN: ${{ secrets.RELEASES_TOKEN }}
+          WORKFLOW_TOKEN: ${{ github.token }}
         run: |
+          if [ -n "$RELEASES_REPOSITORY" ]; then
+            [ -n "$RELEASES_TOKEN" ] || { echo "::error::RELEASES_REPOSITORY is set but the RELEASES_TOKEN secret is missing"; exit 1; }
+            repo="$RELEASES_REPOSITORY"; export GH_TOKEN="$RELEASES_TOKEN"
+          else
+            repo="$GITHUB_REPOSITORY"; export GH_TOKEN="$WORKFLOW_TOKEN"
+          fi
+          echo "PUBLISH_REPOSITORY=$repo" >> "$GITHUB_ENV"
           if ! echo "$TAG" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$'; then
             echo "::error::'$TAG' is not a release tag like v2.10.0 or v2.10.0-rc.1"; exit 1
           fi
@@ -49,7 +62,7 @@ jobs:
             echo "::error::.claude-plugin/plugin.json has $plugin, the tag $TAG needs $version: bump it first"; exit 1
           fi
           engine="$(tr -d ' \r\n' < dev-cycle-protocol/bin/engine-version)"
-          if ! gh release view "engine-v$engine" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+          if ! gh release view "engine-v$engine" --repo "$repo" > /dev/null 2>&1; then
             echo "::error::engine-v$engine is not published; wait for the Engine workflow of that commit"; exit 1
           fi
           echo "ENGINE=$engine" >> "$GITHUB_ENV"
@@ -63,18 +76,34 @@ jobs:
           args=(-f tag_name="$TAG" -f target_commitish="$(git rev-parse HEAD)")
           [ -n "$previous" ] && args+=(-f previous_tag_name="$previous")
           {
-            echo "Install: \`git clone --branch $TAG https://github.com/$GITHUB_REPOSITORY\`, then run \`install.sh\` (or \`install.ps1\`) from the clone."
+            echo "Install: \`git clone --branch $TAG https://github.com/$GITHUB_REPOSITORY\`, or download and extract the source archive attached here, then run \`install.sh\` (or \`install.ps1\`) from that folder."
             echo "The engine is \`engine-v$ENGINE\`, downloaded by the launchers on first use."
             echo
             gh api "repos/$GITHUB_REPOSITORY/releases/generate-notes" "${args[@]}" --jq .body
           } > notes.md
           cat notes.md
 
+      - name: Source archives
+        run: |
+          mkdir -p dist
+          # Same asset names in every release, so releases/latest/download/<name> always works;
+          # the folder inside carries the version.
+          prefix="dev-cycle-protocol-${TAG#v}/"
+          git archive --format=tar.gz --prefix="$prefix" -o dist/dev-cycle-protocol.tar.gz HEAD
+          git archive --format=zip --prefix="$prefix" -o dist/dev-cycle-protocol.zip HEAD
+          (cd dist && sha256sum * > SHA256SUMS && cat SHA256SUMS)
+          echo "COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+
       - name: Publish release
         uses: softprops/action-gh-release@v2
         with:
+          repository: ${{ env.PUBLISH_REPOSITORY }}
+          token: ${{ vars.RELEASES_REPOSITORY && secrets.RELEASES_TOKEN || github.token }}
           tag_name: ${{ env.TAG }}
+          # In the releases repository the tag sits on its default branch (it has no source).
+          target_commitish: ${{ !vars.RELEASES_REPOSITORY && env.COMMIT || '' }}
           name: ${{ env.TAG }}
           body_path: notes.md
           prerelease: ${{ contains(env.TAG, '-rc') }}
           make_latest: ${{ contains(env.TAG, '-rc') && 'false' || 'true' }}
+          files: dist/*

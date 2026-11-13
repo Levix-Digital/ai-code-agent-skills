@@ -3,8 +3,11 @@
 #
 # The binary comes from, in order: DEV_CYCLE_BIN; the cache; the engine-v<version> release
 # (checked against its SHA256SUMS); a build with cargo when this folder is inside a checkout.
+# Releases are published to the public releases repository; the source repository is tried
+# second, for the engine versions published before it.
 $ErrorActionPreference = 'Stop'
 
+$Releases = 'Levix-Digital/dcp-releases'
 $Repo = 'Levix-Digital/dev-cycle-protocol'
 $Version = (Get-Content -Raw (Join-Path $PSScriptRoot 'engine-version')).Trim()
 
@@ -35,14 +38,24 @@ $cache = Join-Path (Join-Path $cacheRoot 'dev-cycle') "engine-v$Version"
 $bin = Join-Path $cache "dev-cycle$exe"
 
 if (-not (Test-Path $bin) -and $target) {
-    $url = "https://github.com/$Repo/releases/download/engine-v$Version"
     $asset = "dev-cycle-$target$exe"
     $tmp = "$cache.tmp.$PID"
     New-Item -ItemType Directory -Force -Path $tmp | Out-Null
     try {
         $ProgressPreference = 'SilentlyContinue'
-        Invoke-WebRequest -UseBasicParsing -Uri "$url/$asset" -OutFile (Join-Path $tmp $asset)
-        Invoke-WebRequest -UseBasicParsing -Uri "$url/SHA256SUMS" -OutFile (Join-Path $tmp 'SHA256SUMS')
+        $found = $false
+        foreach ($source in @($Releases, $Repo)) {
+            $url = "https://github.com/$source/releases/download/engine-v$Version"
+            try {
+                Invoke-WebRequest -UseBasicParsing -Uri "$url/$asset" -OutFile (Join-Path $tmp $asset)
+                Invoke-WebRequest -UseBasicParsing -Uri "$url/SHA256SUMS" -OutFile (Join-Path $tmp 'SHA256SUMS')
+                $found = $true
+                break
+            } catch {
+                # Not in this repository: try the next one.
+            }
+        }
+        if (-not $found) { throw "engine-v$Version not found" }
         $line = Get-Content (Join-Path $tmp 'SHA256SUMS') | Where-Object { $_ -match " $([regex]::Escape($asset))$" } | Select-Object -First 1
         $expected = if ($line) { ($line -split ' ')[0] } else { '' }
         $actual = (Get-FileHash -Algorithm SHA256 (Join-Path $tmp $asset)).Hash.ToLower()
@@ -68,7 +81,7 @@ if (-not (Test-Path $bin)) {
         $bin = Join-Path $root "target/release/dev-cycle$exe"
     } else {
         [Console]::Error.WriteLine("dev-cycle: no binary of engine-v$Version for this system ($target).")
-        [Console]::Error.WriteLine("Download it from https://github.com/$Repo/releases/tag/engine-v$Version, or install Rust and run this again from a checkout.")
+        [Console]::Error.WriteLine("Download it from https://github.com/$Releases/releases/tag/engine-v$Version, or install Rust and run this again from a checkout.")
         exit 127
     }
 }
