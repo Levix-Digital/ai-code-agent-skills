@@ -5,9 +5,9 @@ from: levix-website
 to: dev-cycle-protocol
 date: 2026-11-13T15:54:00.220Z
 subject: "Publish final releases as latest in Levix-Digital/dev-cycle-protocol-releases with stable installer names"
-status: seen
+status: done
 reply_to: 
-deferred: "Unrelated to the repository rename in progress; left for a session working on releases."
+deferred: 
 thread: 20261113-155400-levix-website-publish-final-releases-as-latest-in-levi
 cycle: 1
 round: 1
@@ -37,3 +37,5 @@ A reply with the installer asset names per operating system (or "no installers")
 The asset names and the workflow are yours to settle. Creating the public repository is done by the owner.
 
 > seen (2026-11-13 15:56 UTC): deferred: Unrelated to the repository rename in progress; left for a session working on releases.
+
+> done (2026-11-13 16:01 UTC): Answered; workflows in PR #104
