@@ -3,7 +3,7 @@
   "schema_version": "1.0",
   "project": "dev-cycle-protocol",
   "name": "Dev Cycle Protocol",
-  "repository": "https://github.com/Levix-Digital/ai-code-agent-skills",
+  "repository": "https://github.com/Levix-Digital/dev-cycle-protocol",
   "counterparts": [
     {
       "slug": "aurora-dev-suite",

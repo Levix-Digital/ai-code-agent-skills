@@ -82,7 +82,7 @@ Development skills in the open `SKILL.md` format, shared by every coding agent o
 ## Setup
 
 ```bash
-git clone https://github.com/Levix-Digital/ai-code-agent-skills.git ~/.ai-code-agent-skills
+git clone https://github.com/Levix-Digital/dev-cycle-protocol.git ~/.ai-code-agent-skills
 ```
 
 Link the skills into the agents.

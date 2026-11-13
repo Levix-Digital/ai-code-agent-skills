@@ -3,7 +3,7 @@ generated-by: dev-cycle-protocol/constitution.py (do not edit; change a source a
 sources-sha256: 3b35b3ddc6966d89740626fc5d4df95e5bad7787ab449924045575239061fa61
 content-sha256: 5c88140fb254be9a7f13a32959e14b3ed44893f58ba7668aac0f54c5f225a162
 -->
-# ai-code-agent-skills Constitution
+# dev-cycle-protocol Constitution
 
 The non-negotiable rules every specification, plan and task of this project follows. It is generated from the project's sources of truth by `dev-cycle-protocol/constitution.py`; change a source and regenerate it, never edit it.
 

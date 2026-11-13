@@ -6,7 +6,7 @@
 # (checked against its SHA256SUMS); a build with cargo when this folder is inside a checkout.
 set -eu
 
-REPO="Levix-Digital/ai-code-agent-skills"
+REPO="Levix-Digital/dev-cycle-protocol"
 here=$(cd "$(dirname "$0")" && pwd -P)
 version=$(tr -d ' \r\n' < "$here/engine-version")
 

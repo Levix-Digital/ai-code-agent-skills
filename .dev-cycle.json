@@ -1,5 +1,5 @@
 {
-  "project_name": "ai-code-agent-skills",
+  "project_name": "dev-cycle-protocol",
   "test_commands": [
     "cargo test --workspace",
     "cargo build -p dev-cycle",
