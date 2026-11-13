@@ -86,9 +86,11 @@ jobs:
       - name: Source archives
         run: |
           mkdir -p dist
-          name="dev-cycle-protocol-${TAG#v}"
-          git archive --format=tar.gz --prefix="$name/" -o "dist/$name.tar.gz" HEAD
-          git archive --format=zip --prefix="$name/" -o "dist/$name.zip" HEAD
+          # Same asset names in every release, so releases/latest/download/<name> always works;
+          # the folder inside carries the version.
+          prefix="dev-cycle-protocol-${TAG#v}/"
+          git archive --format=tar.gz --prefix="$prefix" -o dist/dev-cycle-protocol.tar.gz HEAD
+          git archive --format=zip --prefix="$prefix" -o dist/dev-cycle-protocol.zip HEAD
           (cd dist && sha256sum * > SHA256SUMS && cat SHA256SUMS)
           echo "COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
 
