@@ -8,7 +8,7 @@
 $ErrorActionPreference = 'Stop'
 
 $Releases = 'Levix-Digital/dcp-releases'
-$Repo = 'Levix-Digital/ai-code-agent-skills'
+$Repo = 'Levix-Digital/dev-cycle-protocol'
 $Version = (Get-Content -Raw (Join-Path $PSScriptRoot 'engine-version')).Trim()
 
 # The commands read their sibling skills' files (SKILL.md, styles) from this skills folder.

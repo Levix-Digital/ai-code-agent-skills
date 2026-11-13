@@ -50,4 +50,4 @@ Dev Cycle Protocol is the process core of the **Aurora Dev Suite: Dev Cycle Prot
 
 ## Get started
 
-Clone the repository, run the installer and type `/dev-cycle` in your agent: https://github.com/Levix-Digital/ai-code-agent-skills
+Clone the repository, run the installer and type `/dev-cycle` in your agent: https://github.com/Levix-Digital/dev-cycle-protocol

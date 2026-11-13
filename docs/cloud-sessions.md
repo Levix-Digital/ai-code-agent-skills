@@ -14,7 +14,7 @@ How to install it depends on where the session starts:
 In the cloud environment's settings, Setup script:
 
 ```bash
-claude plugin marketplace add Levix-Digital/ai-code-agent-skills || true
+claude plugin marketplace add Levix-Digital/dev-cycle-protocol || true
 claude plugin marketplace update levix-agent-skills || true
 claude plugin install dev-skills@levix-agent-skills || true
 ```
@@ -33,7 +33,7 @@ Add to the project's `.claude/settings.json` and push it to the branch the cloud
 {
   "extraKnownMarketplaces": {
     "levix-agent-skills": {
-      "source": { "source": "github", "repo": "Levix-Digital/ai-code-agent-skills" }
+      "source": { "source": "github", "repo": "Levix-Digital/dev-cycle-protocol" }
     }
   },
   "enabledPlugins": {

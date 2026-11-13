@@ -9,7 +9,7 @@
 set -eu
 
 RELEASES="Levix-Digital/dcp-releases"
-REPO="Levix-Digital/ai-code-agent-skills"
+REPO="Levix-Digital/dev-cycle-protocol"
 here=$(cd "$(dirname "$0")" && pwd -P)
 version=$(tr -d ' \r\n' < "$here/engine-version")
 
