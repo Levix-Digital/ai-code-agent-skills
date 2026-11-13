@@ -2,7 +2,8 @@
 # (RELEASES_REPOSITORY variable) does not have yet, with its assets, notes and pre-release flag.
 # It is run by hand (Actions > Mirror releases > Run workflow) once the variable and the
 # RELEASES_TOKEN secret are set; later releases are published there by engine.yml and release.yml.
-# Running it again only copies what is missing. The engine releases are never marked latest; the
+# Running it again only copies what is missing. Product releases without source archives get them
+# from their tag. The engine releases are never marked latest; the
 # newest final product release is.
 name: Mirror releases
 
@@ -19,6 +20,10 @@ jobs:
     # Publishing is held for the maintainer's approval, like a promotion.
     environment: release
     steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Copy the missing releases
         env:
           SOURCE: ${{ github.repository }}
@@ -40,7 +45,17 @@ jobs:
               skipped=$((skipped + 1)); continue
             fi
             rm -rf assets && mkdir assets
-            GH_TOKEN="$SOURCE_TOKEN" gh release download "$tag" --repo "$SOURCE" --dir assets
+            if [ "$(GH_TOKEN="$SOURCE_TOKEN" gh release view "$tag" --repo "$SOURCE" --json assets --jq '.assets | length')" -gt 0 ]; then
+              GH_TOKEN="$SOURCE_TOKEN" gh release download "$tag" --repo "$SOURCE" --dir assets
+            fi
+            # Product releases published before the source archives existed (the release was the
+            # repository at its tag) get them here, as release.yml builds them now.
+            if [[ "$tag" == v* ]] && [ ! -e assets/dev-cycle-protocol.zip ]; then
+              prefix="dev-cycle-protocol-${tag#v}/"
+              git archive --format=tar.gz --prefix="$prefix" -o assets/dev-cycle-protocol.tar.gz "$tag"
+              git archive --format=zip --prefix="$prefix" -o assets/dev-cycle-protocol.zip "$tag"
+              (cd assets && rm -f SHA256SUMS && sha256sum * > SHA256SUMS)
+            fi
             GH_TOKEN="$SOURCE_TOKEN" gh release view "$tag" --repo "$SOURCE" --json name,body,isPrerelease > info.json
             jq -r .body info.json > notes.md
             flags=(--latest=false)
