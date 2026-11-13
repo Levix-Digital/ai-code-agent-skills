@@ -1,0 +1,56 @@
+# Mirror releases: copies every release of this repository that the public releases repository
+# (RELEASES_REPOSITORY variable) does not have yet, with its assets, notes and pre-release flag.
+# It is run by hand (Actions > Mirror releases > Run workflow) once the variable and the
+# RELEASES_TOKEN secret are set; later releases are published there by engine.yml and release.yml.
+# Running it again only copies what is missing. The engine releases are never marked latest; the
+# newest final product release is.
+name: Mirror releases
+
+on:
+  workflow_dispatch:
+
+# Writes go to the releases repository with RELEASES_TOKEN; this repository is only read.
+permissions:
+  contents: write
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    # Publishing is held for the maintainer's approval, like a promotion.
+    environment: release
+    steps:
+      - name: Copy the missing releases
+        env:
+          SOURCE: ${{ github.repository }}
+          SOURCE_TOKEN: ${{ github.token }}
+          RELEASES_REPOSITORY: ${{ vars.RELEASES_REPOSITORY }}
+          RELEASES_TOKEN: ${{ secrets.RELEASES_TOKEN }}
+        run: |
+          set -euo pipefail
+          [ -n "$RELEASES_REPOSITORY" ] || { echo "::error::set the RELEASES_REPOSITORY variable"; exit 1; }
+          [ -n "$RELEASES_TOKEN" ] || { echo "::error::set the RELEASES_TOKEN secret"; exit 1; }
+          latest="$(GH_TOKEN="$SOURCE_TOKEN" gh release list --repo "$SOURCE" --limit 1000 --exclude-drafts --json tagName,isPrerelease \
+            --jq '[.[] | select(.isPrerelease | not) | .tagName | select(test("^v[0-9]+[.][0-9]+[.][0-9]+$"))] | sort_by(ltrimstr("v") | split(".") | map(tonumber)) | last // ""')"
+          # Oldest first, so the releases repository lists them in the same order.
+          GH_TOKEN="$SOURCE_TOKEN" gh release list --repo "$SOURCE" --limit 1000 --exclude-drafts --json tagName,createdAt \
+            --jq 'sort_by(.createdAt) | .[].tagName' > tags.txt
+          copied=0; skipped=0
+          while read -r tag; do
+            if GH_TOKEN="$RELEASES_TOKEN" gh release view "$tag" --repo "$RELEASES_REPOSITORY" > /dev/null 2>&1; then
+              skipped=$((skipped + 1)); continue
+            fi
+            rm -rf assets && mkdir assets
+            GH_TOKEN="$SOURCE_TOKEN" gh release download "$tag" --repo "$SOURCE" --dir assets
+            GH_TOKEN="$SOURCE_TOKEN" gh release view "$tag" --repo "$SOURCE" --json name,body,isPrerelease > info.json
+            jq -r .body info.json > notes.md
+            flags=(--latest=false)
+            [ "$(jq -r .isPrerelease info.json)" = true ] && flags+=(--prerelease)
+            [ "$tag" = "$latest" ] && flags=(--latest)
+            files=(assets/*)
+            [ -e "${files[0]}" ] || files=()
+            GH_TOKEN="$RELEASES_TOKEN" gh release create "$tag" "${files[@]}" --repo "$RELEASES_REPOSITORY" \
+              --title "$(jq -r .name info.json)" --notes-file notes.md "${flags[@]}"
+            echo "copied $tag (${#files[@]} assets)"
+            copied=$((copied + 1))
+          done < tags.txt
+          echo "Copied $copied releases to $RELEASES_REPOSITORY; $skipped were already there." | tee -a "$GITHUB_STEP_SUMMARY"

@@ -4,8 +4,11 @@
 #
 # The binary comes from, in order: DEV_CYCLE_BIN; the cache; the engine-v<version> release
 # (checked against its SHA256SUMS); a build with cargo when this folder is inside a checkout.
+# Releases are published to the public releases repository; the source repository is tried
+# second, for the engine versions published before it.
 set -eu
 
+RELEASES="Levix-Digital/dcp-releases"
 REPO="Levix-Digital/ai-code-agent-skills"
 here=$(cd "$(dirname "$0")" && pwd -P)
 version=$(tr -d ' \r\n' < "$here/engine-version")
@@ -43,14 +46,21 @@ cache="$cache_root/dev-cycle/engine-v$version"
 bin="$cache/dev-cycle$exe"
 
 if [ ! -x "$bin" ] && [ -n "$target" ]; then
-  url="https://github.com/$REPO/releases/download/engine-v$version"
   asset="dev-cycle-$target$exe"
   tmp="$cache.tmp.$$"
   mkdir -p "$tmp"
   fetch() {
     if command -v curl >/dev/null 2>&1; then curl -fsSL -o "$2" "$1"; else wget -q -O "$2" "$1"; fi
   }
-  if fetch "$url/$asset" "$tmp/$asset" 2>/dev/null && fetch "$url/SHA256SUMS" "$tmp/SHA256SUMS" 2>/dev/null; then
+  found=""
+  for source in "$RELEASES" "$REPO"; do
+    url="https://github.com/$source/releases/download/engine-v$version"
+    if fetch "$url/$asset" "$tmp/$asset" 2>/dev/null && fetch "$url/SHA256SUMS" "$tmp/SHA256SUMS" 2>/dev/null; then
+      found=1
+      break
+    fi
+  done
+  if [ -n "$found" ]; then
     expected=$(grep " $asset\$" "$tmp/SHA256SUMS" | cut -d' ' -f1)
     if command -v sha256sum >/dev/null 2>&1; then
       actual=$(sha256sum "$tmp/$asset" | cut -d' ' -f1)
@@ -75,7 +85,7 @@ if [ ! -x "$bin" ]; then
     bin="$root/target/release/dev-cycle$exe"
   else
     echo "dev-cycle: no binary of engine-v$version for this system (${target:-$os $(uname -m)})." >&2
-    echo "Download it from https://github.com/$REPO/releases/tag/engine-v$version, or install Rust and run this again from a checkout." >&2
+    echo "Download it from https://github.com/$RELEASES/releases/tag/engine-v$version, or install Rust and run this again from a checkout." >&2
     exit 127
   fi
 fi
