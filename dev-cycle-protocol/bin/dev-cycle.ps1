@@ -5,7 +5,7 @@
 # (checked against its SHA256SUMS); a build with cargo when this folder is inside a checkout.
 $ErrorActionPreference = 'Stop'
 
-$Repo = 'Levix-Digital/ai-code-agent-skills'
+$Repo = 'Levix-Digital/dev-cycle-protocol'
 $Version = (Get-Content -Raw (Join-Path $PSScriptRoot 'engine-version')).Trim()
 
 # The commands read their sibling skills' files (SKILL.md, styles) from this skills folder.
